@@ -27,4 +27,5 @@ public class ApprovalController {
 		return "approval/personal/reception/receptionBody.tiles";
 	}
 
+	// 컨트롤러에 테스트 해보겟습니다. 나중에 지워주세용
 }
