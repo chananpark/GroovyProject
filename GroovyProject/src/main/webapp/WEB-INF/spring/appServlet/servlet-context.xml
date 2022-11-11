@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:beans="http://www.springframework.org/schema/beans"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:task="http://www.springframework.org/schema/task"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+		http://www.springframework.org/schema/task http://www.springframework.org/schema/task/spring-task-4.3.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+	<!-- DispatcherServlet Context: defines this servlet's request-processing infrastructure -->
+	
+	<!-- Enables the Spring MVC @Controller programming model -->
+	<mvc:annotation-driven />
+	
+	<task:annotation-driven/>
+
+	<!-- Handles HTTP GET requests for /resources/** by efficiently serving up static resources in the ${webappRoot}/resources directory -->
+	<mvc:resources mapping="/resources/**" location="/resources/" />
+
+	<beans:bean id="excelDownloadView" class="com.spring.groovy.excel.ExcelDownloadView"/>
+	<beans:bean id="beanNameViewResolver" class="org.springframework.web.servlet.view.BeanNameViewResolver">
+	     <beans:property name="order" value="0"/>
+	</beans:bean>
+	
+	<beans:bean id="tilesConfigurer" class="org.springframework.web.servlet.view.tiles3.TilesConfigurer">
+	    <beans:property name="definitions">
+	        <beans:list>
+	             <beans:value>/WEB-INF/tiles/tiles-layout.xml</beans:value>
+	        </beans:list>
+	    </beans:property>
+	</beans:bean>
+	
+	<beans:bean id="viewResolver" class="org.springframework.web.servlet.view.UrlBasedViewResolver">
+	     <beans:property name="viewClass" value="org.springframework.web.servlet.view.tiles3.TilesView" />
+	     <beans:property name="order" value="1"/>
+	 </beans:bean>
+	
+	<!-- Resolves views selected for rendering by @Controllers to .jsp resources in the /WEB-INF/views directory -->
+	<beans:bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+		<beans:property name="prefix" value="/WEB-INF/views/" />
+		<beans:property name="suffix" value=".jsp" />
+		
+		<beans:property name="order" value="2"/> <!-- 이것의 사용우선순위를 2로 한다. -->
+	</beans:bean>
+	
+	<beans:bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver">   
+		<beans:property name="defaultEncoding" value="utf-8" />
+		<beans:property name="maxUploadSize" value="10485760" />
+	</beans:bean> 
+
+	<beans:bean id="aes" class="com.spring.groovy.common.AES256">
+	   <beans:constructor-arg> <!-- 생성자-파라미터 -->
+	      <beans:value>abcd1234#groovy$</beans:value> <!-- 암호화/복호화 키 이다. -->   
+	   </beans:constructor-arg>
+	</beans:bean>
+	
+	<context:component-scan base-package="com.spring.*" name-generator="com.spring.groovy.common.FullBeanNameGenerator"/>
+
+	<!--  AOP 관련 어노테이션 동작이 가능하게 설정 -->   
+	<aop:aspectj-autoproxy />        
+	 
+	<aop:config proxy-target-class="true">
+		<aop:pointcut id="controllerOperation" expression="execution(public * com.spring.groovy..*Controller.*(..))" />
+	</aop:config>	
+	
+</beans:beans>

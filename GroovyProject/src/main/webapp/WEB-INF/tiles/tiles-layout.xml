@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- ======= #23. tiles 레이아웃 설정하기 ======= -->
+
+<!DOCTYPE tiles-definitions PUBLIC
+       "-//Apache Software Foundation//DTD Tiles Configuration 2.1//EN"
+       "http://tiles.apache.org/dtds/tiles-config_2_1.dtd">
+       
+<tiles-definitions>
+
+	<!-- tiles 레이아웃 설정 -->
+	<definition name="layout-tiles"  template="/WEB-INF/tiles/layout/layout-tiles.jsp"> 
+	   <put-attribute name="header"  value="/WEB-INF/tiles/header.jsp" />
+	   <put-attribute name="side"  value="" />
+	   <put-attribute name="content" value="" />
+	</definition>
+   
+	<!-- 폴더명/파일명 -->
+	<definition name="*/*.tiles" extends="layout-tiles">
+	   <put-attribute name="content" value="/WEB-INF/views/tiles/{1}/content/{2}.jsp"/>
+	   <put-attribute name="side" value="/WEB-INF/views/tiles/{1}/side.jsp"/>
+	</definition>
+   
+	<!-- 폴더명/폴더명2/파일명 -->
+	<definition name="*/*/*.tiles" extends="layout-tiles">
+	   <put-attribute name="content" value="/WEB-INF/views/tiles/{1}/content/{2}/{3}.jsp"/>
+	   <put-attribute name="side" value="/WEB-INF/views/tiles/{1}/side.jsp"/>
+	</definition>
+
+	<!-- 폴더명/폴더명2/폴더명3/파일명 -->
+	<definition name="*/*/*/*.tiles" extends="layout-tiles">
+	   <put-attribute name="content" value="/WEB-INF/views/tiles/{1}/content/{2}/{3}/{4}.jsp"/>
+	   <put-attribute name="side" value="/WEB-INF/views/tiles/{1}/side.jsp"/>
+	</definition>
+
+
+</tiles-definitions> 
