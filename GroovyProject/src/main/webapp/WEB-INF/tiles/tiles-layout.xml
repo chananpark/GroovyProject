@@ -7,7 +7,7 @@
        
 <tiles-definitions>
 
-	<!-- tiles 레이아웃 설정 -->
+	<!-- tiles 레이아웃1: 헤더 + 사이드바 + 바디 -->
 	<definition name="layout-tiles"  template="/WEB-INF/tiles/layout/layout-tiles.jsp"> 
 	   <put-attribute name="header"  value="/WEB-INF/tiles/header.jsp" />
 	   <put-attribute name="side"  value="" />
@@ -32,5 +32,25 @@
 	   <put-attribute name="side" value="/WEB-INF/views/tiles/{1}/side.jsp"/>
 	</definition>
 
+	<!-- tiles 레이아웃2: 헤더 + 바디 -->
+	<definition name="layout-tiles2"  template="/WEB-INF/tiles/layout/layout-tiles2.jsp"> 
+	   <put-attribute name="header"  value="/WEB-INF/tiles/header.jsp" />
+	   <put-attribute name="content" value="" />
+	</definition>
+   
+	<!-- 폴더명/파일명 -->
+	<definition name="*/*.tiles2" extends="layout-tiles2">
+	   <put-attribute name="content" value="/WEB-INF/views/tiles/{1}/content/{2}.jsp"/>
+	</definition>
+   
+	<!-- 폴더명/폴더명2/파일명 -->
+	<definition name="*/*/*.tiles2" extends="layout-tiles2">
+	   <put-attribute name="content" value="/WEB-INF/views/tiles/{1}/content/{2}/{3}.jsp"/>
+	</definition>
+
+	<!-- 폴더명/폴더명2/폴더명3/파일명 -->
+	<definition name="*/*/*/*.tiles2" extends="layout-tiles2">
+	   <put-attribute name="content" value="/WEB-INF/views/tiles/{1}/content/{2}/{3}/{4}.jsp"/>
+	</definition>
 
 </tiles-definitions> 
