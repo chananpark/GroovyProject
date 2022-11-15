@@ -73,32 +73,6 @@
 	min-height: 1200px;
 }
 
-#mySide {
-	min-height: 1200px;
-	background-color: #F9F9F9;
-	padding-top: 4%;
-}
-
-#mySide a {
-	color: black;
-}
-
-#mySide .navbar-nav {
-	margin-left: 10%;
-}
-
-#mySide ul {
-	list-style-type: none;
-}
-
-#mySide nav li {
-	font-size: 12.5pt;
-}
-
-#mySide nav li li {
-	font-size: 11.5pt;
-}
-
 .badge {
 	vertical-align: middle;
 }
@@ -110,14 +84,8 @@
 			<tiles:insertAttribute name="header" />
 		</div>
 
-		<div class="row">
-			<div class="col col-2 container" id="mySide">
-				<tiles:insertAttribute name="side" />
-			</div>
-
-			<div class="col m-4 pl-0 pr-4" id="myContent">
-				<tiles:insertAttribute name="content" />
-			</div>
+		<div id="myContent">
+			<tiles:insertAttribute name="content" />
 		</div>
 	</div>
 </body>
