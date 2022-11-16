@@ -119,6 +119,10 @@
 		width: 97%;
 	}
 	
+	#workTable:hover {
+		cursor: pointer;
+	}
+	
 	.tbltexts {
 		text-align: center;
 		padding: 5px 0;
@@ -205,7 +209,22 @@
 			// console.log("ff");
 		}); // end of $("#searchInput").keyup() ----------------------
 		
+		
+		
 	});
+	
+	
+	// 테이블에서 회원을 클릭하면 상세정보 팝업이 뜨게 하기
+	function managePopup(userid){ // -------------------------
+		
+		const url = "<%=ctxPath%>/attend/team_manage_popup.on";
+		const name = "managePopup";
+		const option = "width=1250, height=650, top=100, left=150";
+		window.open(url, name, option);
+		
+		
+		
+	} // end of function managePopup(){} ---------------
 
 </script>
 
@@ -272,7 +291,7 @@
 	<span style="font-size: 10pt; margin: 0 0 3px 5px; ">44개의 데이터가 있습니다.</span>
 	<span id="filter" data-toggle="modal" data-target="#filterModal"><i class="fas fa-bars hoverShadowText"></i>&nbsp;목록 관리</span>
 	<div style="clear: both;"></div>
-	<table style="" id="workTable">
+	<table style="" class="table-hover" id="workTable">
 		<thead>
 			<tr style="border-bottom: solid 1px #bfbfbf; border-top: solid 1px #bfbfbf;">
 				<th style="width: 12%; padding-left: 30px;">부서원</th>
@@ -287,7 +306,7 @@
 			</tr>
 		</thead>
 		<tbody> 				
-			<tr>
+			<tr onclick="managePopup('userid')">
 				<td style="padding-left: 30px;">김혜원</td>
 				<td class="tbltexts" style="">경영지원</td>
 				<td class="tbltexts" style="">2022-11-08(화)</td>
@@ -296,7 +315,7 @@
 				<td class="tbltexts" style=""></td>		
 				<td class="tbltexts" style=""></td>
 				<td class="tbltexts" style=""></td>	
-				<td class="tbltexts" style=""></td> <%-- 빈칸 --%>		
+				<td class="tbltexts" style=""><input class="" type="text" value="userid" /></td> <%-- userid 전달 --%>		
 			</tr>
 			
 			<tr>

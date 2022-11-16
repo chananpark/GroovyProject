@@ -53,6 +53,12 @@
 		color: #b3b3b3;
 	}
 	
+	.cals {
+		border: none;
+		width: 140px;
+		font-size: 16pt;
+	}
+	
 	/* 상단 박스 끝 */
 	
 	/* 상세검색 시작 */
@@ -178,7 +184,7 @@
 		$("#searchText").hide();
 		$("#searchCalBox").hide();
 		
-		$("#searchSelect").change(function(){
+		$("#searchSelect").change(function(){ // -------------------------
 			const selectVal = $("#searchSelect option:selected").val();
 			// console.log(selectVal);
 			
@@ -194,7 +200,7 @@
 				$("#searchCalBox").show();
 			}			
 			
-		});
+		}); // end of $("#searchSelect").change() -----------------------
 		
 	});
 
@@ -204,7 +210,7 @@
 
 <div style="font-size: 18pt; text-align: center; margin-bottom: 20px;">
 	<span class="glyphicon glyphicon-menu-left hoverShadowText" style="color: #bfbfbf; font-size: 14pt;"></span>
-	2022.11
+	<input id="calMonth" class="cals hoverShadowText" type="text" value="2022.11" onfocus="this.blur()"/>
 	<span class="glyphicon glyphicon-menu-right hoverShadowText" style="color: #bfbfbf; font-size: 14pt;"></span>
 </div>
 

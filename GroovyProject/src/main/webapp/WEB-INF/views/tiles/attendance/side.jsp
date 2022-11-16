@@ -326,22 +326,22 @@
 	<ul class="menus">
 		<li class="menu topMenu" id="topMenu1">근태 관리
 			<ul class="menu subMenus" id="subMenu1">
-				<li style="margin-top: 7px;"><a href="<%= ctxPath%>/attend.on" class="hoverShadowText" id="my1">내 근태 조회</a></li>
-				<li class=""><a href="<%= ctxPath%>/attend/my_manage.on" class="hoverShadowText" id="my2">내 근태 관리</a></li>
+				<li style="margin-top: 7px;"><a href="<%= ctxPath%>/attend/myAttend.on" class="hoverShadowText" id="my1">내 근태 조회</a></li>
+				<li class=""><a href="<%= ctxPath%>/attend/myManage.on" class="hoverShadowText" id="my2">내 근태 관리</a></li>
 			</ul>
 		</li>
 		
 		<li class="menu topMenu" id="topMenu2">경영 지원
 			<ul class="menu subMenus" id="subMenu2">
-				<li style="margin-top: 7px;"><a href="<%= ctxPath%>/attend/team_status.on" class="hoverShadowText" id="team1">부서 근태 조회</a></li>
-				<li class=""><a href="<%= ctxPath%>/attend/team_manage.on" class="hoverShadowText" id="team2">부서 근태 관리</a></li>
+				<li style="margin-top: 7px;"><a href="<%= ctxPath%>/attend/teamStatus.on" class="hoverShadowText" id="team1">부서 근태 조회</a></li>
+				<li class=""><a href="<%= ctxPath%>/attend/teamManage.on" class="hoverShadowText" id="team2">부서 근태 관리</a></li>
 			</ul>
 		</li>
 		
 		<li class="menu topMenu" id="topMenu3">전사 근태관리
 			<ul class="menu subMenus" id="subMenu3">
-				<li style="margin-top: 7px;"><a href="<%= ctxPath%>/attend/all_status.on" class="hoverShadowText" id="all1" >전사 근태 조회</a></li>
-				<li class=""><a href="<%= ctxPath%>/attend/all_manage.on" class="hoverShadowText" id="all2">전사 근태 관리</a></li>
+				<li style="margin-top: 7px;"><a href="<%= ctxPath%>/attend/allStatus.on" class="hoverShadowText" id="all1" >전사 근태 조회</a></li>
+				<li class=""><a href="<%= ctxPath%>/attend/allManage.on" class="hoverShadowText" id="all2">전사 근태 관리</a></li>
 			</ul>
 		</li>
 	</ul>

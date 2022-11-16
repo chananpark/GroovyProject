@@ -67,12 +67,44 @@
 		margin-top: 10px;		
 	}
 	
+	#datepick {
+		border: none;
+		width: 140px;
+		font-size: 16pt;
+	}
 	
 
 
 </style>   
 
+
 <script>
+
+	$(document).ready(function(){
+		
+		$('#datepick').datepicker({
+			  dateFormat: 'yy.mm.dd(D)',
+			  maxDate: 0,
+			  prevText: '이전 달',
+			  nextText: '다음 달',
+			  monthNames: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+			  monthNamesShort: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+			  dayNames: ['일', '월', '화', '수', '목', '금', '토'],
+			  dayNamesShort: ['일', '월', '화', '수', '목', '금', '토'],
+			  dayNamesMin: ['일', '월', '화', '수', '목', '금', '토'],
+			  showMonthAfterYear: true,
+			  yearSuffix: '년'
+		});
+		
+		
+		
+		$("#datepick").change(function(){
+			const val = $("#datepick").val();
+			console.log(val);
+		});
+		
+	});
+	
 
 </script>
 
@@ -80,7 +112,7 @@
 
 <div style="font-size: 16pt; text-align: center; margin-bottom: 30px;">
 	<span class="glyphicon glyphicon-menu-left hoverShadowText" style="color: #bfbfbf; font-size: 14pt;"></span>
-	2022.11.07(월)
+	<input id="datepick" class="datepick hoverShadow" type="text" onfocus="this.blur()">
 	<span class="glyphicon glyphicon-menu-right hoverShadowText" style="color: #bfbfbf; font-size: 14pt;"></span>
 </div>
 
@@ -92,12 +124,13 @@
 		<span class="table times">퇴근시간</span>
 		<span class="table timeShapes" style="width: 50%;">시간</span>
 		<a class="category">오늘</a>
-		<a class="category">일</a>
-		<a class="category" href="<%= ctxPath%>/attend/team_status_weekly.on">주</a>
+		<a class="category" href="<%= ctxPath%>/attend/teamStatus.on">일</a>
+		<a class="category" href="<%= ctxPath%>/attend/teamStatusWeekly.on">주</a>
 		<a class="category">월</a>
 	</div>
 	<div class="contents">
-		<span class="table names">김상후</span>
+		<span class="table names"><img src="<%=ctxPath %>/resources/images/logo/logo.png" style="width:35px; border-radius: 50%; border: solid 1px gray;"/>
+								    김상후</span>
 		<span class="table times">07:00</span>
 		<span class="table times">10:00</span>
 		<span class="table times">17:00</span>
@@ -106,7 +139,8 @@
 		<%-- width: 38px; --%>
 	</div>
 	<div class="contents">
-		<span class="table names">김혜원</span>
+		<span class="table names"><img src="<%=ctxPath %>/resources/images/logo/logo.png" style="width:35px; border-radius: 50%; border: solid 1px gray;"/>
+								    김혜원</span>
 		<span class="table times">07:00</span>
 		<span class="table times">10:00</span>
 		<span class="table times">17:00</span>
@@ -115,7 +149,8 @@
 		<%-- width: 38px; --%>
 	</div>
 	<div class="contents">
-		<span class="table names">김원티드</span>
+		<span class="table names"><img src="<%=ctxPath %>/resources/images/logo/logo.png" style="width:35px; border-radius: 50%; border: solid 1px gray;"/>
+								    김원티드</span>
 		<span class="table times">07:00</span>
 		<span class="table times">10:00</span>
 		<span class="table times">17:00</span>

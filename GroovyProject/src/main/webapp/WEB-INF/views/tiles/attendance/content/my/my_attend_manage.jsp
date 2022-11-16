@@ -22,6 +22,15 @@
 		cursor: pointer;
 	}
 	
+	.cals {
+		border: none;
+		width: 140px;
+		font-size: 16pt;
+	}
+	
+	.cals:hover {
+		cursor: pointer;
+	}
 	
 	#workBox {
 		border: solid 1px #bfbfbf;
@@ -62,6 +71,10 @@
 	/* 박스 끝 */
 	
 	/* 테이블 시작 */	
+	.table-hover:hover {
+		cursor: pointer;
+	}
+	
 	.widths {
 		width: 90%; 
 		margin: 0 auto;
@@ -94,13 +107,60 @@
 </style>   
 
 <script src="https://kit.fontawesome.com/48fed31cce.js" crossorigin="anonymous"></script>
+<script>
 
+	$(document).ready(function(){
+			
+		$("#dateEnd").change(function(){ // ---------------------------------------
+			let startVal = $("#dateStart").val();
+			let endVal = $("#dateEnd").val();
+			startVal = startVal.substr(0,4)+startVal.substr(5,2)+startVal.substr(8,2);
+			endVal = endVal.substr(0,4)+endVal.substr(5,2)+endVal.substr(8,2);
+			// console.log(startVal);
+			
+			if(startVal > endVal){
+				alert("검색 종료일이 검색 시작일보다 빠를 수 없습니다.");
+				$('#dateEnd').datepicker({
+				    format : "yyyy-mm-dd",
+				    // endDate : "infinity",
+				    autoclose : true, 
+				    todayHighlight :true,  // 오늘을 표시해줄지. default 가 false
+				}).datepicker("setDate", new Date());
+			}
+		
+		}); // end of $("#dateEnd").change() ---------------------------------------
+		
+		$(function(){
+		    $('.cals').datepicker();
+		})
+		
+		$.datepicker.setDefaults({
+		  dateFormat: 'yy.mm.dd(D)',
+		  maxDate: 0,
+		  prevText: '이전 달',
+		  nextText: '다음 달',
+		  monthNames: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+		  monthNamesShort: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+		  dayNames: ['일', '월', '화', '수', '목', '금', '토'],
+		  dayNamesShort: ['일', '월', '화', '수', '목', '금', '토'],
+		  dayNamesMin: ['일', '월', '화', '수', '목', '금', '토'],
+		  showMonthAfterYear: true,
+		  yearSuffix: '년'
+		});
+		
+	});
+	
+	
+	
+	
+</script>
 
 <div style="font-size: 18pt; margin: 40px 0 50px 30px;" >근태 관리</div>
 
 <div style="font-size: 16pt; text-align: center; margin-bottom: 30px;">
 	<span class="glyphicon glyphicon-menu-left hoverShadowText" style="color: #bfbfbf; font-size: 14pt;"></span>
-	2022.11.07(월) ~ 2022.11.13(일)
+	<input id="dateStart" class="cals hoverShadowText" type="text" value="2022.11.07(월)" onfocus="this.blur()"/> ~ 
+	<input id="dateEnd" class="cals hoverShadowText" type="text" value="2022.11.13(금)" onfocus="this.blur()"/>
 	<span class="glyphicon glyphicon-menu-right hoverShadowText" style="color: #bfbfbf; font-size: 14pt;"></span>
 </div>
 
@@ -151,7 +211,7 @@
 	<div class="titles">&nbsp;신청내역 (전체)</div>
 	<hr>
 	<div>
-		<table style="width: 100%;" id="requestTbl">
+		<table class="table-hover" style="width: 100%;" id="requestTbl">
 			<thead>
 				<tr style="height: 30px; border-bottom: solid 1px #f2f2f2;">
 					<th style="width:13%; padding: 0 0 10px 30px;">이름</th>

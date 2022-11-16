@@ -52,26 +52,18 @@
 	}
 	
 	#workModalBtn {
-		color: gray;
+		color: white;
+		background-color: #086BDE;
 		height: 27px;
 		font-size: 10pt;	
-		margin: 0 0 0 1060px;		
-	}	
-	
-	#workModalBtn:hover {		
-		text-decoration: underline;
-		cursor: pointer;
-	}
-	
-	.cals {
-		border: none;
-		width: 140px;
-		font-size: 16pt;
+		margin: 2% 10% 1% 0;
+		
+		
 	}
 	
 	/* 박스 끝 */
+	/* 테이블 시작 */
 	
-	/* 테이블 시작 */	
 	.widths {
 		width: 90%; 
 		margin: 0 auto;
@@ -82,20 +74,15 @@
 		margin: 20px 0 0 10px;
 	}
 	
-	.table-hover {
-		cursor: pointer;
-	}
-	/* 테이블 끝 */
-	
 	/* 모달 */
 	.modalSizeSmall {
     	width: 500px;
-    	height: 400px;
+    	height: 350px;
     }
     
     .modalSizeBig {
     	width: 500px;
-    	height: 630px;
+    	height: 600px;
     }
     
     .modalSmall { 
@@ -137,7 +124,6 @@
 
 </style>   
 
-
 <script>
 	$(document).ready(function(){ // ==============================
 	
@@ -147,111 +133,24 @@
 		$("#table_week5").hide();
 		
 		$("#extraInfo").hide();
-		$("#dayoffInfo").hide();
 		
 		$("#workSelect").change(function(){ // -------------------------
-			/* $("#modalForm")[0].reset(); */
 			const selectVal = $("#workSelect option:selected").val();
 			// console.log(selectVal);
-			
 							
 			if(selectVal != "dayoff"){	// 신청할 사유가 연차 이외의 것이라면 모달 크기를 늘려줌		
 				$("#workModal").addClass("modalBig").removeClass("modalSmall");
 				$("#modalSize").addClass("modalSizeBig").removeClass("modalSizeSmall");
 				
 				$("#extraInfo").show();
-				$("#dayoffInfo").hide();
 			}
 			else {	// 신청할 사유가 연차라면 모달 크기를 줄여줌	
-				$("#extraInfo").hide();				
-				$("#dayoffInfo").show();
+				$("#extraInfo").hide();
 				$("#workModal").addClass("modalSmall").removeClass("modalBig");
 				$("#modalSize").addClass("modalSizeSmall").removeClass("modalSizeBig");
 			}
 			
 		}); // end of $("#searchSelect").change() -----------------------
-		
-		
-		/* $('#calMonth').monthpicker({
-			pattern: 'yyyy-mm',
-			monthNames: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
-			selectedYear: 2022,
-			startYear: 2010,
-			finalYear: 2022,
-			openOnFocus: true,
-			disableMonths: []
-		}); */
-		
-		
-		$('#dateSelect').datepicker({
-				  dateFormat: 'yy-mm-dd',
-				  maxDate: 0,
-				  prevText: '이전 달',
-				  nextText: '다음 달',
-				  monthNames: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
-				  monthNamesShort: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
-				  dayNames: ['일', '월', '화', '수', '목', '금', '토'],
-				  dayNamesShort: ['일', '월', '화', '수', '목', '금', '토'],
-				  dayNamesMin: ['일', '월', '화', '수', '목', '금', '토'],
-				  showMonthAfterYear: true,
-				  yearSuffix: '년'
-				  
-		});
-		
-		
-		$('#calMonth').datepicker({
-			  dateFormat: 'yy-mm',
-			  maxDate: 0,
-			  prevText: '이전 달',
-			  nextText: '다음 달',
-			  monthNames: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
-			  monthNamesShort: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
-			  dayNames: ['일', '월', '화', '수', '목', '금', '토'],
-			  dayNamesShort: ['일', '월', '화', '수', '목', '금', '토'],
-			  dayNamesMin: ['일', '월', '화', '수', '목', '금', '토'],
-			  showMonthAfterYear: true,
-			  yearSuffix: '년'			  
-		});
-		
-		$('input#dateSelect').datepicker('setDate', 'today'); //(-1D:하루전, -1M:한달전, -1Y:일년전), (+1D:하루후, +1M:한달후, +1Y:일년후)
-		$('input#calMonth').datepicker('setDate', 'today');
-		
-		$("#calMonth").change(function(){
-			console.log($("#calMonth").val());
-		});
-		
-		$("#prevMonth").click(function(){
-			let yearmonth = $("input#calMonth").val().split("-");
-			let newyearmonth = new Date(parseInt(yearmonth[0]), parseInt(yearmonth[1])-1, 1);
-			
-			let year = newyearmonth.getFullYear();
-			let month = newyearmonth.getMonth();			
-			// console.log(year + " "+month);
-				
-			if(month == 0){
-				year = parseInt(year)-1
-				month = 12;
-			}
-			
-			if(month < 10){
-				month = "0"+month;
-			}
-			
-			newyearmonth = year+"-"+month;
-			$("input#calMonth").val(newyearmonth);
-			
-			// console.log("year: "+ year + "month" + (parseInt(month)-1).toString());
-			// console.log(year + "-" + parseInt(month)-1);
-			$("input#calMonth").datepicker('setDate', new Date(year, (parseInt(month)-1).toString(), 1));		
-			
-			
-			
-		}); // end of $("#prevMonth").click() -----------------------------------
-		
-		$("#nextMonth").click(function(){
-			$('input#calMonth').val();
-		});
-		
 		
 	}); // end of $(document).ready() =============================
 		
@@ -259,31 +158,22 @@
 		const id = 'table_'+e;
 		$('#'+id).slideToggle("fast");
 	}
-	
-	
-		
-	
-	function modalClose(){
-		$('#workModal').modal('hide');
-	}
-	
-	
 
 </script> 
     
 <div style="font-size: 18pt; margin: 40px 0 50px 30px;" >근태 조회</div>
 
 <div style="font-size: 18pt; text-align: center;">
-	<span class="glyphicon glyphicon-menu-left" id="prevMonth" style="color: #bfbfbf; font-size: 14pt;"></span>
-	<input id="calMonth" class="cals hoverShadowText" type="text" value="" onfocus="this.blur()"/>
-	<span class="glyphicon glyphicon-menu-right" id="nextMonth" style="color: #bfbfbf; font-size: 14pt;"></span>
+	<i class="glyphicon glyphicon-menu-left" style="color: #bfbfbf; font-size: 14pt;"></i>
+	2022.11
+	<span class="glyphicon glyphicon-menu-right" style="color: #bfbfbf; font-size: 14pt;"></span>
 </div>
 
 
 
-<div style="">	
-	<div id="workModalBtn" data-toggle="modal" data-target="#workModal"><i class="fas fa-edit"></i>&nbsp;근태 신청</div>
-	
+<div style="display: flex; justify-content: space-between;">	
+	<button class="btn btn-primary" id="workModalBtn" data-toggle="modal" data-target="#workModal" style="margin-left: auto;">근태 신청</button>
+		
 	<div id="workBox">
 		<div class="timeBoxes" style="border-right: solid 1px #bfbfbf;">
 			<div class="timeBoxes_1">이번주 누적</div>
@@ -316,7 +206,7 @@
 	</div>
 	<hr>
 	<div id="table_week1">
-		<table style="width: 100%;" class="table-hover">
+		<table style="width: 100%;">
 			<thead>
 				<tr style="height: 30px; border-bottom: solid 1px #f2f2f2;">
 					<th style="width:13%; padding: 0 0 10px 30px;">일자</th>
@@ -388,7 +278,7 @@
 	</div>
 	<hr>
 	<div id="table_week2">
-		<table style="width: 100%;" class="table-hover">
+		<table style="width: 100%;">
 			<thead>
 				<tr style="height: 30px; border-bottom: solid 1px #f2f2f2;">
 					<th style="width:13%; padding: 0 0 10px 30px;">일자</th>
@@ -422,7 +312,7 @@
 	</div>
 	<hr>
 	<div id="table_week3">
-		<table style="width: 100%;" class="table-hover">
+		<table style="width: 100%;">
 			<thead>
 				<tr style="height: 30px; border-bottom: solid 1px #f2f2f2;">
 					<th style="width:13%; padding: 0 0 10px 30px;">일자</th>
@@ -456,7 +346,7 @@
 	</div>
 	<hr>
 	<div>
-		<table style="width: 100%;" id="table_week4" class="table-hover">
+		<table style="width: 100%;" id="table_week4">
 			<thead>
 				<tr style="height: 30px; border-bottom: solid 1px #f2f2f2;">
 					<th style="width:13%; padding: 0 0 10px 30px;">일자</th>
@@ -490,7 +380,7 @@
 	</div>
 	<hr>
 	<div>
-		<table style="width: 100%;" id="table_week5" class="table-hover">
+		<table style="width: 100%;" id="table_week5">
 			<thead>
 				<tr style="height: 30px;">
 					<th style="width:13%; padding: 0 0 10px 30px;">일자</th>
@@ -524,47 +414,44 @@
 		<div class="modal-content modalSizeSmall" id="modalSize">
 			<div class='modal-body'>
 				<div id="modalBox">
-					<form name="modalForm" id="modalForm">
-						<div style="margin: 10px 0 30px 0; font-size: 14pt;">근태신청</div>
-						<div style="margin-bottom: 20px;">신청인: 김혜원</div>
-						<div>
-							<div>날짜</div>
-							<input id="dateSelect" class="modalSelects modalmargins hoverShadow" type="text" placeholder="">
-							<div>종류</div>
-							<select name="workSelect" id="workSelect" class="hoverShadow modalSelects modalmargins">
-								<option>종류를 선택해주세요</option>
-								<option value="out">외근</option>
-								<option value="dayoff">연차</option>
-								<option value="extend">연장근무</option>
-							</select>
+					<div style="margin: 10px 0 30px 0; font-size: 14pt;">근태신청</div>
+					<div style="margin-bottom: 10px;">이름: 김혜원</div>
+					<div>
+						<div>날짜</div>
+						<select name="dateSelect" id="dateSelect" class="hoverShadow modalSelects modalmargins">
+							<option>날짜를 선택해주세요</option>
+						</select>	
+						<div>종류</div>
+						<select name="workSelect" id="workSelect" class="hoverShadow modalSelects modalmargins">
+							<option>종류를 선택해주세요</option>
+							<option value="out">외근</option>
+							<option value="dayoff">연차</option>
+							<option value="extend">연장근무</option>
+						</select>
+					</div>
+					<div id="extraInfo">
+						<div style="display: inline-block; margin-right: 80px;">
+							<div>시작시간</div>
+							<input class="modalSelects modalmargins hoverShadow" style="width: 50px;" type="text" placeholder="">
+							<span style="font-size: 14pt;">:</span>
+							<input class="modalSelects hoverShadow" style="width: 50px;" type="text" placeholder="">
 						</div>
-						<div id="dayoffInfo">
-							<div><span style="font-size: 10pt;">잔여: </span><span style="font-size: 11pt; font-weight: bold; color: #086BDE;">3일</span></div>
-							<div style="font-size: 10pt;">사용 후: 2일</div>
+						<div style="display: inline-block;">
+							<div>종료시간</div>
+							<input class="modalSelects modalmargins hoverShadow" style="width: 50px;" type="text" placeholder="">
+							<span style="font-size: 14pt;">:</span>
+							<input class="modalSelects hoverShadow" style="width: 50px;" type="text" placeholder="">
 						</div>
-						<div id="extraInfo">
-							<div style="display: inline-block; margin-right: 80px;">
-								<div>시작시간</div>
-								<input class="modalSelects modalmargins hoverShadow" style="width: 50px;" type="text" placeholder="">
-								<span style="font-size: 14pt;">:</span>
-								<input class="modalSelects hoverShadow" style="width: 50px;" type="text" placeholder="">
-							</div>
-							<div style="display: inline-block;">
-								<div>종료시간</div>
-								<input class="modalSelects modalmargins hoverShadow" style="width: 50px;" type="text" placeholder="">
-								<span style="font-size: 14pt;">:</span>
-								<input class="modalSelects hoverShadow" style="width: 50px;" type="text" placeholder="">
-							</div>
-							<div>장소</div>
-							<input class="modalSelects modalmargins hoverShadow" type="text" placeholder="">
-							<div>사유(선택)</div>
-							<input class="modalSelects modalmargins hoverShadow"  style="height: 60px;" type="text" placeholder="">						
-						</div>
-						<div style="margin: 30px 0 0 120px;">
-							<button type="button" class="modalBtns hoverShadow" id="okModalBtn" style="background-color: #E3F2FD;">확인</button>
-							<button type="reset" class="modalBtns hoverShadow" id="cancelModalBtn" onclick="modalClose()">취소</button>
-						</div>
-					</form>
+						<div>장소</div>
+						<input class="modalSelects modalmargins hoverShadow" type="text" placeholder="">
+						<div>사유(선택)</div>
+						<input class="modalSelects modalmargins hoverShadow"  style="height: 60px;" type="text" placeholder="">
+						
+					</div>
+					<div style="margin: 10px 0 0 120px;">
+						<button type="button" class="modalBtns hoverShadow" id="okModalBtn" style="background-color: #E3F2FD;">확인</button>
+						<button type="button" class="modalBtns hoverShadow" id="cancelModalBtn">취소</button>
+					</div>
 				</div>
 			</div>
 		</div>

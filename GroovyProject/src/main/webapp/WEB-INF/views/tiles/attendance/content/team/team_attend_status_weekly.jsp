@@ -169,8 +169,8 @@
 		<span class="table times">&nbsp;</span>
 		<span class="table timeShapes" style="width: 50%;">&nbsp;</span>
 		<span class="category">오늘</span>
-		<a class="category" href="<%= ctxPath%>/attend/team_status.on">일</a>
-		<a class="category" href="<%= ctxPath%>/attend/team_status_week.on">주</a>
+		<a class="category" href="<%= ctxPath%>/attend/teamStatus.on">일</a>
+		<a class="category" href="<%= ctxPath%>/attend/teamStatusWeekly.on">주</a>
 		<span class="category">월</span>
 	</div>
 	
