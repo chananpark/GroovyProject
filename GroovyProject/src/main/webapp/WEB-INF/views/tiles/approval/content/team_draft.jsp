@@ -6,6 +6,11 @@
 	margin-bottom: 150px !important;
 }
 
+tbody > tr:hover{
+	background-color: #E3F2FD;
+	cursor: pointer;
+}
+
 #pageList a{
 	font-size: small;
 	color: black;
@@ -31,7 +36,7 @@
 			<%-- 검색 구분 --%>
 			<select id="searchType" name="searchType" class="mr-1">
 				<option value="draftNo">문서번호</option>
-				<option value="draftSubject">제목</option>
+				<option value="draftCate">종류</option>
 				<option value="draftSubject">기안자</option>
 			</select>
 			<%-- 검색어 입력창 --%>

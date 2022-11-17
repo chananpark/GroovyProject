@@ -6,6 +6,11 @@
 	margin-bottom: 150px !important;
 }
 
+tbody > tr:hover{
+	background-color: #E3F2FD;
+	cursor: pointer;
+}
+
 #pageList a{
 	font-size: small;
 	color: black;
@@ -18,7 +23,10 @@
 </style>
 
 <script>
+$(()=>{
 	$('a#processedList').css('color','#086BDE');
+	$('.personalMenu').show();
+});
 </script>
 
 <div style='margin: 1% 0 5% 1%'>
@@ -34,6 +42,7 @@
 			<%-- 검색 구분 --%>
 			<select id="searchType" name="searchType" class="mr-1">
 				<option value="draftNo">문서번호</option>
+				<option value="draftCate">종류</option>
 				<option value="draftSubject">제목</option>
 			</select>
 			<%-- 검색어 입력창 --%>
