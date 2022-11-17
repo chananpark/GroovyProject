@@ -49,7 +49,10 @@
 <%-- ajaxForm --%>
 <script type="text/javascript"
 	src="<%=ctxPath%>/resources/js/jquery.form.min.js"></script>
-	
+
+<%-- sweet alert --%>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
 <%-- 폰트 --%>
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.6/dist/web/static/pretendard.css" />
 
