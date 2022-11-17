@@ -118,7 +118,7 @@
 			<div style="margin: 2% 0 0 20%;">
 				<button type="button" style="background-color: white; border: none;"><a href="#">비밀번호를 잊으셨나요?</a></button>
 				<button type="button" id="btn_back" onclick="javascript:history.back()">뒤로</button>
-				<button type="button" id="btn_next" >다음</button>
+				<button type="button" id="btn_next" onclick='location.href="<%=ctxPath %>/manage/info/viewInfo.on"'>다음</button>
 			</div>
 		</div>
 		

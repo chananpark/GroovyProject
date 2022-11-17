@@ -21,7 +21,7 @@
 		width:18%;
 	}
 
-
+	
 	th {
 		font-weight: bold;
 		background-color: #e3f2fd; 
@@ -29,13 +29,44 @@
 		text-align: center;
 	}
 	
+	.t1 {
+		width: 7%;
+		background-color: #black; 
+	}
+	
 	input {
 		border: solid 1px #cccccc;
+		background-color: #e6e6e6;
 	}
-
-	button#btn_adrsearch {
-		display: inline; 
+	
+	button.btn_check, button#btn_adrsearch, .btn_search{
+		width:50px; 
+		font-size:12px;
+		display: inline-block;
+		border: none;
 		background-color:#F9F9F9;
+	}
+	
+	span#birthday > select {
+		width:85px;
+		font-size: 12px;
+		height: 20px;
+		border: solid 1px #cccccc;
+	}
+	
+	
+	select.select_3{
+		width: 165px;
+		height: 25px;
+		border: solid 1px #cccccc;
+	}
+	
+	div.error {
+		color: red;
+	}
+	
+	.update {
+		background-color: white;
 	}
 	
 </style>
@@ -45,7 +76,57 @@
 
 	
 	$(document).ready(function(){
-
+	
+		 $("div#msg_probation").hide();
+		 $("div.error").hide();
+		 
+		// === 생년월일 === //
+	        
+		    var dt = new Date();
+		    var com_year = dt.getFullYear();
+		    var year = "";
+		    
+		 // 년도 뿌려주기
+		    $("#year").append("<option value=''>년도</option>");
+		    // 올해 기준으로 -50년부터 +1년을 보여준다.
+		    for (var i = (com_year - 50); i <= (com_year); i++) {
+		      $("#year").append("<option value='" + i+ "'>" + i + " 년" + "</option>");
+		    }
+		    
+		    // 월 뿌려주기(1월부터 12월)
+		    var month;
+		    $("#month").append("<option value=''>월</option>");
+		    for (var i = 1; i <= 12; i++) {
+		    	
+		    	if(i<10){
+		    		month += "<option>0"+i+"</option>";
+				}
+				else{
+					month += "<option>"+i+"</option>";
+				}
+		    } 
+			$("#month").html(month);
+		    
+		    // 일 뿌려주기(1일부터 31일)
+		    var day;
+		    $("#day").append("<option value=''>일</option>");
+		    for (var i = 1; i <= 31; i++) {
+		    	if(i<10){
+		    		day += "<option>0"+i+"</option>";
+				}
+				else{
+					day += "<option>"+i+"</option>";
+				}
+		    }
+			$("#day").html(day);
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
 		// === 우편번호 찾기를 클릭했을 때 이벤트 처리하기 === //
 		 $("button#btn_adrsearch").click(function() {
 		 	b_flag_btn_adrsearch_click = true;
@@ -57,6 +138,15 @@
 		 	$(this).val("");
 		 });
 		 
+		 
+			 
+		// === 수습시간 체크박스 버튼을 누르면 === // 
+		$("input#che_probation").click(function(){
+			
+			$("div#msg_probation").show();
+		
+		}); // end of $("input#che_probation").click(function(){
+		 
 }); // end of $(document).ready(function(){}-----------------------------------------
 
 
@@ -66,6 +156,16 @@
 
 
 //>>> Function Declaration <<< //
+
+	
+ // >>> select box  생년월일 표시 <<<
+	  function setDateBox() {
+	    
+	  }
+	// === 생년월일 끝 === 
+		
+		
+	// >>> 주소 <<<		
 	function openDaumPOST(){
 	    new daum.Postcode({
 	        oncomplete: function(data) {
@@ -128,98 +228,116 @@
 	<h5 class='m-4'>사원등록</h5>
 	
 	<table class="m-4 mb-3 table table-bordered table-sm" id="first_table">
-		<tr >
-			<td rowspan='4' style="width:7%;"><img class="float-center" src="<%= ctxPath%>/resources/images/picture/꼬미사진.jpg" height="150px;" width="150px" alt="..."/></td>
-			<th>사원번호</th>
-			<td><input type="text" id="" name="" /></td>
+		<tr>
+			<td rowspan='4' style="width:2%;"><img class="float-center" src="<%= ctxPath%>/resources/images/picture/꼬미사진.jpg" height="150px;" width="150px" alt="..."/></td>
+			<th class="t1">사원번호</th>
+			<td>	
+				<input type="text" id="" name="" readonly />
+			</td>
 			
-			<th>성명</th>
-			<td><input type="text" id="name" name="name" /></td>
+			<th class="t1">성명</th>
+			<td><input type="text" id="name" name="name" required readonly/></td>
 		</tr>
 		<tr >
-			<th>주민등록번호</th>
-				<td >
+			<th class="t1">주민등록번호</th>
+				<td>
 					<span>
-						<input type="text" id="jubun" name="jubun" style="display: inline;"/>
-						<button type="button" style="width:70px; display: inline; border: none;background-color:#F9F9F9; " class="btn btn-sm ml-5">확인/수정</button>
+						<input type="text" id="jubun" name="jubun" style="display: inline;" required readonly/>
 					</span>
 				</td>
-			<th>성별</th>
+			<th class="t1">성별</th>
 			 <td style="text-align: left;">
 	            <input type="radio" id="male" name="gender" value="1" /><label for="male" style="margin-left: 2%;">남자</label>
 	            <input type="radio" id="female" name="gender" value="2" style="margin-left: 10%;" /><label for="female" style="margin-left: 2%;">여자</label>
 	         </td>
 		</tr>
 		<tr>
-			<th>생년월일</th>
-			<td><input type="text" id="birth" name="birth"/></td>
+			<th class="t1"><span class="alert_required" style="color: red;">*</span>생년월일</th>
+			<td>
+				<span id="birthday" name="birthday">
+				    	<select name="year" id="year" title="년도" class=" requiredInfo" ></select>
+						<select name="month" id="month" title="월" class=" requiredInfo" ></select>
+						<select name="day" id="day" title="일" class=" requiredInfo"></select>
+				</span>
+			</td>
 			<th></th>
 			<td></td>
 		</tr>
 		<tr>
-			<th class="">자택주소</th>
+			<th class="t1">자택주소</th>
 			<td colspan="3">
 			<span>
-				<input type="text" id="postcode" name="postcode" placeholder="우편번호" style="display: inline-block;"/>
-				<input type="text" id="address" name="address" class="input_style" placeholder="예)00동, 00로" />
-				<input type="text" id="detailaddress" name="detailaddress" class="input_style"  placeholder="상세주소" style="display: inline-block;  width: 190px;" />
-				<input type="text" id="extraaddress" name="extraaddress" placeholder="참고항목" style="display: inline-block;  width: 190px;  margin: 10px 0 10px 8px;"/>
-				<button type="button" id="btn_adrsearch" onclick="openDaumPOST();" class="btn btn-sm ml-2">주소입력</button>
+				<input type="text" id="postcode" name="postcode" placeholder="우편번호" style="display: inline-block;" class="update"/>
+				<input type="text" id="address" name="address" class="input_style update" placeholder="예)00동, 00로"/>
+				<input type="text" id="detailaddress" name="detailaddress" class="input_style update"  placeholder="상세주소" style="display: inline-block;  width: 190px;"/>
+				<input type="text" id="extraaddress" name="extraaddress" placeholder="참고항목" style="display: inline-block;  width: 190px;  margin: 10px 0 10px 8px;" class="update"/>
+				<button type="button" id="btn_adrsearch" onclick="openDaumPOST();" class="btn btn-sm ml-2">추가</button>
 			</span>
 			</td>
 		</tr>
 
 	</table>
 	
-	<table  class="m-4 mb-3 table table-bordered ">
+	<table  class="m-4 mb-3 table table-bordered" >
 		<tr>
-			<th>회사전화</th>
-			<td><input type="text" id="mobile" name="mobile" /></td>
+			<th>내선번호</th>
+			<td><input type="text" id="" name="" readonly />
+			</td>
 			<th>핸드폰번호</th>
-			<td><input type="text" id="mobile" name="mobile" /></td>
-			<th></th>
-			<td></td>
+	         <td style="text-align: left;" id="telNum" name="mobile">
+	             <input type="text" id="hp1" name="hp1" size="6" maxlength="3" value="010" class="requiredInfo update" readonly/>&nbsp;-&nbsp;
+	             <input type="text" id="hp2" name="hp2" size="6" maxlength="4" class="requiredInfo update"/>&nbsp;-&nbsp;
+	             <input type="text" id="hp3" name="hp3" size="6" maxlength="4" class="requiredInfo update"/>
+	             <div class="error">휴대폰 형식이 아닙니다.</div>
+	         </td>
+
 		</tr>
 		<tr>
 			<th>회사이메일</th>
-			<td><input type="text" id="mobile" name="mobile" /></td>
+			<td><input type="email" id="mobile" name="mobile" readonly/>
+				
+			</td>
 			<th>외부이메일</th>
-			<td><input type="text" id="mobile" name="mobile" /></td>
-			<th></th>
-			<td></td>
+			<td>
+				<input type="email" id="mobile" name="mobile" class="update" />
+				<div class="error">이메일 형식이 아닙니다.</div>
+			</td>
+
 		</tr>
 	</table>
 	
-	<table  class=" m-4 mb-3 table table-bordered table-sm">
+	<table  class=" m-4 mb-3 table table-bordered ">
 		<tr>
-			<th><span style="color: red;">*</span>사업장</th>
-			<td><input type="text" id="" name="" /></td>
 			<th>부문</th>
-			<td><input type="text" id="" name="" /></td>
+			<td>
+				<input type="text" id="" name="" readonly />
+			</td>
+			<th>부서</th>
+			<td>
+				<input type="text" id="" name="" readonly />
+			</td>
 			<th>직급</th>
-			<td><input type="text" id="" name="" /></td>
+			<td>
+				<input type="text" id="" name="" readonly />
+			</td>
 		</tr>
 		<tr>
 			<th><span style="color: red;">*</span>급여계약기준</th>
-			<td><input type="text" id="" name="" /></td>
-			<th>팀</th>
-			<td><input type="text" id="" name="" /></td>
-			<th>직책</th>
-			<td><input type="text" id="" name="" /></td>
-		</tr>
-		<tr>
-			<th ><span style="color: red;">*</span>수습여부/적용률</th>
-			<td><input type="text" id="" name="" /></td>
+			<td><input type="text" id="" name="" readonly />
+			</td>
+			
 			<th>수습기간</th>
-			<td ><input type="date" id="" name="" />&nbsp;~&nbsp;<input type="date" id="" name="" /></td>
-			<th >비고</th>
-			<td></td>
+			<td>
+				<input type="text" id="che_probation" name="" readonly />
+			</td>
+			<th><td></td></th>
 		</tr>
+		
 		<tr>
 			<th><span style="color: red;">*</span>입사일자</th>
-			<td><input type="date" id="" name="" style="width: 165px;"/></td>
+			<td><input type="date" id="" name="" style="width: 165px;" required readonly/></td>
 			<th>퇴직일자</th>
-			<td><input type="date" id="" name="" style="width: 165px;"/></td>
+			<td><input type="date" id="" name="" style="width: 165px;" required readonly/></td>
 			<th></th>
 			<td></td>
 		</tr>

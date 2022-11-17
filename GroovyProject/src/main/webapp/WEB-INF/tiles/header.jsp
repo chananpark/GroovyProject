@@ -134,7 +134,7 @@
    			</div>
    			<div class="dropdown-content">
 			    <a href="#">프로필</a>
-			    <a href="#">로그아웃</a>
+			    <a href="<%= ctxPath%>/login.on">로그아웃</a>
 			</div>
    		</div>
     </li>
