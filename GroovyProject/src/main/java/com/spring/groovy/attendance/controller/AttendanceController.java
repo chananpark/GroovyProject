@@ -23,17 +23,24 @@ public class AttendanceController {
 		
 	}
 	
-	@RequestMapping(value = "/attend/teamStatus.on")
-	public String teamAttendStatus(HttpServletRequest request) {
+	@RequestMapping(value = "/attend/teamStatusDaily.on")
+	public String teamAttendStatusDaily(HttpServletRequest request) {
 		request.setAttribute("submenuId", "team1");
-		return "attendance/team/team_attend_status.tiles";
+		return "attendance/team/team_attend_status_daily.tiles";
 		
 	}
 	
 	@RequestMapping(value = "/attend/teamStatusWeekly.on")
-	public String teamAttendStatusWeek(HttpServletRequest request) {
+	public String teamAttendStatusWeekly(HttpServletRequest request) {
 		request.setAttribute("submenuId", "team1");
 		return "attendance/team/team_attend_status_weekly.tiles";
+		
+	}
+	
+	@RequestMapping(value = "/attend/teamStatusMonthly.on")
+	public String teamAttendStatusMonthly(HttpServletRequest request) {
+		request.setAttribute("submenuId", "team1");
+		return "attendance/team/team_attend_status_monthly.tiles";
 		
 	}
 	

@@ -53,6 +53,17 @@
 		color: #b3b3b3;
 	}
 	
+	#calMonth {
+		width: 100px;
+		font-size: 16pt;		
+		text-align: center;
+		border: none;
+	}
+	
+	#calMonth:hover {
+		cursor: pointer;
+	}
+	
 	/* 상단 박스 끝 */
 	
 	/* 상세검색 시작 */
@@ -210,8 +221,51 @@
 		}); // end of $("#searchInput").keyup() ----------------------
 		
 		
+		$("#prevMonth").click(function(){ // ------------------------------------
+			
+			let monthVal = $("#calMonth").val();
+			monthVal = new Date(monthVal.substr(0,4), parseInt(monthVal.substr(5,2))-2);
+			// console.log(monthVal);
+			
+			let newMonth;
+			if( parseInt(monthVal.getMonth())+1 <10 ){
+				newMonth = monthVal.getFullYear()+"-0"+(parseInt(monthVal.getMonth())+1);
+			}
+			else {
+				newMonth = monthVal.getFullYear()+"-"+(parseInt(monthVal.getMonth())+1);
+			}
+			
+			$("#calMonth").val(newMonth);
+			
+		}); // end of $("#prevMonth").click() -----------------------------------
 		
-	});
+		
+		const now = new Date();		
+		const year = now.getFullYear();
+		const month = now.getMonth()+1;
+		const thisMonth = year+"-"+month;
+		$("#calMonth").val(thisMonth);
+		
+		$("#nextMonth").click(function(){ // ------------------------------------
+			let monthVal = $("#calMonth").val();
+			if(thisMonth != monthVal){			
+				monthVal = new Date(monthVal.substr(0,4), parseInt(monthVal.substr(5,2)));
+				// console.log(monthVal);
+				
+				let newMonth;
+				if( parseInt(monthVal.getMonth())+1 <10 ){
+					newMonth = monthVal.getFullYear()+"-0"+(parseInt(monthVal.getMonth())+1);
+				}
+				else {
+					newMonth = monthVal.getFullYear()+"-"+(parseInt(monthVal.getMonth())+1);
+				}
+				
+				$("#calMonth").val(newMonth);
+			}
+		}); // end of $("#nextMonth").click() ------------------------------------
+		
+		
+	}); // end of $(document).ready() ===========================================================
 	
 	
 	// 테이블에서 회원을 클릭하면 상세정보 팝업이 뜨게 하기
@@ -231,9 +285,9 @@
 <div style="font-size: 18pt; margin: 40px 0 50px 30px;" >부서 근태관리</div>
 
 <div style="font-size: 18pt; text-align: center; margin-bottom: 20px;">
-	<span class="glyphicon glyphicon-menu-left hoverShadowText" style="color: #bfbfbf; font-size: 14pt;"></span>
-	2022.11
-	<span class="glyphicon glyphicon-menu-right hoverShadowText" style="color: #bfbfbf; font-size: 14pt;"></span>
+	<span class="glyphicon glyphicon-menu-left" id="prevMonth" style="color: #bfbfbf; font-size: 14pt;"></span>
+	<input id="calMonth" class="cals hoverShadowText" type="text" value="" onfocus="this.blur()"/>
+	<span class="glyphicon glyphicon-menu-right" id="nextMonth" style="color: #bfbfbf; font-size: 14pt;"></span>
 </div>
 
 <div> <%-- 상단 박스 시작 --%>

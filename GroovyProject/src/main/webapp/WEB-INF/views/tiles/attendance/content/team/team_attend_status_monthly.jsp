@@ -22,7 +22,7 @@
 	
 	.cals {
 		border: none;
-		width: 140px;
+		width: 145px;
 		font-size: 16pt;
 	}
 	
@@ -80,7 +80,7 @@
 		padding: 20px 20px;
 		vertical-align: top;
 		
-	}		
+	}	
 	
 	#todayBtn {
 		font-size: 9pt;
@@ -92,7 +92,6 @@
 		text-decoration: underline;
 		cursor: pointer;
 	}
-	
 	
 	.boxes {
 		font-size: 10pt;
@@ -193,41 +192,29 @@
 		  yearSuffix: '년',
 		  beforeShowDay: function(date){
 				var day = date.getDay();
-				return [(day != 0 && day != 6 && day != 2 && day != 3 && day != 4)];
+				return [(day != 0 && day != 6)];
 			}
 		});
 		
 		
 		
 		const now = new Date();
-		const now2 = new Date();
-		
+				
 		let year = now.getFullYear();
 		let month = now.getMonth()+1;
 		let date = now.getDate();		
 		let day = parseInt(now.getDay());
-				
-		let start;
-		let end;
-		if(day != 1){ // 오늘이 월요일이 아니라면
-			start = new Date(now.setDate( now.getDate()-(day-1) )); // 이번주의 월요일 구하기
-			
-			start = start.getFullYear() + "." + (start.getMonth()+1) + "." + start.getDate() + "(" + day_kor(start.getDay()) + ")";
-			// console.log(start);
-		}
-		else{ // 오늘이 월요일 이라면
-			start = year + "." + month + "." + date + "(" + day_kor(day) + ")";
-		}
 		
-		if(day != 5){ // 오늘이 금요일이 아니라면			
-			end = new Date(now2.setDate(now2.getDate()+(5-day))); // 이번주의 금요일 구하기
-			
-			end = end.getFullYear() + "." + (end.getMonth()+1) + "." + end.getDate() + "(" + day_kor(end.getDay()) + ")";
-			// console.log(endDate);
-		}
-		else { // 오늘이 금요일 이라면
-			end = year + "." + month + "." + date + "(" + day_kor(day) + ")";
-		}
+		let start = new Date(year+"."+month+"."+"1");
+		// console.log(start);
+		// Tue Nov 01 2022 00:00:00 GMT+0900 (한국 표준시)
+		
+		let end = new Date(year,month,0);
+		// console.log(end);
+		// Wed Nov 30 2022 00:00:00 GMT+0900 (한국 표준시)
+		
+		start = start.getFullYear() + "." + (start.getMonth()+1) + ".0" + start.getDate() + "(" + day_kor(start.getDay()) + ")";
+		end = end.getFullYear() + "." + (end.getMonth()+1) + "." + end.getDate() + "(" + day_kor(end.getDay()) + ")";
 		
 		$('input#dateStart').val(start);
 		$('input#dateEnd').val(end);
@@ -235,56 +222,61 @@
 		$('input#dateStart').datepicker('setDate', start);
 		$('input#dateEnd').datepicker('setDate', end);
 		
+		
+		// [<] 버튼을  클릭했을 때 
 		$("#prevWeek").click(function(){
 			
 			let startVal = $('input#dateStart').val().substr(0,10);
 			let endVal = $('input#dateEnd').val().substr(0,10);
-						
-			let newStart = new Date(startVal);
-			newStart = new Date(newStart.setDate(newStart.getDate()-7));
-			
+			 		
+			let newStart = new Date(startVal.substr(0,4), parseInt(startVal.substr(5,2))-2, startVal.substr(8,2));
+			// console.log(newStart);
 			newStart = newStart.getFullYear() + "." + (newStart.getMonth()+1) + "." + newStart.getDate() + "(" + day_kor(newStart.getDay()) + ")";
 			
-			
-			let newEnd = new Date(endVal);
-			newEnd = new Date(newEnd.setDate(newEnd.getDate()-7));
-			
+			let newEnd = new Date(endVal.substr(0,4), parseInt(endVal.substr(5,2))-1, 0);
+			// console.log(newEnd);
 			newEnd = newEnd.getFullYear() + "." + (newEnd.getMonth()+1) + "." + newEnd.getDate() + "(" + day_kor(newEnd.getDay()) + ")";
-					
+			
 			$('input#dateStart').val(newStart);
 			$('input#dateEnd').val(newEnd);
 			
 			$('input#dateStart').datepicker('setDate', newStart);
 			$('input#dateEnd').datepicker('setDate', newEnd);
+			
 		}); // end of $("#prevWeek").click() -------------------------
 		
+		// [>] 버튼을  클릭했을 때 
 		$("#nextWeek").click(function(){
 			
 			let startVal = $('input#dateStart').val().substr(0,10);
 			let endVal = $('input#dateEnd').val().substr(0,10);
-					
-			// const end1 = parseInt(end.substr(0,7).split(".").join(""));    // if(end1 != end2) 비교용
-			// const end2 = parseInt(endVal.substr(0,7).split(".").join("")); // if(end1 != end2) 비교용
 			
-			let newStart = new Date(startVal);
-			newStart = new Date(newStart.setDate(newStart.getDate()+7));
+			const end1 = parseInt(end.substr(0,7).split(".").join(""));    // if(end1 != end2) 비교용
+			const end2 = parseInt(endVal.substr(0,7).split(".").join("")); // if(end1 != end2) 비교용
+			// console.log(end1 + "/" + end2);
 			
-			newStart = newStart.getFullYear() + "." + (newStart.getMonth()+1) + "." + newStart.getDate() + "(" + day_kor(newStart.getDay()) + ")";
+			if(end1 != end2){ // $('input#dateEnd').val() 가 현재달의 말일이 아닌 경우			
+				 		
+				let newStart = new Date(startVal.substr(0,4), parseInt(startVal.substr(5,2)), startVal.substr(8,2));
+				// console.log(newStart);
+				
+				newStart = newStart.getFullYear() + "." + (newStart.getMonth()+1) + "." + newStart.getDate() + "(" + day_kor(newStart.getDay()) + ")";
+				
+				let newEnd = new Date(endVal.substr(0,4), parseInt(endVal.substr(5,2))+1, 0);
+				// console.log(newEnd);
+				
+				newEnd = newEnd.getFullYear() + "." + (newEnd.getMonth()+1) + "." + newEnd.getDate() + "(" + day_kor(newEnd.getDay()) + ")";
+				
+				$('input#dateStart').val(newStart);
+				$('input#dateEnd').val(newEnd);
+				
+				$('input#dateStart').datepicker('setDate', newStart);
+				$('input#dateEnd').datepicker('setDate', newEnd);
+				
+			}
 			
-			
-			let newEnd = new Date(endVal);
-			newEnd = new Date(newEnd.setDate(newEnd.getDate()+7));
-			
-			newEnd = newEnd.getFullYear() + "." + (newEnd.getMonth()+1) + "." + newEnd.getDate() + "(" + day_kor(newEnd.getDay()) + ")";
-					
-			$('input#dateStart').val(newStart);
-			$('input#dateEnd').val(newEnd);
-			
-			$('input#dateStart').datepicker('setDate', newStart);
-			$('input#dateEnd').datepicker('setDate', newEnd);
-			
-			
-		}); // end of $("#prevWeek").click() -------------------------
+		}); // end of $("#nextWeek").click() -------------------------
+		
 		
 	}); // end of $(document).ready() ===============================================
 	
@@ -330,10 +322,10 @@
 		<span class="table times">&nbsp;</span>
 		<span class="table times">&nbsp;</span>
 		<span class="table timeShapes" style="width: 50%;">&nbsp;</span>
-		<span id="todayBtn">오늘</span>
+		<span  id="todayBtn">오늘</span>
 		<a class="category hoverShadow" href="<%= ctxPath%>/attend/teamStatusDaily.on">일</a>
-		<a class="category hoverShadow" style="background-color: #086BDE; color: white;" href="<%= ctxPath%>/attend/teamStatusWeekly.on">주</a>
-		<a class="category hoverShadow" href="<%= ctxPath%>/attend/teamStatusMonthly.on">월</a>
+		<a class="category hoverShadow" href="<%= ctxPath%>/attend/teamStatusWeekly.on">주</a>
+		<a class="category hoverShadow" style="background-color: #086BDE; color: white;" href="<%= ctxPath%>/attend/teamStatusMonthly.on">월</a>
 	</div>
 	
 	<%-- 중앙 박스 시작 --%>

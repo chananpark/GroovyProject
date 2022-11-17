@@ -69,6 +69,12 @@
 		font-size: 16pt;
 	}
 	
+	#calMonth {
+		width: 100px;
+		font-size: 16pt;		
+		text-align: center;
+	}
+	
 	/* 박스 끝 */
 	
 	/* 테이블 시작 */	
@@ -149,6 +155,12 @@
 		$("#extraInfo").hide();
 		$("#dayoffInfo").hide();
 		
+		const now = new Date();		
+		const year = now.getFullYear();
+		const month = now.getMonth()+1;
+		const thisMonth = year+"-"+month;
+		$("#calMonth").val(thisMonth);
+		
 		$("#workSelect").change(function(){ // -------------------------
 			/* $("#modalForm")[0].reset(); */
 			const selectVal = $("#workSelect option:selected").val();
@@ -172,17 +184,6 @@
 		}); // end of $("#searchSelect").change() -----------------------
 		
 		
-		/* $('#calMonth').monthpicker({
-			pattern: 'yyyy-mm',
-			monthNames: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
-			selectedYear: 2022,
-			startYear: 2010,
-			finalYear: 2022,
-			openOnFocus: true,
-			disableMonths: []
-		}); */
-		
-		
 		$('#dateSelect').datepicker({
 				  dateFormat: 'yy-mm-dd',
 				  maxDate: 0,
@@ -196,61 +197,50 @@
 				  showMonthAfterYear: true,
 				  yearSuffix: '년'
 				  
-		});
+		});		
 		
-		
-		$('#calMonth').datepicker({
-			  dateFormat: 'yy-mm',
-			  maxDate: 0,
-			  prevText: '이전 달',
-			  nextText: '다음 달',
-			  monthNames: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
-			  monthNamesShort: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
-			  dayNames: ['일', '월', '화', '수', '목', '금', '토'],
-			  dayNamesShort: ['일', '월', '화', '수', '목', '금', '토'],
-			  dayNamesMin: ['일', '월', '화', '수', '목', '금', '토'],
-			  showMonthAfterYear: true,
-			  yearSuffix: '년'			  
-		});
 		
 		$('input#dateSelect').datepicker('setDate', 'today'); //(-1D:하루전, -1M:한달전, -1Y:일년전), (+1D:하루후, +1M:한달후, +1Y:일년후)
-		$('input#calMonth').datepicker('setDate', 'today');
-		
-		$("#calMonth").change(function(){
-			console.log($("#calMonth").val());
-		});
-		
-		$("#prevMonth").click(function(){
-			let yearmonth = $("input#calMonth").val().split("-");
-			let newyearmonth = new Date(parseInt(yearmonth[0]), parseInt(yearmonth[1])-1, 1);
-			
-			let year = newyearmonth.getFullYear();
-			let month = newyearmonth.getMonth();			
-			// console.log(year + " "+month);
 				
-			if(month == 0){
-				year = parseInt(year)-1
-				month = 12;
+		
+		
+		
+		$("#prevMonth").click(function(){ // ------------------------------------
+			
+			let monthVal = $("#calMonth").val();
+			monthVal = new Date(monthVal.substr(0,4), parseInt(monthVal.substr(5,2))-2);
+			// console.log(monthVal);
+			
+			let newMonth;
+			if( parseInt(monthVal.getMonth())+1 <10 ){
+				newMonth = monthVal.getFullYear()+"-0"+(parseInt(monthVal.getMonth())+1);
+			}
+			else {
+				newMonth = monthVal.getFullYear()+"-"+(parseInt(monthVal.getMonth())+1);
 			}
 			
-			if(month < 10){
-				month = "0"+month;
-			}
-			
-			newyearmonth = year+"-"+month;
-			$("input#calMonth").val(newyearmonth);
-			
-			// console.log("year: "+ year + "month" + (parseInt(month)-1).toString());
-			// console.log(year + "-" + parseInt(month)-1);
-			$("input#calMonth").datepicker('setDate', new Date(year, (parseInt(month)-1).toString(), 1));		
-			
-			
+			$("#calMonth").val(newMonth);
 			
 		}); // end of $("#prevMonth").click() -----------------------------------
 		
-		$("#nextMonth").click(function(){
-			$('input#calMonth').val();
-		});
+		
+		$("#nextMonth").click(function(){ // ------------------------------------
+			let monthVal = $("#calMonth").val();
+			if(thisMonth != monthVal){			
+				monthVal = new Date(monthVal.substr(0,4), parseInt(monthVal.substr(5,2)));
+				// console.log(monthVal);
+				
+				let newMonth;
+				if( parseInt(monthVal.getMonth())+1 <10 ){
+					newMonth = monthVal.getFullYear()+"-0"+(parseInt(monthVal.getMonth())+1);
+				}
+				else {
+					newMonth = monthVal.getFullYear()+"-"+(parseInt(monthVal.getMonth())+1);
+				}
+				
+				$("#calMonth").val(newMonth);
+			}
+		}); // end of $("#nextMonth").click() ------------------------------------
 		
 		
 	}); // end of $(document).ready() =============================

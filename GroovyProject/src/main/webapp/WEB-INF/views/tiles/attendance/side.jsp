@@ -333,7 +333,7 @@
 		
 		<li class="menu topMenu" id="topMenu2">경영 지원
 			<ul class="menu subMenus" id="subMenu2">
-				<li style="margin-top: 7px;"><a href="<%= ctxPath%>/attend/teamStatus.on" class="hoverShadowText" id="team1">부서 근태 조회</a></li>
+				<li style="margin-top: 7px;"><a href="<%= ctxPath%>/attend/teamStatusDaily.on" class="hoverShadowText" id="team1">부서 근태 조회</a></li>
 				<li class=""><a href="<%= ctxPath%>/attend/teamManage.on" class="hoverShadowText" id="team2">부서 근태 관리</a></li>
 			</ul>
 		</li>

@@ -49,6 +49,17 @@
 		color: black;
 	}
 	
+	#todayBtn {
+		font-size: 9pt;
+		text-decoration: none;
+		margin-left: 10px;
+	}
+	
+	#todayBtn:hover {
+		text-decoration: underline;
+		cursor: pointer;
+	}
+	
 	.category:hover {
 		cursor: pointer;
 	}
@@ -96,14 +107,73 @@
 			  yearSuffix: '년'
 		});
 		
+		$('input#datepick').datepicker('setDate', 'today');
 		
 		
+		let val;
 		$("#datepick").change(function(){
-			const val = $("#datepick").val();
-			console.log(val);
+			val = $("#datepick").val();
+			$('input#datepick').datepicker('setDate', val);
+			// console.log(val);
 		});
 		
-	});
+		$("#prevday").click(function(){
+			let originVal = $('input#datepick').val().substr(0,10);
+			
+			let newVal = new Date(originVal);
+			newVal = new Date(newVal.setDate(newVal.getDate()-1));
+			
+			newVal = newVal.getFullYear() + "." + (newVal.getMonth()+1) + "." + newVal.getDate() + "(" + day_kor(newVal.getDay()) + ")";
+			
+			$('input#datepick').val(newVal);
+			
+			$('input#datepick').datepicker('setDate', newVal);
+		});
+		
+		$("#nextday").click(function(){
+			let originVal = $('input#datepick').val().substr(0,10);
+			
+			let newVal = new Date(originVal);
+			
+			if( newVal.getDay() == 5 ){ // 금요일이면 => 주말 패스
+				newVal = new Date(newVal.setDate(newVal.getDate()+3));
+			}
+			else{ // 금요일이 아니라면 => 하루 더하기
+				newVal = new Date(newVal.setDate(newVal.getDate()+1));
+			}
+			console.log(newVal);
+			newVal = newVal.getFullYear() + "." + (newVal.getMonth()+1) + "." + newVal.getDate() + "(" + day_kor(newVal.getDay()) + ")";
+			
+			$('input#datepick').val(newVal);
+			
+			$('input#datepick').datepicker('setDate', newVal);
+		});
+		
+	}); // end of $(document).ready() ==========================================
+	
+	function day_kor(day){
+		switch (day) {
+		
+		case 1:
+			result = "월"	
+			break;
+		case 2:
+			result = "화"
+			break;
+		case 3:
+			result = "수"
+			break;
+		case 4:
+			result = "목"
+			break;
+		case 5:
+			result = "금"
+			break;
+			
+		} // end of switch
+		
+		return result;
+	}
 	
 
 </script>
@@ -111,9 +181,9 @@
 <div style="font-size: 18pt; margin: 40px 0 50px 30px; " >부서 근태조회</div>
 
 <div style="font-size: 16pt; text-align: center; margin-bottom: 30px;">
-	<span class="glyphicon glyphicon-menu-left hoverShadowText" style="color: #bfbfbf; font-size: 14pt;"></span>
+	<span id="prevday" class="glyphicon glyphicon-menu-left hoverShadowText" style="color: #bfbfbf; font-size: 14pt;"></span>
 	<input id="datepick" class="datepick hoverShadow" type="text" onfocus="this.blur()">
-	<span class="glyphicon glyphicon-menu-right hoverShadowText" style="color: #bfbfbf; font-size: 14pt;"></span>
+	<span id="nextday" class="glyphicon glyphicon-menu-right hoverShadowText" style="color: #bfbfbf; font-size: 14pt;"></span>
 </div>
 
 <div class="widths" style="border-bottom: solid 1px #bfbfbf; margin-bottom: 10px;">
@@ -123,14 +193,14 @@
 		<span class="table times">출근시간</span>
 		<span class="table times">퇴근시간</span>
 		<span class="table timeShapes" style="width: 50%;">시간</span>
-		<a class="category">오늘</a>
-		<a class="category" href="<%= ctxPath%>/attend/teamStatus.on">일</a>
-		<a class="category" href="<%= ctxPath%>/attend/teamStatusWeekly.on">주</a>
-		<a class="category">월</a>
+		<span id="todayBtn">오늘</span>
+		<a class="category hoverShadow" style="background-color: #086BDE; color: white;" href="<%= ctxPath%>/attend/teamStatusDaily.on">일</a>
+		<a class="category hoverShadow" href="<%= ctxPath%>/attend/teamStatusWeekly.on">주</a>
+		<a class="category hoverShadow" href="<%= ctxPath%>/attend/teamStatusMonthly.on">월</a>
 	</div>
 	<div class="contents">
-		<span class="table names"><img src="<%=ctxPath %>/resources/images/logo/logo.png" style="width:35px; border-radius: 50%; border: solid 1px gray;"/>
-								    김상후</span>
+		<span class="table names"><img src="<%=ctxPath %>/resources/images/test/jaeseok.jpg" style="width:35px; border-radius: 50%; border: solid 1px gray;"/>
+								    재석이</span>
 		<span class="table times">07:00</span>
 		<span class="table times">10:00</span>
 		<span class="table times">17:00</span>

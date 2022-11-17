@@ -145,23 +145,132 @@
 		  dayNamesShort: ['일', '월', '화', '수', '목', '금', '토'],
 		  dayNamesMin: ['일', '월', '화', '수', '목', '금', '토'],
 		  showMonthAfterYear: true,
-		  yearSuffix: '년'
+		  yearSuffix: '년',
+		  beforeShowDay: function(date){
+				var day = date.getDay();
+				return [(day != 0 && day != 6)];
+			}
 		});
 		
-	});
+		
+		const now = new Date();
+		const now2 = new Date();
+		
+		let year = now.getFullYear();
+		let month = now.getMonth()+1;
+		let date = now.getDate();		
+		let day = parseInt(now.getDay());
+				
+		let start;
+		let end;
+		if(day != 1){ // 오늘이 월요일이 아니라면
+			start = new Date(now.setDate( now.getDate()-(day-1) )); // 이번주의 월요일 구하기
+			
+			start = start.getFullYear() + "." + (start.getMonth()+1) + "." + start.getDate() + "(" + day_kor(start.getDay()) + ")";
+			// console.log(start);
+		}
+		else{ // 오늘이 월요일 이라면
+			start = year + "." + month + "." + date + "(" + day_kor(day) + ")";
+		}
+		
+		if(day != 5){ // 오늘이 금요일이 아니라면			
+			end = new Date(now2.setDate(now2.getDate()+(5-day))); // 이번주의 금요일 구하기
+			
+			end = end.getFullYear() + "." + (end.getMonth()+1) + "." + end.getDate() + "(" + day_kor(end.getDay()) + ")";
+			// console.log(endDate);
+		}
+		else { // 오늘이 금요일 이라면
+			end = year + "." + month + "." + date + "(" + day_kor(day) + ")";
+		}
+		
+		$('input#dateStart').val(start);
+		$('input#dateEnd').val(end);
+		
+		$('input#dateStart').datepicker('setDate', start);
+		$('input#dateEnd').datepicker('setDate', end);
+		
+		$("#prevWeek").click(function(){
+			
+			let startVal = $('input#dateStart').val().substr(0,10);
+			let endVal = $('input#dateEnd').val().substr(0,10);
+						
+			let newStart = new Date(startVal);
+			newStart = new Date(newStart.setDate(newStart.getDate()-7));
+			
+			newStart = newStart.getFullYear() + "." + (newStart.getMonth()+1) + "." + newStart.getDate() + "(" + day_kor(newStart.getDay()) + ")";
+			
+			
+			let newEnd = new Date(endVal);
+			newEnd = new Date(newEnd.setDate(newEnd.getDate()-7));
+			
+			newEnd = newEnd.getFullYear() + "." + (newEnd.getMonth()+1) + "." + newEnd.getDate() + "(" + day_kor(newEnd.getDay()) + ")";
+					
+			$('input#dateStart').val(newStart);
+			$('input#dateEnd').val(newEnd);
+			
+			$('input#dateStart').datepicker('setDate', newStart);
+			$('input#dateEnd').datepicker('setDate', newEnd);
+		}); // end of $("#prevWeek").click() -------------------------
+		
+		$("#nextWeek").click(function(){
+			
+			let startVal = $('input#dateStart').val().substr(0,10);
+			let endVal = $('input#dateEnd').val().substr(0,10);
+						
+			let newStart = new Date(startVal);
+			newStart = new Date(newStart.setDate(newStart.getDate()+7));
+			
+			newStart = newStart.getFullYear() + "." + (newStart.getMonth()+1) + "." + newStart.getDate() + "(" + day_kor(newStart.getDay()) + ")";
+			
+			
+			let newEnd = new Date(endVal);
+			newEnd = new Date(newEnd.setDate(newEnd.getDate()+7));
+			
+			newEnd = newEnd.getFullYear() + "." + (newEnd.getMonth()+1) + "." + newEnd.getDate() + "(" + day_kor(newEnd.getDay()) + ")";
+					
+			$('input#dateStart').val(newStart);
+			$('input#dateEnd').val(newEnd);
+			
+			$('input#dateStart').datepicker('setDate', newStart);
+			$('input#dateEnd').datepicker('setDate', newEnd);
+		}); // end of $("#prevWeek").click() -------------------------
+		
+	}); // end of $(document).ready() ==============================================
 	
 	
-	
+	function day_kor(day){
+		switch (day) {
+		
+		case 1:
+			result = "월"	
+			break;
+		case 2:
+			result = "화"
+			break;
+		case 3:
+			result = "수"
+			break;
+		case 4:
+			result = "목"
+			break;
+		case 5:
+			result = "금"
+			break;
+			
+		} // end of switch
+		
+		return result;
+	}
 	
 </script>
 
 <div style="font-size: 18pt; margin: 40px 0 50px 30px;" >근태 관리</div>
 
 <div style="font-size: 16pt; text-align: center; margin-bottom: 30px;">
-	<span class="glyphicon glyphicon-menu-left hoverShadowText" style="color: #bfbfbf; font-size: 14pt;"></span>
-	<input id="dateStart" class="cals hoverShadowText" type="text" value="2022.11.07(월)" onfocus="this.blur()"/> ~ 
-	<input id="dateEnd" class="cals hoverShadowText" type="text" value="2022.11.13(금)" onfocus="this.blur()"/>
-	<span class="glyphicon glyphicon-menu-right hoverShadowText" style="color: #bfbfbf; font-size: 14pt;"></span>
+	<span id="prevWeek" class="glyphicon glyphicon-menu-left hoverShadowText" style="color: #bfbfbf; font-size: 14pt;"></span>
+	<input id="dateStart" class="cals hoverShadowText" type="text" onfocus="this.blur()"/> ~ 
+	<input id="dateEnd" class="cals hoverShadowText" type="text" onfocus="this.blur()"/>
+	<span id="nextWeek" class="glyphicon glyphicon-menu-right hoverShadowText" style="color: #bfbfbf; font-size: 14pt;"></span>
 </div>
 
 
