@@ -4,21 +4,13 @@
 
 
 <style>
-	.hoverShadow {
-		transition: all 0.5s;
-	}
+	.hoverShadow {	transition: all 0.5s;	}
 	
-	.hoverShadow:hover {
-		box-shadow: 1px 1px 8px #ddd;
-	}
+	.hoverShadow:hover {	box-shadow: 1px 1px 8px #ddd;	}
 	
-	.hoverShadowText {
-		transition: all 0.5s;
-	}
+	.hoverShadowText {	transition: all 0.5s;	}
 	
-	.hoverShadowText:hover {
-		text-shadow: -1px -1px #ddd;
-	}
+	.hoverShadowText:hover {	text-shadow: -1px -1px #ddd;	}
 	
 	#workBox {
 		border: solid 1px #bfbfbf;
@@ -32,7 +24,6 @@
 	
 	.timeBoxes {
 		display: inline-block;
-		/* border: solid 1px pink; */
 		width: 150px;
 		margin-right: 15px;
 		margin-top: 15px;
@@ -84,13 +75,9 @@
 		padding-top: 50px;
 	}
 	
-	.weeks {
-		margin: 20px 0 0 10px;
-	}
+	.weeks {	margin: 20px 0 0 10px;	}
 	
-	.table-hover {
-		cursor: pointer;
-	}
+	.table-hover {	cursor: pointer;	}
 	/* 테이블 끝 */
 	
 	/* 모달 */
@@ -119,9 +106,7 @@
 		margin: 0 auto;		
 	}
 	
-	.modalmargins {
-		margin: 5px 0 20px 0;
-	}
+	.modalmargins {	margin: 5px 0 20px 0;	}
 	
 	.modalSelects {
 		width: 100%;

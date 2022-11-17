@@ -9,17 +9,11 @@
 
 	* {font-family: 'Pretendard', sans-serif; !important}
 	
-	.menuBlue {
-		color: #086BDE;
-	}
+	.menuBlue {	color: #086BDE;	}
 	
-	.hoverShadow {
-		transition: all 0.5s;
-	}
+	.hoverShadow {	transition: all 0.5s;	}
 	
-	.hoverShadow:hover {
-		box-shadow: 1px 1px 10px #ddd;
-	}
+	.hoverShadow:hover {	box-shadow: 1px 1px 10px #ddd;	}
 	
 	.hoverShadowText {
 		transition: all 0.5s;
@@ -35,7 +29,6 @@
 	
    
 	#attendBox{
-		/* border: solid 1px gray; */
 		width: 200px;
 		height: 300px;
 		margin: 0 0 30px 30px;		
@@ -46,13 +39,9 @@
 		color: #666666;
 	}
 	
-	.attTime{
-		font-size: 10pt;
-	}
+	.attTime{	font-size: 10pt;	}
 	
-	.attTimeRight{
-		float: right;
-	}
+	.attTimeRight{	float: right;	}
 	
 	.onOff {
 		border: solid 1px #086BDE;
@@ -111,12 +100,8 @@
 		cursor: pointer;
 	}
 	
-	.menus:hover {
-		cursor: pointer;		
-	}
-	.menu {
-		list-style: none;
-	}
+	.menus:hover {	cursor: pointer;	}
+	.menu {	list-style: none;	}
 	
 	.topMenu {
 		font-size: 12.5pt;
@@ -124,15 +109,9 @@
 		margin-bottom: 5px;		
 	}
 	
-	.subMenus {
-		font-size: 11.5pt;
-	}
-	
-	
-	/* div 겹치는거 때문에 함 */
-	#menuBox {		
-		z-index: 1;
-	}
+	.subMenus {	font-size: 11.5pt;	}
+		
+	#menuBox {	z-index: 1;	} /* div 겹치는거 때문에 함 */
 	
    
 </style>

@@ -4,21 +4,13 @@
 <% String ctxPath = request.getContextPath(); %>
 
 <style>
-	.hoverShadow {
-		transition: all 0.5s;
-	}
+	.hoverShadow {	transition: all 0.5s;	}
 	
-	.hoverShadow:hover {
-		box-shadow: 1px 1px 8px #ddd;
-	}
+	.hoverShadow:hover {	box-shadow: 1px 1px 8px #ddd;	}
 	
-	.hoverShadowText {
-		transition: all 0.5s;
-	}
+	.hoverShadowText {	transition: all 0.5s;	}
 	
-	.hoverShadowText:hover {
-		text-shadow: -1px -1px #ddd;
-	}
+	.hoverShadowText:hover {	text-shadow: -1px -1px #ddd;	}
 	
 	.cals {
 		border: none;
@@ -26,15 +18,10 @@
 		font-size: 16pt;
 	}
 	
-	.cals:hover {
-		cursor: pointer;
-	}
+	.cals:hover {	cursor: pointer;	}
 
 	/* 상단 시작 */
-	.table {
-		display: inline-block;
-		/* border: solid 1px gray; */
-	}
+	.table {	display: inline-block;	}
 	
 	.category {
 		display: inline-block;
@@ -48,28 +35,25 @@
 		text-align: center;		
 	}
 	
-	.category:hover {
-		cursor: pointer;
-	}
+	.category:hover {	cursor: pointer;	}
 	
 	#title {
 		width: 100%; 
 		border-bottom: solid 1px #bfbfbf;
-		
+		padding-bottom: 10px;
+		padding-right: 50px;
+		text-align: right;		
 	}
 	
 	.tblnames { width: 10%; padding-left: 10px; }	
 	.times { width: 7%;	}	
 	.timeShapes { width: 65%; }
 	
-	div.contents {
-		margin-top: 10px;		
-	}
+	div.contents {	margin-top: 10px;	}
 	
 	/* 중앙 박스 시작 */	
 	.infoBoxes {
 		display: inline-block;
-		/* border: solid 1px gray; */
 		background-color: #F9F9F9;
 		border-radius: 5px;
 	}
@@ -98,14 +82,11 @@
 		margin-top: 5px;
 	}
 	
-	#teamInfoTitle {
-		border-bottom: solid 1px gray;
-	}
+	#teamInfoTitle {	border-bottom: solid 1px gray;	}
 	
 	.tInfo_positions {
 		display: inline-block;
 		width: 50px;
-		/* border: solid 1px gray; */
 		text-align: center;
 		margin-right: 50px;		
 	}
@@ -113,7 +94,6 @@
 	.tInfo_names {
 		display: inline-block;
 		width: 100px;		
-		/* border: solid 1px gray; */
 	}
 	
 	.pplHover:hover {
@@ -129,14 +109,12 @@
 	
 	.pInfo_titles {
 		display: inline-block;
-		/* border: solid 1px gray; */
 		width: 120px;
 		margin-right: 250px;
 	}
 	
 	.pInfo_contents {
 		display: inline-block;
-		/* border: solid 1px gray; */
 		width: 200px;
 		text-align: right;		
 	}
@@ -144,19 +122,14 @@
 	/* 중앙 박스 끝 */	
 	
 	/* 하단 표 시작 */
-	#workTable {
-		/* border: solid 1px gray; */
-		width: 97%;
-	}
+	#workTable {	width: 97%;	}
 	
 	.tbltexts {
 		text-align: center;
 		padding: 5px 0;
 	}
 	
-	.today{
-		color: #086BDE;
-	} /* 표에서 오늘에 해당하는 날짜는 파란색으로 */
+	.today {	color: #086BDE;	} /* 표에서 오늘에 해당하는 날짜는 파란색으로 */
 	
 	.tblBtn { /* 비고 */
 		color: #086BDE;
@@ -317,11 +290,6 @@
 
 <div>
 	<div id="title">
-		<span class="table tblnames">&nbsp;</span>
-		<span class="table times">&nbsp;</span>
-		<span class="table times">&nbsp;</span>
-		<span class="table times">&nbsp;</span>
-		<span class="table timeShapes" style="width: 50%;">&nbsp;</span>
 		<span  id="todayBtn">오늘</span>
 		<a class="category hoverShadow" href="<%= ctxPath%>/attend/teamStatusDaily.on">일</a>
 		<a class="category hoverShadow" href="<%= ctxPath%>/attend/teamStatusWeekly.on">주</a>

@@ -3,26 +3,15 @@
 <% String ctxPath = request.getContextPath(); %>    
 
 
-
-<%-- <link rel="stylesheet" href="<%= ctxPath%>/resources/bootstrap-4.6.0-dist/css/bootstrap.min.css" type="text/css"> --%>
-
 <style>
 
-	.hoverShadow {
-		transition: all 0.5s;
-	}
+	.hoverShadow {	transition: all 0.5s;	}
 	
-	.hoverShadow:hover {
-		box-shadow: 1px 1px 8px #ddd;
-	}
+	.hoverShadow:hover {	box-shadow: 1px 1px 8px #ddd;	}
 	
-	.hoverShadowText {
-		transition: all 0.5s;
-	}
+	.hoverShadowText {	transition: all 0.5s;	}
 	
-	.hoverShadowText:hover {
-		text-shadow: -1px -1px #ddd;
-	}
+	.hoverShadowText:hover {	text-shadow: -1px -1px #ddd;	}
 	
 	/* 상단 박스 시작 */	
 	#workBox {
@@ -36,7 +25,6 @@
 	
 	.timeBoxes {
 		display: inline-block;
-		/* border: solid 1px pink; */
 		width: 100px;
 		margin-right: 20px;
 	}
@@ -58,17 +46,14 @@
 		font-size: 16pt;		
 		text-align: center;
 		border: none;
-	}
+	} 
 	
-	#calMonth:hover {
-		cursor: pointer;
-	}
+	#calMonth:hover {	cursor: pointer;	}
 	
 	/* 상단 박스 끝 */
 	
 	/* 상세검색 시작 */
 	#searchBox {
-		/* border: solid 1px #bfbfbf; */
 		width: 90%;
 		margin: 0 auto;
 		padding: 50px 0;
@@ -82,9 +67,7 @@
 		
 	}
 		
-	#searchText {
-		display: inline-block;
-	}
+	#searchText {	display: inline-block;	}
 	
 	.searchTxt {
 		width: 130px;
@@ -100,9 +83,7 @@
 		height: 25px;
 	}
 	
-	#searchCalBox {
-		display: inline-block;
-	}
+	#searchCalBox {	display: inline-block;	}
 	
 	.searchCal {
 		width: 100px;
@@ -120,28 +101,19 @@
 		margin-right: 4%;
 	}
 	
-	#filter:hover {
-		cursor: pointer;
-	}
+	#filter:hover {	cursor: pointer;	}
 	
 	/* 하단 표 시작 */
-	#workTable {
-		/* border: solid 1px gray; */
-		width: 97%;
-	}
+	#workTable {	width: 97%;	}
 	
-	#workTable:hover {
-		cursor: pointer;
-	}
+	#workTable:hover {	cursor: pointer;	}
 	
 	.tbltexts {
 		text-align: center;
 		padding: 5px 0;
 	}
 	
-	.today{
-		color: #086BDE;
-	} /* 표에서 오늘에 해당하는 날짜는 파란색으로 */
+	.today{	color: #086BDE;	} /* 표에서 오늘에 해당하는 날짜는 파란색으로 */
 	
 	.tblBtn { /* 비고 */
 		color: #086BDE;

@@ -5,23 +5,13 @@
 
 <style>
 
-	.hoverShadow {
-		transition: all 0.5s;
-	}
+	.hoverShadow {	transition: all 0.5s;	}
 	
-	.hoverShadow:hover {
-		box-shadow: 1px 1px 8px #ddd;
-		cursor: pointer;
-	}
+	.hoverShadow:hover {	box-shadow: 1px 1px 8px #ddd;	}
 	
-	.hoverShadowText {
-		transition: all 0.5s;
-	}
+	.hoverShadowText {	transition: all 0.5s;	}
 	
-	.hoverShadowText:hover {
-		text-shadow: -1px -1px #ddd;
-		cursor: pointer;
-	}
+	.hoverShadowText:hover {	text-shadow: -1px -1px #ddd;	}
 
 	/* 표 시작 */
 	
@@ -31,15 +21,11 @@
 		padding-top: 50px;
 	}
 	
-	.table {
-		display: inline-block;
-		/* border: solid 1px gray; */
-	}
+	.table {	display: inline-block;	}
 	
 	.category {
 		display: inline-block;
 		background-color: #E3F2FD;
-		/* border: solid 1px gray; */
 		border-radius: 5px;
 		width: 37px;
 		height: 20px;
@@ -60,23 +46,21 @@
 		cursor: pointer;
 	}
 	
-	.category:hover {
-		cursor: pointer;
-	}
+	.category:hover {	cursor: pointer;	}
 	
 	#title {
 		width: 100%; 
 		border-bottom: solid 1px #bfbfbf;
-		
+		padding-bottom: 10px;
+		padding-right: 50px;
+		text-align: right;		
 	}
 	
 	.names { width: 10%; padding-left: 10px; }	
 	.times { width: 7%;	}	
 	.timeShapes { width: 65%; }
 	
-	div.contents {
-		margin-top: 10px;		
-	}
+	div.contents {	margin-top: 10px;	}
 	
 	#datepick {
 		border: none;
@@ -104,7 +88,11 @@
 			  dayNamesShort: ['일', '월', '화', '수', '목', '금', '토'],
 			  dayNamesMin: ['일', '월', '화', '수', '목', '금', '토'],
 			  showMonthAfterYear: true,
-			  yearSuffix: '년'
+			  yearSuffix: '년',
+			  beforeShowDay: function(date){
+					var day = date.getDay();
+					return [(day != 0 && day != 6)];
+				}
 		});
 		
 		$('input#datepick').datepicker('setDate', 'today');
@@ -121,7 +109,13 @@
 			let originVal = $('input#datepick').val().substr(0,10);
 			
 			let newVal = new Date(originVal);
-			newVal = new Date(newVal.setDate(newVal.getDate()-1));
+			
+			if( newVal.getDay() == 1 ){ // 금요일이면 => 주말 패스
+				newVal = new Date(newVal.setDate(newVal.getDate()-3));
+			}
+			else{ // 금요일이 아니라면 => 하루 더하기
+				newVal = new Date(newVal.setDate(newVal.getDate()-1));
+			}
 			
 			newVal = newVal.getFullYear() + "." + (newVal.getMonth()+1) + "." + newVal.getDate() + "(" + day_kor(newVal.getDay()) + ")";
 			
@@ -141,7 +135,7 @@
 			else{ // 금요일이 아니라면 => 하루 더하기
 				newVal = new Date(newVal.setDate(newVal.getDate()+1));
 			}
-			console.log(newVal);
+			// console.log(newVal);
 			newVal = newVal.getFullYear() + "." + (newVal.getMonth()+1) + "." + newVal.getDate() + "(" + day_kor(newVal.getDay()) + ")";
 			
 			$('input#datepick').val(newVal);
@@ -185,18 +179,20 @@
 	<input id="datepick" class="datepick hoverShadow" type="text" onfocus="this.blur()">
 	<span id="nextday" class="glyphicon glyphicon-menu-right hoverShadowText" style="color: #bfbfbf; font-size: 14pt;"></span>
 </div>
-
+<div id="title">		
+	<span id="todayBtn">오늘</span>
+	<a class="category hoverShadow" style="background-color: #086BDE; color: white;" href="<%= ctxPath%>/attend/teamStatusDaily.on">일</a>
+	<a class="category hoverShadow" href="<%= ctxPath%>/attend/teamStatusWeekly.on">주</a>
+	<a class="category hoverShadow" href="<%= ctxPath%>/attend/teamStatusMonthly.on">월</a>
+</div>
 <div class="widths" style="border-bottom: solid 1px #bfbfbf; margin-bottom: 10px;">
-	<div id="title">
+	
+	<div style="border-bottom: solid 1px #bfbfbf;">
 		<span class="table names">이름</span>
 		<span class="table times">근무시간</span>
 		<span class="table times">출근시간</span>
 		<span class="table times">퇴근시간</span>
 		<span class="table timeShapes" style="width: 50%;">시간</span>
-		<span id="todayBtn">오늘</span>
-		<a class="category hoverShadow" style="background-color: #086BDE; color: white;" href="<%= ctxPath%>/attend/teamStatusDaily.on">일</a>
-		<a class="category hoverShadow" href="<%= ctxPath%>/attend/teamStatusWeekly.on">주</a>
-		<a class="category hoverShadow" href="<%= ctxPath%>/attend/teamStatusMonthly.on">월</a>
 	</div>
 	<div class="contents">
 		<span class="table names"><img src="<%=ctxPath %>/resources/images/test/jaeseok.jpg" style="width:35px; border-radius: 50%; border: solid 1px gray;"/>

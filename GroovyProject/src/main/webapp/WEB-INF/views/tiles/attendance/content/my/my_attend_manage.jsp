@@ -4,23 +4,13 @@
 
 <style>
 
-	.hoverShadow {
-		transition: all 0.5s;
-	}
+	.hoverShadow {	transition: all 0.5s;	}
 	
-	.hoverShadow:hover {
-		box-shadow: 1px 1px 8px #ddd;
-		cursor: pointer;
-	}
+	.hoverShadow:hover {	box-shadow: 1px 1px 8px #ddd;	}
 	
-	.hoverShadowText {
-		transition: all 0.5s;
-	}
+	.hoverShadowText {	transition: all 0.5s;	}
 	
-	.hoverShadowText:hover {
-		text-shadow: -1px -1px #ddd;
-		cursor: pointer;
-	}
+	.hoverShadowText:hover {	text-shadow: -1px -1px #ddd;	}
 	
 	.cals {
 		border: none;
@@ -28,9 +18,7 @@
 		font-size: 16pt;
 	}
 	
-	.cals:hover {
-		cursor: pointer;
-	}
+	.cals:hover {	cursor: pointer;	}
 	
 	#workBox {
 		border: solid 1px #bfbfbf;
@@ -44,7 +32,6 @@
 	
 	.timeBoxes {
 		display: inline-block;
-		/* border: solid 1px pink; */
 		width: 90px;
 		margin-right: 15px;
 		margin-top: 15px;
@@ -71,9 +58,7 @@
 	/* 박스 끝 */
 	
 	/* 테이블 시작 */	
-	.table-hover:hover {
-		cursor: pointer;
-	}
+	.table-hover:hover {	cursor: pointer;	}
 	
 	.widths {
 		width: 90%; 
@@ -93,9 +78,7 @@
 		margin: 20px 0;
 	}
 	
-	.showMore:hover {
-		text-decoration: underline;
-	}
+	.showMore:hover {	text-decoration: underline;	}
 	
 	.trash {
 		color: gray; 
