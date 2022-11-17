@@ -50,13 +50,13 @@
 
   <ul class="navbar-nav headerNavbar">
   	<li class="nav-item mt-1 ">
-      	<div style="padding: 0; margin-right: 100px; cursor:pointer;" class="nav-link" onClick='location.href="#"'>
+      	<div style="padding: 0; margin-right: 100px; cursor:pointer;" class="nav-link" onClick='location.href="<%=ctxPath%>/index.on"'>
       		<img src='<%=ctxPath%>/resources/images/logo/groovy_loco_edit.png' width="150"/>
     	</div>
     </li>
     
     <li class="nav-item"  >
-    	<div class="nav-link text-dark header_hover header_width" onClick='location.href="#"'>
+    	<div class="nav-link text-dark header_hover header_width" onClick='location.href="<%=ctxPath%>/index.on"'>
     		<div class="text-center"><i class="fas fa-home fa-lg"></i></div>
     		<div style="text-align: center;">홈</div>
     	</div>

@@ -41,7 +41,7 @@
 	// 일정 등록 메소드
 	function insertSchedule() {
 		
-		location.href="<%=ctxPath %>/insertSchedule.on";
+		location.href="<%=ctxPath %>/schedule/insertSchedule.on";
 		
 	} // end of function insertSchedule
 		

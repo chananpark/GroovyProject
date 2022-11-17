@@ -198,7 +198,7 @@
 	// 일정 검색하는 메소드
 	function search_schedule( ){
 		
-		location.href="<%=ctxPath %>/searchSchedule.on";
+		location.href="<%=ctxPath %>/schedule/searchSchedule.on";
 		
 	} // end of function search_schedule
 	
