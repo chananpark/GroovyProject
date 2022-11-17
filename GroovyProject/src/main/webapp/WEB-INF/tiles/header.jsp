@@ -49,8 +49,10 @@
 <nav class="navbar navbar-expand-sm">
 
   <ul class="navbar-nav headerNavbar">
-  	<li class="nav-item mt-2">
-      <div style="padding: 0; margin-right: 150px;" class="nav-link" onClick='location.href="#"'><img src='<%=ctxPath%>/resources/images/logo/groovy_loco.png' width="100"/></div>
+  	<li class="nav-item mt-1 ">
+      	<div style="padding: 0; margin-right: 100px; cursor:pointer;" class="nav-link" onClick='location.href="#"'>
+      		<img src='<%=ctxPath%>/resources/images/logo/groovy_loco_edit.png' width="150"/>
+    	</div>
     </li>
     
     <li class="nav-item"  >
