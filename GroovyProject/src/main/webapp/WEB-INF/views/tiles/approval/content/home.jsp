@@ -1,13 +1,20 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<% String ctxPath = request.getContextPath(); %>
 <style>
 .listContainer {
 	font-size: small;
 	margin-bottom: 5%;
 }
 
+tbody > tr:hover{
+	background-color: #E3F2FD;
+	cursor: pointer;
+}
+
 .approveThis {
 	text-align: center;
+	background-color: #E3F2FD;
 }
 
 .activeBtn {
@@ -62,6 +69,7 @@ $(()=>{
 	// 결재대기문서 클릭시
 	$('div.card').click(function() {
 		// 해당 문서 결재하기 화면으로	
+		location.href='<%=ctxPath%>/approval/detail.on';
 	});
 });
 </script>
