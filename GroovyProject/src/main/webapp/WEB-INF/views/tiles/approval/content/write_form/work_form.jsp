@@ -144,36 +144,37 @@ $(() => {
 
 	// 드래그한 파일 객체가 해당 영역에 놓였을 때
 	$drop.ondrop = (e) => {
-	  e.preventDefault();
-	  e.stopPropagation();
+		e.preventDefault();
+		e.stopPropagation();
 	
-	  // 드롭된 파일 리스트 가져오기
-	  const files = Array.from(e.dataTransfer?.files);
+		// 드롭된 파일 리스트 가져오기
+		const files = Array.from(e.dataTransfer.files);
 	  
-	  // 파일 리스트 띄우기
-	  $title.innerHTML = files.map(file => file.name).join("<br>");
+		// 파일 리스트 띄우기
+		$title.innerHTML = files.map(file => file.name).join("<br>");	
+	  
+		// 파일리스트 전역변수에 파일 담기
+		fileList = files.map(el => el.name);
 	}
 
 	$drop.ondragover = (e) => {
-	  e.preventDefault();
-	  e.stopPropagation();
+		e.preventDefault();
+		e.stopPropagation();
 	}
 	
 	// 드래그한 파일이 최초로 진입했을 때
 	$drop.ondragenter = (e) => {
-	  e.preventDefault();
-	  e.stopPropagation();
-	  $drop.classList.add("active");
+		e.preventDefault();
+		e.stopPropagation();
+		$drop.classList.add("active");
 	}
 
 	// 드래그한 파일이 영역을 벗어났을 때
 	$drop.ondragleave = (e) => {
-	  e.preventDefault();
-	  e.stopPropagation();
-	  $drop.classList.remove("active");
+		e.preventDefault();
+		e.stopPropagation();
+		$drop.classList.remove("active");
 	}
-	
-	// 파일리스트 전역변수에 파일 담기
 	
 });
 /* 결재라인 행 추가 */
