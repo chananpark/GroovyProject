@@ -25,7 +25,6 @@
 
 <!-- Bootstrap CSS -->
 <link rel="stylesheet" type="text/css" href="<%=ctxPath%>/resources/bootstrap-4.6.0-dist/css/bootstrap.min.css">
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
 
 <!-- Font Awesome 5 Icons -->
 <link rel="stylesheet"
