@@ -60,6 +60,8 @@
 	/* 테이블 시작 */	
 	.table-hover:hover {	cursor: pointer;	}
 	
+	.tables { font-size: 10pt; }
+	
 	.widths {
 		width: 90%; 
 		margin: 0 auto;
@@ -250,10 +252,10 @@
 <div style="font-size: 18pt; margin: 40px 0 50px 30px;" >근태 관리</div>
 
 <div style="font-size: 16pt; text-align: center; margin-bottom: 30px;">
-	<span id="prevWeek" class="glyphicon glyphicon-menu-left hoverShadowText" style="color: #bfbfbf; font-size: 14pt;"></span>
+	<span id="prevWeek" class="fas fa-angle-left hoverShadowText" style="color: #bfbfbf; font-size: 14pt;"></span>
 	<input id="dateStart" class="cals hoverShadowText" type="text" onfocus="this.blur()"/> ~ 
 	<input id="dateEnd" class="cals hoverShadowText" type="text" onfocus="this.blur()"/>
-	<span id="nextWeek" class="glyphicon glyphicon-menu-right hoverShadowText" style="color: #bfbfbf; font-size: 14pt;"></span>
+	<span id="nextWeek" class="fas fa-angle-right hoverShadowText" style="color: #bfbfbf; font-size: 14pt;"></span>
 </div>
 
 
@@ -303,7 +305,7 @@
 	<div class="titles">&nbsp;신청내역 (전체)</div>
 	<hr>
 	<div>
-		<table class="table-hover" style="width: 100%;" id="requestTbl">
+		<table class="table-hover tables" style="width: 100%;" id="requestTbl">
 			<thead>
 				<tr style="height: 30px; border-bottom: solid 1px #f2f2f2;">
 					<th style="width:13%; padding: 0 0 10px 30px;">이름</th>
@@ -347,7 +349,7 @@
 	<div class="titles">&nbsp;사용내역 (전체)</div>
 	<hr>
 	<div>
-		<table style="width: 100%;" id="requestTbl">
+		<table class="tables" style="width: 100%;" id="requestTbl">
 			<thead>
 				<tr style="height: 30px; border-bottom: solid 1px #f2f2f2;">
 					<th style="width:13%; padding: 0 0 10px 30px;">이름</th>
@@ -388,7 +390,7 @@
 	<div class="titles">&nbsp;연차 생성내역</div>
 	<hr>
 	<div>
-		<table style="width: 100%;" id="requestTbl">
+		<table class="tables" style="width: 100%;" id="requestTbl">
 			<thead>
 				<tr style="height: 30px; border-bottom: solid 1px #f2f2f2;">
 					<th style="width:17%; padding: 0 0 10px 30px;">등록일</th>

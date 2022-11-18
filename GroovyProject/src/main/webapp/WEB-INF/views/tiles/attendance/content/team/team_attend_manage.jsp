@@ -160,9 +160,6 @@
 
 </style>
 
-<script src="https://kit.fontawesome.com/48fed31cce.js" crossorigin="anonymous"></script>
-<script src="<%= ctxPath%>/resources/js/jquery-3.6.0.min.js" type="text/javascript"></script>
-<script src="<%= ctxPath%>/resources/bootstrap-4.6.0-dist/css/bootstrap.min.css" type="text/javascript"></script>
 <script> 
 
 	$(document).ready(function(){
@@ -257,9 +254,9 @@
 <div style="font-size: 18pt; margin: 40px 0 50px 30px;" >부서 근태관리</div>
 
 <div style="font-size: 18pt; text-align: center; margin-bottom: 20px;">
-	<span class="glyphicon glyphicon-menu-left" id="prevMonth" style="color: #bfbfbf; font-size: 14pt;"></span>
+	<span class="fas fa-angle-left" id="prevMonth" style="color: #bfbfbf; font-size: 14pt;"></span>
 	<input id="calMonth" class="cals hoverShadowText" type="text" value="" onfocus="this.blur()"/>
-	<span class="glyphicon glyphicon-menu-right" id="nextMonth" style="color: #bfbfbf; font-size: 14pt;"></span>
+	<span class="fas fa-angle-right" id="nextMonth" style="color: #bfbfbf; font-size: 14pt;"></span>
 </div>
 
 <div> <%-- 상단 박스 시작 --%>
@@ -317,7 +314,7 @@
 	<span style="font-size: 10pt; margin: 0 0 3px 5px; ">44개의 데이터가 있습니다.</span>
 	<span id="filter" data-toggle="modal" data-target="#filterModal"><i class="fas fa-bars hoverShadowText"></i>&nbsp;목록 관리</span>
 	<div style="clear: both;"></div>
-	<table style="" class="table-hover" id="workTable">
+	<table style="font-size: 10pt;" class="table-hover" id="workTable">
 		<thead>
 			<tr style="border-bottom: solid 1px #bfbfbf; border-top: solid 1px #bfbfbf;">
 				<th style="width: 12%; padding-left: 30px;">부서원</th>

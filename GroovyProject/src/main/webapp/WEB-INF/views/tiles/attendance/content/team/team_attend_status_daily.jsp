@@ -19,6 +19,7 @@
 		width: 90%; 
 		margin: 0 auto;
 		padding-top: 50px;
+		font-size: 10pt;
 	}
 	
 	.table {	display: inline-block;	}
@@ -175,9 +176,9 @@
 <div style="font-size: 18pt; margin: 40px 0 50px 30px; " >부서 근태조회</div>
 
 <div style="font-size: 16pt; text-align: center; margin-bottom: 30px;">
-	<span id="prevday" class="glyphicon glyphicon-menu-left hoverShadowText" style="color: #bfbfbf; font-size: 14pt;"></span>
+	<span id="prevday" class="fas fa-angle-left hoverShadowText" style="color: #bfbfbf; font-size: 14pt;"></span>
 	<input id="datepick" class="datepick hoverShadow" type="text" onfocus="this.blur()">
-	<span id="nextday" class="glyphicon glyphicon-menu-right hoverShadowText" style="color: #bfbfbf; font-size: 14pt;"></span>
+	<span id="nextday" class="fas fa-angle-right hoverShadowText" style="color: #bfbfbf; font-size: 14pt;"></span>
 </div>
 <div id="title">		
 	<span id="todayBtn">오늘</span>
@@ -225,7 +226,7 @@
 		<%-- width: 38px; --%>
 	</div>
 </div>
-<div style="margin-left: 428px;">
+<div style="margin-left: 412px; font-size: 11pt;">
 	07시&nbsp;&nbsp;&nbsp;08시&nbsp;&nbsp;&nbsp;09시&nbsp;&nbsp;&nbsp;10시&nbsp;&nbsp;&nbsp;11시&nbsp;&nbsp;&nbsp;
 	12시&nbsp;&nbsp;&nbsp;13시&nbsp;&nbsp;&nbsp;14시&nbsp;&nbsp;&nbsp;15시&nbsp;&nbsp;&nbsp;16시&nbsp;&nbsp;&nbsp;
 	17시&nbsp;&nbsp;&nbsp;18시&nbsp;&nbsp;&nbsp;19시&nbsp;&nbsp;&nbsp;20시&nbsp;&nbsp;&nbsp;21시&nbsp;&nbsp;&nbsp;

@@ -282,10 +282,10 @@
 <div style="font-size: 18pt; margin: 40px 0 50px 30px;" >부서 근태조회</div>
 
 <div style="font-size: 16pt; text-align: center; margin-bottom: 30px;">
-	<span id="prevWeek" class="glyphicon glyphicon-menu-left" style="color: #bfbfbf; font-size: 14pt;"></span>
+	<span id="prevWeek" class="fas fa-angle-left" style="color: #bfbfbf; font-size: 14pt;"></span>
 	<input id="dateStart" class="cals hoverShadowText" type="text" onfocus="this.blur()"/> ~ 
 	<input id="dateEnd" class="cals hoverShadowText" type="text" onfocus="this.blur()"/>
-	<span id="nextWeek" class="glyphicon glyphicon-menu-right" style="color: #bfbfbf; font-size: 14pt;"></span>
+	<span id="nextWeek" class="fas fa-angle-right" style="color: #bfbfbf; font-size: 14pt;"></span>
 </div>
 
 <div>
@@ -348,7 +348,7 @@
 	
 	<%-- 하단 테이블 시작 --%>
 	<div style="margin: 5% 5%;">
-		<table style="" id="workTable">
+		<table style="font-size: 10pt;" id="workTable">
 			<thead>
 				<tr style="border-bottom: solid 1px #bfbfbf;">
 					<th style="width: 12%; padding-left: 10px; padding: 5px 0 5px 10px;">일자</th>

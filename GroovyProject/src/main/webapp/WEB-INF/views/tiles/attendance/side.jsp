@@ -2,9 +2,7 @@
     pageEncoding="UTF-8"%>
     
 <% String ctxPath = request.getContextPath(); %>
-<link href="https://webfontworld.github.io/pretendard/Pretendard.css" rel="stylesheet">
-<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
-    
+
 <style>
 
 	* {font-family: 'Pretendard', sans-serif; !important}
@@ -113,6 +111,7 @@
 		
 	#menuBox {	z-index: 1;	} /* div 겹치는거 때문에 함 */
 	
+	.nav-link { padding-top: 5px; !important	}
    
 </style>
 
@@ -145,11 +144,11 @@
 			
 			if(attSelectBox.is(":visible")){
 				attSelectBox.slideUp("fast");
-				document.getElementById("attSelectComp").className = "glyphicon glyphicon-menu-down";
+				document.getElementById("attSelectComp").className = "fas fa-caret-down";
 			}
 			else{
 				attSelectBox.slideToggle("fast");
-				document.getElementById("attSelectComp").className = "glyphicon glyphicon-menu-up";
+				document.getElementById("attSelectComp").className = "fas fa-caret-up";
 			}
 		});
 		
@@ -290,7 +289,7 @@
 	<div id="workSelectBox">
 		<button type="button" class="onOff hoverShadow" id="">출근하기</button>
 		<button type="button" class="onOff hoverShadow" id="">퇴근하기</button>
-		<button style="display: block;" type="button" id="attSelectBtn" class="hoverShadow">근무상태 <span id="attSelectComp" class="glyphicon glyphicon-menu-down"></span></button>
+		<button style="display: block;" type="button" id="attSelectBtn" class="hoverShadow">근무상태 <span id="attSelectComp" class="fas fa-caret-down"></span></button>
 		<div id="attSelectBox">
 			<div class="selectContent" style="border-top-left-radius: 9px; border-top-right-radius: 9px;" onclick="workStatus('업무')">업무</div>
 			<div class="selectContent" onclick="workStatus('업무종료')">업무종료</div>
@@ -305,8 +304,8 @@
 	<ul class="menus">
 		<li class="menu topMenu" id="topMenu1">근태 관리
 			<ul class="menu subMenus" id="subMenu1">
-				<li style="margin-top: 7px;"><a href="<%= ctxPath%>/attend/myAttend.on" class="hoverShadowText" id="my1">내 근태 조회</a></li>
-				<li class=""><a href="<%= ctxPath%>/attend/myManage.on" class="hoverShadowText" id="my2">내 근태 관리</a></li>
+				<li class="nav-link" style="margin-top: 7px;"><a href="<%= ctxPath%>/attend/myAttend.on" class="hoverShadowText" id="my1">내 근태 조회</a></li>
+				<li class="nav-link"><a href="<%= ctxPath%>/attend/myManage.on" class="hoverShadowText" id="my2">내 근태 관리</a></li>
 			</ul>
 		</li>
 		

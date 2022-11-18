@@ -2,7 +2,7 @@
     pageEncoding="UTF-8"%>
 <% String ctxPath = request.getContextPath(); %>    
 
-
+<!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css"> -->
 <style>
 	.hoverShadow {	transition: all 0.5s;	}
 	
@@ -68,7 +68,9 @@
 	
 	/* 박스 끝 */
 	
-	/* 테이블 시작 */	
+	/* 테이블 시작 */
+	.tables { font-size: 10pt; }	
+	
 	.widths {
 		width: 90%; 
 		margin: 0 auto;
@@ -81,6 +83,7 @@
 	/* 테이블 끝 */
 	
 	/* 모달 */
+	.font11 { font-size: 11pt;}
 	.modalSizeSmall {
     	width: 500px;
     	height: 400px;
@@ -120,7 +123,7 @@
 		width: 80px;
 		border: none;
 		border-radius: 5px;
-		font-size: 11pt;
+		font-size: 10pt;
 		height: 30px;
 	}
 	
@@ -249,9 +252,9 @@
 <div style="font-size: 18pt; margin: 40px 0 50px 30px;" >근태 조회</div>
 
 <div style="font-size: 18pt; text-align: center;">
-	<span class="glyphicon glyphicon-menu-left" id="prevMonth" style="color: #bfbfbf; font-size: 14pt;"></span>
+	<a class="fas fa-angle-left" id="prevMonth" style="color: #bfbfbf; font-size: 14pt;"></a>
 	<input id="calMonth" class="cals hoverShadowText" type="text" value="" onfocus="this.blur()"/>
-	<span class="glyphicon glyphicon-menu-right" id="nextMonth" style="color: #bfbfbf; font-size: 14pt;"></span>
+	<a class="fas fa-angle-right" id="nextMonth" style="color: #bfbfbf; font-size: 14pt;"></a>
 </div>
 
 
@@ -286,12 +289,12 @@
 
 <div id="week1" class="widths">
 	<div onclick="toggle('week1')" class="weeks">
-		<span class="glyphicon glyphicon-menu-down" style="font-size: 11pt;"></span>
+		<span class="fas fa-angle-down" style="font-size: 10pt;"></span>
 		&nbsp;1 주차
 	</div>
 	<hr>
 	<div id="table_week1">
-		<table style="width: 100%;" class="table-hover">
+		<table style="width: 100%;" class="table-hover tables">
 			<thead>
 				<tr style="height: 30px; border-bottom: solid 1px #f2f2f2;">
 					<th style="width:13%; padding: 0 0 10px 30px;">일자</th>
@@ -358,12 +361,12 @@
 
 <div id="week2" class="widths">
 	<div onclick="toggle('week2')" class="weeks">
-		<span class="glyphicon glyphicon-menu-down" style="font-size: 11pt;"></span>
+		<span class="fas fa-angle-down" style="font-size: 10pt;"></span>
 		&nbsp;2 주차
 	</div>
 	<hr>
 	<div id="table_week2">
-		<table style="width: 100%;" class="table-hover">
+		<table style="width: 100%;" class="table-hover tables" >
 			<thead>
 				<tr style="height: 30px; border-bottom: solid 1px #f2f2f2;">
 					<th style="width:13%; padding: 0 0 10px 30px;">일자</th>
@@ -392,12 +395,12 @@
 
 <div id="week3" class="widths">
 	<div onclick="toggle('week3')" class="weeks">
-		<span class="glyphicon glyphicon-menu-down" style="font-size: 11pt;"></span>
+		<span class="fas fa-angle-down" style="font-size: 10pt;"></span>
 		&nbsp;3 주차
 	</div>
 	<hr>
 	<div id="table_week3">
-		<table style="width: 100%;" class="table-hover">
+		<table style="width: 100%;" class="table-hover tables">
 			<thead>
 				<tr style="height: 30px; border-bottom: solid 1px #f2f2f2;">
 					<th style="width:13%; padding: 0 0 10px 30px;">일자</th>
@@ -426,12 +429,12 @@
 
 <div id="week4" class="widths">
 	<div onclick="toggle('week4')" class="weeks" >
-		<span class="glyphicon glyphicon-menu-down" style="font-size: 11pt;"></span>
+		<span class="fas fa-angle-down" style="font-size: 10pt;"></span>
 		&nbsp;4 주차
 	</div>
 	<hr>
 	<div>
-		<table style="width: 100%;" id="table_week4" class="table-hover">
+		<table style="width: 100%;" id="table_week4" class="table-hover tables">
 			<thead>
 				<tr style="height: 30px; border-bottom: solid 1px #f2f2f2;">
 					<th style="width:13%; padding: 0 0 10px 30px;">일자</th>
@@ -460,12 +463,12 @@
 
 <div id="week5" class="widths">
 	<div onclick="toggle('week5')" class="weeks" >
-		<span class="glyphicon glyphicon-menu-down" style="font-size: 11pt;"></span>
+		<span class="fas fa-angle-down" style="font-size: 10pt;"></span>
 		&nbsp;5 주차
 	</div>
 	<hr>
 	<div>
-		<table style="width: 100%;" id="table_week5" class="table-hover">
+		<table style="width: 100%;" id="table_week5" class="table-hover tables">
 			<thead>
 				<tr style="height: 30px;">
 					<th style="width:13%; padding: 0 0 10px 30px;">일자</th>
@@ -503,9 +506,9 @@
 						<div style="margin: 10px 0 30px 0; font-size: 14pt;">근태신청</div>
 						<div style="margin-bottom: 20px;">신청인: 김혜원</div>
 						<div>
-							<div>날짜</div>
+							<div class="font11">날짜</div>
 							<input id="dateSelect" class="modalSelects modalmargins hoverShadow" type="text" placeholder="">
-							<div>종류</div>
+							<div class="font11">종류</div>
 							<select name="workSelect" id="workSelect" class="hoverShadow modalSelects modalmargins">
 								<option>종류를 선택해주세요</option>
 								<option value="out">외근</option>
@@ -519,20 +522,20 @@
 						</div>
 						<div id="extraInfo">
 							<div style="display: inline-block; margin-right: 80px;">
-								<div>시작시간</div>
+								<div class="font11">시작시간</div>
 								<input class="modalSelects modalmargins hoverShadow" style="width: 50px;" type="text" placeholder="">
 								<span style="font-size: 14pt;">:</span>
 								<input class="modalSelects hoverShadow" style="width: 50px;" type="text" placeholder="">
 							</div>
 							<div style="display: inline-block;">
-								<div>종료시간</div>
+								<div class="font11">종료시간</div>
 								<input class="modalSelects modalmargins hoverShadow" style="width: 50px;" type="text" placeholder="">
 								<span style="font-size: 14pt;">:</span>
 								<input class="modalSelects hoverShadow" style="width: 50px;" type="text" placeholder="">
 							</div>
-							<div>장소</div>
+							<div class="font11">장소</div>
 							<input class="modalSelects modalmargins hoverShadow" type="text" placeholder="">
-							<div>사유(선택)</div>
+							<div class="font11">사유(선택)</div>
 							<input class="modalSelects modalmargins hoverShadow"  style="height: 60px;" type="text" placeholder="">						
 						</div>
 						<div style="margin: 30px 0 0 120px;">
