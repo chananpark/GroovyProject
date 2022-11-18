@@ -1,6 +1,7 @@
 package com.spring.groovy.management.model;
 
-public class EmployeeVO {
+
+public class MemberVO {
 	
 	private String empno;            // 사원번호
 	private String signimg;          // 사원사진
@@ -26,8 +27,7 @@ public class EmployeeVO {
 	private String account;           // 계좌번호
 	private String annualcnt;          // 연차갯수
 	
-	
-	
+
 	
 	
 	public String getEmpno() {

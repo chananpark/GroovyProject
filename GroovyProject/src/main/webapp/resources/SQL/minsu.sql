@@ -130,6 +130,15 @@ VALUES(SEQ_TBL_EMPLOYEE.NEXTVAL, 'minsu@groovy.com', '김민수', 'qwer1234$',
 '책임자', '981210-2222222', '12345', 'IT사업부문','개발팀','alstn8109@naver.com',
 '010-1111-2222','201','2022/11/18','1','국민은행','21520204188',15);
 
+commit
+
+
+select empno, cpemail, name, pwd, position, jubun, postcode, address, detailaddress
+     , extraaddress,empimg,birthday, bumun,department,pvemail,mobile,depttel,joindate
+     ,empstauts,bank, account,annualcnt, empimg
+from tbl_employee
+where cpemail = minsu@groovy.com and  pwd = 'qwer1234$'
+
 
 
 

@@ -96,8 +96,19 @@
 		$("button#btn_next").click(function(){
 			
 			func_login();
-			
 		}); // end of $("button#btn_next").click(function(){---------------------
+			
+			
+		// 엔터를 했을 경우
+		$("input#pwd").keydown(function(e){
+			
+			if(e.keyCode == 13) { 
+				func_login();
+			}
+			
+		}); // end of $("input#pwd").keydown(function(e){
+			
+		
 		
 		
 		
@@ -109,18 +120,18 @@
 	// >>> 다음으로 넘어가는 함수 생성하기 <<< 
 	function func_login() {
 		
-		consr email = $("input#email").val();
+		const cpemail = $("input#cpemail").val();
 		
-		if(email.trim() == "") {
-			alert("아이디를 입력해주세요");
+		if(cpemail.trim() == "") {
+			alert("이메일을 입력해주세요");
 			$("input#email").val("");
 			$("input#email").focus();
 			return;  // 종료
 		}
 		 
-		const frm_login = document.frm_login
+		const frm = document.frm_login
 		
-		frm.action = "<%= ctxPath%>/login2.on";
+		frm.action = "<%= ctxPath%>/login.on";
 		frm.method = "POST";
 		frm.submit();
 		
@@ -140,7 +151,7 @@
 		<h3 style="font-weight: bold;">로그인</h3>
 		<p style="color:#b3b3b3 ">Email 주소를 입력하세요.</p>
 		
-		<input type="email" name="email" id="email" style="width: 90%; background-color: #d9d9d9; border: none; height: 35px; margin:auto;" required/>
+		<input type="cpemail" name="cpemail" id="cpemail" style="width: 90%; background-color: #d9d9d9; border: none; height: 35px; margin:auto;" required/>
 		
 		<div align="center">
 			<button type="button" id="btn_next" style="color: white;" >다음</button>
