@@ -22,7 +22,10 @@ tbody > tr:hover{
 }
 </style>
 <script>
+$(()=>{
 	$('a#teamList').css('color','#086BDE');
+		
+});
 </script>
 
 <div style='margin: 1% 0 5% 1%'>

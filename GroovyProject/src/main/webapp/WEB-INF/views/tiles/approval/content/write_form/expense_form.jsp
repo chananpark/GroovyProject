@@ -92,6 +92,9 @@
 }
 </style>
 
+// 파일 정보를 담아 둘 배열
+let fileList = [];
+
 <script>
 
 $(() => {

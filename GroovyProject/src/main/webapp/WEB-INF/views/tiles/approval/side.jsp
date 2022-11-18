@@ -25,6 +25,11 @@
 .modal-body > div {
 	display: table-row-group;
 }
+
+.nav-link {
+	padding-top: 5px !important;
+}
+
 </style>
 
 <script>
@@ -72,22 +77,22 @@ const goWriteForm = () => {
     <li class="nav-item">
       <a id="home" class="nav-link" href="<%=ctxPath%>/approval/home.on">홈</a>
     </li>
-    <li class="nav-item">
+    <li class="nav-item" style="margin-top: 7px;">
       <a id="requestedList" class="nav-link" href="<%=ctxPath%>/approval/requested.on">결재하기<span class="badge badge-pill badge-primary ml-1">7</span></a>
     </li>
-    <li class="nav-item topMenu">개인 문서함
+    <li class="nav-item topMenu" style="margin-top: 7px; margin-bottom: 5px;">개인 문서함
       	<ul class='subMenus personalMenu'>
-      		<li><a id="sentList" class="nav-link" href="<%=ctxPath%>/approval/personal/sent.on">상신함</a></li>
+      		<li><a id="sentList" class="nav-link" style="margin-top: 7px !important" href="<%=ctxPath%>/approval/personal/sent.on">상신함</a></li>
       		<li><a id="processedList" class="nav-link" href="<%=ctxPath%>/approval/personal/processed.on">결재함</a></li>
       		<li><a id="savedList" class="nav-link" href="<%=ctxPath%>/approval/personal/saved.on">임시저장함</a></li>
       	</ul>
     </li>
-    <li class="nav-item">
+    <li class="nav-item" style="margin-top: 7px;">
       <a id="teamList" class="nav-link" href="<%=ctxPath%>/approval/team.on">팀 문서함</a>
     </li>
-    <li class="nav-item topMenu">환경설정
+    <li class="nav-item topMenu" style="margin-top: 7px;">환경설정
       	<ul class='subMenus configMenu'>
-      		<li><a id="approvalLine" class="nav-link" href="<%=ctxPath%>/approval/config/approvalLine.on">결재라인 설정</a></li>
+      		<li><a id="approvalLine" class="nav-link" style="margin-top: 7px !important" href="<%=ctxPath%>/approval/config/approvalLine.on">결재라인 설정</a></li>
       		<li><a id="signature" class="nav-link" href="<%=ctxPath%>/approval/config/signature.on">서명 관리</a></li>
       	</ul>
     </li>
@@ -100,7 +105,7 @@ const goWriteForm = () => {
 	<div class="modal-dialog modal-dialog-centered ">
 		<div class="modal-content">
 
-			<!-- Modal Header -->
+	<!-- Modal Header -->
 	<div class="modal-header">
 		<h5 class="modal-title">결재양식 선택</h5>
 		<button type="button" class="close" data-dismiss="modal">&times;</button>

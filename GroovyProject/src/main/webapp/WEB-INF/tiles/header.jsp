@@ -44,85 +44,103 @@
 
 	.dropdown:hover .dropdown-content {display: block;}
 	
+	.activeHeaderMenu {
+		color: #086BDE !important;
+		background-color: #E3F2FD;
+	}
 </style>
+
+<script>
+$(()=>{
+	
+	const pathName = window.location.pathname;
+	const ctxPath = '<%=ctxPath%>';
+	let menuName = pathName.substring(ctxPath.length+1);
+	const index = menuName.indexOf("/");
+	menuName = menuName.substring(0,index);
+	
+	$('div#'+menuName).addClass('activeHeaderMenu');
+	
+});
+</script>
 
 <nav class="navbar navbar-expand-sm">
 
   <ul class="navbar-nav headerNavbar">
   	<li class="nav-item mt-1 ">
-      	<div style="padding: 0; margin-right: 100px; cursor:pointer;" class="nav-link" onClick='location.href="#"'>
-      		<img src='<%=ctxPath%>/resources/images/logo/groovy_loco_edit.png' width="150"/>
-    	</div>
+         <div style="padding: 0; margin-right: 100px; cursor:pointer;" class="nav-link" onClick='location.href="<%=ctxPath%>/index.on"'>
+            <img src='<%=ctxPath%>/resources/images/logo/groovy_loco_edit.png' width="150"/>
+       </div>
     </li>
     
     <li class="nav-item"  >
-    	<div class="nav-link text-dark header_hover header_width" onClick='location.href="#"'>
-    		<div class="text-center"><i class="fas fa-home fa-lg"></i></div>
-    		<div style="text-align: center;">홈</div>
-    	</div>
+       <div class="nav-link text-dark header_hover header_width" onClick='location.href="<%=ctxPath%>/index.on"'>
+          <div class="text-center"><i class="fas fa-home fa-lg"></i></div>
+          <div style="text-align: center;">홈</div>
+       </div>
     </li>
     <li class="nav-item" >
-      	<div class="nav-link text-dark  header_hover header_width" onClick='location.href="<%=ctxPath%>/mail/receiveMailBox.on"'>
+      	<div id='mail' class="nav-link text-dark  header_hover header_width" onClick='location.href="<%=ctxPath%>/mail/receiveMailBox.on"'>
     		<div class="text-center"><i class="fas fa-envelope fa-lg"></i></div>
     		<div style="text-align: center;">메일</div>
    		</div>
     </li>
     <li class="nav-item">
-    	<div class="nav-link text-dark  header_hover header_width" onClick='location.href="#"'>
+    	<div id='' class="nav-link text-dark  header_hover header_width" onClick='location.href="#"'>
     		<div class="text-center"><i class="fas fa-sitemap fa-lg"></i></div>
     		<div style="text-align: center;">조직도</div>
    		</div>
     </li>
     <li class="nav-item">
-      	<div class="nav-link text-dark  header_hover header_width" onClick='location.href="<%=ctxPath%>/attend/myAttend.on"'>
+      	<div id='attend' class="nav-link text-dark  header_hover header_width" onClick='location.href="<%=ctxPath%>/attend/myAttend.on"'>
     		<div class="text-center"><i class="fas fa-business-time fa-lg"></i></div>
     		<div style="text-align: center;">근태관리</div>
    		</div>
     </li>
     <li class="nav-item">
-      	<div class="nav-link text-dark  header_hover header_width" onClick='location.href="<%=ctxPath%>/approval/home.on"'>
+      	<div id='approval' class="nav-link text-dark  header_hover header_width" onClick='location.href="<%=ctxPath%>/approval/home.on"'>
     		<div class="text-center"><i class="fas fa-stamp fa-lg"></i></div>
     		<div style="text-align: center;">전자결재</div>
    		</div>
     </li>
     <li class="nav-item">
-      	<div class="nav-link text-dark  header_hover header_width" onClick='location.href="<%=ctxPath%>/manage/info/viewInfo.on"'>
+      	<div id='manage' class="nav-link text-dark  header_hover header_width" onClick='location.href="<%=ctxPath%>/manage/info/viewInfo.on"'>
     		<div class="text-center"><i class="fas fa-id-card-alt fa-lg"></i></div>
     		<div style="text-align: center;">사원관리</div>
    		</div>
     </li>
     <li class="nav-item">
-      	<div class="nav-link text-dark  header_hover header_width" onClick='location.href="<%=ctxPath%>/schedule/schedule.on"'>
+      	<div id='schedule' class="nav-link text-dark  header_hover header_width" onClick='location.href="<%=ctxPath%>/schedule/schedule.on"'>
     		<div class="text-center"><i class="far fa-calendar-alt fa-lg"></i></div>
     		<div style="text-align: center;">일정관리</div>
    		</div>
     </li>
     <li class="nav-item">
-      	<div class="nav-link text-dark  header_hover header_width" onClick='location.href="#"'>
+      	<div id='' class="nav-link text-dark  header_hover header_width" onClick='location.href="#"'>
     		<div class="text-center"><i class="fas fa-bookmark fa-lg"></i></div>
     		<div style="text-align: center;">자원예약</div>
    		</div>
     </li>
     <li class="nav-item">
-      	<div class="nav-link text-dark  header_hover header_width" onClick='location.href="#"'>
+      	<div id='' class="nav-link text-dark  header_hover header_width" onClick='location.href="#"'>
     		<div class="text-center"><i class="fas fa-bullhorn fa-lg"></i></div>
     		<div style="text-align: center;">공지사항</div>
    		</div>
     </li>
     <li class="nav-item">
-      	<div class="nav-link text-dark  header_hover header_width" onClick='location.href="#"'>
+      	<div id='' class="nav-link text-dark  header_hover header_width" onClick='location.href="#"'>
     		<div class="text-center"><i class="fas fa-chalkboard-teacher fa-lg"></i></div>
     		<div style="text-align: center;">커뮤니티</div>
    		</div>
     </li>
     <li class="nav-item">
-      	<div class="nav-link text-dark  header_hover header_width" onClick='location.href="#"'>
+      	<div id='' class="nav-link text-dark  header_hover header_width" onClick='location.href="#"'>
     		<div class="text-center"><i class="fas fa-chart-pie fa-lg"></i></div>
     		<div style="text-align: center;">설문조사</div>
    		</div>
     </li>
     <li class="nav-item">
-      	<div class="nav-link text-dark  header_hover header_width" onClick='location.href="#"'>
+      	<div id='' class="nav-link text-dark  header_hover header_width" onClick='location.href="#"'>
     		<div class="text-center"><i class="fas fa-comments fa-lg"></i></div>
     		<div style="text-align: center;">채팅</div>
    		</div>

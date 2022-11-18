@@ -94,8 +94,6 @@
 
 <script>
 
-let submitFlag;
-
 // 네이버 스마트 에디터용 전역변수
 var obj = [];
 
