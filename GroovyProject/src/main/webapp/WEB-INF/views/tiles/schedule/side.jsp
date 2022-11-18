@@ -57,7 +57,7 @@
 <nav class="navbar bg-light">
 
 	<!-- Links -->
-  	<ul class="navbar-nav">
+  	<ul class="navbar-nav" style='width:100%;'>
     	<li class="nav-item">
       		<h4 class='mb-4'>일정관리</h4>
     	</li>

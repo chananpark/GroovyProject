@@ -64,7 +64,7 @@
 		color: #666666;
 	}
 	
-	#index_atten .attTime{	font-size: 10pt;	}
+	#index_atten .attTime{		}
 	
 	#index_atten .attTimeRight{	float: right;	}
 	
@@ -75,7 +75,6 @@
 		border-radius: 30px;
 		height: 30px;
 		width: 75px;
-		font-size: 10pt;
 	}
 	
 	#index_atten .onOff:hover {
@@ -91,7 +90,6 @@
 		height: 30px;
 		width: 152px;
 		margin-top: 7px;
-		font-size: 10pt;
 	}
 	
 	#index_atten #attSelectBtn:hover {
@@ -105,17 +103,16 @@
 		color: #086BDE;
 		background-color: (255, 255, 255, 1);
 		border-radius: 10px;
-		height: 150px;
+		height: 100px;
 		width: 152px;
 	}
 	
 	#index_atten .selectContent {
-		padding-top: 5px;
-		height: 30px;
+		height: 20px;
 		color: #666666;
 		text-align: center;
 		display: block;
-		
+		font-size: 10pt;
 	}
 	
 	#index_atten .selectContent:hover {
@@ -129,12 +126,11 @@
 	#index_atten .menu {	list-style: none;	}
 	
 	#index_atten .topMenu {
-		font-size: 12.5pt;
 		margin-top: 20px;
 		margin-bottom: 5px;		
 	}
 	
-	#index_atten .subMenus {	font-size: 11.5pt;	}
+	#index_atten .subMenus {		}
 		
 	#index_atten #menuBox {	z-index: 1;	} /* div 겹치는거 때문에 함 */
 	/* 출퇴근css 끝 */
@@ -397,35 +393,39 @@
 			<%-- 출퇴근 --%>
 			<div class="card mb-3 shadow mt-3" id="index_atten">
 				<div class="card-header bg-white index_card_header" onClick='location.href="<%=ctxPath%>/attend/myAttend.on"'>출/퇴근</div>
-				<div class="card-body ">
+				<div class="card-body " style="height: 200px;">
 					<div style="margin:0 auto;">
-						<div id="attendBox" style="margin:0 auto;">
-							<div id="nowDate"></div>
-							<div id="nowTime"></div>
-							
+						<div id="attendBox" style="display:flex; width: 400px;">
 							<div>
-								<span class="attTime">출근시간</span>
-								<span class="attTime attTimeRight">10:00:00</span>
-							</div>
-							<div>
-								<span class="attTime">퇴근시간</span>
-								<span class="attTime attTimeRight">10:00:00</span>
-							</div>
-							<div>
-								<span class="attTime">누적근무시간<span style="font-size: 8pt;">(주간)</span></span>
-								<span class="attTime attTimeRight">9h 20m 52s</span>
+								<div id="nowDate"></div>
+								<div id="nowTime"></div>
+								
+								<div>
+									<span class="attTime">출근시간</span>
+									<span class="attTime attTimeRight">10:00:00</span>
+								</div>
+								<div>
+									<span class="attTime">퇴근시간</span>
+									<span class="attTime attTimeRight">10:00:00</span>
+								</div>
+								<div>
+									<span class="attTime pr-1">누적근무시간<span style="font-size: 8pt;">(주간)</span></span>
+									<span class="attTime attTimeRight">9h 20m 52s</span>
+								</div>
 							</div>
 							<hr>
-							<div id="workSelectBox">
-								<button type="button" class="onOff hoverShadow" id="">출근하기</button>
-								<button type="button" class="onOff hoverShadow" id="">퇴근하기</button>
-								<button style="display: block;" type="button" id="attSelectBtn" class="hoverShadow">근무상태 <span id="attSelectComp" class="fas fa-caret-down"></span></button>
-								<div id="attSelectBox">
-									<div class="selectContent" style="border-top-left-radius: 9px; border-top-right-radius: 9px;" onclick="workStatus('업무')">업무</div>
-									<div class="selectContent" onclick="workStatus('업무종료')">업무종료</div>
-									<div class="selectContent" onclick="workStatus('출장')">출장</div>
-									<div class="selectContent" onclick="workStatus('복귀')">복귀</div>
-									<div class="selectContent" style="border-bottom-left-radius: 9px; border-bottom-right-radius: 9px;" onclick="workStatus('연장근무')">연장근무</div>
+							<div>
+								<div id="workSelectBox">
+									<button type="button" class="onOff hoverShadow" id="">출근하기</button>
+									<button type="button" class="onOff hoverShadow" id="">퇴근하기</button>
+									<button style="display: block;" type="button" id="attSelectBtn" class="hoverShadow">근무상태 <span id="attSelectComp" class="fas fa-caret-down"></span></button>
+									<div id="attSelectBox">
+										<div class="selectContent" style="border-top-left-radius: 9px; border-top-right-radius: 9px;" onclick="workStatus('업무')">업무</div>
+										<div class="selectContent" onclick="workStatus('업무종료')">업무종료</div>
+										<div class="selectContent" onclick="workStatus('출장')">출장</div>
+										<div class="selectContent" onclick="workStatus('복귀')">복귀</div>
+										<div class="selectContent" style="border-bottom-left-radius: 9px; border-bottom-right-radius: 9px;" onclick="workStatus('연장근무')">연장근무</div>
+									</div>
 								</div>
 							</div>
 						</div>

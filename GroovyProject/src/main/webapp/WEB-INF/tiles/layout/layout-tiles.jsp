@@ -24,12 +24,7 @@
 	content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
 <!-- Bootstrap CSS -->
-<<<<<<< HEAD
-<link rel="stylesheet" type="text/css"
-	href="<%=ctxPath%>/resources/bootstrap-4.6.0-dist/css/bootstrap.min.css">
-=======
 <link rel="stylesheet" type="text/css" href="<%=ctxPath%>/resources/bootstrap-4.6.0-dist/css/bootstrap.min.css">
->>>>>>> branch 'main' of https://github.com/Chanan-Park/GroovyProject.git
 
 <!-- Font Awesome 5 Icons -->
 <link rel="stylesheet"
