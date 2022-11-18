@@ -155,19 +155,19 @@
 		nowDate(); // 현재 날짜를 얻어와서 보여주는 함수
 		clock();   // 현재 날짜를 얻어와서 초단위로 업데이트하여 보여주는 함수
 		
-		$("#attSelectBox").hide();
+		$("#index_atten #attSelectBox").hide();
 		
-		$("#attSelectBtn").click(function(){
+		$("#index_atten #attSelectBtn").click(function(){
 			
-			const attSelectBox = $("#attSelectBox")
+			const attSelectBox = $("#index_atten #attSelectBox")
 			
 			if(attSelectBox.is(":visible")){
 				attSelectBox.slideUp("fast");
-				document.getElementById("attSelectComp").className = "glyphicon glyphicon-menu-down";
-			}
+				document.getElementById("attSelectComp").className = "fas fa-caret-down";
+			} 
 			else{
 				attSelectBox.slideToggle("fast");
-				document.getElementById("attSelectComp").className = "glyphicon glyphicon-menu-up";
+				document.getElementById("attSelectComp").className = "fas fa-caret-up";
 			}
 		});
 		
@@ -215,7 +215,7 @@
 		
 		const nowDate = year + "-" + month + "-" + date + "(" + day + ")";
 		
-		$("#nowDate").text(nowDate);	
+		$("#index_atten #nowDate").text(nowDate);	
 		
 	} // end of function nowDate(){} ---------------------------------
 	
@@ -242,7 +242,7 @@
 		
 		const nowTime = hours + ":" + min + ":" + sec;
 		
-		$("#nowTime").text(nowTime);		
+		$("#index_atten #nowTime").text(nowTime);		
 		
 	} // end of function nowTime(){} ----------------------------------
 	
@@ -257,8 +257,8 @@
 	function workStatus(e){
 		// console.log(e);		
 		
-		$("#attSelectBtn").html(e + "&nbsp;<span id='attSelectComp' class='glyphicon glyphicon-menu-down'></span>");
-		$("#attSelectBox").hide();
+		$("#index_atten #attSelectBtn").html(e + "&nbsp;<span id='attSelectComp' class='glyphicon glyphicon-menu-down'></span>");
+		$("#index_atten #attSelectBox").hide();
 		
 	}
 	
@@ -419,7 +419,7 @@
 							<div id="workSelectBox">
 								<button type="button" class="onOff hoverShadow" id="">출근하기</button>
 								<button type="button" class="onOff hoverShadow" id="">퇴근하기</button>
-								<button style="display: block;" type="button" id="attSelectBtn" class="hoverShadow">근무상태 <span id="attSelectComp" class="glyphicon glyphicon-menu-down"></span></button>
+								<button style="display: block;" type="button" id="attSelectBtn" class="hoverShadow">근무상태 <span id="attSelectComp" class="fas fa-caret-down"></span></button>
 								<div id="attSelectBox">
 									<div class="selectContent" style="border-top-left-radius: 9px; border-top-right-radius: 9px;" onclick="workStatus('업무')">업무</div>
 									<div class="selectContent" onclick="workStatus('업무종료')">업무종료</div>
