@@ -2,13 +2,23 @@ package com.spring.groovy.approval.controller;
 
 import javax.servlet.http.HttpServletRequest;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+
+import com.spring.groovy.approval.service.ApprovalService;
 
 
 @Controller
 @RequestMapping(value = "/approval/*")
 public class ApprovalController {
+	
+	private ApprovalService service;
+	
+	@Autowired
+	public ApprovalController(ApprovalService service) {
+		this.service = service;
+	}
 
 	// 전자결재 홈 페이지요청
 	@RequestMapping(value = "/home.on")

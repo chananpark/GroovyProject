@@ -45,7 +45,7 @@
 <nav class="navbar bg-light">
 
   <!-- 공용 Links -->
-  <ul class="menus navbar-nav text-left ">
+  <ul class="menus navbar-nav text-left " style='width:100%'>
     <li class="nav-item">
       <h1 >사원관리</h1>
     </li>

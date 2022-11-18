@@ -2,7 +2,7 @@
     pageEncoding="UTF-8"%>
 <% String ctxPath = request.getContextPath(); %>
 <style>
-#writeBtn:hover{
+#goWriteBtn:hover{
 	border: 1px solid #086BDE;
 	color: white;
 	background-color: #086BDE;
@@ -25,6 +25,11 @@
 .modal-body > div {
 	display: table-row-group;
 }
+
+.nav-link {
+	padding-top: 5px !important;
+}
+
 </style>
 
 <script>
@@ -52,7 +57,7 @@ const selectApv = () => {
 
 const goWriteForm = () => {
 	const forms = Array.from($('.formChoice'));
-	const selected = forms.filter(el => $(el).is(':checked'))[0].id;
+	const selected = forms.find(el => $(el).is(':checked')).id;
 	
 	location.href="<%=ctxPath%>/approval/write/"+selected+".on";
 }
@@ -62,32 +67,32 @@ const goWriteForm = () => {
 <nav class="navbar bg-light">
 
   <!-- Links -->
-  <ul class="navbar-nav">
+  <ul class="navbar-nav" style='width:100%'>
     <li class="nav-item">
       <h4 class='mb-4'>전자결재</h4>
     </li>
     <li class="nav-item mb-4">
-      <button id="writeBtn" type="button" style='width:170px' class="btn btn-outline-dark"  onclick="selectApv()">기안문서 작성</button>
+      <button id="goWriteBtn" type="button" style='width:100%' class="btn btn-outline-dark"  onclick="selectApv()">기안문서 작성</button>
     </li>
     <li class="nav-item">
       <a id="home" class="nav-link" href="<%=ctxPath%>/approval/home.on">홈</a>
     </li>
-    <li class="nav-item">
+    <li class="nav-item" style="margin-top: 7px;">
       <a id="requestedList" class="nav-link" href="<%=ctxPath%>/approval/requested.on">결재하기<span class="badge badge-pill badge-primary ml-1">7</span></a>
     </li>
-    <li class="nav-item topMenu">개인 문서함
+    <li class="nav-item topMenu" style="margin-top: 7px; margin-bottom: 5px;">개인 문서함
       	<ul class='subMenus personalMenu'>
-      		<li><a id="sentList" class="nav-link" href="<%=ctxPath%>/approval/personal/sent.on">상신함</a></li>
+      		<li><a id="sentList" class="nav-link" style="margin-top: 7px !important" href="<%=ctxPath%>/approval/personal/sent.on">상신함</a></li>
       		<li><a id="processedList" class="nav-link" href="<%=ctxPath%>/approval/personal/processed.on">결재함</a></li>
       		<li><a id="savedList" class="nav-link" href="<%=ctxPath%>/approval/personal/saved.on">임시저장함</a></li>
       	</ul>
     </li>
-    <li class="nav-item">
+    <li class="nav-item" style="margin-top: 7px;">
       <a id="teamList" class="nav-link" href="<%=ctxPath%>/approval/team.on">팀 문서함</a>
     </li>
-    <li class="nav-item topMenu">환경설정
+    <li class="nav-item topMenu" style="margin-top: 7px;">환경설정
       	<ul class='subMenus configMenu'>
-      		<li><a id="approvalLine" class="nav-link" href="<%=ctxPath%>/approval/config/approvalLine.on">결재라인 설정</a></li>
+      		<li><a id="approvalLine" class="nav-link" style="margin-top: 7px !important" href="<%=ctxPath%>/approval/config/approvalLine.on">결재라인 설정</a></li>
       		<li><a id="signature" class="nav-link" href="<%=ctxPath%>/approval/config/signature.on">서명 관리</a></li>
       	</ul>
     </li>
@@ -100,7 +105,7 @@ const goWriteForm = () => {
 	<div class="modal-dialog modal-dialog-centered ">
 		<div class="modal-content">
 
-			<!-- Modal Header -->
+	<!-- Modal Header -->
 	<div class="modal-header">
 		<h5 class="modal-title">결재양식 선택</h5>
 		<button type="button" class="close" data-dismiss="modal">&times;</button>
