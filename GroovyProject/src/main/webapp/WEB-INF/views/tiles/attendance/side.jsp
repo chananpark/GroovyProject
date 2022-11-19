@@ -47,7 +47,7 @@
 		background-color: white;
 		border-radius: 30px;
 		height: 30px;
-		width: 75px;
+		width: 87px;
 		font-size: 10pt;
 	}
 	
@@ -62,7 +62,7 @@
 		background-color: white;
 		border-radius: 30px;
 		height: 30px;
-		width: 152px;
+		width: 178px;
 		margin-top: 7px;
 		font-size: 10pt;
 	}
@@ -80,6 +80,7 @@
 		border-radius: 10px;
 		height: 150px;
 		width: 152px;
+		font-size: 10pt;
 	}
 	
 	.selectContent {
@@ -269,7 +270,7 @@
 
 </script>
 
-<div id="attendBox" style="padding: 20px 20px">
+<div id="attendBox" style="padding: 20px 0; width: 80%;" >
 	<div id="nowDate"></div>
 	<div id="nowTime"></div>
 	
@@ -300,7 +301,7 @@
 	</div>
 </div>
 
-<div id="menuBox">
+<div id="menuBox" style="">
 	<ul class="menus">
 		<li class="menu topMenu" id="topMenu1">근태 관리
 			<ul class="menu subMenus" id="subMenu1">

@@ -171,7 +171,6 @@
 		
 		
 		const now = new Date();
-		const now2 = new Date();
 		
 		let year = now.getFullYear();
 		let month = now.getMonth()+1;
@@ -191,7 +190,7 @@
 		}
 		
 		if(day != 5){ // 오늘이 금요일이 아니라면			
-			end = new Date(now2.setDate(now2.getDate()+(5-day))); // 이번주의 금요일 구하기
+			end = new Date(now.setDate(now.getDate()+(5-day))); // 이번주의 금요일 구하기
 			
 			end = end.getFullYear() + "." + (end.getMonth()+1) + "." + end.getDate() + "(" + day_kor(end.getDay()) + ")";
 			// console.log(endDate);
@@ -231,31 +230,34 @@
 		
 		$("#nextWeek").click(function(){
 			
-			let startVal = $('input#dateStart').val().substr(0,10);
-			let endVal = $('input#dateEnd').val().substr(0,10);
-					
-			// const end1 = parseInt(end.substr(0,7).split(".").join(""));    // if(end1 != end2) 비교용
-			// const end2 = parseInt(endVal.substr(0,7).split(".").join("")); // if(end1 != end2) 비교용
+			let startVal = $('input#dateStart').val();
 			
-			let newStart = new Date(startVal);
-			newStart = new Date(newStart.setDate(newStart.getDate()+7));
-			
-			newStart = newStart.getFullYear() + "." + (newStart.getMonth()+1) + "." + newStart.getDate() + "(" + day_kor(newStart.getDay()) + ")";
-			
-			
-			let newEnd = new Date(endVal);
-			newEnd = new Date(newEnd.setDate(newEnd.getDate()+7));
-			
-			newEnd = newEnd.getFullYear() + "." + (newEnd.getMonth()+1) + "." + newEnd.getDate() + "(" + day_kor(newEnd.getDay()) + ")";
-					
-			$('input#dateStart').val(newStart);
-			$('input#dateEnd').val(newEnd);
-			
-			$('input#dateStart').datepicker('setDate', newStart);
-			$('input#dateEnd').datepicker('setDate', newEnd);
-			
+			if(start != startVal){
+				
+				startVal = startVal.substr(0,10);
+				let endVal = $('input#dateEnd').val().substr(0,10);
+									
+				let newStart = new Date(startVal);
+				newStart = new Date(newStart.setDate(newStart.getDate()+7));
+				
+				newStart = newStart.getFullYear() + "." + (newStart.getMonth()+1) + "." + newStart.getDate() + "(" + day_kor(newStart.getDay()) + ")";
+				
+				
+				let newEnd = new Date(endVal);
+				newEnd = new Date(newEnd.setDate(newEnd.getDate()+7));
+				
+				newEnd = newEnd.getFullYear() + "." + (newEnd.getMonth()+1) + "." + newEnd.getDate() + "(" + day_kor(newEnd.getDay()) + ")";
+						
+				$('input#dateStart').val(newStart);
+				$('input#dateEnd').val(newEnd);
+				
+				$('input#dateStart').datepicker('setDate', newStart);
+				$('input#dateEnd').datepicker('setDate', newEnd);
+			}
 			
 		}); // end of $("#prevWeek").click() -------------------------
+		
+		
 		
 	}); // end of $(document).ready() ===============================================
 	
@@ -296,7 +298,7 @@
 
 <div>
 	<div id="title">
-		<span id="todayBtn">오늘</span>
+		<span id="todayBtn">&nbsp;</span>
 		<a class="category hoverShadow" href="<%= ctxPath%>/attend/teamStatusDaily.on">일</a>
 		<a class="category hoverShadow" style="background-color: #086BDE; color: white;" href="<%= ctxPath%>/attend/teamStatusWeekly.on">주</a>
 		<a class="category hoverShadow" href="<%= ctxPath%>/attend/teamStatusMonthly.on">월</a>

@@ -38,7 +38,7 @@
 	.timeBoxes_2 {
 		font-size: 18pt;
 		text-align: center;
-		color: #b3b3b3;
+		color: #086BDE;
 	}
 	
 	#calMonth {
@@ -263,22 +263,22 @@
 	<div id="workBox">
 		<div class="timeBoxes" style="">
 			<div class="timeBoxes_1">출근 미체크</div>
-			<div class="timeBoxes_2">-</div>
+			<div class="timeBoxes_2" style="color: #bfbfbf;">-</div>
 		</div>
-		<div class="timeBoxes">
+		<div class="timeBoxes"style="margin-right: 40px; padding-right: 30px; border-right: solid 1px #bfbfbf;">
 			<div class="timeBoxes_1">퇴근 미체크</div>
-			<div class="timeBoxes_2">1</div>
+			<div class="timeBoxes_2" style="color: #bfbfbf;">1</div>
 		</div>
 		<div class="timeBoxes" style="">
-			<div class="timeBoxes_1">지각</div>
-			<div class="timeBoxes_2">1</div>
-		</div>
-		<div class="timeBoxes">
-			<div class="timeBoxes_1">결근</div>
+			<div class="timeBoxes_1">무단결근</div>
 			<div class="timeBoxes_2">1</div>
 		</div>
 		<div class="timeBoxes">
 			<div class="timeBoxes_1">연차</div>
+			<div class="timeBoxes_2">1</div>
+		</div>
+		<div class="timeBoxes">
+			<div class="timeBoxes_1">연장근무(시간)</div>
 			<div class="timeBoxes_2">3</div>
 		</div>
 	</div>

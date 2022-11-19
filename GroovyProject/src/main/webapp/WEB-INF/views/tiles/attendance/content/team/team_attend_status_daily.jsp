@@ -59,7 +59,7 @@
 	
 	.names { width: 10%; padding-left: 10px; }	
 	.times { width: 7%;	}	
-	.timeShapes { width: 65%; }
+	.timeShapes { width: 65%; margin-right: -4px; }
 	
 	div.contents {	margin-top: 10px;	}
 	
@@ -68,6 +68,8 @@
 		width: 140px;
 		font-size: 16pt;
 	}
+	
+	.bTimes { display: inline-block; width: 38px; margin-right: -4px; text-align: center;}
 	
 
 
@@ -144,6 +146,12 @@
 			$('input#datepick').datepicker('setDate', newVal);
 		});
 		
+		
+
+		$("#todayBtn").click(function(){			
+			$('input#datepick').datepicker('setDate', 'today');			
+		});
+		
 	}); // end of $(document).ready() ==========================================
 	
 	function day_kor(day){
@@ -194,6 +202,12 @@
 		<span class="table times">출근시간</span>
 		<span class="table times">퇴근시간</span>
 		<span class="table timeShapes" style="width: 50%;">시간</span>
+		<span style="display: inline-block; background-color: #cfe9fc; width: 15px; height: 15px; border-radius: 50%;" class="">&nbsp;</span>
+		<span style="display: inline-block; font-size: 8pt; margin-right: 5px;" class="">일반근무</span>
+		<span style="display: inline-block; background-color: #ffdddd; width: 15px; height: 15px; border-radius: 50%;"" class="">&nbsp;</span>
+		<span style="display: inline-block; font-size: 8pt; margin-right: 5px;" class="">연장근무</span>
+		<span style="display: inline-block; background-color: #fadb9e; width: 15px; height: 15px; border-radius: 50%;"" class="">&nbsp;</span>
+		<span style="display: inline-block; font-size: 8pt;" class="">외근</span>
 	</div>
 	<div class="contents">
 		<span class="table names"><img src="<%=ctxPath %>/resources/images/test/jaeseok.jpg" style="width:35px; border-radius: 50%; border: solid 1px gray;"/>
@@ -201,7 +215,7 @@
 		<span class="table times">07:00</span>
 		<span class="table times">10:00</span>
 		<span class="table times">17:00</span>
-		<span class="table timeShapes" style="margin-left: 38px; background-color: #E3F2FD; width: 38px;">&nbsp;</span>
+		<span class="table timeShapes" style="margin-left: 76px; background-color: #cfe9fc; width: 38px;">&nbsp;</span>
 		
 		<%-- width: 38px; --%>
 	</div>
@@ -211,7 +225,8 @@
 		<span class="table times">07:00</span>
 		<span class="table times">10:00</span>
 		<span class="table times">17:00</span>
-		<span class="table timeShapes" style="margin-left: 114px; background-color: #E3F2FD; width: 304px;">&nbsp;</span>
+		<span class="table timeShapes" style="margin-left: 38px; background-color: #cfe9fc; width: 76px;">&nbsp;</span>
+		<span class="table timeShapes" style="margin-left: 0px; background-color: #fadb9e; width: 39px;">&nbsp;</span>
 		
 		<%-- width: 38px; --%>
 	</div>
@@ -221,16 +236,18 @@
 		<span class="table times">07:00</span>
 		<span class="table times">10:00</span>
 		<span class="table times">17:00</span>
-		<span class="table timeShapes" style="margin-left: 152px; background-color: #E3F2FD; width: 190px;">&nbsp;</span>
-		
+		<span class="table timeShapes" style="margin-left: 0px; background-color: #cfe9fc; width: 39px;">&nbsp;</span>
+		<span class="table timeShapes" style="margin-left: 0px; background-color: #ffdddd; width: 39px;">&nbsp;</span>
+		<span class="table timeShapes" style="margin-left: 0px; background-color: #fadb9e; width: 39px;">&nbsp;</span>
 		<%-- width: 38px; --%>
 	</div>
 </div>
-<div style="margin-left: 412px; font-size: 11pt;">
-	07시&nbsp;&nbsp;&nbsp;08시&nbsp;&nbsp;&nbsp;09시&nbsp;&nbsp;&nbsp;10시&nbsp;&nbsp;&nbsp;11시&nbsp;&nbsp;&nbsp;
-	12시&nbsp;&nbsp;&nbsp;13시&nbsp;&nbsp;&nbsp;14시&nbsp;&nbsp;&nbsp;15시&nbsp;&nbsp;&nbsp;16시&nbsp;&nbsp;&nbsp;
-	17시&nbsp;&nbsp;&nbsp;18시&nbsp;&nbsp;&nbsp;19시&nbsp;&nbsp;&nbsp;20시&nbsp;&nbsp;&nbsp;21시&nbsp;&nbsp;&nbsp;
-	22시&nbsp;&nbsp;&nbsp;23시&nbsp;&nbsp;&nbsp;24시
+<div style="margin-left: 414px; font-size: 11pt;">
+	<span class="bTimes">07시</span> <span class="bTimes">08시</span> <span class="bTimes">08시</span> <span class="bTimes">09시</span> 
+	<span class="bTimes">10시</span> <span class="bTimes">11시</span> <span class="bTimes">12시</span> <span class="bTimes">13시</span> 
+	<span class="bTimes">14시</span> <span class="bTimes">15시</span> <span class="bTimes">16시</span> <span class="bTimes">17시</span>
+	<span class="bTimes">18시</span> <span class="bTimes">19시</span> <span class="bTimes">20시</span> <span class="bTimes">21시</span> 
+	<span class="bTimes">22시</span> <span class="bTimes">23시</span> <span class="bTimes">24시</span>
 </div>
 	
 

@@ -290,7 +290,7 @@
 
 <div>
 	<div id="title">
-		<span  id="todayBtn">오늘</span>
+		<span  id="todayBtn">&nbsp;</span>
 		<a class="category hoverShadow" href="<%= ctxPath%>/attend/teamStatusDaily.on">일</a>
 		<a class="category hoverShadow" href="<%= ctxPath%>/attend/teamStatusWeekly.on">주</a>
 		<a class="category hoverShadow" style="background-color: #086BDE; color: white;" href="<%= ctxPath%>/attend/teamStatusMonthly.on">월</a>
