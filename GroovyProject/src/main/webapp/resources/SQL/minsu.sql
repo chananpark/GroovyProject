@@ -42,7 +42,8 @@ nocycle
 nocache;
 -- Sequence SEQ_TBL_EMPLOYEE이(가) 생성되었습니다.
 
-
+alter table tbl_employee MODIFY account varchar2(20);
+alter table tbl_employee MODIFY annualcnt varchar2(5);
 
 
 -- 급여테이블
@@ -139,6 +140,11 @@ select empno, cpemail, name, pwd, position, jubun, postcode, address, detailaddr
 from tbl_employee
 where cpemail = minsu@groovy.com and  pwd = 'qwer1234$'
 
+delete from tbl_employee 
+where annualcnt = 15
 
+DELETE FROM tbl_employee 
+WHERE account = 210123456789
 
+desc
 
