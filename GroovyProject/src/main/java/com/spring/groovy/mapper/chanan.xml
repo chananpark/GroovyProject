@@ -1,8 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- mapper 기본설정 -->
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<!-- 루트 엘리먼트 & 네임스페이스 설정(프로젝트 전체 내에서 유일해야 함, 주로 파일명) -->
 <mapper namespace="chanan">
-		<!-- 이 안에 sql문을 적는다 -->
+	
+	<select id="getTeamDraftCnt" resultType="int" parameterType="com.spring.groovy.common.Pagination" >
+		SELECT COUNT(*) FROM VIEW_TEAM_DRAFT
+		<if test='searchType != "" and searchWord != "" '>
+		WHERE LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
+		</if>
+	</select>
+	
+	<select id="getTeamDraftList" resultType="com.spring.groovy.approval.model.DraftVO" parameterType="HashMap" >
+		SELECT * 
+		FROM ( SELECT A.*, ROWNUM AS RNO
+		    FROM ( SELECT *
+		            FROM
+		            VIEW_TEAM_DRAFT
+		            <if test='searchType != "" and searchWord != "" '>
+		            WHERE LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
+		            </if>
+					ORDER BY APPROVAL_DATE ${sortType}
+		            )A )
+		WHERE RNO BETWEEN #{startRno} AND #{endRno}
+	</select>
+	
 </mapper>

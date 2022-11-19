@@ -7,8 +7,8 @@ public class Pagination {
 
 	private int pageSize = 10; // 한 페이지당 보여줄 게시물 건수 (초기값 10)
 	private int currentPage = 1; // 현재 페이지번호 (초기값 1)
-	private String searchType; // 검색기준
-	private String searchWord; // 검색어
+	private String searchType = ""; // 검색기준
+	private String searchWord = ""; // 검색어
 
 	private int blockSize = 5; // 한 페이지 당 보여줄 페이지 개수
 	private int totalPage; // 총 페이지수
@@ -68,6 +68,8 @@ public class Pagination {
 		resultMap.put("searchType", searchType);
 		resultMap.put("searchWord", searchWord);
 
+		resultMap.put("pageSize", pageSize);
+
 		return resultMap;
 	}
 	
@@ -77,18 +79,15 @@ public class Pagination {
 		int loop = 1;
 
 		int pageNo = ((currentPage - 1) / blockSize) * blockSize + 1;
-		
-		searchType = (searchType == null) ? "" : searchType;
-		searchWord = (searchWord == null) ? "" : searchWord;
 
 		String pageBar = "<ul class='pagination justify-content-center'>";
 
 		// === [맨처음][이전] 만들기 === //
 		if (pageNo != 1) {
 			pageBar += "<li class='page-item'><a class='page-link' href='" + url + "?searchType="
-					+ searchType + "&searchWord=" + searchWord + "&currentPage=1'><i class='fas fa-angle-double-left'></i></a></li>";
+					+ searchType + "&searchWord=" + searchWord + "&currentPage=1" + "&pageSize=" + pageSize +"'><i class='fas fa-angle-double-left'></i></a></li>";
 			pageBar += "<li class='page-item'><a class='page-link' href='" + url + "?searchType="
-					+ searchType + "&searchWord=" + searchWord + "&currentPage=" + (pageNo - 1)
+					+ searchType + "&searchWord=" + searchWord + "&currentPage=" + (pageNo - 1) + "&pageSize=" + pageSize
 					+ "'><i class='fas fa-angle-left'></i></i></a></li>";
 		}
 
@@ -98,7 +97,7 @@ public class Pagination {
 				pageBar += "<li class='page-item active'><a class='page-link' href=#>" + pageNo + "</a></li>";
 			} else {
 				pageBar += "<li class='page-item'><a class='page-link' href='" + url
-						+ "?searchType=" + searchType + "&searchWord=" + searchWord + "&currentPage=" + pageNo
+						+ "?searchType=" + searchType + "&searchWord=" + searchWord + "&currentPage=" + pageNo + "&pageSize=" + pageSize
 						+ "'>" + pageNo + "</a></li>";
 			}
 
@@ -109,9 +108,9 @@ public class Pagination {
 		// === [다음][마지막] 만들기 === //
 		if (pageNo <= totalPage) {
 			pageBar += "<li class='page-item'><a class='page-link' href='" + url + "?searchType="
-					+ searchType + "&searchWord=" + searchWord + "&currentPage=" + pageNo + "'><i class='fas fa-angle-right'></i></a></li>";
+					+ searchType + "&searchWord=" + searchWord + "&currentPage=" + pageNo + "&pageSize=" + pageSize + "'><i class='fas fa-angle-right'></i></a></li>";
 			pageBar += "<li class='page-item'><a class='page-link' href='" + url + "?searchType="
-					+ searchType + "&searchWord=" + searchWord + "&currentPage=" + totalPage + "'><i class='fas fa-angle-double-right'></i></a></li>";
+					+ searchType + "&searchWord=" + searchWord + "&currentPage=" + totalPage + "&pageSize=" + pageSize + "'><i class='fas fa-angle-double-right'></i></a></li>";
 		}
 
 		pageBar += "</ul>";
