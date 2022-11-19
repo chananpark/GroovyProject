@@ -4,5 +4,23 @@
 
 <!-- 루트 엘리먼트 & 네임스페이스 설정(프로젝트 전체 내에서 유일해야 함, 주로 파일명) -->
 <mapper namespace="minsu">
-		<!-- 이 안에 sql문을 적는다 -->
+	<!-- 이 안에 sql문을 적는다 -->
+	
+	<select id="getLogin" resultType="com.spring.groovy.management.model.MemberVO" parameterType="String" >
+		select cpemail
+		from tbl_employee
+		where cpemail = #{cpemail}
+	</select>
+	
+	
+	<select id="login2" parameterType="HashMap" resultType="com.spring.groovy.management.model.MemberVO">
+		select empno, cpemail, name, pwd, position, jubun, postcode, address, detailaddress
+		     , extraaddress,empimg,birthday, bumun,department,pvemail,mobile,depttel,joindate
+		     ,empstauts,bank, account,annualcnt, empimg
+		from tbl_employee
+		where cpemail = #{cpemail} and pwd = #{pwd}
+	</select>
+	
+	
+		
 </mapper>

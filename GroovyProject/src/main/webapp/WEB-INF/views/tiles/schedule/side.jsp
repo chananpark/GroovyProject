@@ -41,7 +41,7 @@
 	// 일정 등록 메소드
 	function insertSchedule() {
 		
-		location.href="<%=ctxPath %>/insertSchedule.on";
+		location.href="<%=ctxPath %>/schedule/insertSchedule.on";
 		
 	} // end of function insertSchedule
 		
@@ -57,7 +57,7 @@
 <nav class="navbar bg-light">
 
 	<!-- Links -->
-  	<ul class="navbar-nav">
+  	<ul class="navbar-nav" style='width:100%;'>
     	<li class="nav-item">
       		<h4 class='mb-4'>일정관리</h4>
     	</li>

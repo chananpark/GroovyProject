@@ -51,7 +51,7 @@
 		//	const userid = $target.parent().find("td[name='userid']").text(); 
 		//	console.log("확인용 : "+ userid);
 			 
-			location.href = "<%= ctxPath %>/viewSchedule.on"; 
+			location.href = "<%= ctxPath %>/schedule/viewSchedule.on"; 
 		}); // end of $("tbody > tr").click(function()
 		
 		

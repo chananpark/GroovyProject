@@ -96,10 +96,86 @@
 		border: solid 2px #086BDE;
 	}
 	
-	
 </style>    
 </head>
 <body>
+
+<script type="text/javascript">
+
+
+	$(document).ready(function(){
+		
+		$("div#first_error").hide();
+		$("div#result_error").hide();
+		
+		$("button#btn_next").click(function(){
+			func_login();
+		}); // end of $("button#btn_next").click(function(){
+		
+		// 엔터를 했을 경우
+		$("input#pwd").keydown(function(e){
+			
+			if(e.keyCode == 13) { 
+				func_login();
+			}
+			
+		}); // end of $("input#pwd").keydown(function(e){
+		
+			
+		// === 비밀번호 === //
+	   	$("input#pwd").blur( function(e) {
+	   		
+			const $target = $(e.target);
+		
+			const regExp = new RegExp(/^.*(?=^.{8,15}$)(?=.*\d)(?=.*[a-z])(?=.*[^a-z0-9]).*$/g);
+			const bool = regExp.test( $target.val() );
+			
+			 if($target.val() == "") {
+		        	// 비밀번호 입력칸이 공백인 경우
+		        	 $target.parent().find("div#first_error").show();
+		    }
+			 else {
+				 
+					if(!bool) {
+						// 암호가 정규표현식에 위배된 경우
+						$("div#result_error").show();
+					}
+					else {
+						// 비밀번호 입력칸에 글자가 들어온경우
+				       	 $("div#result_error").hide();
+					}
+			 }
+		}); // end of $("input#pwd").blur() ----------------- // 아이디가 pwd 인 것은 포커스를 잃어버렸을 경우(blur) 이벤트를 처리해주는 것이다.
+		
+	}); // end of $(document).ready(function(){ ----------------------
+		
+		
+	// >>> Function Declartion <<<
+
+	// >>> 다음으로 넘어가는 함수 생성하기 <<< 
+	function func_login() {
+		
+		const pwd = $("input#pwd").val();
+		
+		if(pwd.trim() == "") {
+			$("div#first_error").show();
+			$("input#pwd").val("");
+			$("input#pwd").focus();
+			return;  // 종료
+		}
+		
+		const frm = document.frm_login
+		frm.action = "<%= ctxPath%>/login2.on";
+		frm.method = "POST";
+		frm.submit();
+		
+	} // end of function func_login() {-------------------------
+		
+		
+
+</script>
+
+
 <div id="myContainer">
 
 	<div id="body" class="body" align="center" class="flex-content join-content">
@@ -109,16 +185,19 @@
 		
 		<div id="container" class="card card-body">
 			<h3 style="font-weight: bold;">로그인</h3>
-			<input neme="email" style="padding: 0 1%; color:#086BDE; border: solid 1px #cccccc; margin: 2% auto;" readonly/>
+			<div name="cpemail" style="padding:0 1%; color:#086BDE; border: solid 1px #cccccc; margin: 2% auto; width: 200px; font-size: 13px; padding: 1% 0;" readonly>${loginuser.cpemail}</div>
 			
-			<div style="color:#b3b3b3; margin: 5% 0 0 5%;" align="left" >비밀번호(8자이상 32자 이하로 입력해주세요)</div>
-			<input type="text" name="email" style="width: 90%; border: solid 2px #086BDE; height: 35px; margin: auto;" autofocus required/>
-			<div align="left" style="color:#b3b3b3; margin: 2% 0 0 5%;"><input type="checkbox" />자동로그인</div>
+			<div style="color:#b3b3b3; margin: 5% 0 0 5%;" align="left">비밀번호(8자이상 15자 이하로 입력해주세요)</div>
+			<input type="password" name="pwd" id="pwd" style="width: 90%; border: solid 2px #086BDE; height: 35px; margin: auto;" autofocus="autofocus" required/>
+			<div id="first_error" style="color:red; font-size: 12px;">비밀번호를 입력해주세요</div>
+			<div id="result_error">비밀번호가 일치하지 않습니다.</div>
+			<div></div>
+			<div align="left" style="color:#b3b3b3; margin: 2% 0 0 5%;"><input type="checkbox" id="checkbox"/>자동로그인</div>
 			
 			<div style="margin: 2% 0 0 20%;">
 				<button type="button" style="background-color: white; border: none;"><a href="#">비밀번호를 잊으셨나요?</a></button>
 				<button type="button" id="btn_back" onclick="javascript:history.back()">뒤로</button>
-				<button type="button" id="btn_next" onclick='location.href="<%=ctxPath %>/manage/info/viewInfo.on"'>다음</button>
+				<button type="button" id="btn_next">다음</button>
 			</div>
 		</div>
 		

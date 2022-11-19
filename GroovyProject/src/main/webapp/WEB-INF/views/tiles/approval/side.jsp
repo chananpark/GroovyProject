@@ -62,12 +62,16 @@ const goWriteForm = () => {
 <nav class="navbar bg-light">
 
   <!-- Links -->
-  <ul class="navbar-nav">
+  <ul class="navbar-nav" style='width:100%'>
     <li class="nav-item">
       <h4 class='mb-4'>전자결재</h4>
     </li>
     <li class="nav-item mb-4">
-      <button id="writeBtn" type="button" style='width:170px' class="btn btn-outline-dark"  onclick="selectApv()">기안문서 작성</button>
+
+
+
+      <button id="goWriteBtn" type="button" style='width:100%' class="btn btn-outline-dark"  onclick="selectApv()">기안문서 작성</button>
+
     </li>
     <li class="nav-item">
       <a id="home" class="nav-link" href="<%=ctxPath%>/approval/home.on">홈</a>

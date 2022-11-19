@@ -86,6 +86,61 @@
 </style>    
 </head>
 <body>
+
+
+<script type="text/javascript">
+
+	$(document).ready(function(){
+		
+		// === 다음버튼을 누르면 === //
+		$("button#btn_next").click(function(){
+			
+			func_login();
+		}); // end of $("button#btn_next").click(function(){---------------------
+			
+			
+		// 엔터를 했을 경우
+		$("input#pwd").keydown(function(e){
+			
+			if(e.keyCode == 13) { 
+				func_login();
+			}
+			
+		}); // end of $("input#pwd").keydown(function(e){
+			
+		
+		
+		
+		
+	}); // end of $(document).ready(function(){ ------------------------------
+
+		
+	// >>> Function Declartion <<<
+
+	// >>> 다음으로 넘어가는 함수 생성하기 <<< 
+	function func_login() {
+		
+		const cpemail = $("input#cpemail").val();
+		
+		if(cpemail.trim() == "") {
+			alert("이메일을 입력해주세요");
+			$("input#email").val("");
+			$("input#email").focus();
+			return;  // 종료
+		}
+		 
+		const frm = document.frm_login
+		
+		frm.action = "<%= ctxPath%>/login.on";
+		frm.method = "POST";
+		frm.submit();
+		
+	} // end of function func_login() {-------------------------
+
+
+</script>
+
+
 <div id="myContainer">
 <div id="body" align="center" class="flex-content join-content">
 <form name="frm_login">
@@ -96,12 +151,10 @@
 		<h3 style="font-weight: bold;">로그인</h3>
 		<p style="color:#b3b3b3 ">Email 주소를 입력하세요.</p>
 		
-		<input type="text" name="email" style="width: 90%; background-color: #d9d9d9; border: none; height: 35px; margin:auto;" required/>
+		<input type="cpemail" name="cpemail" id="cpemail" style="width: 90%; background-color: #d9d9d9; border: none; height: 35px; margin:auto;" required/>
 		
-		<div>
-			<button type="button" id="btn_join" style="background-color: white;"><a href="#">회원가입</a></button>
-			<!-- <button type="button"><a href="#">Microsoft 계정으로 로그인</a></button> -->
-			<button type="button" id="btn_next"><a href="<%= ctxPath%>/login2.on" style="color: white;">다음</a></button>
+		<div align="center">
+			<button type="button" id="btn_next" style="color: white;" >다음</button>
 		</div>
 	</div>
 	
