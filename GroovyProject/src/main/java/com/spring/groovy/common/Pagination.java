@@ -48,20 +48,25 @@ public class Pagination {
 	}
 
 	// 페이지 첫행, 마지막행 구하기
-	public Map<String, Integer> getPageRange(int listCnt) {
+	public Map<String, Object> getPageRange(int listCnt) {
 		
 		pageSize = (pageSize != 10 && pageSize != 30 && pageSize != 50)? pageSize = 10 : pageSize;
 
 		// 총 페이지 수 계산
 		totalPage = (int) Math.ceil((double) listCnt / pageSize);
+		
+		currentPage = (currentPage > totalPage)? 1 : currentPage;
 
 		// startRno, endRno 설정
 		startRno = ((currentPage - 1) * pageSize) + 1;
 		endRno = startRno + pageSize - 1;
 
-		Map<String, Integer> resultMap = new HashMap<>();
+		Map<String, Object> resultMap = new HashMap<>();
 		resultMap.put("startRno", startRno);
 		resultMap.put("endRno", endRno);
+		
+		resultMap.put("searchType", searchType);
+		resultMap.put("searchWord", searchWord);
 
 		return resultMap;
 	}
