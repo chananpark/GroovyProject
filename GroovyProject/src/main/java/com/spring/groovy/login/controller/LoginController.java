@@ -94,7 +94,7 @@ public class LoginController {
 		 session.setAttribute("loginuser", loginuser);
 		 // session(세션)에 로그인 되어진 사용자 정보인 loginuser 를  키이름을 "loginuser" 으로 저장시켜두는 것이다.
 		
-		 mav.setViewName("index/index.tiles2");
+		 mav.setViewName("redirect:/index.on");
 	 
 		return mav;
 	 }

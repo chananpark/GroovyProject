@@ -1,5 +1,4 @@
 
-
 -- 사원테이블
 create table tbl_employee
 (empno              number         not null   -- 사원번호
@@ -41,10 +40,6 @@ nominvalue
 nocycle
 nocache;
 -- Sequence SEQ_TBL_EMPLOYEE이(가) 생성되었습니다.
-
-alter table tbl_employee MODIFY account varchar2(20);
-alter table tbl_employee MODIFY annualcnt varchar2(5);
-
 
 -- 급여테이블
 create table tbl_pay
@@ -124,12 +119,45 @@ alter table tbl_employee
 desc TBL_EMPLOYEE
 
 
+
+-- 칼럼 변경
+alter table tbl_employee MODIFY account varchar2(20) not null;
+alter table tbl_employee MODIFY annualcnt varchar2(5);
+
+update tbl_employee set account = '123456789'
+where account 
+
+update tbl_employee set annualcnt = 'n'
+where annualcnt is null 
+
+select *
+from tbl_employee
+where department = '인사총무팀'
+order by empno 
+
+update tbl_employee set depttel = '102'
+where name ='김민수' 
+
+commit
+
+rollback
+
+delete from tbl_employee
+where empno = 7
+
 INSERT INTO tbl_employee 
 (empno,cpemail,name,pwd,position,jubun,postcode,bumun,department,pvemail
 ,mobile,depttel,joindate,empstauts,bank,account,annualcnt)
 VALUES(SEQ_TBL_EMPLOYEE.NEXTVAL, 'minsu@groovy.com', '김민수', 'qwer1234$',
 '책임자', '981210-2222222', '12345', 'IT사업부문','개발팀','alstn8109@naver.com',
 '010-1111-2222','201','2022/11/18','1','국민은행','21520204188',15);
+
+INSERT INTO tbl_employee 
+(empno,cpemail,name,pwd,position,jubun,postcode,bumun,department,pvemail
+,mobile,depttel,joindate,empstauts,bank,account,annualcnt)
+VALUES(SEQ_TBL_EMPLOYEE.NEXTVAL, 'mangdb@groovy.com', '맹단비', 'qwer1234$',
+'선임', '990102-2222222', '12345', '경영지원본부','인사총무팀','mangdb@naver.com',
+'010-1111-2222','106','2022/11/18','1','국민은행','123456789',15);
 
 commit
 
