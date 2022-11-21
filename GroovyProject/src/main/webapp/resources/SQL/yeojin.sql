@@ -11,10 +11,13 @@ create table tbl_calendar_large_category
 -- Table TBL_CALENDAR_LARGE_CATEGORY이(가) 생성되었습니다.
 
 insert into tbl_calendar_large_category(lgcatgono, lgcatgoname)
-values(1, '내캘린더');
+values(1, '전사일정');
 
 insert into tbl_calendar_large_category(lgcatgono, lgcatgoname)
-values(2, '사내캘린더');
+values(2, '팀별일정');
+
+insert into tbl_calendar_large_category(lgcatgono, lgcatgoname)
+values(3, '개인일정');
 
 commit;
 -- 커밋 완료.
@@ -49,11 +52,63 @@ nocycle
 nocache;
 -- Sequence SEQ_SMCATGONO이(가) 생성되었습니다.
 
+insert into tbl_calendar_small_category(smcatgono, fk_lgcatgono, smcatgoname, fk_empno)
+values(seq_smcatgono.nextval, 1, '교육일정', 15);
+
+insert into tbl_calendar_small_category(smcatgono, fk_lgcatgono, smcatgoname, fk_empno)
+values(seq_smcatgono.nextval, 2, '팀회의', 14);
+
+insert into tbl_calendar_small_category(smcatgono, fk_lgcatgono, smcatgoname, fk_empno)
+values(seq_smcatgono.nextval, 2, '인사총무팀회의', 15);
+
+insert into tbl_calendar_small_category(smcatgono, fk_lgcatgono, smcatgoname, fk_empno)
+values(seq_smcatgono.nextval, 2, '외부출장', 15);
+
+insert into tbl_calendar_small_category(smcatgono, fk_lgcatgono, smcatgoname, fk_empno)
+values(seq_smcatgono.nextval, 2, '외부출장', 14);
+
+commit;
 
 select *
 from tbl_calendar_small_category
 order by smcatgono desc;
 
+select smcatgono, fk_lgcatgono, smcatgoname
+from tbl_calendar_small_category
+where fk_lgcatgono = 1
+order by smcatgono asc;
+
+
+-- 전사일정 소분류 존재 여부 확인
+select smcatgono, fk_lgcatgono, smcatgoname
+from tbl_calendar_small_category
+where smcatgoname = '교육일정';
+
+
+-- 팀별일정 소분류 보여주기
+select smcatgono, fk_lgcatgono, smcatgoname, fk_empno, department
+from
+(
+    select smcatgono, fk_lgcatgono, smcatgoname, fk_empno, E.department
+    from tbl_calendar_small_category C join tbl_employee E
+    on C.fk_empno = E.empno
+    where fk_lgcatgono = 2
+    order by smcatgono asc
+)
+where department = '인사총무팀';
+
+
+-- 팀별일정 소분류명 존재 여부 확인
+select count(*)
+from 
+(
+    select smcatgono, fk_lgcatgono, smcatgoname, fk_empno, E.department
+    from tbl_calendar_small_category C join tbl_employee E
+    on C.fk_empno = E.empno
+    where fk_lgcatgono = 2 and department = (select department from tbl_employee where empno = 15)
+    order by smcatgono asc
+)
+where fk_lgcatgono = 2 and smcatgoname = '외부출장';
 
 -- *** 캘린더 일정 *** 
 create table tbl_calendar_schedule 
@@ -115,16 +170,31 @@ where SD.scheduleno = 21;
 ------------- >>>>>>>> 일정관리(풀캘린더) 끝 <<<<<<<< -------------
 
 select *
-from tbl_employee;
+from tbl_employee
+order by empno;
 
 
 -- 사원 insert 문
 INSERT INTO tbl_employee 
 (empno,cpemail,name,pwd,position,jubun,postcode,bumun,department,pvemail
 ,mobile,depttel,joindate,empstauts,bank,account,annualcnt)
-VALUES(SEQ_TBL_EMPLOYEE.NEXTVAL, 'chanan@groovy.com', '박찬안', 'qwer1234$',
-'부문장', '960719-2222222', '12345', 'IT사업부문','개발팀','pca_719@naver.com',
-'010-1111-2222','201','2022/11/18','1','신한은행','110123456789',15);
+VALUES(SEQ_TBL_EMPLOYEE.NEXTVAL, 'shonyj@groovy.com', '손여진', 'qwer1234$',
+'부문장', '970226-2222222', '12345', '마케팅영업부문','마케팅팀','jin_92214@naver.com',
+'010-1111-2222','301','2022/11/18','1','국민은행','019123456789',15);
+
+UPDATE tbl_employee SET mobile='01012341234' WHERE empno = 14;
+
+commit;
+
+INSERT INTO tbl_employee 
+(empno,cpemail,name,pwd,position,jubun,postcode,bumun,department,pvemail
+,mobile,depttel,joindate,empstauts,bank,account,annualcnt)
+VALUES(SEQ_TBL_EMPLOYEE.NEXTVAL, 'schedule@groovy.com', '김일정', 'qwer1234$',
+'선임', '981230-1111111', '12345', '경영지원부문','인사총무팀','schedule@naver.com',
+'01011112222','106','2022/11/18','1','국민은행','119123456789',15);
+
+
+
 
 
 
