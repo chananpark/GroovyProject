@@ -4,5 +4,128 @@
 
 <!-- 루트 엘리먼트 & 네임스페이스 설정(프로젝트 전체 내에서 유일해야 함, 주로 파일명) -->
 <mapper namespace="yeojin">
-		<!-- 이 안에 sql문을 적는다 -->
+	
+	<!-- 이 안에 sql문을 적는다 -->
+	
+	<!-- ========================================================================== -->
+	<!-- 전사일정 소분류 보여주기 -->
+	<select id="showCompanyCalendar" resultType="com.spring.groovy.schedule.model.CalSmallCategoryVO">
+		select smcatgono, fk_lgcatgono, smcatgoname
+		from tbl_calendar_small_category
+		where fk_lgcatgono = 1
+		order by smcatgono asc
+	</select>
+	
+	
+	<!-- 전사일정 소분류명 존재여부 확인 -->
+	<select id="existComCalendar"  parameterType="String" resultType="int">
+		select count(*)
+		from tbl_calendar_small_category
+		where fk_lgcatgono = 1 and smcatgoname = #{comSmcatgoname}
+	</select>
+	
+	<!-- 전사일정 소분류 추가 -->	
+	<insert id="addComCalendar" parameterType="HashMap">
+		insert into tbl_calendar_small_category(smcatgono, fk_lgcatgono, smcatgoname, fk_empno)
+		values(seq_smcatgono.nextval, 1, #{comSmcatgoname}, #{empno})
+	</insert>
+	<!-- ========================================================================== -->
+	
+	
+	<!-- ========================================================================== -->
+	<!-- 팀별일정 소분류 보여주기 -->
+	<select id="showTeamCalendar" parameterType="String" resultType="com.spring.groovy.schedule.model.CalSmallCategoryVO">
+		select smcatgono, fk_lgcatgono, smcatgoname, fk_empno, department
+		from
+		(
+		    select smcatgono, fk_lgcatgono, smcatgoname, fk_empno, E.department
+		    from tbl_calendar_small_category C join tbl_employee E
+		    on C.fk_empno = E.empno
+		    where fk_lgcatgono = 2
+		    order by smcatgono asc
+		)
+		where department = #{dept}
+	</select>
+	
+	
+	<!-- 팀별일정 소분류명 존재여부 확인 -->
+	<select id="existTeamCalendar" parameterType="HashMap" resultType="int">
+		select count(*)
+		from 
+		(
+		    select smcatgono, fk_lgcatgono, smcatgoname, fk_empno, E.department
+		    from tbl_calendar_small_category C join tbl_employee E
+		    on C.fk_empno = E.empno
+		    where fk_lgcatgono = 2 and department = (select department from tbl_employee where empno = #{empno})
+		    order by smcatgono asc
+		)
+		where fk_lgcatgono = 2 and smcatgoname = #{teamSmcatgoname}
+	</select>
+	
+	<!-- 팀별일정 소분류 추가 -->
+	<insert id="addTeamCalendar" parameterType="HashMap">
+		insert into tbl_calendar_small_category(smcatgono, fk_lgcatgono, smcatgoname, fk_empno)
+		values(seq_smcatgono.nextval, 2, #{teamSmcatgoname}, #{empno})
+	</insert>
+	<!-- ========================================================================== -->
+	
+	
+	<!-- ========================================================================== -->
+	<!-- 개인일정 소분류명 존재여부 확인 -->
+	<select id="existMyCalendar" parameterType="HashMap" resultType="int">
+		select count(*)
+		from tbl_calendar_small_category
+		where fk_lgcatgono = 3 and fk_empno = #{empno} and smcatgoname = #{mySmcatgoname}
+	</select>
+	
+	<!-- 개인일정 소분류 추가 -->	
+	<insert id="addMyCalendar" parameterType="HashMap">
+		insert into tbl_calendar_small_category(smcatgono, fk_lgcatgono, smcatgoname, fk_empno)
+		values(seq_smcatgono.nextval, 3, #{mySmcatgoname}, #{empno})
+	</insert>
+	
+	
+	<!-- 개인일정 소분류 보여주기 -->
+	<select id="showMyCalendar" parameterType="String" resultType="com.spring.groovy.schedule.model.CalSmallCategoryVO">
+		select smcatgono, fk_lgcatgono, smcatgoname, fk_empno
+		from tbl_calendar_small_category
+		where fk_lgcatgono = 3 and fk_empno = #{empno}
+		order by smcatgono asc
+	</select>
+	<!-- ========================================================================== -->
+	
+	
+	<!-- ========================================================================== -->
+	<!-- 수정하려는 전사일정 및 팀별일정, 개인일정 소분류명이 이미 해당 사용자가 만든 소분류 카테고리명으로 존재하는지 유무 알아오기 -->
+	<select id="existsCalCateg" parameterType="HashMap" resultType="int">
+	    select count(*)
+		from tbl_calendar_small_category
+		where fk_lgcatgono = #{caltype} and 
+			  fk_empno = #{empno} and 
+			  smcatgoname = #{smcatgoname}
+	</select>
+	
+	<!-- 전사일정 및 팀별일정, 개인일정 소분류명 수정하기  -->
+	<update id="editCalCateg"  parameterType="HashMap">
+		update tbl_calendar_small_category set smcatgoname = #{smcatgoname}
+		where smcatgono = #{smcatgono}
+	</update>
+	
+	
+	<!-- 전사일정 및 팀별일정, 개인일정 소분류 삭제하기 -->
+	<delete id="delCalCateg" parameterType="String">
+		delete tbl_calendar_small_category
+		where smcatgono = #{smcatgono}
+	</delete>
+	<!-- ========================================================================== -->
+	
+	
+	
+	
+	
+	
+	
+	
+	
+		
 </mapper>
