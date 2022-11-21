@@ -91,7 +91,7 @@ const goWriteForm = () => {
     </li>
     <li class="nav-item topMenu">환경설정
       	<ul class='subMenus configMenu'>
-      		<li><a id="approvalLine" class="nav-link" href="<%=ctxPath%>/approval/config/approvalLine.on">결재라인 설정</a></li>
+      		<li><a id="approvalLine" class="nav-link" href="<%=ctxPath%>/approval/config/approvalLine.on">결재라인</a></li>
       		<li><a id="signature" class="nav-link" href="<%=ctxPath%>/approval/config/signature.on">서명 관리</a></li>
       	</ul>
     </li>

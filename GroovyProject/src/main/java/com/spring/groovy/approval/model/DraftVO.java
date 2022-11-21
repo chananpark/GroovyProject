@@ -13,6 +13,7 @@ public class DraftVO {
 	private String filename; // 저장된 파일명
 	private int filesize; // 파일크기
 	private int temp; // 임시저장 여부 (0: 임시저장아님, 1:임시저장)
+	private int draft_seq; // 기안 시퀀스
 	
 	private String approval_date; // 결재완료일
 	private String draft_type; // 기안종류
@@ -136,8 +137,27 @@ public class DraftVO {
 	}
 
 	public void setApproval_status(String approval_status) {
-//		this.approval_status = approval_status;
-		this.approval_status = "1".equals(approval_status) ? "완료" : "반려";
+		switch (approval_status) {
+		case "1":
+			this.approval_status = "완료";
+			break;
+			
+		case "2":
+			this.approval_status = "반려";
+			break;
+
+		default:
+			this.approval_status = "진행중";
+			break;
+		}
+	}
+
+	public int getDraft_seq() {
+		return draft_seq;
+	}
+
+	public void setDraft_seq(int draft_seq) {
+		this.draft_seq = draft_seq;
 	}
 	
 	

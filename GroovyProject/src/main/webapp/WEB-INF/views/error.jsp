@@ -7,6 +7,7 @@
 <title>Insert title here</title>
 </head>
 <body>
-<h1>잘못된 요청입니다!!!</h1>
+<h1>어머나! 에러가 발생했어요!</h1>
+<h4>금방 고치겠습니다^^</h4>
 </body>
 </html>
