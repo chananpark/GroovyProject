@@ -1,5 +1,6 @@
 package com.spring.groovy.management.model;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -18,9 +19,7 @@ public class ManagementDAO implements InterManagementDAO {
 	// 로그인 - 이메일
 	@Override
 	public MemberVO getLogin(String cpemail) {
-		
 		MemberVO loginuser = sqlsession.selectOne("minsu.getLogin", cpemail);
-		
 		return loginuser;
 		
 	}
@@ -30,6 +29,15 @@ public class ManagementDAO implements InterManagementDAO {
 	public MemberVO login2(Map<String, String> paraMap) {
 		MemberVO loginuser = sqlsession.selectOne("minsu.login2",paraMap);
 		return loginuser;
+	}
+
+	
+	
+	//관리자 사원관리 - 사원조회
+	@Override
+	public List<MemberVO> searchInfoAdmin() {
+		List<MemberVO> empList = sqlsession.selectList("minsu.searchInfoAdmin");
+		return empList;
 	}
 
 }

@@ -1,7 +1,7 @@
 
 -- 사원테이블
 create table tbl_employee
-(empno              number         not null   -- 사원번호
+(empno              varchar2(15)   not null   -- 사원번호
 ,cpemail            varchar2(200)  not null  -- 회사이메일 (AES-256 암호화/복호화 대상)
 ,name               varchar2(30)   not null  -- 회원명
 ,pwd                varchar2(200)  not null  -- 비밀번호 (SHA-256 암호화 대상)
@@ -118,10 +118,13 @@ alter table tbl_employee
 
 desc TBL_EMPLOYEE
 
-
+-- 성별칼럼추가
+alter table tbl_employee add gender varchar2(2);
 
 -- 칼럼 변경
-alter table tbl_employee MODIFY account varchar2(20) not null;
+alter table tbl_employee modify empno varchar2(15) null;
+
+
 alter table tbl_employee MODIFY annualcnt varchar2(5);
 
 update tbl_employee set account = '123456789'
@@ -173,6 +176,10 @@ where annualcnt = 15
 
 DELETE FROM tbl_employee 
 WHERE account = 210123456789
+
+
+select empno, name, position, department,cpemail,mobile,joindate
+from tbl_employee
 
 desc
 

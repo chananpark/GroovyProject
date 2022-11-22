@@ -2,6 +2,7 @@
     pageEncoding="UTF-8"%>
 
 <% String ctxPath = request.getContextPath(); %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <style>
 
@@ -109,7 +110,7 @@
 		    $("#year").append("<option value=''>년도</option>");
 		    // 올해 기준으로 -50년부터 +1년을 보여준다.
 		    for (var i = (com_year - 50); i <= (com_year); i++) {
-		      $("#year").append("<option value='" + i+ "'>" + i + " 년" + "</option>");
+		      $("#birthyyyy").append("<option value='" + i+ "'>" + i + " 년" + "</option>");
 		    }
 		    
 		    // 월 뿌려주기(1월부터 12월)
@@ -124,7 +125,7 @@
 					month += "<option>"+i+"</option>";
 				}
 		    } 
-			$("#month").html(month);
+			$("#birthmm").html(month);
 		    
 		    // 일 뿌려주기(1일부터 31일)
 		    var day;
@@ -137,11 +138,7 @@
 					day += "<option>"+i+"</option>";
 				}
 		    }
-			$("#day").html(day);
-		 
-		 
-		 
-		 
+			$("#birthdd").html(day);
 		 
 		 
 		 
@@ -157,16 +154,30 @@
 		 	$(this).val("");
 		 });
 		 
-		 
-			 
+		
 		// === 수습시간 체크박스 버튼을 누르면 === // 
 		$("input#che_probation").click(function(){
 			
 			$("div#msg_probation").show();
 		
 		}); // end of $("input#che_probation").click(function(){
+			
+			
+			$( "select[name=empstatus]").change(function(){
+				var value = $("option:selected").val();
+				var inputText = $(this).find('input.emppay');
+				
+				if (value == '1') {
+					$(inputText).val('');
+				}
+				else if(value == '2'){
+					$(inputText).val('80%');
+				}
+				
+			});
+
 		 
-}); // end of $(document).ready(function(){}-----------------------------------------
+	}); // end of $(document).ready(function(){}-----------------------------------------
 
 
 
@@ -231,6 +242,43 @@
 	        }
 	    }).open();
 	} // end of openDaumPOST() -------------------------------
+	
+	
+	
+	// >>> 부문선택값에 따라 하위 셀렉트 팀옵션 다르게 하기 <<< // 
+	function bumunchange(value){
+		
+		var dept_1 = ["인사총무팀"]; 
+		var dept_2 = ["개발팀","기획팀"]; 
+		var dept_3 = ["영업팀","마케팅팀"]; 
+		var target = document.getElementById("department");
+		
+		if(value == "경영지원부문") {
+			var dept = dept_1;
+		}
+		else if(value == "IT사업부문") {
+			var dept = dept_2;
+		}
+		else if(value == "마케팅영업부문") {
+			var dept = dept_3;
+		}
+		
+		target.options.length = 0;
+
+		for (i in dept) {
+			var opt = document.createElement("option");
+			opt.value = dept[i];
+			opt.innerHTML = dept[i];
+			target.appendChild(opt);
+		}
+		
+	
+	} //function bumunchange(){ -------------------------
+		
+
+	
+	
+	
 </script>
 
 
@@ -250,7 +298,7 @@
 			<td rowspan='4' style="width:2%;"><img class="float-center" src="<%= ctxPath%>/resources/images/picture/꼬미사진.jpg" height="150px;" width="150px" alt="..."/></td>
 			<th class="t1"><span class="alert_required" style="color: red;">*</span>사원번호</th>
 			<td>	
-				<input type="text" id="" name=""  />
+				<input type="text" id="empno" name="empno" />
 				<button type="button" class="btn btn-sm ml-5 btn_check">확인</button>
 				<div id="empnocheckResult"></div>
 			</td>
@@ -262,8 +310,8 @@
 			<th class="t1"><span class="alert_required" style="color: red;">*</span>주민등록번호</th>
 				<td>
 					<span>
-						<input type="text" id="jubun" name="jubun" style="display: inline;" />
-						<button type="button" class="btn btn-sm ml-5 btn_check">확인</button>
+						<input type="text" id="jubun" name="jubunbirth" style="display: inline; width: 80px;" /> - 
+						<input type="text" id="jubun" name="jubuninfo" style="display: inline;width: 80px;" />
 					</span>
 				</td>
 			<th class="t1">성별</th>
@@ -276,9 +324,9 @@
 			<th class="t1"><span class="alert_required" style="color: red;">*</span>생년월일</th>
 			<td>
 				<span id="birthday" name="birthday">
-				    	<select name="year" id="year" title="년도" class=" requiredInfo" ></select>
-						<select name="month" id="month" title="월" class=" requiredInfo" ></select>
-						<select name="day" id="day" title="일" class=" requiredInfo"></select>
+				    	<select name="birth" id="birthyyyy" title="년도" class=" requiredInfo" ></select>
+						<select name="birth" id="birthmm" title="월" class=" requiredInfo" ></select>
+						<select name="birth" id="birthdd" title="일" class=" requiredInfo"></select>
 				</span>
 			</td>
 			<th></th>
@@ -301,24 +349,25 @@
 	
 	<table  class="m-4 mb-3 table table-bordered" >
 		<tr>
-			<th><span class="alert_required" style="color: red;">*</span>내선번호</th>
+			<th><span class="alert_required"style="color: red;">*</span>내선번호</th>
 			<td>
-				<input type="text" id="mobile" name="mobile" />
-				<button class="btn_search"><i class="fas fa-search" onclick="go_search" data-toggle="modal" data-target="#go_searchTel"></i>찾기</button>
+				<input type="text" id="depttel" name="depttel" />
+				<button class="btn btn-sm ml-5 btn_check" onclick="go_search" data-toggle="modal" data-target="#go_searchTel"><i class="fas fa-search"></i>찾기</button>
 			</td>
 			<th><span class="alert_required" style="color: red;">*</span>핸드폰번호</th>
-	         <td style="text-align: left;" id="telNum" name="mobile">
+	         <td style="text-align: left;" id="mobile" name="mobile">
 	             <input type="text" id="hp1" name="hp1" size="6" maxlength="3" value="010" class="requiredInfo" />&nbsp;-&nbsp;
 	             <input type="text" id="hp2" name="hp2" size="6" maxlength="4" class="requiredInfo"/>&nbsp;-&nbsp;
 	             <input type="text" id="hp3" name="hp3" size="6" maxlength="4" class="requiredInfo"/>
-	             <div class="error">휴대폰 형식이 아닙니다.</div>
 	         </td>
 
 		</tr>
 		<tr>
 			<th><span class="alert_required" style="color: red;">*</span>회사이메일</th>
-			<td><input type="email" id="mobile" name="mobile" />
-			<div class="error">이메일 형식이 아닙니다.</div>
+			<td>
+				<input type="email" id="cpemail" name="cpemail" />
+				<button type="button" class="btn btn-sm ml-5 btn_check">확인</button>
+				<div id="empnocheckResult"></div>
 			</td>
 			<th>외부이메일</th>
 			<td><input type="email" id="mobile" name="mobile" /></td>
@@ -326,55 +375,51 @@
 		</tr>
 	</table>
 	
-	<table  class=" m-4 mb-3 table table-bordered " >
+	<table  class=" m-4 mb-3 table table-bordered" >
 		<tr>
 			<th><span class="alert_required" style="color: red;">*</span>부문</th>
 			<td>
-				<select name="bumun" class="select_3" >
+				<select name="bumun" class="select_3" onchange="bumunchange(value)">
 					<option value="">부문을 선택해주세요</option>
-					<option value=""></option>
-					<option value=""></option>
+					<option value="경영지원부문">경영지원부문</option>
+					<option value="IT사업부문">IT사업부문</option>
+					<option value="마케팅영업부문">마케팅영업부문</option>
 				</select>
 			</td>
 			<th><span class="alert_required" style="color: red;">*</span>부서</th>
 			<td>
-				<select name="department" class="select_3" >
-					<option value="">부서를 선택해주세요</option>
+				<select name="department" id="department" class="select_3" >
+						<option value="">부서를 선택해주세요</option>
 				</select>
 			</td>
+			
+		</tr>
+		<tr>
 			<th><span class="alert_required" style="color: red;">*</span>직급</th>
 			<td>
 				<select name="extension" class="select_3" >
 					<option value="">직급을 선택해주세요</option>
-					<option value="">책임</option>
-					<option value="">선임</option>
+					<option value="부문장">부문장</option>
+					<option value="팀장">팀장</option>
+					<option value="책임">책임</option>
+					<option value="선임">선임</option>
 				</select>
 			</td>
-		</tr>
-		<tr>
 			<th><span class="alert_required" style="color: red;">*</span>급여계약기준</th>
-			<td><select name="" class="select_3">
+			<td><select name="empstatus" class="select_3" onchange="empstatus(value)">
 					<option value="">계약기준을 선택해주세요</option>
-					<option value="">정규직</option>
-					<option value="">계약직</option>
+					<option value="1">정규직</option>
+					<option value="2">계약직</option>
 				</select>
 			</td>
-			
-			<th>수습기간</th>
-			<td>
-				<input type="checkbox" id="che_probation" name="" />
-				<input type="date" style="width: 150px;" id="" name=""/>
-			</td>
-			<th><td></td></th>
 		</tr>
-		
 		<tr>
+			<th>임금적용률</th>
+			<td>
+				<input type="text" class="emppay" name="emppay" readonly style="background-color: #d9d9d9;" />
+			</td>
 			<th><span class="alert_required" style="color: red;">*</span>입사일자</th>
-			<td><input type="date" id="" name="" style="width: 165px;" /></td>
-			<th>퇴직일자</th>
-			<td><input type="date" id="" name="" style="width: 165px;"  /></td>
-			<th></th>
-			<td></td>
+			<td><input type="date" style="width: 165px;" /></td>
 		</tr>
 	</table>
 	
@@ -407,8 +452,8 @@
          <table class="table table-bordered table-sm mt-5" >
          	<thead>
          		<tr>
-         			<th ></th>
-         			<th >부문</th>
+         			<th></th>
+         			<th>부문</th>
          			<th>부서</th>
          			<th>전화번호</th>
          		</tr>

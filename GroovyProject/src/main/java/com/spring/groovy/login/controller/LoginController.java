@@ -47,8 +47,7 @@ public class LoginController {
 			}
 			
 			// 입력한 이메일이 있는경우 
-			HttpSession session = request.getSession();
-			session.setAttribute("loginuser", loginuser);
+			request.setAttribute("loginuser", loginuser);
 			// session(세션)에 로그인 되어진 사용자 정보인 loginuser 를  키이름을 "loginuser" 으로 저장시켜두는 것이다.
 			
 			mav.setViewName("login/login2");
@@ -66,9 +65,9 @@ public class LoginController {
 	 @RequestMapping(value="/login2.on", method= {RequestMethod.POST} ) 
 	 public ModelAndView login2(ModelAndView mav,HttpServletRequest request) {
 		 
-		 HttpSession session = request.getSession();
-		 MemberVO loginuser = (MemberVO) session.getAttribute("loginuser");
-		 String cpemail = loginuser.getCpemail();
+		 ///MemberVO loginuser = (MemberVO) request.getParameter("loginuser");
+		 
+		 String cpemail = request.getParameter("cpemail");
 		 String pwd = request.getParameter("pwd");
 		 
 		 Map<String,String> paraMap = new HashMap<String, String>();
@@ -76,12 +75,12 @@ public class LoginController {
 		 paraMap.put("cpemail", cpemail);
 		 paraMap.put("pwd", pwd);
 		 
-		 loginuser = service.login2(paraMap);
+		 MemberVO loginuser = service.login2(paraMap);
 		 
 		 if(loginuser == null) { // 비밀번호가 틀린경우
 				
 			String message = "비밀번호가 일치하지 않습니다..";
-			String loc = request.getContextPath()+"/login2.on";
+			String loc = request.getContextPath()+"/login.on";
 			
 			mav.addObject("message", message);
 			mav.addObject("loc", loc);
@@ -90,7 +89,8 @@ public class LoginController {
 			return mav;
 		}
 	 
-		 session = request.getSession();
+		 HttpSession session = request.getSession();
+		 System.out.println(loginuser.getDepartment());
 		 session.setAttribute("loginuser", loginuser);
 		 // session(세션)에 로그인 되어진 사용자 정보인 loginuser 를  키이름을 "loginuser" 으로 저장시켜두는 것이다.
 		
@@ -99,6 +99,24 @@ public class LoginController {
 		return mav;
 	 }
 	 
+	 // 로그아웃 
+	 @RequestMapping(value="/logout.on", method= {RequestMethod.POST}) 
+	public ModelAndView logout(ModelAndView mav, HttpServletRequest request){
 	
+
+		// 로그아웃시 시작페이지로 돌아가는 것임 //
+		HttpSession session = request.getSession();
+		session.invalidate();
+		
+		String message = "로그아웃 되었습니다.";
+		String loc = request.getContextPath()+"/login.on";
+		
+		mav.addObject("message", message);
+		mav.addObject("loc", loc);
+		mav.setViewName("msg");
+		
+		return mav;
+ 
+	 }
 	
 }

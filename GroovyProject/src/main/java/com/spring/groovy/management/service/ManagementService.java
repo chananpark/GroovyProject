@@ -1,5 +1,6 @@
 package com.spring.groovy.management.service;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,5 +39,15 @@ public class ManagementService implements InterManagementService {
 	}
 	
 	
+	
+
+	//관리자 사원관리 - 사원조회
+	@Override
+	public List<MemberVO> searchInfoAdmin() {
+		List<MemberVO> empList =  dao.searchInfoAdmin();
+		return empList;
+	}
+	
+
 
 }

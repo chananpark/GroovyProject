@@ -3,12 +3,12 @@ package com.spring.groovy.management.model;
 
 public class MemberVO {
 	
-	private String empno;            // 사원번호
-	private String signimg;          // 사원사진
-	private String cpemail;          // 회사이메일 (AES-256 암호화/복호화 대상)
-	private String name;             // 회원명
+	private String empno;             // 사원번호
+	private String signimg;           // 사원사진
+	private String cpemail;           // 회사이메일 (AES-256 암호화/복호화 대상)
+	private String name;              // 회원명
 	private String pwd;               //비밀번호 (SHA-256 암호화 대상)
-	private String position;          // 직급
+	private String position;          // 직급    
 	private String jubun;             // 주민번호
 	private String postcode;          // 우편번호
 	private String address;           // 주소
@@ -16,6 +16,7 @@ public class MemberVO {
 	private String extraaddress;      // 참고항목
 	private String empimg;            // 사원이미지파일
 	private String birthday;          // 생년월일   
+	private String gender;			  // 성별                     남:1  여:2
 	private String bumun;             // 부문 
 	private String department;        // 부서(팀)
 	private String pvemail;           // 개인이메일 (AES-256 암호화/복호화 대상)
@@ -28,8 +29,6 @@ public class MemberVO {
 	private String annualcnt;          // 연차갯수
 	
 
-	
-	
 	public String getEmpno() {
 		return empno;
 	}
@@ -71,6 +70,12 @@ public class MemberVO {
 	}
 	public void setJubun(String jubun) {
 		this.jubun = jubun;
+	}
+	public String getGender() {
+		return gender;
+	}
+	public void setGender(String gender) {
+		this.gender = gender;
 	}
 	public String getPostcode() {
 		return postcode;

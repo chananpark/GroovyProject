@@ -213,6 +213,23 @@
 	        }
 	    }).open();
 	} // end of openDaumPOST() -------------------------------
+	
+	
+	// >> 정보수정 << 
+	function go_update(){
+		
+		
+		
+		
+		const frm = document.frm_login
+		frm.action = "<%= ctxPath%>.on";
+		frm.method = "POST";
+		frm.submit();
+		
+	} // end of function go_update(){ ----------------------
+	
+	
+	
 </script>
 
 
@@ -229,35 +246,35 @@
 	
 	<table class="m-4 mb-3 table table-bordered table-sm" id="first_table">
 		<tr>
-			<td rowspan='4' style="width:2%;"><img class="float-center" src="<%= ctxPath%>/resources/images/picture/꼬미사진.jpg" height="150px;" width="150px" alt="..."/></td>
+			<td rowspan='4' style="width:2%;"><img class="float-center" src="<%= ctxPath%>/resources/images/picture/꼬미사진.jpg" height="150px;" width="150px" alt="..." value=""${loginuser.empimg}/></td>
 			<th class="t1">사원번호</th>
 			<td>	
-				<input type="text" id="" name="" readonly />
+				<input type="text" id="" name="empno" value="${loginuser.empno}" readonly />
 			</td>
 			
 			<th class="t1">성명</th>
-			<td><input type="text" id="name" name="name" required readonly/></td>
+			<td><input type="text" id="name" name="name" value="${loginuser.name}"  required readonly></input></td>
 		</tr>
 		<tr >
 			<th class="t1">주민등록번호</th>
 				<td>
 					<span>
-						<input type="text" id="jubun" name="jubun" style="display: inline;" required readonly/>
+						<input type="text" id="jubun" name="jubun" value="${loginuser.jubun}" style="display: inline;" required readonly/>${loginuser.jubun}
 					</span>
 				</td>
 			<th class="t1">성별</th>
 			 <td style="text-align: left;">
-	            <input type="radio" id="male" name="gender" value="1" /><label for="male" style="margin-left: 2%;">남자</label>
-	            <input type="radio" id="female" name="gender" value="2" style="margin-left: 10%;" /><label for="female" style="margin-left: 2%;">여자</label>
+	            <input type="radio" id="male" name="gender" value="1" value="${loginuser.gender}"  /><label for="male" style="margin-left: 2%;">남자</label>
+	            <input type="radio" id="female" name="gender" value="2" value="${loginuser.gender}" style="margin-left: 10%;" /><label for="female" style="margin-left: 2%;">여자</label>
 	         </td>
 		</tr>
 		<tr>
 			<th class="t1"><span class="alert_required" style="color: red;">*</span>생년월일</th>
 			<td>
-				<span id="birthday" name="birthday">
-				    	<select name="year" id="year" title="년도" class=" requiredInfo" ></select>
-						<select name="month" id="month" title="월" class=" requiredInfo" ></select>
-						<select name="day" id="day" title="일" class=" requiredInfo"></select>
+				<span id="birthday" name="birthday" >
+				    	<select name="year" id="birthyyyy" title="년도" class=" requiredInfo" <%-- value="${loginuser.birthyyyy} --%>" ></select>
+						<select name="month" id="birthmm" title="월" class=" requiredInfo" <%-- value="${loginuser.birthmm} --%>"  ></select>
+						<select name="day" id=birthdd title="일" class=" requiredInfo" <%-- value="${loginuser.birthdd} --%>" ></select>
 				</span>
 			</td>
 			<th></th>
@@ -267,10 +284,10 @@
 			<th class="t1">자택주소</th>
 			<td colspan="3">
 			<span>
-				<input type="text" id="postcode" name="postcode" placeholder="우편번호" style="display: inline-block;" class="update"/>
-				<input type="text" id="address" name="address" class="input_style update" placeholder="예)00동, 00로"/>
-				<input type="text" id="detailaddress" name="detailaddress" class="input_style update"  placeholder="상세주소" style="display: inline-block;  width: 190px;"/>
-				<input type="text" id="extraaddress" name="extraaddress" placeholder="참고항목" style="display: inline-block;  width: 190px;  margin: 10px 0 10px 8px;" class="update"/>
+				<input type="text" id="postcode" name="postcode" value="${loginuser.postcode}" placeholder="우편번호" style="display: inline-block;" class="update"/>
+				<input type="text" id="address" name="address" value="${loginuser.address}" class="input_style update" placeholder="예)00동, 00로"/>
+				<input type="text" id="detailaddress" name="detailaddress" value="${loginuser.detailaddress}"  class="input_style update"  placeholder="상세주소" style="display: inline-block;  width: 190px;"/>
+				<input type="text" id="extraaddress" name="extraaddress" value="${loginuser.extraaddress}" placeholder="참고항목" style="display: inline-block;  width: 190px;  margin: 10px 0 10px 8px;" class="update"/>
 				<button type="button" id="btn_adrsearch" onclick="openDaumPOST();" class="btn btn-sm ml-2">추가</button>
 			</span>
 			</td>
@@ -281,25 +298,25 @@
 	<table  class="m-4 mb-3 table table-bordered" >
 		<tr>
 			<th>내선번호</th>
-			<td><input type="text" id="" name="" readonly />
+			<td><input type="text" id="" name="" readonly value="${loginuser.depttel}" />
 			</td>
 			<th>핸드폰번호</th>
 	         <td style="text-align: left;" id="telNum" name="mobile">
-	             <input type="text" id="hp1" name="hp1" size="6" maxlength="3" value="010" class="requiredInfo update" readonly/>&nbsp;-&nbsp;
-	             <input type="text" id="hp2" name="hp2" size="6" maxlength="4" class="requiredInfo update"/>&nbsp;-&nbsp;
-	             <input type="text" id="hp3" name="hp3" size="6" maxlength="4" class="requiredInfo update"/>
+	             <input type="text" id="hp1" name="hp1" <%-- value="${loginuser.hp1} --%>" size="6" maxlength="3" value="010" class="requiredInfo update" readonly/>&nbsp;-&nbsp;
+	             <input type="text" id="hp2" name="hp2" <%-- value="${loginuser.hp2} --%>" size="6" maxlength="4" class="requiredInfo update"/>&nbsp;-&nbsp;
+	             <input type="text" id="hp3" name="hp3" <%-- value="${loginuser.hp3} --%>" size="6" maxlength="4" class="requiredInfo update"/>
 	             <div class="error">휴대폰 형식이 아닙니다.</div>
 	         </td>
 
 		</tr>
 		<tr>
 			<th>회사이메일</th>
-			<td><input type="email" id="mobile" name="mobile" readonly/>
+			<td><input type="email" id="cpemail" name="cpemail" value="${loginuser.cpemail}" readonly/>
 				
 			</td>
 			<th>외부이메일</th>
 			<td>
-				<input type="email" id="mobile" name="mobile" class="update" />
+				<input type="email" id="pvemail" name="pvemail" value="${loginuser.pvemail}" class="update" />
 				<div class="error">이메일 형식이 아닙니다.</div>
 			</td>
 
@@ -310,44 +327,46 @@
 		<tr>
 			<th>부문</th>
 			<td>
-				<input type="text" id="" name="" readonly />
+				<input type="text" id="bumun" name="bumun" value="${loginuser.bumun}" readonly />
 			</td>
 			<th>부서</th>
 			<td>
-				<input type="text" id="" name="" readonly />
+				<input type="text" id="department" name="department" value="${loginuser.department}" readonly />
 			</td>
 			<th>직급</th>
 			<td>
-				<input type="text" id="" name="" readonly />
+				<input type="text" id="position" name="position" value="${loginuser.position}" readonly />
 			</td>
 		</tr>
 		<tr>
 			<th><span style="color: red;">*</span>급여계약기준</th>
-			<td><input type="text" id="" name="" readonly />
+			<td><input type="text" id="empstauts" name="empstauts" value="${loginuser.empstauts}" readonly />
 			</td>
 			
 			<th>수습기간</th>
 			<td>
-				<input type="text" id="che_probation" name="" readonly />
+				<input type="text" id="che_probation" name="" value="${loginuser.empstauts}" readonly />
 			</td>
 			<th><td></td></th>
 		</tr>
 		
 		<tr>
 			<th><span style="color: red;">*</span>입사일자</th>
-			<td><input type="date" id="" name="" style="width: 165px;" required readonly/></td>
+			<td><input type="date" id="joindate" name="joindate" value="${loginuser.joindate}" style="width: 165px;" required readonly/></td>
 			<th>퇴직일자</th>
-			<td><input type="date" id="" name="" style="width: 165px;" required readonly/></td>
+			<td><input type="date" id="" name=""  style="width: 165px;" required readonly/></td>
 			<th></th>
 			<td></td>
 		</tr>
 	</table>
+	<div align="right" style="margin: 3% 0;">
+		<button id="btn_update" onclick="go_update" style="color: white; background-color:#086BDE; border: none; width: 80px;">수정</button>
+	</div>
 	
 	
 	<%-- 정보수정 페이지에서 보이는 버튼 --%>
 	<div align="right" style="margin: 3% 0;">
-		<button id="btn_update" style="background-color:#F9F9F9; border: none; width: 80px;">삭제</button>
-		<button id="btn_update" style="color: white; background-color:#086BDE; border: none; width: 80px;">저장</button>
+		<button id="btn_updateEnd" style="color: white; background-color:#086BDE; border: none; width: 80px;">저장</button>
 	</div>
 	
 	

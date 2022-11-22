@@ -73,7 +73,7 @@
 			<span class="float-right">
 			<span >
 				<select style="width: 110px; border:solid 1px #cccccc;">
-					<option value="">사원명</option>
+					<option>사원명</option>
 					<option>부서명</option>
 				</select> 
 			</span>
@@ -99,13 +99,17 @@
 			</thead>
 			<tbody  onclick="go_detailInfo">
 				<tr class="text-center border" id="list">
-					<td>14234</td>
-					<td>김민수</td>
-					<td>책임자</td>
-					<td>개발팀</td>
-					<td>hello@naver.com</td>
-					<td>010-1234-5678</td>
-					<td>2022-11-12</td>
+					<c:forEach  var="employee" items="${requestScope.empList}" varStatus="status">
+					<tr>
+						<td>${employee.empno}</td> 
+						<td>${employee.name}</td>
+						<td>${employee.position}</td>
+						<td>${employee.department}</td>
+						<td>${employee.cpemail}</td>
+						<td>${employee.mobile}</td>
+						<td>${employee.joindate}</td>
+					</tr>
+					</c:forEach>
 				</tr>
 			</tbody>
 		</table>

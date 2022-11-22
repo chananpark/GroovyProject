@@ -22,5 +22,15 @@
 	</select>
 	
 	
+	
+	
+	
+	
+	<!-- 관리자 사원관리 - 사원조회 -->
+	<select id="searchInfoAdmin" resultType="com.spring.groovy.management.model.MemberVO">
+		select empno, name, position, department,cpemail,mobile,joindate
+		from tbl_employee
+	</select>
+	
 		
 </mapper>

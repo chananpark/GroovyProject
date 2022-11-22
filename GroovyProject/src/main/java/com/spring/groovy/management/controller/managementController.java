@@ -1,21 +1,46 @@
 package com.spring.groovy.management.controller;
 
-import javax.servlet.http.HttpServletRequest;
 
+import java.util.List;
+
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.spring.groovy.management.model.MemberVO;
+import com.spring.groovy.management.service.InterManagementService;
 
 @Controller
 public class managementController {
 	
 
+	@Autowired   // Type 에 따라 알아서 Bean 을 주입해준다.
+	private InterManagementService service;
+	
 	// 공용 사원관리
 	@RequestMapping(value="/manage/info/viewInfo.on")
-	public String viewInfo(HttpServletRequest request) {
+	public ModelAndView viewInfo(ModelAndView mav, HttpServletRequest request) {
 		
-		return "manage/each/info/viewInfo.tiles";
-	}
 
+		
+		
+		mav.setViewName("manage/each/info/viewInfo.tiles");
+		return mav; 
+	}
+	
+	@RequestMapping(value="/manage/info/viewInfoEnd.on")
+	public ModelAndView viewInfoEnd(ModelAndView mav, HttpServletRequest request) {
+		
+		
+		
+		mav.setViewName("manage/each/info/viewInfo.tiles");
+		return mav; 
+	}
 
 	//공용 경조비관리 - 경조비신청
 	@RequestMapping(value="/manage/celebrate/receiptCelebrate.on")
@@ -64,14 +89,39 @@ public class managementController {
 
 	//관리자 사원관리 - 사원조회
 	@RequestMapping(value="/manage/admin/searchInfoAdmin.on")
-	public String searchInfoAdmin(HttpServletRequest request) {
+	public ModelAndView searchInfoAdmin(ModelAndView mav, HttpServletRequest request) {
+
+		HttpSession session = request.getSession();
+		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
 		
-		return "manage/admin/info/searchInfoAdmin.tiles";
+		/*
+		 * // 인사팀인지확인하는코드 if(loginuser != null &&
+		 * "인사총무팀".equalsIgnoreCase(loginuser.getDepartment()) ) {
+		 */
+
+			List<MemberVO> empList = service.searchInfoAdmin();
+			
+			request.setAttribute("empList", empList);
+			
+			mav.setViewName("manage/admin/info/searchInfoAdmin.tiles");
+			
+			/*
+			 * } else { String message = "접근이 불가합니다."; String loc =
+			 * request.getContextPath()+"/index.on"; // 원래는 위와 같이 index.action 이 아니라 사용자의
+			 * 암호를 변경해주는 페이지로 잡아주어야 한다.
+			 * 
+			 * mav.addObject("message", message); mav.addObject("loc", loc);
+			 * mav.setViewName("msg"); }
+			 */
+		return mav;
+		
 	}
 
+	
 	//관리자 사원관리 - 사원등록
 	@RequestMapping(value="/manage/admin/registerInfo.on")
 	public String registerInfo(HttpServletRequest request) {
+		
 		
 		return "manage/admin/info/registerInfo.tiles";
 	}
