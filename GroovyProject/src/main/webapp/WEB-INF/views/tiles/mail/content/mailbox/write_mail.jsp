@@ -160,21 +160,9 @@ var formData = new FormData();
 		<%-- === 글내용 유효성 검사(스마트 에디터 사용 할 경우) 시작 === --%>
 		    var contentval = $("textarea#content").val();
 		        
-		 // 글내용 유효성 검사 하기 
-         // alert(contentval); // content에  공백만 여러개를 입력하여 쓰기할 경우 알아보는것.
-         // <p>&nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp; &nbsp;&nbsp;</p> 이라고 나온다.
-         
+
             contentval = contentval.replace(/&nbsp;/gi, ""); // 공백을 "" 으로 변환
-         /*    
-		         대상문자열.replace(/찾을 문자열/gi, "변경할 문자열");
-		     ==> 여기서 꼭 알아야 될 점은 나누기(/)표시안에 넣는 찾을 문자열의 따옴표는 없어야 한다는 점입니다. 
-		                  그리고 뒤의 gi는 다음을 의미합니다.
-		
-		 	 g : 전체 모든 문자열을 변경 global
-		 	 i : 영문 대소문자를 무시, 모두 일치하는 패턴 검색 ignore
-		*/ 
-      //   alert(contentval);
-      //   <p>             </p>
+         
          
            contentval = contentval.substring(contentval.indexOf("<p>")+3);   // "             </p>"
            contentval = contentval.substring(0, contentval.indexOf("</p>")); // "             "
@@ -186,12 +174,14 @@ var formData = new FormData();
 		 <%-- === 글내용 유효성 검사(스마트 에디터 사용 할 경우) 끝 === --%>
 		
 		   // 글암호 유효성 검사
+		   /*
 		   const pw = $("input#pw").val().trim();
 		   if(pw == "") {
 			  alert("글암호를 입력하세요!!");
 			  return;
 		   }
-			
+		   */
+		   
 		   // 폼(form)을 전송(submit)
 		   const frm = document.addFrm;
 		   frm.method = "POST";
@@ -374,6 +364,8 @@ var formData = new FormData();
 		}
 	}
 	
+	
+	
 </script>
 
 
@@ -383,7 +375,7 @@ var formData = new FormData();
 	<div id="mailToolbar" class="tool_bar">
 		<div class="toolbarButton">
 			
-			<button type="button" class="btn btn-outline-dark"><i class="far fa-paper-plane"></i> 보내기</button>
+			<button id="btnWrite" type="button" class="btn btn-outline-dark"><i class="far fa-paper-plane"></i> 보내기</button>
 			<button type="button" class="btn btn-outline-dark"><i class="fas fa-archive"></i> 임시저장</button>
 			<button type="button" class="btn btn-outline-dark"><i class="fas fa-archive"></i> 다시쓰기</button>
 	
