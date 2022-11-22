@@ -17,7 +17,13 @@
 	    select count(*)
 	    from tbl_mail
 	    <![CDATA[where SEND_TIME <= sysdate]]>	    
-	    and  ${listType} =  #{mail_address}
+	    <if test='listType == "FK_Recipient_address" or listType == "FK_Sender_address"'>    	
+    		and  ${listType} =  #{mail_address}
+    	</if>
+    	<if test='listType == "important"'>    	
+    		and ((FK_Recipient_address = #{mail_address} and Recipient_IMPORTANT = 1)
+    			  or (FK_Sender_address = #{mail_address} and SENDER_IMPORTANT = 1))
+    	</if>
 	    <if test='searchType != "" and searchWord != "" '>
 	    	and lower(${searchType}) like '%'||lower(#{searchWord})||'%'
 	    </if>
@@ -38,8 +44,18 @@
 		        from tbl_mail
 		        <!-- <![CDATA[]]> 파싱하지 않고 문자 그대로 들어감 -->
 		        <![CDATA[where SEND_TIME <= sysdate]]>
-		        and  ${listType} =  #{mail_address}
+		        <if test='listType != ""'>		
+		        	<if test='listType == "FK_Recipient_address" or listType == "FK_Sender_address"'>    	
+			    		and  ${listType} =  #{mail_address}
+			    	</if>
+			    	<if test='listType == "important"'>    	
+			    		and ((FK_Recipient_address = #{mail_address} and Recipient_IMPORTANT = 1)
+			    			  or (FK_Sender_address = #{mail_address} and SENDER_IMPORTANT = 1))
+			    	</if>
+			    </if>
+		        
 			    <if test='searchType != "" and searchWord != "" '>
+			    	
 			    	and lower(${searchType}) like '%'||lower(#{searchWord})||'%'
 			    </if>
 

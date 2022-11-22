@@ -32,7 +32,8 @@ create table TBL_MAIL
 );
 
 commit;
-drop table TBL_tag purge;
+rollback;
+ -- drop table TBL_tag purge; 삭제
 select * from tbl_mail;
 
 --태그테이블
@@ -55,7 +56,7 @@ commit;
 --,SENDER_IMPORTANT,Recipient_IMPORTANT,fileName,orgFilename,fileSize,MAIL_PWD
 
 insert into tbl_mail(MAIL_NO, FK_Sender_address,FK_Recipient_address,SUBJECT, CONTENTS,SEND_TIME)
-values(108,'kjsaj0525@groovy.com','kjskjskjs@groovy.com','제목9','내용9',sysdate-2);
+values(109,'kjsaj0525@groovy.com','kjskjskjs@groovy.com','제목10','내용10',sysdate);
 
 select * from tbl_mail;
 
@@ -71,9 +72,19 @@ select count(*)
         
 select count(*)
 	    from tbl_mail
-	    where SEND_TIME is null      
+	    where SEND_TIME is null;
         
-        
+update tbl_mail set Recipient_IMPORTANT = 1 
+where mail_no in (107);   
+
+commit;
+
+select * from tbl_mail;   
+select *
+	    from tbl_mail
+        where SEND_TIME <= sysdate
+        and ((FK_Recipient_address = 'kjsaj0525@groovy.com' and Recipient_IMPORTANT = 1)
+    			  or (FK_Sender_address = 'kjsaj0525@groovy.com' and SENDER_IMPORTANT = 1));
         
         
 select seq, fk_userid, name, subject, readcount, regdate, commentCount,
