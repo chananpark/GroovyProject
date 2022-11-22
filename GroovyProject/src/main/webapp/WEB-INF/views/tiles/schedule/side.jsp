@@ -603,7 +603,7 @@
 		  		// 삭제 취소
 		    	swal("일정 분류 삭제를 취소하였습니다.");
 		  	}
-		});
+		}); // end of swal-.then((willDelete)
 		
 	}// end of function delCalCateg(smcatgono, smcatgoname){}------------------------
 	

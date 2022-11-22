@@ -167,16 +167,45 @@
 		        	dayMaxEventRows: 3 // adjust to 6 only for timeGridWeek/timeGridDay
 		      	}
 		    },
-		
-		
-		});
+			
+			// ===================== DB 와 연동하는 법 시작 ===================== //
+			    
+			// ===================== DB 와 연동하는 법 끝 ===================== //
+		    
+		    
+		    
+			// 풀캘린더에서 날짜 클릭할 때 발생하는 이벤트(일정 등록창으로 넘어간다)
+		    dateClick: function(info) {
+		    	// alert('클릭한 Date: ' + info.dateStr); // 클릭한 Date: 2021-11-20
+	      		$(".fc-day").css('background','none'); // 현재 날짜 배경색 없애기
+	      	    info.dayEl.style.backgroundColor = '#086BDE'; // 클릭한 날짜의 배경색 지정하기
+	      	    $("form > input[name=chooseDate]").val(info.dateStr);
+	      	    
+	      	    var frm = document.dateFrm;
+	      	    frm.action="<%= ctxPath%>/schedule/insertSchedule.on";
+	      	    frm.submit();
+			}, // end of dateClick: function(info)
+      	  
+
+      	  
+      	  
+      	  
+		}); // end of var calendar = new FullCalendar.Calendar(calendarEl,
 		
 		calendar.render();  // 풀캘린더 보여주기
 		
 		
 		
 		
-		// 클릭하면 나타나기
+		
+		
+		
+		
+		
+		
+		
+		
+		// 검색버튼 클릭 이벤트 클릭하면 나타나기
 		// menu 클래스 바로 하위에 있는 a 태그를 클릭했을때
         $("#search_btn").click(function(){
             var submenu = $(this).parent().parent().find("#detail_search");
@@ -189,7 +218,16 @@
             }
         });
 		
-		
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	}); // end of ready
 
 
@@ -257,3 +295,10 @@
 
 
 </div>    
+
+
+<%-- === 마우스로 클릭한 날짜의 일정 등록을 위한 폼 === --%>     
+<form name="dateFrm">
+	<input type="hidden" name="chooseDate" />	
+</form>	
+

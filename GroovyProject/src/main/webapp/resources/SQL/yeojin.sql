@@ -110,6 +110,28 @@ from
 )
 where fk_lgcatgono = 2 and smcatgoname = '외부출장';
 
+
+-- 개인일정 소분류 보여주기
+select smcatgono, fk_lgcatgono, smcatgoname, fk_empno
+from tbl_calendar_small_category
+where fk_lgcatgono = 3 and fk_empno = 15
+order by smcatgono asc;
+
+
+-- 일정 등록시 전사일정, 팀별일정, 개인일정 선택에 따른 서브캘린더 종류를 알아오기
+select smcatgono, fk_lgcatgono, smcatgoname, fk_empno, department
+from 
+(
+    select smcatgono, fk_lgcatgono, smcatgoname, fk_empno, department
+    from tbl_calendar_small_category C join tbl_employee E
+    on C.fk_empno = E.empno
+    where fk_lgcatgono = 3 and department = (select department from tbl_employee where empno = 15)
+    order by smcatgono asc
+)
+
+where fk_lgcatgono = 1 and fk_empno= 15;
+
+
 -- *** 캘린더 일정 *** 
 create table tbl_calendar_schedule 
 (scheduleno    number                 -- 일정관리 번호
@@ -183,6 +205,7 @@ VALUES(SEQ_TBL_EMPLOYEE.NEXTVAL, 'shonyj@groovy.com', '손여진', 'qwer1234$',
 '010-1111-2222','301','2022/11/18','1','국민은행','019123456789',15);
 
 UPDATE tbl_employee SET mobile='01012341234' WHERE empno = 14;
+UPDATE tbl_employee SET empimg='yjprofile.jpg' WHERE empno = 14;
 
 commit;
 
@@ -194,6 +217,10 @@ VALUES(SEQ_TBL_EMPLOYEE.NEXTVAL, 'schedule@groovy.com', '김일정', 'qwer1234$'
 '01011112222','106','2022/11/18','1','국민은행','119123456789',15);
 
 
+-- 참석자 선택하기에서 사원 list 불러오는 쿼리문
+select empno, name, bumun, department, position
+from tbl_employee
+where lower(name) like '%'|| lower('김') ||'%'
 
 
 

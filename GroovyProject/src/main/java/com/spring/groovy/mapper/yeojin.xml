@@ -120,12 +120,68 @@
 	<!-- ========================================================================== -->
 	
 	
+	<!-- 일정 등록시 전사일정, 팀별일정, 개인일정 선택에 따른 서브캘린더 종류를 알아오기 -->
+	<select id="selectSmallCateg" parameterType="HashMap" resultType="com.spring.groovy.schedule.model.CalSmallCategoryVO">
+		select smcatgono, fk_lgcatgono, smcatgoname, fk_empno, department
+	    from tbl_calendar_small_category C join tbl_employee E
+	    on C.fk_empno = E.empno
+		<if test='fk_lgcatgono == "1"'>
+		    where fk_lgcatgono = 1 and department = (select department from tbl_employee where empno = #{empno})
+		</if>
+		<if test='fk_lgcatgono == "2"'>
+		    where fk_lgcatgono = 2 and department = (select department from tbl_employee where empno = #{empno})
+		</if>
+		<if test='fk_lgcatgono == "3"'>
+		    where fk_lgcatgono = 3 and fk_empno = #{empno}
+		</if>
+		 order by smcatgono asc
+	</select>
+	
+	
+	<!-- 참석자를 찾기 위한 특정글자가 들어간 회원명단 불러오기  -->
+	<select id="searchJoinUserList" parameterType="String" resultType="com.spring.groovy.management.model.MemberVO">
+		select empno, name, bumun, department, position
+		from tbl_employee
+		where lower(name) like '%'|| lower(#{joinUserName}) ||'%'
+	</select>
 	
 	
 	
+	<!-- 일정 등록하기 -->
+	<insert id="insertScheduleEnd" parameterType="HashMap">
+		insert into tbl_calendar_schedule(scheduleno, startdate, enddate, subject, color, place, joinuser, content, fk_smcatgono, fk_lgcatgono, fk_empno) 
+    	values(seq_scheduleno.nextval, to_date(#{startdate}, 'yyyymmddhh24miss'), to_date(#{enddate}, 'yyyymmddhh24miss'), #{subject}, #{color}, #{place}, #{joinuser}, #{content}, #{fk_smcatgono}, #{fk_lgcatgono}, #{empno})  
+	</insert>
 	
 	
-	
-	
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 		
 </mapper>
