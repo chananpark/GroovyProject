@@ -3,6 +3,58 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <!-- 루트 엘리먼트 & 네임스페이스 설정(프로젝트 전체 내에서 유일해야 함, 주로 파일명) -->
+
 <mapper namespace="jinseok">
-		<!-- 이 안에 sql문을 적는다 -->
+	<!-- #### 중요 #### 	
+		 HashMap 타입으로 매개변수를 받아온 것을 꺼내서 사용할때 
+		 1. 데이터로 사용할때는 #{key명} 이고,
+		 2. 식별자(테이블명, 컬럼명)로 사용할때는 ${key명} 이고,
+		 3. myBatis 에서 제공하는 if 엘리먼트나 choose 엘리먼트 안에서 사용할때는 
+		       그냥 <if test="key명"> <when test="key명"> 으로 사용한다. 
+	-->
+
+	<select id="getTotalCount" parameterType="HashMap" resultType="int">
+	    select count(*)
+	    from tbl_mail
+	    <![CDATA[where SEND_TIME <= sysdate]]>	    
+	    and  ${listType} =  #{mail_address}
+	    <if test='searchType != "" and searchWord != "" '>
+	    	and lower(${searchType}) like '%'||lower(#{searchWord})||'%'
+	    </if>
+	</select>
+		
+		<!-- 페이징한 메일 정보만 가져오기-->
+	<select id="mailListSearchWithPaging" parameterType="HashMap" resultType="com.spring.groovy.mail.model.MailVO"> 
+	    select *
+		from 
+		(
+		    select rownum AS rno, V.*
+		    from 
+		    (
+		        select  MAIL_NO,FK_Sender_address,FK_Recipient_address,FK_Referenced_address
+                ,SUBJECT,CONTENTS,SEND_TIME,read_check,sender_delete,Recipient_delete
+                ,SENDER_IMPORTANT,Recipient_IMPORTANT,fileName,orgFilename,fileSize,MAIL_PWD
+                
+		        from tbl_mail
+		        <!-- <![CDATA[]]> 파싱하지 않고 문자 그대로 들어감 -->
+		        <![CDATA[where SEND_TIME <= sysdate]]>
+		        and  ${listType} =  #{mail_address}
+			    <if test='searchType != "" and searchWord != "" '>
+			    	and lower(${searchType}) like '%'||lower(#{searchWord})||'%'
+			    </if>
+
+		        order by SEND_TIME desc
+		    ) V
+		) T 
+		where rno between #{startRno} and #{endRno} 
+	</select>
+	
+	<!-- 태그 리스트 가져오기 -->
+	<select id="getTagList" parameterType="String" resultType="com.spring.groovy.mail.model.TagVO"> 
+		select * 
+		from tbl_tag
+		where FK_mail_address = #{mail_address}
+	</select>
+		
+		
 </mapper>

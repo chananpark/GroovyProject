@@ -36,11 +36,16 @@
 
     <li class="nav-item">
       <a class="nav-link" href="#">태그 메일함</a>
-      	<ul>
+      	<ul id="sidebarTag">
       		<li><a id="tag" class="nav-link" href="<%=ctxPath%>/approval/personal/sent.on">태그1</a></li>
       		<li><a id="tag" class="nav-link" href="<%=ctxPath%>/approval/personal/processed.on">태그2</a></li>
       		<li><a id="tag" class="nav-link" href="<%=ctxPath%>/approval/personal/saved.on">태그3</a></li>
       		<li><a id="tag" class="nav-link" href="<%=ctxPath%>/mail/viewMail.on">(임시) 메일 보기</a></li>
+      		<c:forEach var="tagVO" items="${requestScope.tagList}" varStatus="status">   		
+
+	      				<a href="#"><i class="fas fa-tag" style="color:#${tagVO.tag_color};"></i> &nbsp</a>
+	
+	      	</c:forEach>
       	</ul>
     </li>
 

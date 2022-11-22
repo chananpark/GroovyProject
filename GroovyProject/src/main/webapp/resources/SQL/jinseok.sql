@@ -1,0 +1,152 @@
+show user;
+--
+
+
+
+
+create table TBL_MAIL
+(MAIL_NO number not null--메일번호      시퀀스
+,FK_Sender_address  VARCHAR2(200 BYTE) not null--발신자메일주소   
+,FK_Recipient_address  VARCHAR2(200 BYTE) not null--수신사메일주소
+,FK_Referenced_address  VARCHAR2(200 BYTE) --참조메일주소
+,SUBJECT CLOB NOT NULL --메일제목
+,CONTENTS CLOB NOT NULL --메일내용
+,SEND_TIME DATE --발신시간 그냥 보낼땐 sysdate, 예약시 직접 지정한 시간으로 , 임시저장한 메일은 NULL 로 남겨둠
+,read_check Number(1) default 0 not null --읽음여부 check 0 안읽음 1 읽음    // 표시용
+,sender_delete Number(1) default 0 not null -- 보낸 쪽에서 보낸메일함에서 안보이도록 지울때
+,Recipient_delete Number(1) default 0 not null -- 받은 쪽에서 받은메일함에서 안보이게 지울때
+,SENDER_IMPORTANT Number(1) default 0 not null --중요표시(보낸이) check 0 안중요 1 중요
+,Recipient_IMPORTANT Number(1) default 0 not null --중요표시(받는이) check 0 안중요 1 중요
+,fileName       varchar2(255)                    -- WAS(톰캣)에 저장될 파일명(2022103109271535243254235235234.png)                                       
+,orgFilename    varchar2(255)                    -- 진짜 파일명(강아지.png)  // 사용자가 파일을 업로드 하거나 파일을 다운로드 할때 사용되어지는 파일명 
+,fileSize       number                           -- 파일크기  
+,MAIL_PWD       varchar2(20)  --메일암호
+-- 기존의 임시저장칼럼은 DATE 가 NULL 인 애들조회로 가능하게
+,constraint PK_tbl_mail_MAIL_NO primary key(MAIL_NO)
+,constraint FK_TBL_MAIL_FK_Sender_address foreign key(FK_Sender_address) references tbl_EMPLOYEE(CPEMAIL)
+,constraint FK_TBL_MAIL_FK_Recipient_address foreign key(FK_Recipient_address) references tbl_EMPLOYEE(CPEMAIL)
+,constraint FK_TBL_MAIL_FK_Referenced_address foreign key(FK_Referenced_address) references tbl_EMPLOYEE(CPEMAIL)
+,constraint CK_tbl_MAIL_read_check check( read_check in (0,1) )
+,constraint CK_tbl_MAIL_sender_delete check( sender_delete in (0,1) )
+,constraint CK_tbl_MAIL_Recipient_delete check( Recipient_delete in (0,1) )
+);
+
+commit;
+drop table TBL_tag purge;
+select * from tbl_mail;
+
+--태그테이블
+--태그지정자id or 이메일
+--메일번호
+--태그이름(직접설정 가능하게)
+--태그색 //#ffffff 이런식
+
+INSERT INTO tbl_employee 
+(empno,cpemail,name,pwd,position,jubun,postcode,bumun,department,pvemail
+,mobile,depttel,joindate,empstauts,bank,account,annualcnt)
+VALUES(SEQ_TBL_EMPLOYEE.NEXTVAL, 'kjskjskjs@groovy.com', '김진진석', 'qwer1234$',
+'선임', '960525-2222222', '12345', 'IT사업부문','개발팀','kjskjskjs@naver.com',
+'010-1132-2232','208','2022/11/18','1','국민은행','123423456789',15);
+
+commit;
+
+--MAIL_NO,FK_Sender_address,FK_Recipient_address,FK_Referenced_address
+--,SUBJECT,CONTENTS,SEND_TIME,read_check,sender_delete,Recipient_delete
+--,SENDER_IMPORTANT,Recipient_IMPORTANT,fileName,orgFilename,fileSize,MAIL_PWD
+
+insert into tbl_mail(MAIL_NO, FK_Sender_address,FK_Recipient_address,SUBJECT, CONTENTS,SEND_TIME)
+values(108,'kjsaj0525@groovy.com','kjskjskjs@groovy.com','제목9','내용9',sysdate-2);
+
+select * from tbl_mail;
+
+commit;
+-- 
+select count(*)
+	    from tbl_mail
+	    where SEND_TIME< sysdate 
+        and FK_Recipient_address = 'kjsaj0525@groovy.com'
+        
+        
+        and SUBJECT like '%'||lower('제')||'%';
+        
+select count(*)
+	    from tbl_mail
+	    where SEND_TIME is null      
+        
+        
+        
+        
+select seq, fk_userid, name, subject, readcount, regdate, commentCount,
+		       groupno, fk_seq, depthno
+		     , fileName
+		from 
+		(
+		    select rownum AS rno,
+		           seq, fk_userid, name, subject, readcount, regdate, commentCount,
+		           groupno, fk_seq, depthno
+		         , fileName
+		    from 
+		    (
+		        select  MAIL_NO,FK_Sender_address,FK_Recipient_address,FK_Referenced_address
+                ,SUBJECT,CONTENTS,SEND_TIME,read_check,sender_delete,Recipient_delete
+                ,SENDER_IMPORTANT,Recipient_IMPORTANT,fileName,orgFilename,fileSize,MAIL_PWD
+                
+		        from tbl_board
+		        where status = 1
+			    <if test='searchType != "" and searchWord != "" '>
+			    and lower(${searchType}) like '%'||lower(#{searchWord})||'%'
+			    </if>
+		        start with fk_seq = 0 
+		        connect by prior seq = fk_seq 
+		        order by SEND_TIME asc
+		    ) V
+		) T 
+		where rno between #{startRno} and #{endRno}        
+
+
+select count(*)
+	    from tbl_mail
+	   where SEND_TIME <= sysdate;	    
+
+-- 갯수 카운트해주는 함수는 아래처럼 작동된다	  
+ select *
+	    from tbl_mail
+	    where SEND_TIME <= sysdate 
+	    and  FK_Recipient_address =  'kjsaj0525@groovy.com'
+        and lower(FK_Sender_address) like '%'||lower('k')||'%';
+        
+--        
+
+-- 태그 테이블 생성
+create table tbl_tag
+(FK_mail_address VARCHAR2(200 BYTE) not null
+, tag_color char(6) not null
+, tag_name  Nchar(10) not null
+, mail_no NVARCHAR2(400)
+, constraint FK_tbl_tag_FK_mail_address_tag_color primary key(FK_mail_address, tag_color)
+,constraint FK_tbl_tag_FK_mail_address foreign key(FK_mail_address) references tbl_EMPLOYEE(CPEMAIL)
+);
+
+insert into tbl_tag (FK_mail_address,tag_color,tag_name ,mail_no )
+values('kjsaj0525@groovy.com','f9320c','빨강','102');
+
+insert into tbl_tag (FK_mail_address,tag_color,tag_name ,mail_no )
+values('kjsaj0525@groovy.com','00b9f1','파랑','102');
+
+insert into tbl_tag (FK_mail_address,tag_color,tag_name ,mail_no )
+values('kjsaj0525@groovy.com','f9c00c','노랑','102,103');
+
+-- 태그 변경
+update tbl_tag set mail_no = '100,101,106'
+where FK_mail_address = 'kjsaj0525@groovy.com' and tag_color = 'f9320c';
+commit;
+
+
+
+commit;
+
+
+------------ 태그 테이블 조회
+select * 
+from tbl_tag
+where FK_mail_address = 'kjsaj0525@groovy.com';
