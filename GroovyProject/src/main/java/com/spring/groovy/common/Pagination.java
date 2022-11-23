@@ -20,7 +20,7 @@ public class Pagination {
 	}
 
 	public void setPageSize(int pageSize) {
-		this.pageSize = pageSize;
+		this.pageSize = (pageSize != 10 && pageSize != 30 && pageSize != 50)? 10 : pageSize;
 	}
 
 	public int getCurrentPage() {
@@ -47,10 +47,40 @@ public class Pagination {
 		this.searchWord = searchWord;
 	}
 
-	// 페이지 첫행, 마지막행 구하기
+	public int getBlockSize() {
+		return blockSize;
+	}
+
+	public void setBlockSize(int blockSize) {
+		this.blockSize = blockSize;
+	}
+
+	public int getTotalPage() {
+		return totalPage;
+	}
+
+	public void setTotalPage(int totalPage) {
+		this.totalPage = totalPage;
+	}
+
+	public int getStartRno() {
+		return startRno;
+	}
+
+	public void setStartRno(int startRno) {
+		this.startRno = startRno;
+	}
+
+	public int getEndRno() {
+		return endRno;
+	}
+
+	public void setEndRno(int endRno) {
+		this.endRno = endRno;
+	}
+
+	// 특정 페이지 조회 시 필요한 정보들을 Map에 담아서 리턴해줌
 	public Map<String, Object> getPageRange(int listCnt) {
-		
-		pageSize = (pageSize != 10 && pageSize != 30 && pageSize != 50)? pageSize = 10 : pageSize;
 
 		// 총 페이지 수 계산
 		totalPage = (int) Math.ceil((double) listCnt / pageSize);
@@ -62,6 +92,7 @@ public class Pagination {
 		endRno = startRno + pageSize - 1;
 
 		Map<String, Object> resultMap = new HashMap<>();
+		
 		resultMap.put("startRno", startRno);
 		resultMap.put("endRno", endRno);
 		
@@ -71,6 +102,19 @@ public class Pagination {
 		resultMap.put("pageSize", pageSize);
 
 		return resultMap;
+	}
+	
+	// 인스턴스에 페이지 정보 설정하기
+	public void setPageInfo(int listCnt) {
+		
+		// 총 페이지 수 계산
+		totalPage = (int) Math.ceil((double) listCnt / pageSize);
+		
+		currentPage = (currentPage > totalPage)? 1 : currentPage;
+		
+		// startRno, endRno 설정
+		startRno = ((currentPage - 1) * pageSize) + 1;
+		endRno = startRno + pageSize - 1;
 	}
 	
 	// 페이지바 만들기

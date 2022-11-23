@@ -108,7 +108,9 @@ const excelDownLoad = () => {
 	
 		<div class="row mb-3">
 			<div class='col'>
+				<c:if test="${not empty draftList}">
 				<button type="button" id="excelButton" onclick="excelDownLoad()"><i class="fas fa-download"></i>&nbsp;목록 다운로드</button>
+				</c:if>
 			</div>
 			<div class='col text-right'>
 				<select id="pageSize" name="pageSize" onchange="goSearch()">
@@ -150,20 +152,27 @@ const excelDownLoad = () => {
                 <c:when test="${not empty draftList}">
                     <c:forEach items="${draftList}" var="draft" >
                         <tr class='row'>
-							<td class='col'>${fn:substring(draft.approval_date, 0, 10)}</td>
+							<td class='col'>
+                            	<c:if test="${draft.draft_status == '진행중'}">
+                            		<span>-</span>
+                            	</c:if>
+                            	<c:if test="${draft.draft_status != '진행중'}">
+                            		<span>${fn:substring(draft.approval_date, 0, 10)}</span>
+                            	</c:if>
+							</td>
 							<td class='col'>${fn:substring(draft.draft_date, 0, 10)}</td>
                             <td class='col col-2'>${draft.draft_type}</td>
                             <td class='col col-2'>${draft.draft_no}</td>
                             <td class='col col-4'>${draft.draft_subject}</td>
                             <td class='col col-1'>
-                            	<c:if test="${draft.approval_status == '완료'}">
-	                            	<span class="badge badge-secondary">${draft.approval_status}</span>
+                            	<c:if test="${draft.draft_status == '완료'}">
+	                            	<span class="badge badge-secondary">${draft.draft_status}</span>
                             	</c:if>
-                            	<c:if test="${draft.approval_status == '반려'}">
-                            		<span class="badge badge-danger">${draft.approval_status}</span>
+                            	<c:if test="${draft.draft_status == '반려'}">
+                            		<span class="badge badge-danger">${draft.draft_status}</span>
                             	</c:if>
-                            	<c:if test="${draft.approval_status == '진행중'}">
-                            		<span class="badge badge-success">${draft.approval_status}</span>
+                            	<c:if test="${draft.draft_status == '진행중'}">
+                            		<span class="badge badge-success">${draft.draft_status}</span>
                             	</c:if>
                             </td>
                         </tr>

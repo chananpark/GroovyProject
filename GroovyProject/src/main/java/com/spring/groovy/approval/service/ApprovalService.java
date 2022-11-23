@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 
 import com.spring.groovy.approval.model.DraftVO;
 import com.spring.groovy.approval.model.InterApprovalDAO;
-import com.spring.groovy.common.Pagination;
 
 @Service
 public class ApprovalService implements InterApprovalService {
@@ -21,8 +20,8 @@ public class ApprovalService implements InterApprovalService {
     }
 	
 	@Override
-	public int getTeamDraftCnt(Pagination pagination) {
-		return dao.getTeamDraftCnt(pagination);
+	public int getTeamDraftCnt(Map<String, Object> paraMap) {
+		return dao.getTeamDraftCnt(paraMap);
 	}
 
 	@Override
@@ -31,32 +30,32 @@ public class ApprovalService implements InterApprovalService {
 	}
 
 	@Override
-	public int getSentDraftCnt(Pagination pagination) {
-		return dao.getSentDraftCnt(pagination);
+	public int getSentDraftCnt(Map<String, Object> paraMap) {
+		return dao.getSentDraftCnt(paraMap);
 	}
 
 	@Override
-	public Object getSentDraftList(Map<String, Object> paraMap) {
+	public List<DraftVO> getSentDraftList(Map<String, Object> paraMap) {
 		return dao.getSentDraftList(paraMap);
 	}
 
 	@Override
-	public int getProcessedDraftCnt(Pagination pagination) {
-		return dao.getProcessedDraftCnt(pagination);
+	public int getProcessedDraftCnt(Map<String, Object> paraMap) {
+		return dao.getProcessedDraftCnt(paraMap);
 	}
 
 	@Override
-	public Object getProcessedDraftList(Map<String, Object> paraMap) {
+	public List<DraftVO> getProcessedDraftList(Map<String, Object> paraMap) {
 		return dao.getProcessedDraftList(paraMap);
 	}
 	
 	@Override
-	public int getSavedDraftCnt(Pagination pagination) {
-		return dao.getSavedDraftCnt(pagination);
+	public int getSavedDraftCnt(Map<String, Object> paraMap) {
+		return dao.getSavedDraftCnt(paraMap);
 	}
 	
 	@Override
-	public Object getSavedDraftList(Map<String, Object> paraMap) {
+	public List<DraftVO> getSavedDraftList(Map<String, Object> paraMap) {
 		return dao.getSavedDraftList(paraMap);
 	}
 
@@ -64,5 +63,26 @@ public class ApprovalService implements InterApprovalService {
 	public int deleteDraftList(String[] deleteArr) {
 		return dao.deleteDraftList(deleteArr);
 	}
+
+	@Override
+	public List<DraftVO> getMyDraftProcessed(String empno) {
+		return dao.getMyDraftProcessed(empno);
+	}
+
+	@Override
+	public List<Object> getRequestedDraftNo(Map<String, Object> paraMap) {
+		return dao.getRequestedDraftNo(paraMap);
+	}
+	
+	@Override
+	public int getRequestedDraftCnt(Map<String, Object> paraMap) {
+		return dao.getRequestedDraftCnt(paraMap);
+	}
+
+	@Override
+	public List<DraftVO> getRequestedDraftList(Map<String, Object> paraMap) {
+		return dao.getRequestedDraftList(paraMap);
+	}
+
 
 }

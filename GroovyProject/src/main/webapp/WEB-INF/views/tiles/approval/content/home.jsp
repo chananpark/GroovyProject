@@ -1,15 +1,11 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"	pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-<% String ctxPath = request.getContextPath(); %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<% String ctxPath=request.getContextPath(); %>
 <style>
 .listContainer {
 	font-size: small;
 	margin-bottom: 5%;
-}
-
-tbody > tr:hover{
-	background-color: #E3F2FD;
-	cursor: pointer;
 }
 
 .approveThis {
@@ -132,7 +128,7 @@ $(()=>{
 	</div>
 	<div class='listContainer'>
 		<h5 class='mb-3'>기안 진행 문서</h5>
-		<h6 class='mb-3'>진행 중인 문서가 <span style='color:#086BDE'>4</span>건 있습니다.</h6>
+		<h6 class='mb-3'>진행 중인 문서가 <span style='color:#086BDE'>${processingCnt}</span>건 있습니다.</h6>
 		<table class="table">
 			<thead>
 				<tr class='row'>
@@ -145,14 +141,25 @@ $(()=>{
 				</tr>
 			</thead>
 			<tbody>
-				<tr class='row'>
-					<td class='col col-1'>2022.11.09</td>
-					<td class='col col-1'>지출결의</td>
-					<td class='col col-2'>20221109-04</td>
-					<td class='col'>시내교통비</td>
-					<td class='col col-1'>이순신</td>
-					<td class='col col-1'>엄정화</td>
-				</tr>
+				<c:choose>
+               		<c:when test="${not empty processingDraftMap}">
+                    <c:forEach items="${processingDraftMap}" var="processing" >
+                        <tr class='row'>
+							<td class='col col-1'>${fn:substring(processing.draft_date, 0, 10)}</td>
+                            <td class='col col-1'>${processing.draft_type}</td>
+                            <td class='col col-2'>${processing.draft_no}</td>
+                            <td class='col'>${processing.draft_subject}</td>
+                            <td class='col col-1'>${processing.recent_approval_emp}</td>
+                            <td class='col col-1'>${processing.last_approval_emp}</td>
+                        </tr>
+                    </c:forEach>
+                	</c:when>
+                <c:otherwise>
+                    <tr>
+                        <td colspan='6' class='text-center'>진행 중인 문서가 없습니다.</td>
+                    </tr>
+                </c:otherwise>            
+            </c:choose>
 			</tbody>
 		</table>
 		<div class='text-right mr-2'>
@@ -174,14 +181,32 @@ $(()=>{
 				</tr>
 			</thead>
 			<tbody>
-				<tr class='row'>
-					<td class='col col-1'>2022.11.10</td>
-					<td class='col col-1'>지출결의</td>
-					<td class='col col-2'>20221109-04</td>
-					<td class='col'>시내교통비</td>
-					<td class='col col-1'>2022.11.09</td>
-					<td class='col col-1'><span class="badge badge-secondary">완료</span></td>
-				</tr>
+				<c:choose>
+               		<c:when test="${not empty processedDraftList}">
+                    <c:forEach items="${processedDraftList}" var="processed" >
+                        <tr class='row'>
+							<td class='col col-1'>${fn:substring(processed.approval_date, 0, 10)}</td>
+                            <td class='col col-1'>${processed.draft_type}</td>
+                            <td class='col col-2'>${processed.draft_no}</td>
+                            <td class='col'>${processed.draft_subject}</td>
+							<td class='col col-1'>${fn:substring(processed.draft_date, 0, 10)}</td>
+                            <td class='col col-1'>
+                            	<c:if test="${draft.draft_status == '완료'}">
+	                            	<span class="badge badge-secondary">${processed.draft_status}</span>
+                            	</c:if>
+                            	<c:if test="${draft.draft_status == '반려'}">
+                            		<span class="badge badge-danger">${processed.draft_status}</span>
+                            	</c:if>
+                            </td>
+                        </tr>
+                    </c:forEach>
+                	</c:when>
+                <c:otherwise>
+                    <tr>
+                        <td colspan='6' class='text-center'>진행 중인 문서가 없습니다.</td>
+                    </tr>
+                </c:otherwise>            
+            </c:choose>
 			</tbody>
 		</table>
 		<div class='text-right mr-2'>

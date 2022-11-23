@@ -1,13 +1,16 @@
 package com.spring.groovy.approval.controller;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.apache.poi.hssf.usermodel.HSSFDataFormat;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.Cell;
@@ -22,6 +25,7 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.streaming.SXSSFSheet;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.json.JSONObject;
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -31,6 +35,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.spring.groovy.approval.model.DraftVO;
 import com.spring.groovy.approval.service.InterApprovalService;
 import com.spring.groovy.common.Pagination;
 import com.spring.groovy.management.model.MemberVO;
@@ -49,24 +54,42 @@ public class ApprovalController {
 
 	// 전자결재 홈 페이지요청
 	@RequestMapping(value = "/home.on")
-	public String approvalHome(HttpServletRequest request) {
-
-		return "approval/home.tiles";
-	}
-	
-	// 개인문서함-상신함 페이지요청
-	@RequestMapping(value = "/personal/sent.on")
-	public ModelAndView sentDraftList(ModelAndView mav, Pagination pagination, HttpServletRequest request) {
-		
-		// 전체 글 개수 구하기
-		int listCnt = service.getSentDraftCnt(pagination);
-
-		Map<String, Object> paraMap = pagination.getPageRange(listCnt); // startRno, endRno
+	public ModelAndView approvalHome(ModelAndView mav, HttpServletRequest request) {
 		
 		MemberVO loginuser = getLoginUser(request);
-		// 로그인한 사용자 사원번호
-		paraMap.put("empno", loginuser.getEmpno());
 		
+		// 결재 대기 문서 개수 알아오기
+		
+		// 결재 대기 문서 4개 가져오기
+		
+		// 진행 중 문서 개수 알아오기
+		
+		// 진행 중 문서 5개 가져오기
+		
+		// 결재완료된 문서 5개 가져오기
+		List<DraftVO> processedDraftList = service.getMyDraftProcessed(loginuser.getEmpno());
+		
+		mav.addObject("processedDraftList", processedDraftList);
+		mav.setViewName("approval/home.tiles");
+		
+		return mav;
+	}
+
+	// 개인문서함-상신함 페이지요청
+	@SuppressWarnings("unchecked")
+	@RequestMapping(value = "/personal/sent.on")
+	public ModelAndView sentDraftList(ModelAndView mav, Pagination pagination, HttpServletRequest request) throws Exception {
+		
+		MemberVO loginuser = getLoginUser(request);
+		
+		Map<String, Object> paraMap = BeanUtils.describe(pagination); // pagination을 Map으로
+		paraMap.put("empno", loginuser.getEmpno());
+	
+		// 전체 글 개수 구하기
+		int listCnt = service.getSentDraftCnt(paraMap);
+		pagination.setPageInfo(listCnt); // 총 페이지, 시작행, 마지막행 설정
+		paraMap.putAll(BeanUtils.describe(pagination)); // pagination을 Map으로
+
 		// 정렬 설정
 		setSorting(request, paraMap);
 		
@@ -82,17 +105,19 @@ public class ApprovalController {
 	}
 	
 	// 개인문서함-결재함 페이지요청
+	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/personal/processed.on")
-	public ModelAndView processdDraftList(ModelAndView mav, Pagination pagination, HttpServletRequest request) {
-
-		// 전체 글 개수 구하기
-		int listCnt = service.getProcessedDraftCnt(pagination);
-
-		Map<String, Object> paraMap = pagination.getPageRange(listCnt); // startRno, endRno
+	public ModelAndView processdDraftList(ModelAndView mav, Pagination pagination, HttpServletRequest request) throws Exception {
 		
 		MemberVO loginuser = getLoginUser(request);
-		// 로그인한 사용자 사원번호
+		
+		Map<String, Object> paraMap = BeanUtils.describe(pagination); // pagination을 Map으로
 		paraMap.put("empno", loginuser.getEmpno());
+		
+		// 전체 글 개수 구하기
+		int listCnt = service.getProcessedDraftCnt(paraMap);
+		pagination.setPageInfo(listCnt); // 총 페이지, 시작행, 마지막행 설정
+		paraMap.putAll(BeanUtils.describe(pagination)); // pagination을 Map으로
 		
 		// 정렬 설정
 		setSorting(request, paraMap);
@@ -109,17 +134,20 @@ public class ApprovalController {
 	}
 	
 	// 개인문서함-임시저장함 페이지요청
+	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/personal/saved.on")
-	public ModelAndView savedDraftList(ModelAndView mav, Pagination pagination, HttpServletRequest request) {
-
-		// 전체 글 개수 구하기
-		int listCnt = service.getSavedDraftCnt(pagination);
-
-		Map<String, Object> paraMap = pagination.getPageRange(listCnt); // startRno, endRno
+	public ModelAndView savedDraftList(ModelAndView mav, Pagination pagination, HttpServletRequest request) throws Exception {
 		
 		MemberVO loginuser = getLoginUser(request);
-		// 로그인한 사용자 사원번호
+		
+		Map<String, Object> paraMap = BeanUtils.describe(pagination); // pagination을 Map으로
 		paraMap.put("empno", loginuser.getEmpno());
+		
+		// 전체 글 개수 구하기
+		int listCnt = service.getSavedDraftCnt(paraMap);
+
+		pagination.setPageInfo(listCnt); // 총 페이지, 시작행, 마지막행 설정
+		paraMap.putAll(BeanUtils.describe(pagination)); // pagination을 Map으로
 		
 		// 정렬 설정
 		setSorting(request, paraMap);
@@ -154,16 +182,19 @@ public class ApprovalController {
 	}
 	
 	// 팀문서함 페이지요청
+	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/team.on")
-	public ModelAndView teamDraftList(ModelAndView mav, Pagination pagination, HttpServletRequest request) {
-		// 전체 글 개수 구하기
-		int listCnt = service.getTeamDraftCnt(pagination);
+	public ModelAndView teamDraftList(ModelAndView mav, Pagination pagination, HttpServletRequest request) throws Exception{
 
-		Map<String, Object> paraMap = pagination.getPageRange(listCnt); // startRno, endRno
-		
 		MemberVO loginuser = getLoginUser(request);
-		// 로그인한 사용자 부서
+		
+		Map<String, Object> paraMap = BeanUtils.describe(pagination); // pagination을 Map으로
 		paraMap.put("department", loginuser.getDepartment());
+	
+		// 전체 글 개수 구하기
+		int listCnt = service.getTeamDraftCnt(paraMap);
+		pagination.setPageInfo(listCnt); // 총 페이지, 시작행, 마지막행 설정
+		paraMap.putAll(BeanUtils.describe(pagination)); // pagination을 Map으로
 		
 		// 정렬 설정
 		setSorting(request, paraMap);
@@ -261,7 +292,7 @@ public class ApprovalController {
 		}
 
 		// 셀 병합하기 => 첫 번째 행을 병합한다.
-		sheet.addMergedRegion(new CellRangeAddress(rowLocation, rowLocation, 0, 6)); // 시작 행, 끝 행, 시작 열, 끝 열
+		sheet.addMergedRegion(new CellRangeAddress(rowLocation, rowLocation, 0, length-1)); // 시작 행, 끝 행, 시작 열, 끝 열
 
 		// 헤더 행 생성
 		Row headerRow = sheet.createRow(++rowLocation);
@@ -307,10 +338,36 @@ public class ApprovalController {
 	}
 	
 	// 결재하기-결재대기문서 페이지요청
+	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/requested.on")
-	public String requestedDraftList(HttpServletRequest request) {
+	public ModelAndView requestedDraftList(ModelAndView mav, Pagination pagination, HttpServletRequest request) throws Exception {
+			MemberVO loginuser = getLoginUser(request);
+			
+			Map<String, Object> paraMap = BeanUtils.describe(pagination); // pagination을 Map으로
+			paraMap.put("empno", loginuser.getEmpno());
+			paraMap.put("department", loginuser.getDepartment());
+			
+			// 결재 대기 문서의 문서번호들 조회
+			List<Object> draftNoList = service.getRequestedDraftNo(paraMap);
+			paraMap.put("draftNoList", draftNoList);
 		
-		return "approval/requested_draft.tiles";
+			// 전체 글 개수 구하기
+			int listCnt = service.getRequestedDraftCnt(paraMap);
+			pagination.setPageInfo(listCnt); // 총 페이지, 시작행, 마지막행 설정
+			paraMap.putAll(BeanUtils.describe(pagination)); // pagination을 Map으로
+			
+			// 정렬 설정
+			setSorting(request, paraMap);
+			
+			// 한 페이지에 표시할 글 목록
+			mav.addObject("draftList", service.getRequestedDraftList(paraMap));
+			
+			// 페이지바
+			mav.addObject("pagebar", pagination.getPagebar(request.getContextPath()+"/requested.on"));
+			mav.addObject("paraMap", paraMap);
+			
+			mav.setViewName("approval/requested_draft.tiles");
+			return mav;
 	}
 	
 	// 업무기안 작성 페이지요청
@@ -383,13 +440,13 @@ public class ApprovalController {
 		
 		return "approval/config/signature.tiles";
 	}
+	 
 	
 	@ExceptionHandler(Exception.class)
 	private String error(Exception e) {
 		e.printStackTrace();
 	    return "error";
 	}
-
 	// 로그인 사용자 정보 가져오기
 	private MemberVO getLoginUser(HttpServletRequest request) {
 		HttpSession session = request.getSession();
