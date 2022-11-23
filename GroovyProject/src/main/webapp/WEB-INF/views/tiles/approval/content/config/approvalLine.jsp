@@ -1,5 +1,5 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<% String ctxPath=request.getContextPath(); %>	
 <style>
 .accordion {
 	background-color: white;
@@ -27,6 +27,14 @@
 }
 
 #editBtn {
+	background-color: #E3F2FD;
+}
+
+#editBtn:hover {
+	background-color: #cfe9fc;
+}
+
+#saveBtn {
 	background-color: #086BDE;
 	color: white;
 }
@@ -92,21 +100,23 @@ $(()=>{
 	<h4>환경설정</h4>
 </div>
 
-<h5 class='m-4'>결재라인 설정</h5>
+<h5 class='m-4'>결재라인</h5>
 
 <div id='approvalLineContainer' class='m-4'>
 
-	<h6 style='margin: 5% 0'>저장된 결재라인</h6>
+	<div class="btn-group my-4">
+	  <button type="button" class="btn btn-light" onclick="location.href='<%=ctxPath%>/approval/config/approvalLine.on'">저장된 결재라인</button>
+	  <button type="button" class="btn btn-light" onclick="location.href='<%=ctxPath%>/approval/config/approvalLine/add.on'">결재라인 추가</button>
+	</div>
 	
 	<button class="accordion"><i class="fas fa-chevron-down mr-2"></i>기본결재라인</button>
 	<div class='panel'>
 		<div class='approvalLine mb-4'>
 			<div class='my-4'>
 				<button type="button" class="btn btn-sm" id='editBtn'>수정</button>
-				<button type="button" class="btn btn-sm btn-dark" id='deleteBtn'>삭제</button>
-				<span class='ml-2'>결재라인 수정 후 반드시 수정버튼을 클릭해주세요.</span>
-				<button type="button" class="btn btn-sm btn-light">-</button>
-				<button type="button" class="btn btn-sm btn-light">+</button>
+				<button type="button" class="btn btn-sm btn-light" id='deleteBtn'>삭제</button>
+				<span class='ml-2'>결재라인 수정 후 반드시 저장버튼을 클릭해주세요.</span>
+				<button type="button" class="btn btn-sm" id='saveBtn'>저장</button>
 			</div>
 
 		</div>
@@ -141,15 +151,4 @@ $(()=>{
 		    </tbody>
 		  </table>
 		</div>
-	</div>
-
-	<button class="accordion">Section 2</button>
-	<div class="panel">
-	  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-	</div>
-	
-	<button class="accordion">Section 3</button>
-	<div class="panel">
-	  <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-	</div>
 </div>

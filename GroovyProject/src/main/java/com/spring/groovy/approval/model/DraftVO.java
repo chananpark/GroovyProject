@@ -3,8 +3,9 @@ package com.spring.groovy.approval.model;
 public class DraftVO {
 	
 	private int draft_no; // 문서번호
-	private int fk_draft_type_no; // 기안 종류 번호
+	private String draft_type; // 기안 종류
 	private int fk_draft_empno; // 기안자 사원번호
+	private String draft_emp_name; // 기안자 이름
 	private String draft_subject; // 문서 제목
 	private String draft_content; // 문서 내용
 	private String draft_comment; // 기안 의견
@@ -12,13 +13,14 @@ public class DraftVO {
 	private String org_filename; // 원본 파일명
 	private String filename; // 저장된 파일명
 	private int filesize; // 파일크기
-	private int temp; // 임시저장 여부 (0: 임시저장아님, 1:임시저장)
+	private int temp; // 임시저장 여부 (0: 임시저장아님, 1: 임시저장)
 	private int draft_seq; // 기안 시퀀스
+	private String draft_status; // 결재 상태 (0: 진행중, 1: 승인, 2: 반려)
+	private String draft_department; // 기안부서
+	private int urgent_status; // 긴급여부(0: 부, 1: 여)
 	
 	private String approval_date; // 결재완료일
-	private String draft_type; // 기안종류
-	private String draft_emp_name; // 기안자
-	private String approval_status; // 결재상태
+	
 	
 	public int getDraft_no() {
 		return draft_no;
@@ -28,13 +30,6 @@ public class DraftVO {
 		this.draft_no = draft_no;
 	}
 
-	public int getFk_draft_type_no() {
-		return fk_draft_type_no;
-	}
-
-	public void setFk_draft_type_no(int fk_draft_type_no) {
-		this.fk_draft_type_no = fk_draft_type_no;
-	}
 
 	public int getFk_draft_empno() {
 		return fk_draft_empno;
@@ -108,14 +103,6 @@ public class DraftVO {
 		this.temp = temp;
 	}
 
-	public String getApproval_date() {
-		return approval_date;
-	}
-
-	public void setApproval_date(String approval_date) {
-		this.approval_date = approval_date;
-	}
-
 	public String getDraft_type() {
 		return draft_type;
 	}
@@ -124,30 +111,22 @@ public class DraftVO {
 		this.draft_type = draft_type;
 	}
 
-	public String getDraft_emp_name() {
-		return draft_emp_name;
+	public String getDraft_status() {
+		return draft_status;
 	}
 
-	public void setDraft_emp_name(String draft_emp_name) {
-		this.draft_emp_name = draft_emp_name;
-	}
-
-	public String getApproval_status() {
-		return approval_status;
-	}
-
-	public void setApproval_status(String approval_status) {
-		switch (approval_status) {
+	public void setDraft_status(String draft_status) {
+		switch (draft_status) {
 		case "1":
-			this.approval_status = "완료";
+			this.draft_status = "완료";
 			break;
 			
 		case "2":
-			this.approval_status = "반려";
+			this.draft_status = "반려";
 			break;
 
 		default:
-			this.approval_status = "진행중";
+			this.draft_status = "진행중";
 			break;
 		}
 	}
@@ -158,6 +137,38 @@ public class DraftVO {
 
 	public void setDraft_seq(int draft_seq) {
 		this.draft_seq = draft_seq;
+	}
+
+	public String getDraft_emp_name() {
+		return draft_emp_name;
+	}
+
+	public void setDraft_emp_name(String draft_emp_name) {
+		this.draft_emp_name = draft_emp_name;
+	}
+
+	public String getDraft_department() {
+		return draft_department;
+	}
+
+	public void setDraft_department(String draft_department) {
+		this.draft_department = draft_department;
+	}
+
+	public String getApproval_date() {
+		return approval_date;
+	}
+
+	public void setApproval_date(String approval_date) {
+		this.approval_date = approval_date;
+	}
+
+	public int getUrgent_status() {
+		return urgent_status;
+	}
+
+	public void setUrgent_status(int urgent_status) {
+		this.urgent_status = urgent_status;
 	}
 	
 	
