@@ -1,6 +1,8 @@
 package com.spring.groovy.management.controller;
 
 
+import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
+
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -18,6 +20,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.spring.groovy.common.Pagination;
 import com.spring.groovy.management.model.MemberVO;
+import com.spring.groovy.management.model.ProofVO;
 import com.spring.groovy.management.service.InterManagementService;
 
 @Controller
@@ -30,18 +33,12 @@ public class managementController {
 	// 공용 사원관리
 	@RequestMapping(value="/manage/info/viewInfo.on")
 	public ModelAndView viewInfo(ModelAndView mav, HttpServletRequest request) {
-		
-
-		
-		
 		mav.setViewName("manage/each/info/viewInfo.tiles");
 		return mav; 
 	}
 	
 	@RequestMapping(value="/manage/info/viewInfoEnd.on")
 	public ModelAndView viewInfoEnd(ModelAndView mav, HttpServletRequest request) {
-		
-		
 		
 		mav.setViewName("manage/each/info/viewInfo.tiles");
 		return mav; 
@@ -63,12 +60,32 @@ public class managementController {
 	
 	
 	
-	//공용 증명서 - 재직증명서
+	//재직증명서 - 재직증명서
 	@RequestMapping(value="/manage/proof/proofEmployment.on")
-	public String proofEmployment(HttpServletRequest request) {
-		
-		return "manage/each/proof/proofEmployment.tiles";
+	public ModelAndView proofEmployment(ModelAndView mav, HttpServletRequest request) {
+		HttpSession session = request.getSession();
+		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
+		mav.addObject("loginuser", loginuser);
+		mav.setViewName( "manage/each/proof/proofEmployment.tiles");
+		return mav;
 	}
+	
+	//재직증명서 - 재직증명서신청 (Ajax)
+	@RequestMapping(value="/manage/proof/proofEmploymentEnd.on")
+	public String proofEmploymentEnd(ProofVO pvo,  HttpServletRequest request) {
+		
+		int n = 0;
+		// 재직증명서에 넣을 기본정보가져오기
+		n  = service.getproofEmployment(pvo);
+		
+		JSONObject jsonObj = new JSONObject(pvo);
+		jsonObj.put("n", n);
+	
+		return jsonObj.toString();
+	}
+	
+
+	
 	
 	//공용 증명서 -  급여관리(급여조회)
 	@RequestMapping(value="/manage/pay/paySearch.on")

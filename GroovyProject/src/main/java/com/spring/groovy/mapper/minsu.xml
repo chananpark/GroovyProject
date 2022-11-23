@@ -20,6 +20,34 @@
 		from tbl_employee
 		where cpemail = #{cpemail} and pwd = #{pwd}
 	</select>
+	<!-- ================================================================================================= -->
+	
+	<insert id="getproofEmployment" parameterType="com.spring.groovy.management.model.ProofVO">
+		insert into tbl_certificate proofno, fk_empno, issuedate, issueuse
+		values(seq_tbl_certificate.nextval, #{fk_empno}, #{issuedate}, default)
+	</insert>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	

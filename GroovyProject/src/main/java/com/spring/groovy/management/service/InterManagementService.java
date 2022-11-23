@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.spring.groovy.common.Pagination;
 import com.spring.groovy.management.model.MemberVO;
+import com.spring.groovy.management.model.ProofVO;
 
 public interface InterManagementService {
 
@@ -17,10 +18,12 @@ public interface InterManagementService {
 	MemberVO login2(Map<String, String> paraMap);
 
 	// ================================================================================= //
+	//재직증명서 - 재직증명서신청 (Ajax)
 	
 	
 	
 	
+	// ================================================================================= //
 	//관리자 사원관리 - 사원조회
 	List<MemberVO> searchInfoAdmin();
 
@@ -33,6 +36,13 @@ public interface InterManagementService {
 	//관리자 사원관리 - 사원등록
 	int getRegisterInfo(Map<String, String> paraMap);
 
+	//재직증명서 - 재직증명서신청 (Ajax)
+	int getproofEmployment(ProofVO pvo);
+
+
+	
+
+	
 	
 
 

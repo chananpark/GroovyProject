@@ -17,7 +17,15 @@ public interface InterManagementDAO {
 
 	
 	// =========================================================== //
+	//재직증명서 - 재직증명서신청 (Ajax)
+	int getproofEmployment(ProofVO pvo);
+
 	
+	
+	
+	
+	
+	// =========================================================== //
 	//관리자 사원관리 - 사원조회
 	List<MemberVO> searchInfoAdmin();
 
@@ -30,6 +38,8 @@ public interface InterManagementDAO {
 	//관리자 사원관리 - 사원등록
 	int getRegisterInfo(Map<String, String> paraMap);
 
+	
+	
 	
 	
 	

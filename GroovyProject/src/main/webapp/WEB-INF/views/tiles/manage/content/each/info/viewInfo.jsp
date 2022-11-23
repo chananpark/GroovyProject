@@ -259,7 +259,7 @@
 			<th class="t1">주민등록번호</th>
 				<td>
 					<span>
-						<input type="text" id="jubun" name="jubun" value="${loginuser.jubun}" style="display: inline;" required readonly/>${loginuser.jubun}
+						<input type="text" id="jubun" name="jubun" value="${loginuser.jubun}" style="display: inline;" required readonly/>
 					</span>
 				</td>
 			<th class="t1">성별</th>

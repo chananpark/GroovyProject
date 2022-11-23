@@ -33,6 +33,18 @@ public class ManagementDAO implements InterManagementDAO {
 		return loginuser;
 	}
 
+	
+	// ================================================================================= //
+	//재직증명서 - 재직증명서신청 (Ajax)
+	@Override
+	public int getproofEmployment(ProofVO pvo) {
+		int n = sqlsession.insert("minsu.getproofEmployment", pvo);
+		return n;
+	}
+
+		
+	
+	
 	// ================================================================================= //
 	
 	//관리자 사원관리 - 사원조회
@@ -65,7 +77,7 @@ public class ManagementDAO implements InterManagementDAO {
 		return n;
 	}
 
-	
+
 	
 	
 	

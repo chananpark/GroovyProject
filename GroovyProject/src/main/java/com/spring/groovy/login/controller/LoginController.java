@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.spring.groovy.common.Sha256;
 import com.spring.groovy.management.model.MemberVO;
 import com.spring.groovy.management.service.InterManagementService;
 

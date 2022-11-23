@@ -2,6 +2,7 @@
     pageEncoding="UTF-8"%>
     
 <% String ctxPath = request.getContextPath(); %>   
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
     
 <style>
 
@@ -49,11 +50,68 @@
 
 	$(document).ready(function(){
 		
-		
-		
-	}); // end of $(document).ready(function(){
-		
 	
+		// === 용도 선택여부=== //
+		$("button#btn_submit").click(function(e){
+			
+			$("select#issueuse").change(function(e){  
+				
+				const $option = $("#issueuse option:selected").val();
+
+				if($option == "") {
+					alert("용도를 선택해주세요");
+				}
+		
+			});
+			func_subProofEnd();
+			
+		
+		}); // $("select[name='issueuse']").change(function(){  
+		
+			
+			
+			
+	}); // end of $(document).ready(function(){ ------------------------------
+		
+<%-- 	
+		
+	// function Declartion // 
+	// === 증명서신청=== //
+	function subProof(){
+		
+		const frm = document.frm_proofEmp;
+		frm.action = "<%= ctxPath%>/manage/proof/proofEmployment.on";
+		frm.method="POST";
+		frm.submit();
+	}
+	 --%>
+	// >>> 증명서 신청처리 결과 <<< //
+	function func_subProofEnd(){
+	
+		const queryString = $("form[name='frm_proofEmp']").serialize();
+		
+		$.ajax({
+			url:"<%= ctxPath%>/manage/proof/proofEmploymentEnd.on ",
+			data:queryString, 
+			dataType:"json",
+			success:function(json){
+				
+				if(json.n != 1) {
+					alert("재직증명서 신청 실패하였습니다.");
+				}
+				
+				alert("재직증명서 성공 실패하였습니다.");
+				return "/manage/proof/proofEmploymentEnd.tiles";
+			},
+			error: function(request, status, error){
+	            alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+	      }	
+		
+		}); // end of $.ajax({ ------------------
+	
+	}
+		
+		
 
 </script>
 
@@ -68,41 +126,44 @@
 	</div>
 	
 	<h5 class='mx-4'>증명서 신청</h5>
-
+	
 	<div class=" mx-4">
 	<table class="table table-bordered table-sm">
+	<c:if test="${ not empty sessionScope.loginuser }">
 		<tr>
-			<th>신청번호</th>
-			<td><input type="text" name=""/></td>
+			<th><span style="color: red;">*</span>회사명</th>
+			<td><input type="text" value="(주)그루비"/></td>
+			<th><span style="color: red;">*</span>성명</th>
+			<td><input type="text" name="name" value="${loginuser.name}"/></td>
 			<th><span style="color: red;">* </span>신청일자</th>
-			<td><input type="text" name=""/></td>
-			<th><span style="color: red;">* </span>사원번호</th>
-			<td><input type="text" name=""/></td>
+			<td><input type="text" name="issuedate" value="sysdate"/></td>
 		</tr>
 		<tr>
 			<th>부서</th>
-			<td><input type="text" name=""/></td>
-			<th><span style="color: red;">* </span>성명</th>
-			<td><input type="text" name=""/></td>
-			<th><span style="color: red;">* </span>발행일자</th>
-			<td><input type="text" name=""/></td>
-		</tr>
-		<tr>
-			<th>사업장</th>
-			<td><input type="text" name=""/></td>
+			<td><input type="text" name="bumun" value="${loginuser.bumun}"/></td>
+			<th>부서</th>
+			<td><input type="text" name="department" value="${loginuser.department}"/></td>
 			<th>직급</th>
-			<td><input type="text" name=""/></td>
+			<td><input type="text" name="position" value="${loginuser.position}"/></td>
+		</tr>
+		
+		<tr>
+			<th><span style="color: red;">* </span>사원번호</th>
+			<td><input type="text" name="empno"value="${loginuser.empno}"/></td>
 			<th>용도</th>
 			<td> 
-				<select style="border: solid 1px #cccccc;">
+				<select name="issueuse" id="issueuse" onchange="" style="border: solid 1px #cccccc;">
+					<option> 용도를 선택해주세요 </option>
 					<option value="1">은행제출용</option>
 					<option value="2">공공기관제출용</option>
 				</select>
 			</td>
 		</tr>
+		</c:if>
 	</table>
 	<div align="right">
-		<button id="btn_update" style="color: white; background-color:#086BDE; width: 5%;" class="btn" onclick="viewDetailProof" data-toggle="modal" data-target="#viewDetailProof">신청</button>
+		<button id="btn_submit" style="color: white; background-color:#086BDE;  font-size: 14px;" class="btn" onclick="subProof">신청</button>
+		<button id="btn_view" style="color: white; background-color:#086BDE; font-size: 14px;" class="btn" onclick="viewDetailProof" data-toggle="modal" data-target="#viewDetailProof">증명서보기</button>
 	</div>
 	</div>
 </div>

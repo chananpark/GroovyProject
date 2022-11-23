@@ -54,6 +54,7 @@ create table tbl_pay
 );
 -- Table TBL_PAY이(가) 생성되었습니다.
 
+drop table tbl_pay
 
 -- 급여테이블 시퀀스
 create sequence seq_tbl_pay
@@ -203,8 +204,8 @@ from(
 WHERE RNO BETWEEN 1 AND 10
 		and empno =
 
-
-
+select *
+from tbl_employee
 
 INSERT INTO tbl_employee 
 (empno,cpemail,name,position,jubun,postcode,ADDRESS,DETAILADDRESS, EXTRAADDRESS
@@ -212,12 +213,48 @@ INSERT INTO tbl_employee
 ,mobile,depttel,joindate,empstauts,bank,account,annualcnt,gender)
 VALUES
 
+insert into tbl_certificate 
+values(seq_tbl_certificate.nextval, 13, sysdate, '1');
+(select name, empno, bumun,department, position from tbl_employee)
 
+select *
+from tbl_certificate
 
+rollback
 
+proofno              number             not null   -- 증명서번호
+,fk_empno             number             not null   -- 사원번호
+,issuedate            date default sysdate          -- 발급일자(sysdate)
+,issueuse            
 
+insert into tbl_certificate 
+values(   seq_tbl_certificate.nextval, 13, sysdate, '1',
+(select name, empno, bumun,department, position, proofno, issuedate, issueuse
+from tbl_employee A, tbl_certificate B
+where A.empno = B.fk_empno) )
 
+insert into tbl_certificate 
+values(seq_tbl_certificate.nextval, 13, sysdate, '1')
 
+INSERT INTO tbl_certificate C (
+	proofno
+    , fk_empno
+    , issuedate
+    , issueuse
+
+)
+SELECT
+    name, empno, bumun,department, position, proofno, issuedate, issueuse
+
+FROM tbl_employee 
+
+INNER JOIN tbl_employee e  ON 1=1
+
+insert all 
+    into tbl_certificate values(seq_tbl_certificate.nextval, 13, sysdate, '1',)
+    into tbl_employee  name, empno, bumun,department, position, proofno, issuedate, issueuse
+    SELECT name, empno, bumun,department, position, proofno, issuedate, issueuse
+    FROM tbl_employee 
 
 
 
