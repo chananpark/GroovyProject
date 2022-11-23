@@ -29,6 +29,9 @@ public class MemberVO {
 	private String annualcnt;          // 연차갯수
 	
 
+	
+	
+
 	public String getEmpno() {
 		return empno;
 	}

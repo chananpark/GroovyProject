@@ -155,15 +155,6 @@
 	// >>> 다음으로 넘어가는 함수 생성하기 <<< 
 	function func_login() {
 		
-		const pwd = $("input#pwd").val();
-		
-		if(pwd.trim() == "") {
-			$("div#first_error").show();
-			$("input#pwd").val("");
-			$("input#pwd").focus();
-			return;  // 종료
-		}
-		
 		const frm = document.frm_login
 		frm.action = "<%= ctxPath%>/login2.on";
 		frm.method = "POST";

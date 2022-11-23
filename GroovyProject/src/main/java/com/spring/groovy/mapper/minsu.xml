@@ -23,7 +23,7 @@
 	
 	
 	
-	
+	<!-- ================================================================================================= -->
 	
 	
 	<!-- 관리자 사원관리 - 사원조회 -->
@@ -31,6 +31,66 @@
 		select empno, name, position, department,cpemail,mobile,joindate
 		from tbl_employee
 	</select>
+	
+	<!-- 관리자 사원조회 - 회원목록 수 조회  -->
+	<select id="getsearchInfoAdmin" resultType="int" parameterType="com.spring.groovy.common.Pagination" >
+		-SELECT COUNT(*) FROM tbl_employee
+		<if test='searchType != "" and searchWord != "" '>
+		WHERE LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
+		</if>
+
+	</select>
+	
+	<!-- 관리자 사원관리 - 사원조회 한 페이지에 표시할 글 목록조회-->
+	<select id="getSearchInfoAdminList" resultType="com.spring.groovy.management.model.MemberVO" parameterType="HashMap" >
+		select *
+		from (SELECT ROWNUM AS RNO, v.*
+			from( 
+			    select *
+			    from tbl_employee
+			     <if test='searchType != "" and searchWord != "" '>
+		            WHERE LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
+	            </if>
+	            ORDER BY ${sortType} ${sortOrder}
+			)V)
+		WHERE RNO BETWEEN #{startRno} AND #{endRno}
+	</select>
+	
+	
+	
+	
+	<!-- 관리자 사원관리 - 사원등록 -->
+	<insert id="getRegisterInfo" parameterType="HashMap" >
+		insert into tbl_employee 
+			(empno,cpemail,name,position,jubun,postcode,address,detailaddress, extraaddress
+			,empimg,birthday, bumun,department,pvemail
+			,mobile,depttel,joindate,empstauts,bank,account,annualcnt,gender)
+		values(  ${empno}, ${cpemail}, ${name}, ${position}, ${jubun}, ${postcode}, ${address}, ${detailaddress}, ${extraaddress}
+				,${empimg}, ${birthday}, ${bumun}, ${department}, ${pvemail}, ${mobile}, ${depttel}, ${joindate}, ${empstauts}
+				, ${bank}, ${account}, ${annualcnt}, ${gender})
+	</insert>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 		
 </mapper>

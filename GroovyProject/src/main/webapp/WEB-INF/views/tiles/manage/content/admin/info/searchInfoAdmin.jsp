@@ -43,17 +43,53 @@
 	$(document).ready(function(){
 	
 		$('.eachmenu3').show();
-		 
+		
+		// *** select 태그에 대한 이벤트는 click이 아닌 change이다. ***//
+		// 페이지당 회원명수 선택 함수 생성하기
+		$("select#sizePerPage").bind('change',function(){
+			goSearch(); 
+		});// end of $("select#sizePerPage").bind('change',function()------------------------------
+				
+		
+		// === 검색어 엔터하면 === 
+		$("input#searchWord").keyup(function(e){
+			if(e.keyCode == 13){
+				go_search();
+			}
+		}); // end of $("input#searchWord").keyup(function(){-------------------
+			
+		// === 검색버튼을 누르면 ===
+		$("button#go_search").click(function(){
+			go_search();
+		}); // end of $("button#go_search").click(function(){------------------------
+		
+			
+		// 검색시 검색조건 및 검색어 값 유지시키기
+		if( ${not empty requestScope.paraMap} ) {
+			$("select#searchType").val("${requestScope.searchType}");
+			$("input#searchWord").val("${requestScope.searchWord}");
+		}
+		
+			
 		 
 	}); // end of $(document).ready(function(){
 		
 		
 	// >>> Function Declartion<<<	
-
 	
-	// end of function go_detailInfo(){
+	
+	// >>> 검색기능 <<<
+	function go_search() {
 		
-
+	
+		const frm = document.frm_searchInfo;
+		frm.method = "GET";
+		frm.action = "<%= ctxPath%>/manage/admin/searchInfoAdmin.on";
+		frm.submit();
+		
+	} // end of function go_search() { -----------------------
+		
+	
 </script>
 
 
@@ -72,13 +108,13 @@
 		<div class="pt-2">
 			<span class="float-right">
 			<span >
-				<select style="width: 110px; border:solid 1px #cccccc;">
-					<option>사원명</option>
-					<option>부서명</option>
+				<select id="searchType" name="searchType" style="width: 110px; border:solid 1px #cccccc;">
+					<option value="1">사원명</option>
+					<option value="2">부서명</option>
 				</select> 
 			</span>
-			<input type="text"style="width: 120px; border:solid 1px #cccccc;"/>
-			<button class="btn btn-sm mr-3" style="background-color: #086BDE; color:white;"><i class="fas fa-search"></i>검색</button>
+			<input type="text" id="searchWord" placeholder="검색어를 입력하세요" style="width: 120px; border:solid 1px #cccccc;"/>
+			<button class="btn btn-sm mr-3" id="go_search" style="background-color: #086BDE; color:white;"><i class="fas fa-search"></i>검색</button>
 			</span>
 		</div>
 	</div>

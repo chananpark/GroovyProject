@@ -37,9 +37,9 @@
 	        }
 	    }); // end of  $(".topMenu").click(function(e) {-------------------
 	    	
-	    	console.log("${loginuser.empno}");
+	    //	console.log("${loginuser.empno}");
 	    
-	    	console.log("${loginuser}");
+	    //	console.log("${loginuser}");
 	    
 	    });
 

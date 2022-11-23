@@ -181,5 +181,45 @@ WHERE account = 210123456789
 select empno, name, position, department,cpemail,mobile,joindate
 from tbl_employee
 
-desc
+SELECT * 
+		FROM ( SELECT A.*, ROWNUM AS RNO
+		    FROM ( SELECT *
+		            FROM
+		            VIEW_MY_DRAFT_PROCESSED
+                
+		            ORDER BY sortType
+		            )A )
+		WHERE RNO BETWEEN #{startRno} AND #{endRno}
+		and FK_APPROVAL_EMPNO = #{empno}
+
+select *
+from (SELECT ROWNUM AS RNO, v.*
+from( 
+    select *
+    from tbl_employee
+    order by bumun
+)V)
+
+WHERE RNO BETWEEN 1 AND 10
+		and empno =
+
+
+
+
+INSERT INTO tbl_employee 
+(empno,cpemail,name,position,jubun,postcode,ADDRESS,DETAILADDRESS, EXTRAADDRESS
+,EMPIMG,birthday, bumun,department,pvemail
+,mobile,depttel,joindate,empstauts,bank,account,annualcnt,gender)
+VALUES
+
+
+
+
+
+
+
+
+
+
+
 

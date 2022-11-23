@@ -61,6 +61,9 @@
 		border: solid 1px #cccccc;
 	}
 	
+	.msg_error {
+		color: red;
+	}
 	
 	
 	 /* === 모달 CSS === */
@@ -87,18 +90,55 @@
 	    left: -10%;
 		top: 10%;
  	}
+ 	
+ 	
 	
 </style>
 
 <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 <script type="text/javascript">
 
-	
+$("div.error").hide();
 	$(document).ready(function(){
 	
 		 $('.eachmenu3').show();
+		 $("div.msg_error").hide();
 		 $("div#msg_probation").hide();
 		 
+
+		
+		 // === 주민등록번호=== // 
+		 $("input#jubun").blur(function(e){
+			 
+			 const $target = $(e.target);
+			 const regExp = /\d{2}([0]\d|[1][0-2])([0][1-9]|[1-2]\d|[3][0-1])[-]*[1-4]\d{6}/g;
+				/*	 \d{2} : 맨앞 정수 2자리(생년)는 어떤 정수값이 와도 상관없다.
+		
+					 ([0]\d|[1][0-2]) : 첫자리가 0인경우는 뒤에 어떤 정수가 와도 괜찮다. ,, 첫자리가 1인경우 뒷자리는 0,1,2만 올수있다. 
+		
+					  // (01-12 생월을 표현)
+		
+					 ([0][1-9]|[1-2]\d|[3][0-1]) : 생일은 첫자리가 0이면 뒷자리가 0이될경우 0일이 되기 때문에 0다음에는 1-9만 올 수있다.
+		
+					 [-]* : 하이픈은 0개 or 1개다.
+		
+					 [1-4] : 주민번호 뒷자리 첫번째 숫자는 1~4만 갖는다.
+		
+					 \d{6} : 주민번호 첫자리를 제외한 숫자는 총 6자리다.
+				*/
+			 const bool = regExp.test( $target.val() );
+			
+			 if(!bool) {
+				 $("div.msg_error").show();
+				 $("input#jubun").val().remove();
+			 }
+			 else {
+				 $("div.msg_error").hide();
+			 }
+			
+		 }); //  end of $("input#jubunbirth").bulr((e) => {--------------------
+		 
+		
 		 
 		// === 생년월일 === //
 	        
@@ -106,7 +146,7 @@
 		    var com_year = dt.getFullYear();
 		    var year = "";
 		    
-		 // 년도 뿌려주기
+		    // 년도 뿌려주기
 		    $("#year").append("<option value=''>년도</option>");
 		    // 올해 기준으로 -50년부터 +1년을 보여준다.
 		    for (var i = (com_year - 50); i <= (com_year); i++) {
@@ -142,7 +182,6 @@
 		 
 		 
 		 
-		 
 		// === 우편번호 찾기를 클릭했을 때 이벤트 처리하기 === //
 		 $("button#btn_adrsearch").click(function() {
 		 	b_flag_btn_adrsearch_click = true;
@@ -153,6 +192,85 @@
 		 	alert("우편번호 입력은 \"우편번호찾기\"를 클릭하여 입력해야 합니다. ");
 		 	$(this).val("");
 		 });
+		 
+		 
+		 
+		 
+		 // === 핸드폰 번호 === //
+		 $("input#hp2").blur( function(e) {
+				
+				const $target = $(e.target);
+				
+				// const regExp = /^[1-9][0-9]{2,3}$/g;
+				// 또는
+				const regExp = new RegExp( /^[1-9][0-9]{2,3}$/g);
+				// 숫자 3자리 또는 4자리만 들어오도록 검사하는 정규표현식 객체 생성
+				const bool = regExp.test( $target.val() );
+				
+				if(!bool) {
+					// 국번이 정규표현식에 위배된 경우
+					$("table#tblMemberRegister :input").prop("disabled", true);
+					$target.prop("disabled", false);
+					
+					// $target.next().show();
+					// 또는
+					$target.parent().find("span.error").show();
+					
+					$target.focus();
+					
+				}
+				else {
+					// 국번이 정규표현식에 맞는 경우
+					$("table#tblMemberRegister :input").prop("disabled", false);
+					
+					// $target.next().hide();
+					// 또는
+					$target.parent().find("span.error").hide();
+					
+				}
+				
+			}); // end of $("input#hp2").blur() ----------------- // 아이디가 hp2 인 것은 포커스를 잃어버렸을 경우(blur) 이벤트를 처리해주는 것이다.
+			
+			
+			
+			
+			// ------------------------------------------------------------------------
+			$("input#hp3").blur( function(e) {
+				
+				const $target = $(e.target);
+				
+				// const regExp = /^[0-9]{4}$/g;
+				// 또는
+				const regExp = new RegExp(/^[0-9]{4}$/g);
+				// 숫자 3자리 또는 4자리만 들어오도록 검사하는 정규표현식 객체 생성
+				const bool = regExp.test( $target.val() );
+				
+				if(!bool) {
+					// 전화번호 마지막 네자리가 정규표현식에 위배된 경우
+					$("table#tblMemberRegister :input").prop("disabled", true);
+					$target.prop("disabled", false);
+					
+					// $target.next().show();
+					// 또는
+					$target.parent().find("span.error").show();
+					
+					$target.focus();
+					
+				}
+				else {
+					// 전화번호 마지막 네자리가 정규표현식에 맞는 경우
+					$("table#tblMemberRegister :input").prop("disabled", false);
+					
+					// $target.next().hide();
+					// 또는
+					$target.parent().find("span.error").hide();
+					
+				}
+				
+			}); // end of $("input#hp3").blur() ----------------- // 아이디가 hp3 인 것은 포커스를 잃어버렸을 경우(blur) 이벤트를 처리해주는 것이다.
+
+			
+			
 		 
 		
 		// === 수습시간 체크박스 버튼을 누르면 === // 
@@ -175,8 +293,8 @@
 				}
 				
 			});
-
-		 
+			
+			
 	}); // end of $(document).ready(function(){}-----------------------------------------
 
 
@@ -276,6 +394,59 @@
 	} //function bumunchange(){ -------------------------
 		
 
+		function go_search() {
+			$('#go_searchTel').modal({backdrop: 'static'});
+		}
+	
+	
+<%-- 	
+	
+	// >>> 등록버튼을 누르면 <<<
+	function btn_register() {
+	 
+     // 보내야할 데이터를 선정하는 또 다른 방법
+	  // jQuery에서 사용하는 것으로써,
+	  // form태그의 선택자.serialize(); 을 해주면 form 태그내의 모든 값들을 name값을 키값으로 만들어서 보내준다. 
+	  const queryString = $("form[name=addWriteFrm]").serialize();
+ 	 
+	   
+	 var queryString = $("form[name=addWriteFrm]").serialize();
+	 
+	 $("form[name=addWriteFrm]").ajaxForm({
+		  url:"<%= request.getContextPath()%>/manage/admin/registerInfoEnd.on",
+		  data:queryString,
+		  enctype:"multipart/form-data",
+		  type:"POST",
+		  dataType:"JSON",
+		  success:function(json){
+			  
+			  if(json != "") {
+				  alert("사원등록 완료되었습니다.");
+			  }
+			  alert("사원등록 실패.");
+		  },
+		  error: function(request, status, error){
+			  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+		  }
+	  });
+		
+	} // end of function btn_register() { -----------------------------
+	
+	
+	 --%>
+	// >>> 등록버튼을 누르면 <<<
+	function btn_register() {
+		 
+		
+		const frm = document.frm_manageInfo
+		frm.action = "<%= ctxPath%>/manage/admin/registerInfoEnd.on";
+		frm.method = "POST";
+		frm.submit();
+	
+	}
+	
+	
+	
 	
 	
 	
@@ -298,9 +469,7 @@
 			<td rowspan='4' style="width:2%;"><img class="float-center" src="<%= ctxPath%>/resources/images/picture/꼬미사진.jpg" height="150px;" width="150px" alt="..."/></td>
 			<th class="t1"><span class="alert_required" style="color: red;">*</span>사원번호</th>
 			<td>	
-				<input type="text" id="empno" name="empno" />
-				<button type="button" class="btn btn-sm ml-5 btn_check">확인</button>
-				<div id="empnocheckResult"></div>
+				<input type="text" id="empno" name="empno" placeholder="자동입력됩니다." readonly/>
 			</td>
 			
 			<th class="t1"><span class="alert_required" style="color: red;">*</span>성명</th>
@@ -310,9 +479,9 @@
 			<th class="t1"><span class="alert_required" style="color: red;">*</span>주민등록번호</th>
 				<td>
 					<span>
-						<input type="text" id="jubun" name="jubunbirth" style="display: inline; width: 80px;" /> - 
-						<input type="text" id="jubun" name="jubuninfo" style="display: inline;width: 80px;" />
+						<input type="text" id="jubun" name="jubun" style="display: inline;" />
 					</span>
+					<div class="msg_error">형식에 올바르지 않습니다.</div>
 				</td>
 			<th class="t1">성별</th>
 			 <td style="text-align: left;">
@@ -324,9 +493,9 @@
 			<th class="t1"><span class="alert_required" style="color: red;">*</span>생년월일</th>
 			<td>
 				<span id="birthday" name="birthday">
-				    	<select name="birth" id="birthyyyy" title="년도" class=" requiredInfo" ></select>
-						<select name="birth" id="birthmm" title="월" class=" requiredInfo" ></select>
-						<select name="birth" id="birthdd" title="일" class=" requiredInfo"></select>
+				    	<select name="birthyyyy" id="birthyyyy" title="년도" class=" requiredInfo" ></select>
+						<select name="birthmm" id="birthmm" title="월" class=" requiredInfo" ></select>
+						<select name="birthdd" id="birthdd" title="일" class=" requiredInfo"></select>
 				</span>
 			</td>
 			<th></th>
@@ -421,12 +590,20 @@
 			<th><span class="alert_required" style="color: red;">*</span>입사일자</th>
 			<td><input type="date" style="width: 165px;" /></td>
 		</tr>
+		<tr>
+			<th><span class="alert_required" style="color: red;">*</span>은행</th>
+			<td>
+				<input type="text" class="emppay" name="emppay" readonly />
+			</td>
+			<th><span class="alert_required" style="color: red;">*</span>계좌</th>
+			<td><input type="text" style="width: 165px;" /></td>
+		</tr>
 	</table>
 	
 	<%-- 정보수정 페이지에서 보이는 버튼 --%>
 	<div align="right" style="margin: 3% 0;">
 		<button id="btn_update" style="background-color:#F9F9F9; border: none; width: 80px;">삭제</button>
-		<button id="btn_update" style="color: white; background-color:#086BDE; border: none; width: 80px;">저장</button>
+		<button id="btn_register" onclick ="btn_register" style="color: white; background-color:#086BDE; border: none; width: 80px;">저장</button>
 	</div>
 </div>
 </form>
@@ -460,10 +637,14 @@
          	</thead>
 	         <tbody>
 	         <tr class="text-center">
-	         	<td style="width: 5px;"><input type="checkbox" /></td>
-				<td>개발팀</td>
-				<td>SW</td>
-				<td>02-2232-2233</td>
+		         <c:forEach  var="employee" items="${requestScope.n}" varStatus="status">
+					<tr>
+			         	<td style="width: 5px;"><input type="checkbox" /></td>
+						<td>${employee.bumun}</td>
+						<td>${employee.department}</td>
+						<td>${employee.depttel}</td>
+					</tr>
+				</c:forEach>
 	         </tr>
 	         </tbody>
          </table>
