@@ -48,6 +48,19 @@
 		color: #086BDE !important;
 		background-color: #E3F2FD;
 	}
+	
+	.header_profile_css {
+		border-radius: 50%; 
+		background-color: #E3F2FD; 
+		width:50px; 
+		height:50px; 
+		display: flex; 
+		justify-content: center; 
+		align-items: center;
+		color:white;
+		font-size: 25pt;
+		font-weight: bold;
+	}
 </style>
 
 <script>
@@ -61,6 +74,7 @@ $(()=>{
 	
 	$('div#'+menuName).addClass('activeHeaderMenu');
 	
+	$("#header_profile_bg").text("${sessionScope.loginuser.name}".substring(0,1));
 });
 </script>
 
@@ -150,7 +164,15 @@ $(()=>{
     <li class="nav-item" style="margin-left: 13%;">
       	<div class="nav-link dropdown" onClick='location.href="#"'>
     		<div class="dropbtn">
-    			<img style="border-radius: 50%; height:50px; width: 50px;" src="<%=ctxPath %>/resources/images/test/cat_ex.PNG" />
+    			
+    			<c:if test="${empty sessionScope.loginuser.empimg}">
+					<div class="header_profile_css" id="header_profile_bg"></div>
+				</c:if>
+				
+				<c:if test="${not empty sessionScope.loginuser.empimg}">
+					<img style="border-radius: 50%; height:50px; width: 50px;" src="<%=ctxPath %>/resources/images/profile/${sessionScope.loginuser.empimg}" />
+				</c:if>
+								
    			</div>
    			<div class="dropdown-content">
 			    <a href="#">프로필</a>

@@ -6,6 +6,7 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.spring.groovy.management.model.MemberVO;
 import com.spring.groovy.schedule.model.CalSmallCategoryVO;
 import com.spring.groovy.schedule.model.InterScheduleDAO;
 
@@ -115,6 +116,30 @@ public class ScheduleService implements InterScheduleService {
 	public List<CalSmallCategoryVO> showMyCalendar(String empno) {
 		List<CalSmallCategoryVO> calMyCateList = dao.showMyCalendar(empno); 
 		return calMyCateList;
+	}
+
+
+	// === 일정 등록시 전사일정, 팀별일정, 개인일정 선택에 따른 서브캘린더 종류를 알아오기 ===
+	@Override
+	public List<CalSmallCategoryVO> selectSmallCateg(Map<String, String> paraMap) {
+		List<CalSmallCategoryVO> smallCategList = dao.selectSmallCateg(paraMap);
+		return smallCategList;
+	}
+
+
+	// === 참석자를 찾기 위한 특정글자가 들어간 회원명단 불러오기 ===
+	@Override
+	public List<MemberVO> searchJoinUserList(String joinUserName) {
+		List<MemberVO> joinUserList = dao.searchJoinUserList(joinUserName);
+		return joinUserList;
+	}
+
+	
+	// === 일정 등록하기 ===
+	@Override
+	public int insertScheduleEnd(Map<String, String> paraMap) {
+		int n = dao.insertScheduleEnd(paraMap);
+		return n;
 	}
 	
 	
