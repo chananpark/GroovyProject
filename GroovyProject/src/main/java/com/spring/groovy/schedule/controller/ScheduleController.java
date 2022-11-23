@@ -58,16 +58,6 @@ public class ScheduleController {
 		return mav;
 	}
 	
-	
-	// === 일정 상세 보기 ===
-	@RequestMapping(value="/schedule/viewSchedule.on")
-	public ModelAndView viewSchedule(HttpServletRequest request, ModelAndView mav) { 
-		
-		mav.setViewName("schedule/view_schedule.tiles");
-		return mav;
-	}
-	
-	
 	// === 일정 수정 하기 ===
 	@RequestMapping(value="/schedule/editSchedule.on")
 	public ModelAndView editSchedule(HttpServletRequest request, ModelAndView mav) { 
@@ -306,9 +296,7 @@ public class ScheduleController {
 				JSONObject jsObj = new JSONObject();
 				jsObj.put("empno", mvo.getEmpno());
 				jsObj.put("name", mvo.getName());
-				jsObj.put("bumun", mvo.getBumun());
-				jsObj.put("department", mvo.getDepartment());
-				jsObj.put("position", mvo.getPosition());
+				jsObj.put("cpemail", mvo.getCpemail());
 				
 				jsonArr.put(jsObj);
 			}
@@ -328,7 +316,6 @@ public class ScheduleController {
 	//  확인용 startdate => 20211125140000
    	    
 		String enddate = request.getParameter("enddate");
-		System.out.println("확인용 enddate => " + enddate);
 		String subject = request.getParameter("subject");
 		String fk_lgcatgono= request.getParameter("fk_lgcatgono");
 		String fk_smcatgono = request.getParameter("fk_smcatgono");
@@ -375,16 +362,87 @@ public class ScheduleController {
 	} // end of public ModelAndView registerSchedule_end(ModelAndView mav, HttpServletRequest request) throws Throwable
 	
 		
+	// === 모든 캘린더(사내캘린더, 내캘린더, 공유받은캘린더)를 불러오는것 ===
+	@ResponseBody
+	@RequestMapping(value="/schedule/selectSchedule.on", produces="text/plain;charset=UTF-8")
+	public String selectSchedule(HttpServletRequest request) {
+		
+		// 등록된 일정 가져오기
+		
+		String empno = request.getParameter("empno");
+		String cpemail = request.getParameter("cpemail");
+		
+		Map<String,String> paraMap = new HashMap<String, String>();
+		paraMap.put("empno", empno);
+		paraMap.put("cpemail", cpemail);
+				
+		List<Map<String,String>> scheduleList = service.selectSchedule(paraMap);
+		
+		JSONArray jsArr = new JSONArray();
+		
+		if(scheduleList != null && scheduleList.size() > 0) {
+			
+			for(Map<String,String> map : scheduleList) {
+				JSONObject jsObj = new JSONObject();
+				jsObj.put("scheduleno", map.get("scheduleno"));
+				jsObj.put("startdate", map.get("startdate"));
+				jsObj.put("enddate", map.get("enddate"));
+				jsObj.put("subject", map.get("subject"));
+				jsObj.put("color", map.get("color"));
+				jsObj.put("place", map.get("place"));
+				jsObj.put("joinuser", map.get("joinuser"));
+				jsObj.put("content", map.get("content"));
+				jsObj.put("fk_smcatgono", map.get("fk_smcatgono"));
+				jsObj.put("fk_lgcatgono", map.get("fk_lgcatgono"));
+				jsObj.put("empno", map.get("fk_empno"));
+				jsObj.put("department", map.get("department"));
+				
+				jsArr.put(jsObj);
+			}// end of for-------------------------------------
+		
+		}
+		
+		return jsArr.toString();
+	} // end of public String selectSchedule(HttpServletRequest request)
+		
+		
+		
+	// === 일정 상세보기 ===
+	@RequestMapping(value="/schedule/viewSchedule.on")
+	public ModelAndView viewSchedule(ModelAndView mav, HttpServletRequest request) {
+		
+		String scheduleno = request.getParameter("scheduleno");
+		
+		/*
+		// 검색하고 나서 취소 버튼 클릭했을 때 필요함
+		String listgobackURL_schedule = request.getParameter("listgobackURL_schedule");
+		mav.addObject("listgobackURL_schedule",listgobackURL_schedule);
+
+		
+		// 일정상세보기에서 일정수정하기로 넘어갔을 때 필요함
+		String gobackURL_detailSchedule = Myutil.getCurrentURL(request);
+		mav.addObject("gobackURL_detailSchedule", gobackURL_detailSchedule);
+		
+		try {
+			Integer.parseInt(scheduleno);
+			Map<String,String> map = service.detailSchedule(scheduleno);
+			mav.addObject("map", map);
+			mav.setViewName("schedule/detailSchedule.tiles1");
+		} catch (NumberFormatException e) {
+			mav.setViewName("redirect:/schedule/scheduleManagement.action");
+		}
+		*/
+		
+		Map<String,String> map = service.viewSchedule(scheduleno);
+		mav.addObject("map", map);
+		
+		mav.setViewName("schedule/view_schedule.tiles");
+		return mav;
+	} // end of public ModelAndView viewSchedule(ModelAndView mav, HttpServletRequest request)
 	
 		
-		
-		
-		
-		
-		
-		
-		
-		
+
+	
 		
 		
 		

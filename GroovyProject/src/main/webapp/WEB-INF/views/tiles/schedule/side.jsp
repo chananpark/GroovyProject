@@ -249,7 +249,7 @@
 					
 					$.each(json, function(index, item){
 						html += '<div class="side_vertical">';
-						html += '<input name="com_smcategChk" type="checkbox" id="ComCal'+item.smcatgono+'" class="calendar_checkbox checkbox_color mr-2" checked/><label class="pt-1 mb-0" style="width:70px;" for="ComCal'+item.smcatgono+'">'+item.smcatgoname+'</label>';
+						html += '<input name="com_smcategChk" type="checkbox" id="ComCal'+item.smcatgono+'" value="'+item.smcatgono+'" class="calendar_checkbox checkbox_color mr-2 com_smcategChk" checked/><label class="pt-1 mb-0" style="width:70px;" for="ComCal'+item.smcatgono+'">'+item.smcatgoname+'</label>';
 						
 						// 인사총무팀만 전사일정 수정, 삭제 가능
 						if("${sessionScope.loginuser.department}" == '인사총무팀') {						
@@ -377,7 +377,7 @@
 					
 					$.each(json, function(index, item){
 						html += '<div class="side_vertical">';
-						html += '<input name = "team_smcategChk" type="checkbox" id="teamCal'+item.smcatgono+'" class="calendar_checkbox checkbox_color mr-2" checked/><label class="pt-1 mb-0"  style="width:70px;" for="teamCal'+item.smcatgono+'">'+item.smcatgoname+'</label>'
+						html += '<input name = "team_smcategChk" type="checkbox" id="teamCal'+item.smcatgono+'" value="'+item.smcatgono+'" class="calendar_checkbox checkbox_color mr-2 team_smcategChk" checked/><label class="pt-1 mb-0"  style="width:70px;" for="teamCal'+item.smcatgono+'">'+item.smcatgoname+'</label>'
 			      		html += '<span><i class="ml-2 far fa-edit text-secondary" onclick="editTeamCalCateg('+item.smcatgono+',\''+item.smcatgoname+'\')"></i></span>';
 			      		html += '<span><i class="ml-1 fas fa-trash-alt text-secondary" onclick="delCalCateg('+item.smcatgono+',\''+item.smcatgoname+'\')"></i></span></div>';
 					 
@@ -498,7 +498,7 @@
 					
 					$.each(json, function(index, item){
 						html += '<div class="side_vertical">';
-						html += '<input name="my_smcategChk" type="checkbox" id="teamCal'+item.smcatgono+'" class="calendar_checkbox checkbox_color mr-2" checked/><label class="pt-1 mb-0"  style="width:70px;" for="teamCal'+item.smcatgono+'">'+item.smcatgoname+'</label>'
+						html += '<input name="my_smcategChk" type="checkbox" id="teamCal'+item.smcatgono+'" value="'+item.smcatgono+'" class="calendar_checkbox checkbox_color mr-2 my_smcategChk" checked/><label class="pt-1 mb-0"  style="width:70px;" for="teamCal'+item.smcatgono+'">'+item.smcatgoname+'</label>'
 			      		html += '<span><i class="ml-2 far fa-edit text-secondary" onclick="editMyCalCateg('+item.smcatgono+',\''+item.smcatgoname+'\')"></i></span>';
 			      		html += '<span><i class="ml-1 fas fa-trash-alt text-secondary" onclick="delCalCateg('+item.smcatgono+',\''+item.smcatgoname+'\')"></i></span></div>';
 					 
@@ -650,6 +650,11 @@
       		<i class="fas fa-plus icon-right text-secondary" onclick="addMyCalendar();"></i>
       		<ul id="mySmallCateg"></ul>
     	</li>
+    	
+    	<li class="nav-item">
+    		<input type="checkbox" id="sharedCal" class="calendar_checkbox checkbox_color" value="0" checked/>&nbsp;&nbsp;
+    		<label for="sharedCal">공유일정</label>
+    	</li> 
   	</ul>
 
 </nav>

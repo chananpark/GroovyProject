@@ -179,15 +179,39 @@ select SD.scheduleno
      , nvl(SD.content,'') as content
      , SD.fk_smcatgono
      , SD.fk_lgcatgono
-     , SD.fk_userid
+     , SD.fk_empno
      , M.name
      , SC.smcatgoname
 from tbl_calendar_schedule SD 
-JOIN tbl_member M
-ON SD.fk_userid = M.userid
+JOIN tbl_employee M
+ON SD.fk_empno = M.empno
 JOIN tbl_calendar_small_category SC
 ON SD.fk_smcatgono = SC.smcatgono
-where SD.scheduleno = 21;
+where SD.scheduleno = 10;
+
+
+-- 일정 공유자 리스트 찾아오기
+select empno, name, cpemail
+from tbl_employee
+where lower(name) like '%'|| lower('김') ||'%';
+
+
+-- 등록된 일정 달력에 표시하기
+select scheduleno, to_char(startdate,'yyyy-mm-dd hh24:mi'), to_char(enddate,'yyyy-mm-dd hh24:mi'), subject, color, place, joinuser, content, fk_smcatgono, fk_lgcatgono, fk_empno, department
+from tbl_calendar_schedule C join tbl_employee E
+on C.fk_empno = E.empno
+where fk_empno = 15 OR
+fk_lgcatgono = 1 OR
+(fk_lgcatgono = 2 AND department = (select department from tbl_employee where empno = 15) ) OR
+fk_lgcatgono = 3 OR 
+lower(joinuser) like '%'|| lower('shonyj@groovy.com') ||'%'
+order by scheduleno asc;
+
+
+
+DELETE FROM tbl_calendar_schedule
+WHERE scheduleno = 3;
+commit;
 
 ------------- >>>>>>>> 일정관리(풀캘린더) 끝 <<<<<<<< -------------
 

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import com.spring.groovy.management.model.MemberVO;
 import com.spring.groovy.schedule.model.CalSmallCategoryVO;
+import com.spring.groovy.schedule.model.CalendarScheduleVO;
 import com.spring.groovy.schedule.model.InterScheduleDAO;
 
 @Service
@@ -140,6 +141,22 @@ public class ScheduleService implements InterScheduleService {
 	public int insertScheduleEnd(Map<String, String> paraMap) {
 		int n = dao.insertScheduleEnd(paraMap);
 		return n;
+	}
+
+
+	// === 모든 캘린더(사내캘린더, 내캘린더, 공유받은캘린더)를 불러오는것 ===
+	@Override
+	public List<Map<String,String>> selectSchedule(Map<String,String> paraMap) {
+		List<Map<String,String>> scheduleList = dao.selectSchedule(paraMap);
+		return scheduleList;
+	}
+
+
+	// === 일정 상세보기 ===
+	@Override
+	public Map<String, String> viewSchedule(String scheduleno) {
+		Map<String,String> map = dao.viewSchedule(scheduleno);
+		return map;
 	}
 	
 	

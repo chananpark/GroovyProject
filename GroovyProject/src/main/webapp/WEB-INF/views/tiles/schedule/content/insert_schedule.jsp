@@ -199,7 +199,7 @@
 							var name = item.name;
 							if(name.includes(joinUserName)){ // name 이라는 문자열에 joinUserName 라는 문자열이 포함된 경우라면 true , 
 								                             // name 이라는 문자열에 joinUserName 라는 문자열이 포함되지 않은 경우라면 false 
-							   joinUserArr.push(name+"("+item.bumun+"-"+item.department+", "+item.position+")");
+							   joinUserArr.push(name+"("+item.cpemail+")");
 							}
 						});
 						

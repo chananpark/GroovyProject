@@ -51,6 +51,12 @@ public interface InterScheduleDAO {
 
 	// === 일정 등록하기 ===
 	int insertScheduleEnd(Map<String, String> paraMap);
+
+	// === 모든 캘린더(사내캘린더, 내캘린더, 공유받은캘린더)를 불러오는것 ===
+	List<Map<String,String>> selectSchedule(Map<String,String> paraMap);
+
+	// === 일정 상세보기 ===
+	Map<String, String> viewSchedule(String scheduleno);
 	
 	
 	
