@@ -437,9 +437,8 @@ $("div.error").hide();
 	// >>> 등록버튼을 누르면 <<<
 	function btn_register() {
 		 
-		
 		const frm = document.frm_manageInfo
-		frm.action = "<%= ctxPath%>/manage/admin/registerInfoEnd.on";
+		frm.action = "<%= ctxPath%>/manage/admin/registerInfo.on";
 		frm.method = "POST";
 		frm.submit();
 	
@@ -466,7 +465,7 @@ $("div.error").hide();
 	
 	<table class="m-4 mb-3 table table-bordered table-sm" id="first_table">
 		<tr>
-			<td rowspan='4' style="width:2%;"><img class="float-center" src="<%= ctxPath%>/resources/images/picture/꼬미사진.jpg" height="150px;" width="150px" alt="..."/></td>
+			<td rowspan='4' style="width:2%;"><img name="empimg" class="float-center" src="<%= ctxPath%>/resources/images/picture/꼬미사진.jpg" height="150px;" width="150px" alt="..."/></td>
 			<th class="t1"><span class="alert_required" style="color: red;">*</span>사원번호</th>
 			<td>	
 				<input type="text" id="empno" name="empno" placeholder="자동입력됩니다." readonly/>
@@ -539,7 +538,7 @@ $("div.error").hide();
 				<div id="empnocheckResult"></div>
 			</td>
 			<th>외부이메일</th>
-			<td><input type="email" id="mobile" name="mobile" /></td>
+			<td><input type="email" id="pvemail" name="pvemail" /></td>
 
 		</tr>
 	</table>
@@ -596,7 +595,7 @@ $("div.error").hide();
 				<input type="text" class="emppay" name="emppay" readonly />
 			</td>
 			<th><span class="alert_required" style="color: red;">*</span>계좌</th>
-			<td><input type="text" style="width: 165px;" /></td>
+			<td><input type="text" name="account" style="width: 165px;" /></td>
 		</tr>
 	</table>
 	

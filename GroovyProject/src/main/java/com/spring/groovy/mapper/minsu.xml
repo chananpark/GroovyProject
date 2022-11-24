@@ -22,14 +22,19 @@
 	</select>
 	<!-- ================================================================================================= -->
 	
-	<insert id="getproofEmployment" parameterType="com.spring.groovy.management.model.ProofVO">
-		insert into tbl_certificate proofno, fk_empno, issuedate, issueuse
-		values(seq_tbl_certificate.nextval, #{fk_empno}, #{issuedate}, default)
+	<!-- 재직증명서 - 재직증명서신청 (insert) -->
+	<insert id="proofEmployment" parameterType="com.spring.groovy.management.model.ProofVO">
+		insert into tbl_certificate (proofno, fk_empno, issuedate, issueuse)
+		values(seq_tbl_certificate.nextval, #{fk_empno}, sysdate, #{issueuse})
 	</insert>
 	
 	
-	
-	
+	<!-- 재직증명서 신청내역을 가져오기(select) -->
+	<select id="getProofList" resultType="com.spring.groovy.management.model.ProofVO" parameterType="String">
+		select proofno,fk_empno, to_char(issuedate, 'yyyy-mm-dd') issuedate, issueuse
+		from tbl_certificate
+		where fk_empno = #{empno}
+	</select>
 	
 	
 	
@@ -61,8 +66,8 @@
 	</select>
 	
 	<!-- 관리자 사원조회 - 회원목록 수 조회  -->
-	<select id="getsearchInfoAdmin" resultType="int" parameterType="com.spring.groovy.common.Pagination" >
-		-SELECT COUNT(*) FROM tbl_employee
+	<select id="getcountList" resultType="int" parameterType="com.spring.groovy.common.Pagination" >
+		SELECT COUNT(*) FROM tbl_employee
 		<if test='searchType != "" and searchWord != "" '>
 		WHERE LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
 		</if>
@@ -70,7 +75,7 @@
 	</select>
 	
 	<!-- 관리자 사원관리 - 사원조회 한 페이지에 표시할 글 목록조회-->
-	<select id="getSearchInfoAdminList" resultType="com.spring.groovy.management.model.MemberVO" parameterType="HashMap" >
+	<select id="getOnePageCnt" resultType="com.spring.groovy.management.model.MemberVO" parameterType="HashMap" >
 		select *
 		from (SELECT ROWNUM AS RNO, v.*
 			from( 
@@ -79,7 +84,7 @@
 			     <if test='searchType != "" and searchWord != "" '>
 		            WHERE LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
 	            </if>
-	            ORDER BY ${sortType} ${sortOrder}
+	            ORDER BY empno desc
 			)V)
 		WHERE RNO BETWEEN #{startRno} AND #{endRno}
 	</select>

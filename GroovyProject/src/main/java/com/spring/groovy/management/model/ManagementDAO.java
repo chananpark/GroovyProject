@@ -35,50 +35,56 @@ public class ManagementDAO implements InterManagementDAO {
 
 	
 	// ================================================================================= //
-	//재직증명서 - 재직증명서신청 (Ajax)
+	//재직증명서 - 재직증명서신청 (insert)
 	@Override
-	public int getproofEmployment(ProofVO pvo) {
-		int n = sqlsession.insert("minsu.getproofEmployment", pvo);
+	public int proofEmployment(ProofVO pvo) {
+		int n = sqlsession.insert("minsu.proofEmployment", pvo);
 		return n;
 	}
 
-		
+	// 재직증명서 신청내역을 가져오기(select)
+	@Override
+	public List<ProofVO> getProofList(String empno) {
+		List<ProofVO> proofList = sqlsession.selectList("minsu.getProofList", empno);
+		return proofList;
+	}
+
+
+	
 	
 	
 	// ================================================================================= //
 	
 	//관리자 사원관리 - 사원조회
 	@Override
-	public List<MemberVO> searchInfoAdmin() {
-		List<MemberVO> empList = sqlsession.selectList("minsu.searchInfoAdmin");
+	public List<MemberVO> searchInfoAdmin(Map<String, Object> paraMap) {
+		List<MemberVO> empList = sqlsession.selectList("minsu.searchInfoAdmin", paraMap);
 		return empList;
 	}
 
 	// 관리자 사원관리 - 사원조회 한 페이지에 표시할 사원조회 전체 글 개수 구하기
 	@Override
-	public int getsearchInfoAdmin(Pagination pagination) {
-		int n = sqlsession.selectOne("minsu.getsearchInfoAdmin", pagination);
+	public int getcountList(Pagination pagination) {
+		int n = sqlsession.selectOne("minsu.getcountList", pagination);
 		return n;
 	}
 	
 	// 관리자 사원관리 - 사원조회 한 페이지에 표시할 글 목록
 	@Override
-	public int getSearchInfoAdminList(Map<String, Object> paraMap) {
-		int n = sqlsession.selectOne("minsu.getSearchInfoAdminList", paraMap);
-		return 0;
+	public List<MemberVO> getOnePageCnt(Map<String, Object> paraMap) {
+		return sqlsession.selectList("minsu.getOnePageCnt", paraMap);
+		
 	}
 	
 	
 	
 	//관리자 사원관리 - 사원등록
 	@Override
-	public int getRegisterInfo(Map<String, String> paraMap) {
+	public int getRegisterInfo(Map<String, Object> paraMap) {
 		int n = sqlsession.insert("minsu.getRegisterInfo",paraMap);
 		return n;
 	}
 
-
-	
 	
 	
 	

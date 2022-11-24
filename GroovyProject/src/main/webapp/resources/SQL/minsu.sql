@@ -113,6 +113,15 @@ nocycle
 nocache;
 -- Sequence SEQ_TBL_CERTIFICATE이(가) 생성되었습니다.
 
+-- 재직증명서 신청기록 테이블
+create table tbl_proof_history
+(fk_empno         varchar2(40)            not null  --회원아이디
+,logindate         date default sysdate    not null  -- 로그인한 날짜
+,clientip          varchar2(20)            not null
+,constraint  FK_tbl_login_history_fk_userid   foreign key(fk_userid) references tbl_member(userid)
+);
+
+
 -- 이미지 칼럼 추가
 alter table tbl_employee
    add signimg varchar2(200); 
@@ -165,98 +174,36 @@ VALUES(SEQ_TBL_EMPLOYEE.NEXTVAL, 'mangdb@groovy.com', '맹단비', 'qwer1234$',
 
 commit
 
-
+-- 로그인 조회
 select empno, cpemail, name, pwd, position, jubun, postcode, address, detailaddress
      , extraaddress,empimg,birthday, bumun,department,pvemail,mobile,depttel,joindate
      ,empstauts,bank, account,annualcnt, empimg
 from tbl_employee
 where cpemail = minsu@groovy.com and  pwd = 'qwer1234$'
 
-delete from tbl_employee 
-where annualcnt = 15
-
-DELETE FROM tbl_employee 
-WHERE account = 210123456789
-
-
-select empno, name, position, department,cpemail,mobile,joindate
-from tbl_employee
-
-SELECT * 
-		FROM ( SELECT A.*, ROWNUM AS RNO
-		    FROM ( SELECT *
-		            FROM
-		            VIEW_MY_DRAFT_PROCESSED
-                
-		            ORDER BY sortType
-		            )A )
-		WHERE RNO BETWEEN #{startRno} AND #{endRno}
-		and FK_APPROVAL_EMPNO = #{empno}
-
-select *
-from (SELECT ROWNUM AS RNO, v.*
-from( 
-    select *
-    from tbl_employee
-    order by bumun
-)V)
-
-WHERE RNO BETWEEN 1 AND 10
-		and empno =
 
 select *
 from tbl_employee
 
+-- 사원테이블에 정보넣기
 INSERT INTO tbl_employee 
 (empno,cpemail,name,position,jubun,postcode,ADDRESS,DETAILADDRESS, EXTRAADDRESS
 ,EMPIMG,birthday, bumun,department,pvemail
 ,mobile,depttel,joindate,empstauts,bank,account,annualcnt,gender)
 VALUES
 
-insert into tbl_certificate 
-values(seq_tbl_certificate.nextval, 13, sysdate, '1');
-(select name, empno, bumun,department, position from tbl_employee)
 
 select *
 from tbl_certificate
 
-rollback
 
-proofno              number             not null   -- 증명서번호
-,fk_empno             number             not null   -- 사원번호
-,issuedate            date default sysdate          -- 발급일자(sysdate)
-,issueuse            
-
-insert into tbl_certificate 
-values(   seq_tbl_certificate.nextval, 13, sysdate, '1',
-(select name, empno, bumun,department, position, proofno, issuedate, issueuse
-from tbl_employee A, tbl_certificate B
-where A.empno = B.fk_empno) )
-
+-- 증명서테이블에 insert
 insert into tbl_certificate 
 values(seq_tbl_certificate.nextval, 13, sysdate, '1')
 
-INSERT INTO tbl_certificate C (
-	proofno
-    , fk_empno
-    , issuedate
-    , issueuse
-
-)
-SELECT
-    name, empno, bumun,department, position, proofno, issuedate, issueuse
-
-FROM tbl_employee 
-
-INNER JOIN tbl_employee e  ON 1=1
-
-insert all 
-    into tbl_certificate values(seq_tbl_certificate.nextval, 13, sysdate, '1',)
-    into tbl_employee  name, empno, bumun,department, position, proofno, issuedate, issueuse
-    SELECT name, empno, bumun,department, position, proofno, issuedate, issueuse
-    FROM tbl_employee 
-
-
-
-
+-- 증명서 테이블신청내역 조회
+select proofno,fk_empno, issuedate, issueuse
+from tbl_certificate
+where fk_empno = '13' 
+commit
 
