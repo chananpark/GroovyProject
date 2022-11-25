@@ -182,6 +182,8 @@ select SD.scheduleno
      , SD.fk_empno
      , M.name
      , SC.smcatgoname
+     , department
+     , position
 from tbl_calendar_schedule SD 
 JOIN tbl_employee M
 ON SD.fk_empno = M.empno

@@ -57,6 +57,12 @@ public interface InterScheduleDAO {
 
 	// === 일정 상세보기 ===
 	Map<String, String> viewSchedule(String scheduleno);
+
+	// === 일정 수정하기 마무리 ===
+	int updateScheduleEnd(Map<String, String> paraMap);
+
+	// === 일정 삭제하기 ===
+	int deleteSchedule(String scheduleno);
 	
 	
 	

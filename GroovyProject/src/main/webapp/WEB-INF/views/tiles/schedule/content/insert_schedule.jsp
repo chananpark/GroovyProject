@@ -332,18 +332,10 @@
 			var joinUserArr = new Array();
 			
 			plusUser_elm.forEach(function(item,index,array){
-			//	console.log(item.innerText.trim());
-				/*
-					이순신(leess) 
-					아이유1(iyou1) 
-					설현(seolh) 
-				*/
 				joinUserArr.push(item.innerText.trim());
 			});
 			
 			var joinuser = joinUserArr.join(",");
-		//	console.log("공유자 => " + joinuser);
-			// 이순신(leess),아이유1(iyou1),설현(seolh) 
 			
 			$("input[name=joinuser]").val(joinuser);
 			
@@ -463,7 +455,7 @@
 				<tr class="insert_sche_tr">
 					<th class="col-2"><label class="mr-5" class="insert_sche_title">색상</label></th>
 					<td class="col-10">
-						<input class="" type="color" id="color" name="color" list="list"/>
+						<input class="" type="color" id="color" name="color" value="#086BDE" list="list"/>
 						<datalist id="list">
 							<option value="#6D4C41">#6D4C41</option>
 					  		<option value="#BF360C">#BF360C</option>
@@ -484,7 +476,7 @@
 					</td>
 				</tr>
 				<tr class="insert_sche_tr"> 
-					<th class="col-2"><label class="mr-5" for="joinuser insert_sche_title">참석자</label></th>
+					<th class="col-2"><label class="mr-5 insert_sche_title" for="joinuser ">참석자</label></th>
 					<td class="col-10">
 						<input type="text" id="joinUserName" class="input_width" placeholder="일정을 공유할 회원명을 입력하세요"/>
 						<div class="displayUserList"></div>
@@ -492,13 +484,13 @@
 					</td>
 				</tr>
 				<tr class="insert_sche_tr">
-					<th class="col-2"><label class="mr-5" for="insert_sche_title">장소</label></th>
+					<th class="col-2"><label class="mr-5 insert_sche_title">장소</label></th>
 					<td class="col-10">
 						<input class="input_width" type="text" id="place" name="place" placeholder="장소를 입력하세요.">
 					</td>
 				</tr>
 				<tr style="vertical-align: middle; height: 230px;">
-					<th class="col-2"><label class="mr-5" for="insert_sche_title">내용</label></th>
+					<th class="col-2"><label class="mr-5 insert_sche_title" >내용</label></th>
 					<td class="col-10">
 						<textarea class="input_width" id="content" name="content" placeholder="내용을 입력하세요." style="height:200px;"></textarea>
 					</td>

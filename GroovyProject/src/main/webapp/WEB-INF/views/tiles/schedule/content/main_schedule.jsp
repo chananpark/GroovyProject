@@ -247,7 +247,7 @@
 	                                   
 									for(var i=0; i<$("input:checkbox[name=my_smcategChk]:checked").length; i++){
 	                                
-										if($("input:checkbox[name=my_smcategChk]:checked").eq(i).val() == item.fk_smcatgono && item.empno == "${sessionScope.loginuser.empno}" ){
+										if($("input:checkbox[name=my_smcategChk]:checked").eq(i).val() == item.fk_smcatgono && item.empno == ${sessionScope.loginuser.empno} ){
 	   			                        	//  alert("캘린더 소분류 번호 : " + $("input:checkbox[name=my_smcatgono]:checked").eq(i).val());
 	                                		events.push({
 			                                	id: item.scheduleno,

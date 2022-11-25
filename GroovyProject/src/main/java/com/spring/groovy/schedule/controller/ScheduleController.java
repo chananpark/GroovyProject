@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -58,14 +59,6 @@ public class ScheduleController {
 		return mav;
 	}
 	
-	// === 일정 수정 하기 ===
-	@RequestMapping(value="/schedule/editSchedule.on")
-	public ModelAndView editSchedule(HttpServletRequest request, ModelAndView mav) { 
-		
-		mav.setViewName("schedule/edit_schedule.tiles2");
-		return mav;
-	}
-		
 	///////////////////////////////////////////////////////////////////////////////////////////////////////
 	// === 전사일정 소분류 보여주기 ===
 	@ResponseBody
@@ -322,12 +315,6 @@ public class ScheduleController {
 		String color = request.getParameter("color");
 		String place = request.getParameter("place");
 		String joinuser = request.getParameter("joinuser");
-		
-     //	System.out.println("확인용 joinuser => " + joinuser);
-	 // 확인용 joinUser_es =>
-	 // 또는 
-	 // 확인용 joinUser_es => 이순신(leess),아이유1(iyou1),설현(seolh) 	
-		
 		String content = request.getParameter("content");
 		String empno = request.getParameter("empno");
 		
@@ -339,9 +326,7 @@ public class ScheduleController {
 		paraMap.put("fk_smcatgono", fk_smcatgono);
 		paraMap.put("color", color);
 		paraMap.put("place", place);
-		
 		paraMap.put("joinuser", joinuser);
-		
 		paraMap.put("content", content);
 		paraMap.put("empno", empno);
 		
@@ -440,15 +425,110 @@ public class ScheduleController {
 		return mav;
 	} // end of public ModelAndView viewSchedule(ModelAndView mav, HttpServletRequest request)
 	
-		
 
+	// === 일정 수정하기 ===
+	@RequestMapping(value="/schedule/editSchedule.on", method = {RequestMethod.POST})
+	public ModelAndView editSchedule(ModelAndView mav, HttpServletRequest request) {
+		
+		String scheduleno= request.getParameter("scheduleno");
+   		
+		try {
+			Integer.parseInt(scheduleno);
+			
+			String gobackURL_viewSchedule = request.getParameter("gobackURL_viewSchedule");
+			
+			HttpSession session = request.getSession();
+			MemberVO loginuser = (MemberVO) session.getAttribute("loginuser");
+			
+			Map<String,String> map = service.viewSchedule(scheduleno);
+			
+			if( !loginuser.getEmpno().equals( map.get("FK_EMPNO") ) ) {
+				String message = "다른 사용자가 작성한 일정은 수정이 불가합니다.";
+				String loc = "javascript:history.back()";
+				
+				mav.addObject("message", message);
+				mav.addObject("loc", loc);
+				mav.setViewName("msg");
+			}
+			else {
+				mav.addObject("map", map);
+				mav.addObject("gobackURL_viewSchedule", gobackURL_viewSchedule);
+				
+				mav.setViewName("schedule/edit_schedule.tiles2");
+			}
+		} catch (NumberFormatException e) {
+			mav.setViewName("redirect:/schedule/schedule.on");
+		}
+		
+		return mav;
+		
+	} // end of public ModelAndView editSchedule(ModelAndView mav, HttpServletRequest request)
+		
+		
+	// === 일정 수정하기 마무리 ===
+	@RequestMapping(value="/schedule/editScheduleEnd.on", method = {RequestMethod.POST})
+	public ModelAndView editScheduleEnd(ModelAndView mav, HttpServletRequest request) throws Throwable {
+		
+		String startdate= request.getParameter("startdate");
+	//	System.out.println("확인용 startdate => " + startdate);
+	//  확인용 startdate => 20211125140000
+   	    
+		String enddate = request.getParameter("enddate");
+		String subject = request.getParameter("subject");
+		String fk_lgcatgono= request.getParameter("fk_lgcatgono");
+		String fk_smcatgono = request.getParameter("fk_smcatgono");
+		String color = request.getParameter("color");
+		String place = request.getParameter("place");
+		String joinuser = request.getParameter("joinuser");
+		String content = request.getParameter("content");
+		String empno = request.getParameter("empno");
+		String scheduleno = request.getParameter("scheduleno");
+		
+		Map<String,String> paraMap = new HashMap<String, String>();
+		paraMap.put("startdate", startdate);
+		paraMap.put("enddate", enddate);
+		paraMap.put("subject", subject);
+		paraMap.put("fk_lgcatgono",fk_lgcatgono);
+		paraMap.put("fk_smcatgono", fk_smcatgono);
+		paraMap.put("color", color);
+		paraMap.put("place", place);
+		paraMap.put("joinuser", joinuser);
+		paraMap.put("content", content);
+		paraMap.put("empno", empno);
+		paraMap.put("scheduleno", scheduleno);
+		
+		int n = service.updateScheduleEnd(paraMap);
+
+		if(n == 0) {
+			mav.addObject("message", "일정 수정을 실패하였습니다. ");
+		}
+		else {
+			mav.addObject("message", "일정이 정상적으로 수정되었습니다.");
+		}
+		
+		mav.addObject("loc", request.getContextPath()+"/schedule/viewSchedule.on?scheduleno="+scheduleno);
+		
+		mav.setViewName("msg");
+		
+		return mav;
+	} // end of public ModelAndView editScheduleEnd(ModelAndView mav, HttpServletRequest request) throws Throwable	
+		
+		
 	
+	// === 일정 삭제하기 ===
+	@ResponseBody
+	@RequestMapping(value="/schedule/deleteSchedule.on", method = {RequestMethod.POST})
+	public String deleteSchedule(HttpServletRequest request) throws Throwable {
 		
+		String scheduleno = request.getParameter("scheduleno");
+				
+		int n = service.deleteSchedule(scheduleno);
 		
-		
-		
-		
-		
+		JSONObject jsObj = new JSONObject();
+		jsObj.put("n", n);
+			
+		return jsObj.toString();
+	} // end of public String deleteSchedule(HttpServletRequest request) throws Throwable
 	
 	
 	

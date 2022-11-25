@@ -149,6 +149,22 @@ public class ScheduleDAO implements InterScheduleDAO {
 	public Map<String, String> viewSchedule(String scheduleno) {
 		Map<String,String> map = sqlsession.selectOne("yeojin.viewSchedule", scheduleno);
 		return map;
+	}
+
+
+	// === 일정 수정하기 마무리 ===
+	@Override
+	public int updateScheduleEnd(Map<String, String> paraMap) {
+		int n = sqlsession.update("yeojin.updateScheduleEnd", paraMap);
+		return n;
+	}
+
+
+	// === 일정 삭제하기 ===
+	@Override
+	public int deleteSchedule(String scheduleno) {
+		int n = sqlsession.delete("yeojin.deleteSchedule", scheduleno);
+		return n;
 	} 
 	
 	

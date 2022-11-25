@@ -195,9 +195,11 @@
 		<result property="CONTENT" 		column="content" 		javaType="String" />
 		<result property="FK_SMCATGONO" column="fk_smcatgono" 	javaType="String" />
 		<result property="FK_LGCATGONO" column="fk_lgcatgono" 	javaType="String" />
-		<result property="fk_empno" 	column="fk_userid" 		javaType="String" />
+		<result property="FK_EMPNO" 	column="fk_empno" 		javaType="String" />
 		<result property="NAME" 		column="name" 			javaType="String" />
 		<result property="SMCATGONAME" 	column="smcatgoname" 	javaType="String" />
+		<result property="DEPARTMENT" 	column="department" 	javaType="String" />
+		<result property="POSITION" 	column="position" 	javaType="String" />
 	</resultMap>
 	
 	<select id="viewSchedule" parameterType="String" resultMap="viewScheduleMap">
@@ -207,13 +209,15 @@
 		     , SD.subject
 		     , SD.color
 		     , nvl(SD.place,'-') as place
-		     , nvl(SD.joinuser,'공유자가 없습니다.') as joinuser
+		     , nvl(SD.joinuser,'참석자가 없습니다.') as joinuser
 		     , nvl(SD.content,'') as content
 		     , SD.fk_smcatgono
 		     , SD.fk_lgcatgono
 		     , SD.fk_empno
 		     , M.name
 		     , SC.smcatgoname
+		     , department
+     		 , position
 		from tbl_calendar_schedule SD 
 		JOIN tbl_employee M
 		ON SD.fk_empno = M.empno
@@ -223,12 +227,21 @@
 	</select>	
 	
 		
+	<!-- 일정 수정하기 마무리  -->	
+	<update id="updateScheduleEnd" parameterType="HashMap">
+		update tbl_calendar_schedule 
+		set startdate = to_date(#{startdate}, 'yyyymmddhh24miss'), enddate = to_date(#{enddate}, 'yyyymmddhh24miss'), subject = #{subject}, color = #{color},
+			place = #{place}, joinuser = #{joinuser}, content = #{content}, fk_smcatgono = #{fk_smcatgono}, fk_lgcatgono = #{fk_lgcatgono}, fk_empno = #{empno}
+		where scheduleno = #{scheduleno}
+	
+	</update>
 		
 		
-		
-		
-		
-		
+	<!-- 일정 삭제하기 -->
+	<delete id="deleteSchedule" parameterType="String">
+		delete from tbl_calendar_schedule
+		where scheduleno = #{scheduleno}
+	</delete>
 		
 		
 		

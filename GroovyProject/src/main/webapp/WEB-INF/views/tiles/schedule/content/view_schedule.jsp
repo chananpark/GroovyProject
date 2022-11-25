@@ -79,13 +79,45 @@
 		
 	}// end of function delSchedule(scheduleno){}-------------------------
 	
+
+	// 일정 삭제하기
+	function delSchedule(scheduleno){
+	
+		var bool = confirm("일정을 삭제하시겠습니까?");
+		
+		if(bool){
+			$.ajax({
+				url: "<%= ctxPath%>/schedule/deleteSchedule.on",
+				type: "post",
+				data: {"scheduleno":scheduleno},
+				dataType: "json",
+				success:function(json){
+					if(json.n==1){
+						alert("일정을 삭제하였습니다.");
+						location.href="<%= ctxPath%>/schedule/schedule.on";
+					}
+					else {
+						alert("일정 삭제에 실패하였습니다.");
+						location.href="<%= ctxPath%>/schedule/schedule.on";
+					}
+					
+				},
+				error: function(request, status, error){
+		            alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+		        }
+			});
+		}
+		
+	}// end of function delSchedule(scheduleno){}-------------------------
+
+	
 	
 	// 일정 수정하기
 	function editSchedule(scheduleno){
 		var frm = document.goEditFrm;
 		frm.scheduleno.value = scheduleno;
 		
-		frm.action = "<%= ctxPath%>/schedule/editSchedule.action";
+		frm.action = "<%= ctxPath%>/schedule/editSchedule.on";
 		frm.method = "post";
 		frm.submit();
 	}
@@ -132,7 +164,7 @@
 				</td>
 			</tr>
 			<tr>
-				<th class="col-2">공유자</th>
+				<th class="col-2">참석자</th>
 				<td class="col-10">${map.JOINUSER}</td>
 			</tr>
 			<tr>
@@ -149,17 +181,74 @@
 			</tr>
 		</table>
 		
+		
+		<input type="hidden" value="${sessionScope.loginuser.empno}" />
+		<input type="hidden" value="${requestScope.map.FK_LGCATGONO}" />
+		<input type="hidden" value="${requestScope.map.department}" />
+		
+		<c:set var="v_fk_empno" value="${requestScope.map.FK_EMPNO}" />
+		<c:set var="v_fk_lgcatgono" value="${requestScope.map.FK_LGCATGONO}"/>
+		<c:set var="v_department" value="${requestScope.map.DEPARTMENT}"/>
+		<c:set var="v_loginuser_empno" value="${sessionScope.loginuser.empno}"/>
+		<c:set var="v_loginuser_department" value="${sessionScope.loginuser.department}"/>
+		<c:set var="v_loginuser_position" value="${sessionScope.loginuser.position}"/>
+			
 		<div style="float:right;" class="mr-2 mt-4">
-			<button class="btn bg-light mr-2" style="">수정</button>
-			<button class="btn bg-light mr-2" style="">삭제</button>
-			<button class="btn" style="background-color: #086BDE; color:white; ">돌아가기</button>
+		
+			<%-- 검색에서 상세보기로 넘어온 경우 --%>
+			<c:if test="${not empty requestScope.listgobackURL_schedule}">
+				<%-- 전사일정이면서 인사총무팀일 경우 --%>	
+				<c:if test="${v_fk_lgcatgono eq '1' && v_loginuser_department == '인사총무팀' && v_loginuser_empno == v_fk_empno }">
+					<button class="btn bg-light mr-2" onclick="editSchedule('${requestScope.map.SCHEDULENO}')">수정</button>
+					<button class="btn bg-light mr-2" onclick="delSchedule('${requestScope.map.SCHEDULENO}')">삭제</button>
+				</c:if>
+				
+				<%-- 팀별일정이면서 해당 팀일 경우  --%>
+				<c:if test="${v_fk_lgcatgono eq '2' && v_loginuser_department == v_department && v_loginuser_empno == v_fk_empno }">
+					<button class="btn bg-light mr-2" onclick="editSchedule('${requestScope.map.SCHEDULENO}')">수정</button>
+					<button class="btn bg-light mr-2" onclick="delSchedule('${requestScope.map.SCHEDULENO}')">삭제</button>
+				</c:if>
+				
+				<%-- 개인일정 --%>
+				<c:if test="${v_fk_lgcatgono eq '3' && v_loginuser_empno == v_fk_empno }">
+					<button class="btn bg-light mr-2" onclick="editSchedule('${requestScope.map.SCHEDULENO}')">수정</button>
+					<button class="btn bg-light mr-2" onclick="delSchedule('${requestScope.map.SCHEDULENO}')">삭제</button>
+				</c:if>
+				
+				<button class="btn" style="background-color: #086BDE; color:white;" onclick="javascript:location.href='<%= ctxPath%>${requestScope.listgobackURL_schedule}'">돌아가기</button>
+			</c:if>	
+			
+			<%-- 달력에서 상세보기로 넘어온 경우 --%>
+			<c:if test="${empty requestScope.listgobackURL_schedule}">
+				<%-- 전사일정이면서 인사총무팀일 경우 --%>	
+				<c:if test="${v_fk_lgcatgono eq '1' && v_loginuser_department == '인사총무팀' && v_loginuser_empno == v_fk_empno }">
+					<button class="btn bg-light mr-2" onclick="editSchedule('${requestScope.map.SCHEDULENO}')">수정</button>
+					<button class="btn bg-light mr-2" onclick="delSchedule('${requestScope.map.SCHEDULENO}')">삭제</button>
+				</c:if>
+				
+				<%-- 팀별일정이면서 해당 팀일 경우  --%>
+				<c:if test="${v_fk_lgcatgono eq '2' && v_loginuser_department == v_department && v_loginuser_empno == v_fk_empno }">
+					<button class="btn bg-light mr-2" onclick="editSchedule('${requestScope.map.SCHEDULENO}')">수정</button>
+					<button class="btn bg-light mr-2" onclick="delSchedule('${requestScope.map.SCHEDULENO}')">삭제</button>
+				</c:if>
+				
+				<%-- 개인일정 --%>
+				<c:if test="${v_fk_lgcatgono eq '3' && v_loginuser_empno == v_fk_empno }">
+					<button class="btn bg-light mr-2" onclick="editSchedule('${requestScope.map.SCHEDULENO}')">수정</button>
+					<button class="btn bg-light mr-2" onclick="delSchedule('${requestScope.map.SCHEDULENO}')">삭제</button>
+				</c:if>
+				
+				<button class="btn" style="background-color: #086BDE; color:white;" onclick="javascript:location.href='<%= ctxPath%>/schedule/schedule.on'">돌아가기</button>
+			</c:if>	
+				
 		</div>
 	
 	</div>
 
-
-
-
+<form name="goEditFrm">
+	<input type="hidden" name="scheduleno"/>
+	<input type="hidden" name="gobackURL_detailSchedule" value="${requestScope.gobackURL_detailSchedule}"/>
+</form>	
 
 
 

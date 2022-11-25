@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 
 import com.spring.groovy.management.model.MemberVO;
 import com.spring.groovy.schedule.model.CalSmallCategoryVO;
-import com.spring.groovy.schedule.model.CalendarScheduleVO;
 import com.spring.groovy.schedule.model.InterScheduleDAO;
 
 @Service
@@ -157,6 +156,22 @@ public class ScheduleService implements InterScheduleService {
 	public Map<String, String> viewSchedule(String scheduleno) {
 		Map<String,String> map = dao.viewSchedule(scheduleno);
 		return map;
+	}
+
+
+	// === 일정 수정하기 마무리 ===
+	@Override
+	public int updateScheduleEnd(Map<String, String> paraMap) {
+		int n = dao.updateScheduleEnd(paraMap);
+		return n;
+	}
+
+
+	// === 일정 삭제하기 ===
+	@Override
+	public int deleteSchedule(String scheduleno) {
+		int n = dao.deleteSchedule(scheduleno);
+		return n;
 	}
 	
 	
