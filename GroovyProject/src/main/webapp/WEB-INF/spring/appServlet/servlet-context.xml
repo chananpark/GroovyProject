@@ -67,4 +67,29 @@
 		<aop:pointcut id="controllerOperation" expression="execution(public * com.spring.groovy..*Controller.*(..))" />
 	</aop:config>	
 	
+	<!-- ========== 인터셉터 시작 ========== -->
+	<!-- 로그인 여부 체크하는 인터셉터 등록 -->
+    <beans:bean id="loginCheckInterceptor" class="com.spring.groovy.interceptor.controller.LoginCheckInterceptor" />
+	
+	<!-- 로그인한 사용자가 인사팀관리자인지 여부를 체크하는 인터셉터 등록 -->
+   <beans:bean id="adminCheckInterceptor" class="com.spring.groovy.interceptor.controller.AdminCheckInterceptor" />
+	
+	<mvc:interceptors>
+	   
+   		<mvc:interceptor>
+	       <mvc:mapping path="/**"/>                   <!-- 모든  url 로그인 체크확인-->
+	       <mvc:exclude-mapping path="/login.on"/>     <!-- 로그인체크 제외되는  url -->
+	       <mvc:exclude-mapping path="/login2.on"/>    <!-- 로그인체크 제외되는  url -->
+	       <mvc:exclude-mapping path="/logout.on"/>    <!-- 로그인체크 제외되는  url -->
+	       <beans:ref bean="loginCheckInterceptor"/>        <!-- 로그인유무 검사(회원 사용자인지 검사) -->
+	    </mvc:interceptor>
+	    
+	    <mvc:interceptor>
+	       <mvc:mapping path="/manage/admin/**"/>         <!-- /admin/**는 아래의 과정을 거쳐야한다. -->
+	       <beans:ref bean="adminCheckInterceptor"/>        <!-- 특정회원인지 로그인유무 검사 -->
+	    </mvc:interceptor>
+	</mvc:interceptors>
+	
+	<!-- ========== 인터셉터 끝 ========== -->
+	
 </beans:beans>
