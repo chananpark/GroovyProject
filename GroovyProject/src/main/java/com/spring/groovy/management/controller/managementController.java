@@ -1,21 +1,51 @@
 package com.spring.groovy.management.controller;
 
-import javax.servlet.http.HttpServletRequest;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import org.json.JSONObject;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.servlet.ModelAndView;
+
+import com.spring.groovy.common.Pagination;
+import com.spring.groovy.management.model.MemberVO;
+import com.spring.groovy.management.service.InterManagementService;
 
 @Controller
 public class managementController {
 	
 
+	@Autowired   // Type 에 따라 알아서 Bean 을 주입해준다.
+	private InterManagementService service;
+	
 	// 공용 사원관리
 	@RequestMapping(value="/manage/info/viewInfo.on")
-	public String viewInfo(HttpServletRequest request) {
+	public ModelAndView viewInfo(ModelAndView mav, HttpServletRequest request) {
 		
-		return "manage/each/info/viewInfo.tiles";
-	}
 
+		
+		
+		mav.setViewName("manage/each/info/viewInfo.tiles");
+		return mav; 
+	}
+	
+	@RequestMapping(value="/manage/info/viewInfoEnd.on")
+	public ModelAndView viewInfoEnd(ModelAndView mav, HttpServletRequest request) {
+		
+		
+		
+		mav.setViewName("manage/each/info/viewInfo.tiles");
+		return mav; 
+	}
 
 	//공용 경조비관리 - 경조비신청
 	@RequestMapping(value="/manage/celebrate/receiptCelebrate.on")
@@ -57,24 +87,182 @@ public class managementController {
 	
 	
 	
-	
+	// ================================================================================= //
 	
 	
 	
 
 	//관리자 사원관리 - 사원조회
-	@RequestMapping(value="/manage/admin/searchInfoAdmin.on")
-	public String searchInfoAdmin(HttpServletRequest request) {
-		
-		return "manage/admin/info/searchInfoAdmin.tiles";
-	}
+	@RequestMapping(value="/manage/admin/searchInfoAdmin.on", method= {RequestMethod.POST}, produces="text/plain;charset=UTF-8")
+	public ModelAndView searchInfoAdmin(ModelAndView mav, Pagination pagination, HttpServletRequest request) {
 
+		// 전체 글 개수 구하기
+		int listCnt = service.getsearchInfoAdmin(pagination);
+		
+		// 페이지수 알아오기
+		Map<String, Object> paraMap = pagination.getPageRange(listCnt); // startRno, endRno
+				
+//		HttpSession session = request.getSession();
+		
+		List<MemberVO> empList = service.searchInfoAdmin();
+		
+		request.setAttribute("empList", empList);
+		
+		// 한 페이지에 표시할 글 목록
+		mav.addObject("empList", service.getSearchInfoAdminList(paraMap));
+		
+		// 페이지바
+		mav.addObject("pagebar", pagination.getPagebar(request.getContextPath()+"/manage/admin/searchInfoAdmin.on"));
+		mav.addObject("paraMap", paraMap);
+		
+		mav.setViewName("manage/admin/info/searchInfoAdmin.tiles");
+			
+		return mav;
+		
+	}
+	
+	
 	//관리자 사원관리 - 사원등록
 	@RequestMapping(value="/manage/admin/registerInfo.on")
-	public String registerInfo(HttpServletRequest request) {
+	public ModelAndView registerInfo(ModelAndView mav, HttpServletRequest request) {
 		
-		return "manage/admin/info/registerInfo.tiles";
+		mav.setViewName("manage/admin/info/registerInfo.tiles");
+		return mav; 
 	}
+		
+	
+	//관리자 사원관리 - 사원등록
+	@RequestMapping(value="/manage/admin/registerInfoEnd.on")
+	public ModelAndView registerInfoEnd(ModelAndView mav, HttpServletRequest request) {
+
+		
+		
+		String empno = request.getParameter("empno");
+		String cpemail = request.getParameter("cpemail");
+		String name = request.getParameter("name");
+		String position = request.getParameter("position"); 
+	    String jubun = request.getParameter("jubun"); 
+	    String postcode = request.getParameter("postcode");
+	    String address = request.getParameter("address");
+		String detailaddress = request.getParameter("detailaddress");
+		String extraaddress = request.getParameter("extraaddress");
+		String bumun = request.getParameter("bumun"); 
+	    String department = request.getParameter("department"); 
+	    String pvemail = request.getParameter("pvemail");
+	    String depttel = request.getParameter("depttel");
+	    String joindate = request.getParameter("joindate");
+		String empstauts = request.getParameter("empstauts");
+		String bank = request.getParameter("bank");
+		String account = request.getParameter("account"); 
+	    String annualcnt = request.getParameter("annualcnt"); 
+	    String gender = request.getParameter("gender");
+	    
+		String hp1 = request.getParameter("hp1");
+		String hp2 = request.getParameter("hp2");
+		String hp3 = request.getParameter("hp3");
+		String birthyyyy = request.getParameter("birthyyyy"); 
+	    String birthmm = request.getParameter("birthmm"); 
+	    String birthdd = request.getParameter("birthdd");
+	     
+		String mobile = hp1 + "-"+ hp2 +"-"+ hp3;
+		String birthday = birthyyyy+"-"+birthmm+"-"+birthdd; 
+		
+		
+		Map<String,String> paraMap = new HashMap<>();
+		paraMap.put("empno", empno);
+		paraMap.put("cpemail", cpemail);
+		paraMap.put("name", name);
+		paraMap.put("position", position);
+		paraMap.put("jubun", jubun);
+		paraMap.put("postcode", postcode);
+		paraMap.put("address", address);
+		paraMap.put("detailaddress", detailaddress);
+		paraMap.put("extraaddress", extraaddress);
+		paraMap.put("bumun", bumun);
+		paraMap.put("department", department);
+		paraMap.put("pvemail", pvemail);
+		paraMap.put("depttel", depttel);
+		paraMap.put("joindate", joindate);
+		paraMap.put("empstauts", empstauts);
+		paraMap.put("bank", bank);
+		paraMap.put("account", account);
+		paraMap.put("annualcnt", annualcnt);
+		paraMap.put("gender", gender);
+		paraMap.put("mobile", mobile);
+		paraMap.put("birthday", birthday);
+		
+		// 사원등록
+		int n = service.getRegisterInfo(paraMap);
+		
+		if(n==1) {
+			String message="등록성공";
+			mav.addObject("message", message);
+			mav.addObject("n", n);
+			mav.setViewName("manage/admin/info/registerInfo.tiles");
+			return mav; 
+		}
+		
+		String message = "등록실패";
+		String loc = "javascript:history.back()";
+		
+		mav.addObject("message", message);
+		mav.addObject("loc", loc);
+		return mav;
+	}
+	
+	
+	
+	
+	
+	
+	/*
+	//관리자 사원관리 - 사원등록
+	@RequestMapping(value="/manage/admin/registerInfo.on")
+	public ModelAndView registerInfo(ModelAndView mav, HttpServletRequest request) {
+		mav.setViewName("manage/admin/info/registerInfo.tiles");
+		return mav; 
+	}
+	*/
+	
+	
+	/*
+	//관리자 사원관리 - 사원등록
+	@RequestMapping(value="/manage/admin/registerInfoEnd.on", method= {RequestMethod.POST}, produces="text/plain;charset=UTF-8")
+	public String registerInfoEnd(HttpServletRequest request, MemberVO mvo) {
+
+		String hp1 = request.getParameter("hp1");
+		String hp2 = request.getParameter("hp2");
+		String hp3 = request.getParameter("hp3");
+		String birthyyyy = request.getParameter("birthyyyy"); 
+	    String birthmm = request.getParameter("birthmm"); 
+	    String birthdd = request.getParameter("birthdd");
+	     
+		String mobile = hp1 + "-"+ hp2 +"-"+ hp3;
+		String birthday = birthyyyy+"-"+birthmm+"-"+birthdd; 
+		
+		
+		Map<String,Object> paraMap = new HashMap<>();
+		paraMap.put("mvo", mvo);
+		paraMap.put("mobile", mobile);
+		paraMap.put("birthday", birthday);
+		
+		// 위에 잇는 정보를 paramap에 담아야하는데 membervo애 어떻게 넣지?
+
+		// 사원등록
+		int n = service.getRegisterInfo(paraMap);
+		
+		JSONObject jsonObj = new JSONObject();
+		jsonObj.put("n", n);
+		
+		
+		return jsonObj.toString(); // "{"n":1,"name":"서영학"}" 또는 "{"n":0,"name":"서영학"}"
+	}
+	
+	*/
+	
+	
+	
+	
 
 
 	//관리자 사원관리 - 경조비신청현황
@@ -121,5 +309,15 @@ public class managementController {
 		return "manage/admin/pay/payChart.tiles";
 	}
 
+	
+	
+	
+	
+	
+	
+	@ExceptionHandler(org.springframework.validation.BindException.class)
+	public String error(Exception e) {
+	    return "error";
+	}
 
 }

@@ -2,6 +2,7 @@
     pageEncoding="UTF-8"%>
 
 <% String ctxPath = request.getContextPath(); %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <style>
 
@@ -60,6 +61,9 @@
 		border: solid 1px #cccccc;
 	}
 	
+	.msg_error {
+		color: red;
+	}
 	
 	
 	 /* === 모달 CSS === */
@@ -86,18 +90,55 @@
 	    left: -10%;
 		top: 10%;
  	}
+ 	
+ 	
 	
 </style>
 
 <script src="https://t1.daumcdn.net/mapjsapi/bundle/postcode/prod/postcode.v2.js"></script>
 <script type="text/javascript">
 
-	
+$("div.error").hide();
 	$(document).ready(function(){
 	
 		 $('.eachmenu3').show();
+		 $("div.msg_error").hide();
 		 $("div#msg_probation").hide();
 		 
+
+		
+		 // === 주민등록번호=== // 
+		 $("input#jubun").blur(function(e){
+			 
+			 const $target = $(e.target);
+			 const regExp = /\d{2}([0]\d|[1][0-2])([0][1-9]|[1-2]\d|[3][0-1])[-]*[1-4]\d{6}/g;
+				/*	 \d{2} : 맨앞 정수 2자리(생년)는 어떤 정수값이 와도 상관없다.
+		
+					 ([0]\d|[1][0-2]) : 첫자리가 0인경우는 뒤에 어떤 정수가 와도 괜찮다. ,, 첫자리가 1인경우 뒷자리는 0,1,2만 올수있다. 
+		
+					  // (01-12 생월을 표현)
+		
+					 ([0][1-9]|[1-2]\d|[3][0-1]) : 생일은 첫자리가 0이면 뒷자리가 0이될경우 0일이 되기 때문에 0다음에는 1-9만 올 수있다.
+		
+					 [-]* : 하이픈은 0개 or 1개다.
+		
+					 [1-4] : 주민번호 뒷자리 첫번째 숫자는 1~4만 갖는다.
+		
+					 \d{6} : 주민번호 첫자리를 제외한 숫자는 총 6자리다.
+				*/
+			 const bool = regExp.test( $target.val() );
+			
+			 if(!bool) {
+				 $("div.msg_error").show();
+				 $("input#jubun").val().remove();
+			 }
+			 else {
+				 $("div.msg_error").hide();
+			 }
+			
+		 }); //  end of $("input#jubunbirth").bulr((e) => {--------------------
+		 
+		
 		 
 		// === 생년월일 === //
 	        
@@ -105,11 +146,11 @@
 		    var com_year = dt.getFullYear();
 		    var year = "";
 		    
-		 // 년도 뿌려주기
+		    // 년도 뿌려주기
 		    $("#year").append("<option value=''>년도</option>");
 		    // 올해 기준으로 -50년부터 +1년을 보여준다.
 		    for (var i = (com_year - 50); i <= (com_year); i++) {
-		      $("#year").append("<option value='" + i+ "'>" + i + " 년" + "</option>");
+		      $("#birthyyyy").append("<option value='" + i+ "'>" + i + " 년" + "</option>");
 		    }
 		    
 		    // 월 뿌려주기(1월부터 12월)
@@ -124,7 +165,7 @@
 					month += "<option>"+i+"</option>";
 				}
 		    } 
-			$("#month").html(month);
+			$("#birthmm").html(month);
 		    
 		    // 일 뿌려주기(1일부터 31일)
 		    var day;
@@ -137,12 +178,7 @@
 					day += "<option>"+i+"</option>";
 				}
 		    }
-			$("#day").html(day);
-		 
-		 
-		 
-		 
-		 
+			$("#birthdd").html(day);
 		 
 		 
 		 
@@ -158,15 +194,108 @@
 		 });
 		 
 		 
-			 
+		 
+		 
+		 // === 핸드폰 번호 === //
+		 $("input#hp2").blur( function(e) {
+				
+				const $target = $(e.target);
+				
+				// const regExp = /^[1-9][0-9]{2,3}$/g;
+				// 또는
+				const regExp = new RegExp( /^[1-9][0-9]{2,3}$/g);
+				// 숫자 3자리 또는 4자리만 들어오도록 검사하는 정규표현식 객체 생성
+				const bool = regExp.test( $target.val() );
+				
+				if(!bool) {
+					// 국번이 정규표현식에 위배된 경우
+					$("table#tblMemberRegister :input").prop("disabled", true);
+					$target.prop("disabled", false);
+					
+					// $target.next().show();
+					// 또는
+					$target.parent().find("span.error").show();
+					
+					$target.focus();
+					
+				}
+				else {
+					// 국번이 정규표현식에 맞는 경우
+					$("table#tblMemberRegister :input").prop("disabled", false);
+					
+					// $target.next().hide();
+					// 또는
+					$target.parent().find("span.error").hide();
+					
+				}
+				
+			}); // end of $("input#hp2").blur() ----------------- // 아이디가 hp2 인 것은 포커스를 잃어버렸을 경우(blur) 이벤트를 처리해주는 것이다.
+			
+			
+			
+			
+			// ------------------------------------------------------------------------
+			$("input#hp3").blur( function(e) {
+				
+				const $target = $(e.target);
+				
+				// const regExp = /^[0-9]{4}$/g;
+				// 또는
+				const regExp = new RegExp(/^[0-9]{4}$/g);
+				// 숫자 3자리 또는 4자리만 들어오도록 검사하는 정규표현식 객체 생성
+				const bool = regExp.test( $target.val() );
+				
+				if(!bool) {
+					// 전화번호 마지막 네자리가 정규표현식에 위배된 경우
+					$("table#tblMemberRegister :input").prop("disabled", true);
+					$target.prop("disabled", false);
+					
+					// $target.next().show();
+					// 또는
+					$target.parent().find("span.error").show();
+					
+					$target.focus();
+					
+				}
+				else {
+					// 전화번호 마지막 네자리가 정규표현식에 맞는 경우
+					$("table#tblMemberRegister :input").prop("disabled", false);
+					
+					// $target.next().hide();
+					// 또는
+					$target.parent().find("span.error").hide();
+					
+				}
+				
+			}); // end of $("input#hp3").blur() ----------------- // 아이디가 hp3 인 것은 포커스를 잃어버렸을 경우(blur) 이벤트를 처리해주는 것이다.
+
+			
+			
+		 
+		
 		// === 수습시간 체크박스 버튼을 누르면 === // 
 		$("input#che_probation").click(function(){
 			
 			$("div#msg_probation").show();
 		
 		}); // end of $("input#che_probation").click(function(){
-		 
-}); // end of $(document).ready(function(){}-----------------------------------------
+			
+			
+			$( "select[name=empstatus]").change(function(){
+				var value = $("option:selected").val();
+				var inputText = $(this).find('input.emppay');
+				
+				if (value == '1') {
+					$(inputText).val('');
+				}
+				else if(value == '2'){
+					$(inputText).val('80%');
+				}
+				
+			});
+			
+			
+	}); // end of $(document).ready(function(){}-----------------------------------------
 
 
 
@@ -231,6 +360,96 @@
 	        }
 	    }).open();
 	} // end of openDaumPOST() -------------------------------
+	
+	
+	
+	// >>> 부문선택값에 따라 하위 셀렉트 팀옵션 다르게 하기 <<< // 
+	function bumunchange(value){
+		
+		var dept_1 = ["인사총무팀"]; 
+		var dept_2 = ["개발팀","기획팀"]; 
+		var dept_3 = ["영업팀","마케팅팀"]; 
+		var target = document.getElementById("department");
+		
+		if(value == "경영지원부문") {
+			var dept = dept_1;
+		}
+		else if(value == "IT사업부문") {
+			var dept = dept_2;
+		}
+		else if(value == "마케팅영업부문") {
+			var dept = dept_3;
+		}
+		
+		target.options.length = 0;
+
+		for (i in dept) {
+			var opt = document.createElement("option");
+			opt.value = dept[i];
+			opt.innerHTML = dept[i];
+			target.appendChild(opt);
+		}
+		
+	
+	} //function bumunchange(){ -------------------------
+		
+
+		function go_search() {
+			$('#go_searchTel').modal({backdrop: 'static'});
+		}
+	
+	
+<%-- 	
+	
+	// >>> 등록버튼을 누르면 <<<
+	function btn_register() {
+	 
+     // 보내야할 데이터를 선정하는 또 다른 방법
+	  // jQuery에서 사용하는 것으로써,
+	  // form태그의 선택자.serialize(); 을 해주면 form 태그내의 모든 값들을 name값을 키값으로 만들어서 보내준다. 
+	  const queryString = $("form[name=addWriteFrm]").serialize();
+ 	 
+	   
+	 var queryString = $("form[name=addWriteFrm]").serialize();
+	 
+	 $("form[name=addWriteFrm]").ajaxForm({
+		  url:"<%= request.getContextPath()%>/manage/admin/registerInfoEnd.on",
+		  data:queryString,
+		  enctype:"multipart/form-data",
+		  type:"POST",
+		  dataType:"JSON",
+		  success:function(json){
+			  
+			  if(json != "") {
+				  alert("사원등록 완료되었습니다.");
+			  }
+			  alert("사원등록 실패.");
+		  },
+		  error: function(request, status, error){
+			  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+		  }
+	  });
+		
+	} // end of function btn_register() { -----------------------------
+	
+	
+	 --%>
+	// >>> 등록버튼을 누르면 <<<
+	function btn_register() {
+		 
+		
+		const frm = document.frm_manageInfo
+		frm.action = "<%= ctxPath%>/manage/admin/registerInfoEnd.on";
+		frm.method = "POST";
+		frm.submit();
+	
+	}
+	
+	
+	
+	
+	
+	
 </script>
 
 
@@ -250,9 +469,7 @@
 			<td rowspan='4' style="width:2%;"><img class="float-center" src="<%= ctxPath%>/resources/images/picture/꼬미사진.jpg" height="150px;" width="150px" alt="..."/></td>
 			<th class="t1"><span class="alert_required" style="color: red;">*</span>사원번호</th>
 			<td>	
-				<input type="text" id="" name=""  />
-				<button type="button" class="btn btn-sm ml-5 btn_check">확인</button>
-				<div id="empnocheckResult"></div>
+				<input type="text" id="empno" name="empno" placeholder="자동입력됩니다." readonly/>
 			</td>
 			
 			<th class="t1"><span class="alert_required" style="color: red;">*</span>성명</th>
@@ -263,8 +480,8 @@
 				<td>
 					<span>
 						<input type="text" id="jubun" name="jubun" style="display: inline;" />
-						<button type="button" class="btn btn-sm ml-5 btn_check">확인</button>
 					</span>
+					<div class="msg_error">형식에 올바르지 않습니다.</div>
 				</td>
 			<th class="t1">성별</th>
 			 <td style="text-align: left;">
@@ -276,9 +493,9 @@
 			<th class="t1"><span class="alert_required" style="color: red;">*</span>생년월일</th>
 			<td>
 				<span id="birthday" name="birthday">
-				    	<select name="year" id="year" title="년도" class=" requiredInfo" ></select>
-						<select name="month" id="month" title="월" class=" requiredInfo" ></select>
-						<select name="day" id="day" title="일" class=" requiredInfo"></select>
+				    	<select name="birthyyyy" id="birthyyyy" title="년도" class=" requiredInfo" ></select>
+						<select name="birthmm" id="birthmm" title="월" class=" requiredInfo" ></select>
+						<select name="birthdd" id="birthdd" title="일" class=" requiredInfo"></select>
 				</span>
 			</td>
 			<th></th>
@@ -301,24 +518,25 @@
 	
 	<table  class="m-4 mb-3 table table-bordered" >
 		<tr>
-			<th><span class="alert_required" style="color: red;">*</span>내선번호</th>
+			<th><span class="alert_required"style="color: red;">*</span>내선번호</th>
 			<td>
-				<input type="text" id="mobile" name="mobile" />
-				<button class="btn_search"><i class="fas fa-search" onclick="go_search" data-toggle="modal" data-target="#go_searchTel"></i>찾기</button>
+				<input type="text" id="depttel" name="depttel" />
+				<button class="btn btn-sm ml-5 btn_check" onclick="go_search" data-toggle="modal" data-target="#go_searchTel"><i class="fas fa-search"></i>찾기</button>
 			</td>
 			<th><span class="alert_required" style="color: red;">*</span>핸드폰번호</th>
-	         <td style="text-align: left;" id="telNum" name="mobile">
+	         <td style="text-align: left;" id="mobile" name="mobile">
 	             <input type="text" id="hp1" name="hp1" size="6" maxlength="3" value="010" class="requiredInfo" />&nbsp;-&nbsp;
 	             <input type="text" id="hp2" name="hp2" size="6" maxlength="4" class="requiredInfo"/>&nbsp;-&nbsp;
 	             <input type="text" id="hp3" name="hp3" size="6" maxlength="4" class="requiredInfo"/>
-	             <div class="error">휴대폰 형식이 아닙니다.</div>
 	         </td>
 
 		</tr>
 		<tr>
 			<th><span class="alert_required" style="color: red;">*</span>회사이메일</th>
-			<td><input type="email" id="mobile" name="mobile" />
-			<div class="error">이메일 형식이 아닙니다.</div>
+			<td>
+				<input type="email" id="cpemail" name="cpemail" />
+				<button type="button" class="btn btn-sm ml-5 btn_check">확인</button>
+				<div id="empnocheckResult"></div>
 			</td>
 			<th>외부이메일</th>
 			<td><input type="email" id="mobile" name="mobile" /></td>
@@ -326,62 +544,66 @@
 		</tr>
 	</table>
 	
-	<table  class=" m-4 mb-3 table table-bordered " >
+	<table  class=" m-4 mb-3 table table-bordered" >
 		<tr>
 			<th><span class="alert_required" style="color: red;">*</span>부문</th>
 			<td>
-				<select name="bumun" class="select_3" >
+				<select name="bumun" class="select_3" onchange="bumunchange(value)">
 					<option value="">부문을 선택해주세요</option>
-					<option value=""></option>
-					<option value=""></option>
+					<option value="경영지원부문">경영지원부문</option>
+					<option value="IT사업부문">IT사업부문</option>
+					<option value="마케팅영업부문">마케팅영업부문</option>
 				</select>
 			</td>
 			<th><span class="alert_required" style="color: red;">*</span>부서</th>
 			<td>
-				<select name="department" class="select_3" >
-					<option value="">부서를 선택해주세요</option>
+				<select name="department" id="department" class="select_3" >
+						<option value="">부서를 선택해주세요</option>
 				</select>
 			</td>
+			
+		</tr>
+		<tr>
 			<th><span class="alert_required" style="color: red;">*</span>직급</th>
 			<td>
 				<select name="extension" class="select_3" >
 					<option value="">직급을 선택해주세요</option>
-					<option value="">책임</option>
-					<option value="">선임</option>
+					<option value="부문장">부문장</option>
+					<option value="팀장">팀장</option>
+					<option value="책임">책임</option>
+					<option value="선임">선임</option>
 				</select>
 			</td>
-		</tr>
-		<tr>
 			<th><span class="alert_required" style="color: red;">*</span>급여계약기준</th>
-			<td><select name="" class="select_3">
+			<td><select name="empstatus" class="select_3" onchange="empstatus(value)">
 					<option value="">계약기준을 선택해주세요</option>
-					<option value="">정규직</option>
-					<option value="">계약직</option>
+					<option value="1">정규직</option>
+					<option value="2">계약직</option>
 				</select>
 			</td>
-			
-			<th>수습기간</th>
-			<td>
-				<input type="checkbox" id="che_probation" name="" />
-				<input type="date" style="width: 150px;" id="" name=""/>
-			</td>
-			<th><td></td></th>
 		</tr>
-		
 		<tr>
+			<th>임금적용률</th>
+			<td>
+				<input type="text" class="emppay" name="emppay" readonly style="background-color: #d9d9d9;" />
+			</td>
 			<th><span class="alert_required" style="color: red;">*</span>입사일자</th>
-			<td><input type="date" id="" name="" style="width: 165px;" /></td>
-			<th>퇴직일자</th>
-			<td><input type="date" id="" name="" style="width: 165px;"  /></td>
-			<th></th>
-			<td></td>
+			<td><input type="date" style="width: 165px;" /></td>
+		</tr>
+		<tr>
+			<th><span class="alert_required" style="color: red;">*</span>은행</th>
+			<td>
+				<input type="text" class="emppay" name="emppay" readonly />
+			</td>
+			<th><span class="alert_required" style="color: red;">*</span>계좌</th>
+			<td><input type="text" style="width: 165px;" /></td>
 		</tr>
 	</table>
 	
 	<%-- 정보수정 페이지에서 보이는 버튼 --%>
 	<div align="right" style="margin: 3% 0;">
 		<button id="btn_update" style="background-color:#F9F9F9; border: none; width: 80px;">삭제</button>
-		<button id="btn_update" style="color: white; background-color:#086BDE; border: none; width: 80px;">저장</button>
+		<button id="btn_register" onclick ="btn_register" style="color: white; background-color:#086BDE; border: none; width: 80px;">저장</button>
 	</div>
 </div>
 </form>
@@ -407,18 +629,22 @@
          <table class="table table-bordered table-sm mt-5" >
          	<thead>
          		<tr>
-         			<th ></th>
-         			<th >부문</th>
+         			<th></th>
+         			<th>부문</th>
          			<th>부서</th>
          			<th>전화번호</th>
          		</tr>
          	</thead>
 	         <tbody>
 	         <tr class="text-center">
-	         	<td style="width: 5px;"><input type="checkbox" /></td>
-				<td>개발팀</td>
-				<td>SW</td>
-				<td>02-2232-2233</td>
+		         <c:forEach  var="employee" items="${requestScope.n}" varStatus="status">
+					<tr>
+			         	<td style="width: 5px;"><input type="checkbox" /></td>
+						<td>${employee.bumun}</td>
+						<td>${employee.department}</td>
+						<td>${employee.depttel}</td>
+					</tr>
+				</c:forEach>
 	         </tr>
 	         </tbody>
          </table>
