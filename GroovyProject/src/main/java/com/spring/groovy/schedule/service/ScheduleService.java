@@ -141,6 +141,38 @@ public class ScheduleService implements InterScheduleService {
 		int n = dao.insertScheduleEnd(paraMap);
 		return n;
 	}
+
+
+	// === 모든 캘린더(사내캘린더, 내캘린더, 공유받은캘린더)를 불러오는것 ===
+	@Override
+	public List<Map<String,String>> selectSchedule(Map<String,String> paraMap) {
+		List<Map<String,String>> scheduleList = dao.selectSchedule(paraMap);
+		return scheduleList;
+	}
+
+
+	// === 일정 상세보기 ===
+	@Override
+	public Map<String, String> viewSchedule(String scheduleno) {
+		Map<String,String> map = dao.viewSchedule(scheduleno);
+		return map;
+	}
+
+
+	// === 일정 수정하기 마무리 ===
+	@Override
+	public int updateScheduleEnd(Map<String, String> paraMap) {
+		int n = dao.updateScheduleEnd(paraMap);
+		return n;
+	}
+
+
+	// === 일정 삭제하기 ===
+	@Override
+	public int deleteSchedule(String scheduleno) {
+		int n = dao.deleteSchedule(scheduleno);
+		return n;
+	}
 	
 	
 	

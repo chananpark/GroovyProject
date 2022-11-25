@@ -5,6 +5,7 @@ import java.util.Map;
 
 import com.spring.groovy.management.model.MemberVO;
 import com.spring.groovy.schedule.model.CalSmallCategoryVO;
+import com.spring.groovy.schedule.model.CalendarScheduleVO;
 
 public interface InterScheduleService {
 
@@ -40,6 +41,18 @@ public interface InterScheduleService {
 
 	// === 일정 등록하기 ===
 	int insertScheduleEnd(Map<String, String> paraMap);
+
+	// === 모든 캘린더(사내캘린더, 내캘린더, 공유받은캘린더)를 불러오는것 ===
+	List<Map<String,String>> selectSchedule(Map<String,String> paraMap);
+
+	// === 일정 상세보기 ===
+	Map<String, String> viewSchedule(String scheduleno);
+
+	// === 일정 수정하기 마무리 ===
+	int updateScheduleEnd(Map<String, String> paraMap);
+
+	// === 일정 삭제하기 ===
+	int deleteSchedule(String scheduleno);
 
 	
 	

@@ -70,9 +70,9 @@ $(()=>{
 	const ctxPath = '<%=ctxPath%>';
 	let menuName = pathName.substring(ctxPath.length+1);
 	const index = menuName.indexOf("/");
-	menuName = menuName.substring(0,index);
+	menuName = menuName.substring(0,index) || 'index';
 	
-	$('div#'+menuName).addClass('activeHeaderMenu');
+	$('div#'+menuName).addClass('activeHeaderMenu'); // 현재 메뉴에 색 입히기
 	
 	$("#header_profile_bg").text("${sessionScope.loginuser.name}".substring(0,1));
 });
@@ -88,7 +88,7 @@ $(()=>{
     </li>
     
     <li class="nav-item"  >
-    	<div class="nav-link text-dark header_hover header_width" onClick='location.href="<%=ctxPath%>/index.on"'>
+    	<div id='index' class="nav-link text-dark header_hover header_width" onClick='location.href="<%=ctxPath%>/index.on"'>
     		<div class="text-center"><i class="fas fa-home fa-lg"></i></div>
     		<div style="text-align: center;">홈</div>
     	</div>

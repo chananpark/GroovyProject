@@ -133,6 +133,38 @@ public class ScheduleDAO implements InterScheduleDAO {
 	public int insertScheduleEnd(Map<String, String> paraMap) {
 		int n = sqlsession.insert("yeojin.insertScheduleEnd", paraMap);
 		return n;
+	}
+
+
+	// === 모든 캘린더(사내캘린더, 내캘린더, 공유받은캘린더)를 불러오는것 ===
+	@Override
+	public List<Map<String,String>> selectSchedule(Map<String,String> paraMap) {
+		List<Map<String,String>> selectSchedule = sqlsession.selectList("yeojin.selectSchedule", paraMap);
+		return selectSchedule;
+	}
+
+
+	// === 일정 상세보기 ===
+	@Override
+	public Map<String, String> viewSchedule(String scheduleno) {
+		Map<String,String> map = sqlsession.selectOne("yeojin.viewSchedule", scheduleno);
+		return map;
+	}
+
+
+	// === 일정 수정하기 마무리 ===
+	@Override
+	public int updateScheduleEnd(Map<String, String> paraMap) {
+		int n = sqlsession.update("yeojin.updateScheduleEnd", paraMap);
+		return n;
+	}
+
+
+	// === 일정 삭제하기 ===
+	@Override
+	public int deleteSchedule(String scheduleno) {
+		int n = sqlsession.delete("yeojin.deleteSchedule", scheduleno);
+		return n;
 	} 
 	
 	

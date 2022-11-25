@@ -33,6 +33,14 @@
 	  text-decoration: none;
 	}
 	
+	.fc-event-title {
+		color: black;
+	}
+	
+	.fc-event-time {
+		color: black;
+	}
+	
 	/* 상단 버튼 css 시작 */
 	.fc .fc-button-primary {
 		background-color: #086BDE;
@@ -169,16 +177,131 @@
 		    },
 			
 			// ===================== DB 와 연동하는 법 시작 ===================== //
-			    
+			events:function(info, successCallback, failureCallback) {
+	
+				$.ajax({
+					url: '<%= ctxPath%>/schedule/selectSchedule.on',
+					data:{"empno":$('input#empno').val(),
+						  "cpemail":$('input#cpemail').val()
+	                 	  },
+					dataType: "json",
+	                success:function(json) {
+						var events = [];
+	                    if(json.length > 0){
+	                         
+							$.each(json, function(index, item) {
+	                            var startdate = moment(item.startdate).format('YYYY-MM-DD HH:mm:ss');
+	                            var enddate = moment(item.enddate).format('YYYY-MM-DD HH:mm:ss');
+	                            var subject = item.subject;
+	                              
+                                // 전사일정 달력에 표시 
+                               	if( $("input:checkbox[name=com_smcategChk]:checked").length <= $("input:checkbox[name=com_smcategChk]").length ){
+                                
+                                   	for(var i=0; i<$("input:checkbox[name=com_smcategChk]:checked").length; i++){
+                             	  
+                            			if($("input:checkbox[name=com_smcategChk]:checked").eq(i).val() == item.fk_smcatgono){
+ 			                                // alert("캘린더 소분류 번호 : " + $("input:checkbox[name=com_smcategChk]:checked").eq(i).val());
+                              			    events.push({
+	                          	                id: item.scheduleno,
+	                                            title: item.subject,
+	                                            start: startdate,
+	                                            end: enddate,
+	                                  	        url: "<%= ctxPath%>/schedule/viewSchedule.on?scheduleno="+item.scheduleno,
+	                                            color: item.color,
+	                                            cid: item.fk_smcatgono  
+	                                            // 사내캘린더 내의 서브캘린더 체크박스의 value값과 일치하도록 만들어야 한다. 
+	                                            // 그래야만 서브캘린더의 체크박스와 cid 값이 연결되어 체크시 풀캘린더에서 일정이 보여지고 체크해제시 풀캘린더에서 일정이 숨겨져 안보이게 된다. 
+		                                	}); // end of events.push({})---------
+ 		                                }
+                             	   
+									}// end of for-------------------------------------
+                              
+								}// end of if-------------------------------------------
+	                             
+								
+                             	// 팀별일정 달력에 표시 
+                                if( $("input:checkbox[name=team_smcategChk]:checked").length <= $("input:checkbox[name=team_smcategChk]").length ){
+	                                   
+									for(var i=0; i<$("input:checkbox[name=team_smcategChk]:checked").length; i++){
+	                                
+										if($("input:checkbox[name=team_smcategChk]:checked").eq(i).val() == item.fk_smcatgono && item.department == "${sessionScope.loginuser.department}" ){
+	   			                        	//  alert("캘린더 소분류 번호 : " + $("input:checkbox[name=my_smcatgono]:checked").eq(i).val());
+	                                		events.push({
+			                                	id: item.scheduleno,
+                                                title: item.subject,
+                                                start: startdate,
+                                                end: enddate,
+                                        	    url: "<%= ctxPath%>/schedule/viewSchedule.on?scheduleno="+item.scheduleno,
+                                                color: item.color,
+                                                cid: item.fk_smcatgono  
+                                        	}); // end of events.push({})---------
+										}
+										
+									}// end of for-------------------------------------
+                                 
+								}// end of if-------------------------------------------
+								
+								
+								// 개인일정 달력에 표시 
+                                if( $("input:checkbox[name=my_smcategChk]:checked").length <= $("input:checkbox[name=my_smcategChk]").length ){
+	                                   
+									for(var i=0; i<$("input:checkbox[name=my_smcategChk]:checked").length; i++){
+	                                
+										if($("input:checkbox[name=my_smcategChk]:checked").eq(i).val() == item.fk_smcatgono && item.empno == ${sessionScope.loginuser.empno} ){
+	   			                        	//  alert("캘린더 소분류 번호 : " + $("input:checkbox[name=my_smcatgono]:checked").eq(i).val());
+	                                		events.push({
+			                                	id: item.scheduleno,
+                                                title: item.subject,
+                                                start: startdate,
+                                                end: enddate,
+                                        	    url: "<%= ctxPath%>/schedule/viewSchedule.on?scheduleno="+item.scheduleno,
+                                                color: item.color,
+                                                cid: item.fk_smcatgono 
+											}); // end of events.push({})---------
+										}
+										
+									}// end of for-------------------------------------
+                                 
+								}// end of if-------------------------------------------
+
+								
+                             	// 공유일정
+                                if (item.fk_lgcatgono != 1 && item.empno != "${sessionScope.loginuser.empno}" && '(item.joinuser).indexOf("${sessionScope.loginuser.cpemail}")' != '-1' ){  
+                                      
+									events.push({
+                          				id: "0",  // "0" 인 이유는  배열 events 에 push 할때 id는 고유해야 하는데 위의 사내캘린더 및 내캘린더에서 push 할때 id값으로 item.scheduleno 을 사용하였다. item.scheduleno 값은 DB에서 1 부터 시작하는 시퀀스로 사용된 값이므로 0 값은 위의 사내캘린더나 내캘린더에서 사용되지 않으므로 여기서 고유한 값을 사용하기 위해 0 값을 준 것이다. 
+                                        title: item.subject,
+                                        start: startdate,
+                                        end: enddate,
+                                	    url: "<%= ctxPath%>/schedule/viewSchedule.on?scheduleno="+item.scheduleno,
+                                        color: item.color,
+                                        cid: "0"  // "0" 인 이유는  공유받은캘린더 에서의 체크박스의 value 를 "0" 으로 주었기 때문이다.
+									}); // end of events.push({})--------- 
+	                                   
+                        		}// end of if------------------------- 
+								
+							}); // end of $.each(json, function(index, item) {})-----------------------
+							
+						} // end of if(json.length > 0)                            
+	                         
+	                    // console.log(events);                       
+                    	successCallback(events);                               
+					},
+				    error: function(request, status, error){
+				    	alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+					}	
+	                                            
+				}); // end of $.ajax()--------------------------------
+	        
+			}, // end of events:function(info, successCallback, failureCallback) {}---------
 			// ===================== DB 와 연동하는 법 끝 ===================== //
-		    
 		    
 		    
 			// 풀캘린더에서 날짜 클릭할 때 발생하는 이벤트(일정 등록창으로 넘어간다)
 		    dateClick: function(info) {
 		    	// alert('클릭한 Date: ' + info.dateStr); // 클릭한 Date: 2021-11-20
 	      		$(".fc-day").css('background','none'); // 현재 날짜 배경색 없애기
-	      	    info.dayEl.style.backgroundColor = '#086BDE'; // 클릭한 날짜의 배경색 지정하기
+	      	    info.dayEl.style.backgroundColor = '#f9f9f9'; // 클릭한 날짜의 배경색 지정하기
 	      	    $("form > input[name=chooseDate]").val(info.dateStr);
 	      	    
 	      	    var frm = document.dateFrm;
@@ -187,17 +310,49 @@
 			}, // end of dateClick: function(info)
       	  
 
-      	  
-      	  
+			// === 전사일정, 팀별일정, 개인일정, 공유일정의 체크박스에 체크유무에 따라 일정을 보여주거나 일정을 숨기게 하는 것이다. === 
+	    	eventDidMount: function (arg) {
+		    	var arr_calendar_checkbox = document.querySelectorAll("input.calendar_checkbox"); 
+		        // 사내캘린더, 내캘린더, 공유받은캘린더 에서의 모든 체크박스임
+		            
+		        arr_calendar_checkbox.forEach(function(item) { // item 이 전사일정, 팀별일정, 개인일정, 공유일정의 모든 체크박스 중 하나인 체크박스임
+			    	if (item.checked) { 
+			    		// === 전사일정, 팀별일정, 개인일정, 공유일정의 체크박스중 체크박스에 체크를 한 경우 라면
+			                
+			        	if (arg.event.extendedProps.cid === item.value) { // item.value 가 체크박스의 value 값이다.
+			              	// console.log("일정을 보여주는 cid : "  + arg.event.extendedProps.cid);
+			              	// console.log("일정을 보여주는 체크박스의 value값(item.value) : " + item.value);
+			                    
+			              	arg.el.style.display = "block"; // 풀캘린더에서 일정을 보여준다.
+			            }
+					} else { 
+						// === 전사일정, 팀별일정, 개인일정, 공유일정의 체크박스중 체크박스에 체크를 해제한 경우 라면
+			                
+						if (arg.event.extendedProps.cid === item.value) {
+	            		// console.log("일정을 숨기는 cid : "  + arg.event.extendedProps.cid);
+	                	// console.log("일정을 숨기는 체크박스의 value값(item.value) : " + item.value);
+			                	
+	            			arg.el.style.display = "none"; // 풀캘린더에서 일정을  숨긴다.
+			            }
+					}
+				});// end of arr_calendar_checkbox.forEach(function(item) {})------------
+			}
       	  
 		}); // end of var calendar = new FullCalendar.Calendar(calendarEl,
 		
 		calendar.render();  // 풀캘린더 보여주기
 		
+		var arr_calendar_checkbox = document.querySelectorAll("input.calendar_checkbox"); 
+		// 전사일정, 팀별일정, 개인일정, 공유일정의 체크박스
 		
-		
-		
-		
+		arr_calendar_checkbox.forEach(function(item) {
+	 		item.addEventListener("change", function () {
+	     		// console.log(item);
+				calendar.refetchEvents(); // 모든 소스의 이벤트를 다시 가져와 화면에 다시 표시합니다.
+			});
+    	});
+		//==== 풀캘린더와 관련된 소스코드 끝(화면이 로드되면 캘린더 전체 화면 보이게 해줌) ==== //
+
 		
 		
 		
@@ -207,20 +362,20 @@
 		
 		// 검색버튼 클릭 이벤트 클릭하면 나타나기
 		// menu 클래스 바로 하위에 있는 a 태그를 클릭했을때
-        $("#search_btn").click(function(){
-            var submenu = $(this).parent().parent().find("#detail_search");
- 
-            // submenu 가 화면상에 보일때는 위로 보드랍게 접고 아니면 아래로 보드랍게 펼치기
-            if( submenu.is(":visible") ){
-                submenu.slideUp();
-            }else{
-                submenu.slideDown();
-            }
-        });
+		$("#search_btn").click(function(){
+		    var submenu = $(this).parent().parent().find("#detail_search");
+		
+		    // submenu 가 화면상에 보일때는 위로 보드랍게 접고 아니면 아래로 보드랍게 펼치기
+		    if( submenu.is(":visible") ){
+		        submenu.slideUp();
+		    }else{
+		        submenu.slideDown();
+		    }
+		});
 		
 
 	
-	
+		
 	
 	
 	
@@ -287,6 +442,10 @@
 		</table>
 		
 	</div>
+	
+	<%-- hidden 태그 --%>
+	<input type="hidden" id="empno" name="empno" value="${sessionScope.loginuser.empno}">
+	<input type="hidden" id="cpemail" name="cpemail" value="${sessionScope.loginuser.cpemail}">
 	
 	<%-- 풀캘린더가 보여지는 엘리먼트  --%>
 	<div id="calendar" style="margin: 100px 20px 50px 0;" ></div>
