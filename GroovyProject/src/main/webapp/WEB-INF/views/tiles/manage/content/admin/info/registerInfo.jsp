@@ -269,7 +269,10 @@ $("div.error").hide();
 				
 			}); // end of $("input#hp3").blur() ----------------- // 아이디가 hp3 인 것은 포커스를 잃어버렸을 경우(blur) 이벤트를 처리해주는 것이다.
 
-			
+		// === 회사이메일 확인버튼 === //
+		$("button#checkCpEmail").click(function(){
+			func_checkEmail();
+		});// $("button#checkCpEmail").click(function(){ ---------------------
 			
 		 
 		
@@ -389,7 +392,6 @@ $("div.error").hide();
 			opt.innerHTML = dept[i];
 			target.appendChild(opt);
 		}
-		
 	
 	} //function bumunchange(){ -------------------------
 		
@@ -399,31 +401,20 @@ $("div.error").hide();
 		}
 	
 	
-<%-- 	
-	
-	// >>> 등록버튼을 누르면 <<<
-	function btn_register() {
-	 
-     // 보내야할 데이터를 선정하는 또 다른 방법
-	  // jQuery에서 사용하는 것으로써,
-	  // form태그의 선택자.serialize(); 을 해주면 form 태그내의 모든 값들을 name값을 키값으로 만들어서 보내준다. 
-	  const queryString = $("form[name=addWriteFrm]").serialize();
- 	 
-	   
-	 var queryString = $("form[name=addWriteFrm]").serialize();
+	// >>> 회사이메일 확인버튼 누르면 <<<
+	function func_checkEmail() {
 	 
 	 $("form[name=addWriteFrm]").ajaxForm({
-		  url:"<%= request.getContextPath()%>/manage/admin/registerInfoEnd.on",
-		  data:queryString,
-		  enctype:"multipart/form-data",
+		  url:"<%= request.getContextPath()%>/manage/admin/checkCpEmail.on",
+		  data:{"cpemail":cpemail},
 		  type:"POST",
 		  dataType:"JSON",
 		  success:function(json){
 			  
-			  if(json != "") {
-				  alert("사원등록 완료되었습니다.");
+			  if(json == 1) {
+				  alert("사용가능한 사원이메일입니다.");
 			  }
-			  alert("사원등록 실패.");
+			  alert("이미 등록된 사원이메일입니다.");
 		  },
 		  error: function(request, status, error){
 			  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
@@ -433,7 +424,6 @@ $("div.error").hide();
 	} // end of function btn_register() { -----------------------------
 	
 	
-	 --%>
 	// >>> 등록버튼을 누르면 <<<
 	function btn_register() {
 		 
@@ -519,7 +509,7 @@ $("div.error").hide();
 		<tr>
 			<th><span class="alert_required"style="color: red;">*</span>내선번호</th>
 			<td>
-				<input type="text" id="depttel" name="depttel" />
+				<input type="text" id="depttel" name="depttel" readonly/>
 				<button class="btn btn-sm ml-5 btn_check" onclick="go_search" data-toggle="modal" data-target="#go_searchTel"><i class="fas fa-search"></i>찾기</button>
 			</td>
 			<th><span class="alert_required" style="color: red;">*</span>핸드폰번호</th>
@@ -534,7 +524,7 @@ $("div.error").hide();
 			<th><span class="alert_required" style="color: red;">*</span>회사이메일</th>
 			<td>
 				<input type="email" id="cpemail" name="cpemail" />
-				<button type="button" class="btn btn-sm ml-5 btn_check">확인</button>
+				<button type="button" class="btn btn-sm ml-5 btn_check" id="checkCpEmail"onclick="func_checkCpEmail()">확인</button>
 				<div id="empnocheckResult"></div>
 			</td>
 			<th>외부이메일</th>

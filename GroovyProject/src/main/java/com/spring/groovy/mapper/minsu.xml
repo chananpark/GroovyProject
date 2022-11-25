@@ -104,8 +104,12 @@
 	</insert>
 	
 	
-	
-	
+	<!-- 관리자 사원관리 - 사원등록(이메일중복확인 Ajax)-->
+	<select id="cpEmailList" parameterType="HashMap" resultType="com.spring.groovy.management.model.MemberVO">
+		select cpemail
+		from tbl_employee
+		where cpemail = #{cpemail}
+	</select>
 	
 	
 	

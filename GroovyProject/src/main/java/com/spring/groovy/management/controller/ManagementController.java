@@ -16,8 +16,10 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.google.gson.JsonObject;
 import com.spring.groovy.common.Pagination;
 import com.spring.groovy.management.model.MemberVO;
 import com.spring.groovy.management.model.ProofVO;
@@ -95,7 +97,7 @@ public class ManagementController {
 			 * mav.addObject("proofList", proofList);
 			 */
 			mav.addObject("loginuser", loginuser);
-			mav.setViewName( "redirect:manage/each/proof/proofList.tiles");
+			mav.setViewName( "redirect:/manage/proof/proofList.on");
 			return mav;
 		}
 		
@@ -132,7 +134,7 @@ public class ManagementController {
 		mav.addObject("proofList", proofList);
 		mav.addObject("empno", empno);
 		
-		// mav.setViewName("redirect:/manage/proof/proofList.on");
+		mav.setViewName("manage/each/proof/proofList.tiles");
 		return mav;
 	}
 	
@@ -193,11 +195,29 @@ public class ManagementController {
 			
 		}
 		
-		
 		mav.setViewName("manage/admin/info/registerInfo.tiles");
 		return mav; 
 	}
+	
+	
+	//관리자 사원관리 - 사원등록(이메일중복확인 Ajax)
+	@ResponseBody
+	@RequestMapping(value="/manage/admin/checkCpEmail.on")
+	public String checkCpEmail(HttpServletRequest request, MemberVO mvo) {
 		
+		String cp_email = request.getParameter("cpemail");
+		
+		Map<String,Object> paraMap = new HashMap<>();
+		paraMap.put("cp_email", cp_email);
+		
+		List<MemberVO> cpEmailList = service.checkCpEmail(paraMap);
+		
+		JsonObject jsonObj = new JsonObject();
+		jsonObj.put("cpEmailList", cpEmailList);
+		
+		return jsonObj.toString();
+	}
+	
 	
 	//관리자 사원관리 - 사원등록
 	@RequestMapping(value="/manage/admin/registerInfoEnd.on")

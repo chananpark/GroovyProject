@@ -207,3 +207,11 @@ from tbl_certificate
 where fk_empno = '13' 
 commit
 
+select proofno,fk_empno, to_char(issuedate, 'yyyy-mm-dd') issuedate , issueuse
+from tbl_certificate
+
+select cpemail
+from tbl_enployee
+
+
+

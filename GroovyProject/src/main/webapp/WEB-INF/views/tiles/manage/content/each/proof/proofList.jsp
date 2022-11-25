@@ -138,7 +138,7 @@
 				<td>${emp.fk_empno}</td>
 				<td><c:choose><c:when test="${emp.issueuse eq '1'}">은행제출용</c:when><c:otherwise>공공기관제출용</c:otherwise></c:choose></td>
 				<td>${emp.issuedate}</td>
-				<td><button class="btn btn-sm" style="background-color:#F9F9F9"onclick="go_viewDetailProof()" data-toggle="modal" data-target="#viewDetailProof">출력</button></td>
+				<td><button class="btn btn-sm" style="background-color:#F9F9F9" data-toggle="modal" data-target="#viewDetailProof" data-issueuse="${emp.issueuse}">출력</button></td> 
 			</tr>
 				</c:forEach>
 		</tbody>
@@ -156,11 +156,13 @@
 
 <%-- 재직증명서 상세보기 모달창 --%>
 <div class="modal" id="viewDetailProof" >
-   <div class="modal-dialog" >
+   <div class="modal-dialog" role="document">
       <div class="modal-content modals-fullsize">
-      
+      	
+      	<div style="margin-top: 2%;">
+      		<button class="close" data-dismiss="modal" aria-hodden="true">X</button>
+      	</div>
          <div class='modal-body px-3'>
- 		<button class="btn btn-sm float-right" style="background-color:#086BDE; color:white;">닫기</button>        
           <div align="center" style="padding: 2%; margin: 8% auto;">
                   
          <h4 class="float-center mb-5">재직증명서</h4>
@@ -172,15 +174,15 @@
 	         <tbody class="font">
 	         <tr>
 	         	<th>성명</th>
-	         	<td><input type="text" style="border: none;" name=""/></td>
+	         	<td><input type="text" style="border: none;" name="name" value="${session.loginuser.name}"/></td>
 	         	<th>주민번호</th>
-	         	<td><input type="text" style="border: none; name="" /></td>
+	         	<td><input type="text" style="border: none; name="jubun" value="${session.loginuser.jubun}" /></td>
 	         </tr>
 	         <tr>
 	         	<th>연락처</th>
-	         	<td><input type="text" style="border: none; name="" /></td>
+	         	<td><input type="text" style="border: none; name="mobile" value="${session.loginuser.mobile}"/></td>
 	         	<th>주소 </th>
-	         	<td><input type="text" style="border: none; name="" /></td>
+	         	<td><input type="text" style="border: none; name="address" value="${session.loginuser.address}"/></td>
 	         </tr>
 	         </tbody>
          </table>
@@ -194,25 +196,25 @@
 	         <tbody class="font">
 		         <tr>
 		         	<th>회사명</th>
-		         	<td><input type="text" style="border: none; name="" /></td>
+		         	<td><input type="text" style="border: none; value="(주)그루비"/></td>
 		         	<th>대표자 </th>
 		         	<td><input type="text" style="border: none; name="" /></td>
 		         </tr>
 		        <tr>
 		         	<th>근무부서</th>
-		         	<td><input type="text" style="border: none; name="" /></td>
+		         	<td><input type="text" style="border: none; name="department" value="${session.loginuser.department}"/></td>
 		         	<th>입사일 </th>
-		         	<td><input type="text" style="border: none; name="" /></td>
+		         	<td><input type="text" style="border: none; name="joindate" value="${session.loginuser.joindate}"/></td>
 		         </tr>
 		          <tr>
 		         	<th>직급</th>
-		         	<td><input type="text" style="border: none;"/></td>
+		         	<td><input type="text" style="border: none;" name="position" value="${session.loginuser.position}"/></td>
 		         	<th>재직기간</th>
 		         	<td><input type="text" style="border: none;"/></td>
 		         </tr>
 		         <tr>
 		         	<th>사용용도</th>
-		         	<td><input type="text" style="border: none;"/></td>
+		         	<td><input type="text" style="border: none;" id="modalissueuse"name="issueuse" "/></td>
 		         	<th></th>
 		         	<td><input type="text" style="border: none;"/></td>
 		         </tr>

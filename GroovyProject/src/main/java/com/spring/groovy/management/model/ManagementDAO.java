@@ -85,6 +85,14 @@ public class ManagementDAO implements InterManagementDAO {
 		return n;
 	}
 
+	//관리자 사원관리 - 사원등록(이메일중복확인 Ajax)
+	@Override
+	public List<MemberVO> cpEmailList(Map<String, Object> paraMap) {
+		List<MemberVO> cpEmailList = sqlsession.selectOne("minsu.cpEmailList",paraMap);
+		return cpEmailList;
+	}
+
+	
 	
 	
 	
