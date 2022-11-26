@@ -187,11 +187,45 @@ public class ManagementController {
 	
 	//관리자 사원관리 - 사원등록
 	@RequestMapping(value="/manage/admin/registerInfo.on")
-	public ModelAndView registerInfo(ModelAndView mav, HttpServletRequest request) {
+	public ModelAndView registerInfo(ModelAndView mav, HttpServletRequest request, MemberVO mvo) {
 
 		String method = request.getMethod();
 		
 		if("POST".equals(method)) {
+			
+			String hp1 = request.getParameter("hp1");
+			String hp2 = request.getParameter("hp2");
+			String hp3 = request.getParameter("hp3");
+			String birthyyyy = request.getParameter("birthyyyy"); 
+		    String birthmm = request.getParameter("birthmm"); 
+		    String birthdd = request.getParameter("birthdd");
+		     
+		    String mobile = hp1 + "-"+ hp2 +"-"+ hp3;
+		    String birthday = birthyyyy+"-"+birthmm+"-"+birthdd; 
+			
+			
+			Map<String,Object> paraMap = new HashMap<>();
+			paraMap.put("mvo", mvo);
+			paraMap.put("mobile", mobile);
+			paraMap.put("birthday", birthday);
+			
+			
+			// 사원등록
+			int n = service.getRegisterInfo(paraMap);
+			
+			if(n==1) {
+				String message="사원등록 성공";
+				mav.addObject("message", message);
+				mav.setViewName("redirect:/manage/admin/registerInfo.on");
+				return mav; 
+			}
+			
+			String message = "등록실패";
+			String loc = "javascript:history.back()";
+			
+			mav.addObject("message", message);
+			mav.addObject("loc", loc);
+			return mav;
 			
 		}
 		
@@ -215,50 +249,7 @@ public class ManagementController {
 		return json.toString();
 	}
 	
-	
-	//관리자 사원관리 - 사원등록
-	@RequestMapping(value="/manage/admin/registerInfoEnd.on")
-	public ModelAndView registerInfoEnd(ModelAndView mav, HttpServletRequest request, MemberVO mvo) {
 
-	
-		String hp1 = request.getParameter("hp1");
-		String hp2 = request.getParameter("hp2");
-		String hp3 = request.getParameter("hp3");
-		String birthyyyy = request.getParameter("birthyyyy"); 
-	    String birthmm = request.getParameter("birthmm"); 
-	    String birthdd = request.getParameter("birthdd");
-	     
-		String mobile = hp1 + "-"+ hp2 +"-"+ hp3;
-		String birthday = birthyyyy+"-"+birthmm+"-"+birthdd; 
-		
-		
-		Map<String,Object> paraMap = new HashMap<>();
-		paraMap.put("mvo", mvo);
-		paraMap.put("mobile", mobile);
-		paraMap.put("birthday", birthday);
-		
-		
-		// 사원등록
-		int n = service.getRegisterInfo(paraMap);
-		
-		if(n==1) {
-			String message="등록성공";
-			mav.addObject("message", message);
-			mav.addObject("n", n);
-			mav.setViewName("manage/admin/info/registerInfo.tiles");
-			return mav; 
-		}
-		
-		String message = "등록실패";
-		String loc = "javascript:history.back()";
-		
-		mav.addObject("message", message);
-		mav.addObject("loc", loc);
-		return mav;
-	}
-	
-	
-	
 	
 	
 	

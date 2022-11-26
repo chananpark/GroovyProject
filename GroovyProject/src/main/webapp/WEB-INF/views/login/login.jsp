@@ -151,7 +151,7 @@
 		<h3 style="font-weight: bold;">로그인</h3>
 		<p style="color:#b3b3b3 ">Email 주소를 입력하세요.</p>
 		
-		<input type="cpemail" name="cpemail" id="cpemail" style="width: 90%; background-color: #d9d9d9; border: none; height: 35px; margin:auto;" required/>
+		<input type="email" name="cpemail" id="cpemail" style="width: 90%; background-color:#E3F2FD; border: none; height: 35px; margin:auto;" required/>
 		
 		<div align="center">
 			<button type="button" id="btn_next" style="color: white;" >다음</button>

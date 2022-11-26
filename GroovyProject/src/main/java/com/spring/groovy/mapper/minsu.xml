@@ -97,10 +97,10 @@
 		insert into tbl_employee 
 			(empno,cpemail,name,position,jubun,postcode,address,detailaddress, extraaddress
 			,empimg,birthday, bumun,department,pvemail
-			,mobile,depttel,joindate,empstauts,bank,account,annualcnt,gender)
-		values(  ${empno}, ${cpemail}, ${name}, ${position}, ${jubun}, ${postcode}, ${address}, ${detailaddress}, ${extraaddress}
+			,mobile,depttel,joindate,empstauts,bank,account,annualcnt,gender, fk_position_no, fk_bumun_no, fk_department_no )
+		values( ${empno}, ${cpemail}, ${name}, ${position}, ${jubun}, ${postcode}, ${address}, ${detailaddress}, ${extraaddress}
 				,${empimg}, ${birthday}, ${bumun}, ${department}, ${pvemail}, ${mobile}, ${depttel}, ${joindate}, ${empstauts}
-				, ${bank}, ${account}, ${annualcnt}, ${gender})
+				, ${bank}, ${account}, ${annualcnt}, ${gender},${fk_position_no}, ${fk_bumun_no}, ${fk_department_no})
 	</insert>
 	
 	

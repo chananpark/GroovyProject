@@ -180,13 +180,12 @@
 			<input type="hidden" name="cpemail" value="${loginuser.cpemail}"/>
 			
 			<div style="color:#b3b3b3; margin: 5% 0 0 5%;" align="left">비밀번호(8자이상 15자 이하로 입력해주세요)</div>
-			<input type="password" name="pwd" id="pwd" style="width: 90%; border: solid 2px #086BDE; height: 35px; margin: auto;" autofocus="autofocus" required/>
+			<input type="password" name="pwd" id="pwd" style="width: 90%; background-color:#E3F2FD; border:none; height: 35px; margin: auto;" autofocus="autofocus" required/>
 			<div id="first_error" style="color:red; font-size: 12px;">비밀번호를 입력해주세요</div>
 			<div id="result_error">비밀번호 형식에 맞지 않습니다.</div>
 			<div></div>
-			<div align="left" style="color:#b3b3b3; margin: 2% 0 0 5%;"><input type="checkbox" id="checkbox"/>자동로그인</div>
 			
-			<div style="margin: 2% 0 0 20%;">
+			<div style="margin: 5% 0 0 20%;">
 				<button type="button" style="background-color: white; border: none;"><a href="#">비밀번호를 잊으셨나요?</a></button>
 				<button type="button" id="btn_back" onclick="javascript:history.back()">뒤로</button>
 				<button type="button" id="btn_next">다음</button>
