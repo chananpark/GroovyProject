@@ -113,9 +113,9 @@ public class ManagementService implements InterManagementService {
 
 	//관리자 사원관리 - 사원등록(이메일중복확인 Ajax)
 	@Override
-	public List<MemberVO> checkCpEmail(Map<String, Object> paraMap) {
-		List<MemberVO> cpEmailList = dao.cpEmailList(paraMap);
-		return cpEmailList;
+	public int checkCpEmail(String cpemail) {
+		int n = dao.cpEmailList(cpemail);
+		return n;
 	}
 
 	

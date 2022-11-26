@@ -270,7 +270,7 @@ $("div.error").hide();
 			}); // end of $("input#hp3").blur() ----------------- // 아이디가 hp3 인 것은 포커스를 잃어버렸을 경우(blur) 이벤트를 처리해주는 것이다.
 
 		// === 회사이메일 확인버튼 === //
-		$("button#checkCpEmail").click(function(){
+		$("button#checkCpEmail").click(function(e){
 			func_checkEmail();
 		});// $("button#checkCpEmail").click(function(){ ---------------------
 			
@@ -411,10 +411,10 @@ $("div.error").hide();
 		  dataType:"JSON",
 		  success:function(json){
 			  
-			  if(json == 1) {
-				  alert("사용가능한 사원이메일입니다.");
+			  if(json.n == 1) {
+				  alert("이미 등록된 사원이메일입니다.");
 			  }
-			  alert("이미 등록된 사원이메일입니다.");
+			  alert("사용가능한 사원이메일입니다.");
 		  },
 		  error: function(request, status, error){
 			  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
@@ -524,7 +524,7 @@ $("div.error").hide();
 			<th><span class="alert_required" style="color: red;">*</span>회사이메일</th>
 			<td>
 				<input type="email" id="cpemail" name="cpemail" />
-				<button type="button" class="btn btn-sm ml-5 btn_check" id="checkCpEmail"onclick="func_checkCpEmail()">확인</button>
+				<button type="button" class="btn btn-sm ml-5 btn_check" id="checkCpEmail" onclick="func_checkEmail()">확인</button>
 				<div id="empnocheckResult"></div>
 			</td>
 			<th>외부이메일</th>

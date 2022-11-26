@@ -202,20 +202,17 @@ public class ManagementController {
 	
 	//관리자 사원관리 - 사원등록(이메일중복확인 Ajax)
 	@ResponseBody
-	@RequestMapping(value="/manage/admin/checkCpEmail.on")
+	@RequestMapping(value="/manage/admin/checkCpEmail.on", produces="text/plain;charset=UTF-8")
 	public String checkCpEmail(HttpServletRequest request, MemberVO mvo) {
 		
-		String cp_email = request.getParameter("cpemail");
+		String cpemail = request.getParameter("cpemail");
 		
-		Map<String,Object> paraMap = new HashMap<>();
-		paraMap.put("cp_email", cp_email);
+		int n = service.checkCpEmail(cpemail);
 		
-		List<MemberVO> cpEmailList = service.checkCpEmail(paraMap);
-		
-		JsonObject jsonObj = new JsonObject();
-		jsonObj.put("cpEmailList", cpEmailList);
-		
-		return jsonObj.toString();
+		JSONObject json = new JSONObject();
+		json.put("n", n);
+	
+		return json.toString();
 	}
 	
 	

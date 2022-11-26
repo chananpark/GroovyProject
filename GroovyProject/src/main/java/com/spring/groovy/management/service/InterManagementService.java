@@ -39,7 +39,7 @@ public interface InterManagementService {
 	int getRegisterInfo(Map<String, Object> paraMap);
 
 	//관리자 사원관리 - 사원등록(이메일중복확인 Ajax)
-	List<MemberVO> checkCpEmail(Map<String, Object> paraMap);
+	int checkCpEmail(String cpemail);
 
 
 

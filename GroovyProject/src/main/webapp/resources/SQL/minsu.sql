@@ -213,5 +213,38 @@ from tbl_certificate
 select cpemail
 from tbl_enployee
 
+select position, bumun,department,
+		    fk_position_no, fk_bumun_no, fk_department_no
+		from tbl_employee
+
+5 대표이사
+4 부문장
+3 팀장
+2 책임
+1 선임
+
+
+1 이사실
+2 경영지원본부
+3 IT사업부문
+4 마케팅영업부문
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

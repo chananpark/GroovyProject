@@ -16,7 +16,7 @@
 	<select id="login2" parameterType="HashMap" resultType="com.spring.groovy.management.model.MemberVO">
 		select empno, cpemail, name, pwd, position, jubun, postcode, address, detailaddress
 		     , extraaddress,empimg,birthday, bumun,department,pvemail,mobile,depttel,joindate
-		     ,empstauts,bank, account,annualcnt, empimg
+		     ,empstauts,bank, account,annualcnt, empimg, fk_position_no, fk_bumun_no, fk_department_no
 		from tbl_employee
 		where cpemail = #{cpemail} and pwd = #{pwd}
 	</select>
@@ -105,8 +105,8 @@
 	
 	
 	<!-- 관리자 사원관리 - 사원등록(이메일중복확인 Ajax)-->
-	<select id="cpEmailList" parameterType="HashMap" resultType="com.spring.groovy.management.model.MemberVO">
-		select cpemail
+	<select id="cpEmailList" parameterType="String" resultType="int">
+		select count(*)
 		from tbl_employee
 		where cpemail = #{cpemail}
 	</select>

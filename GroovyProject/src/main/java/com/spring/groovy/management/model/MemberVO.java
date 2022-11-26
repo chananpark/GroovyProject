@@ -27,7 +27,9 @@ public class MemberVO {
 	private String bank;              // 은행
 	private String account;           // 계좌번호
 	private String annualcnt;          // 연차갯수
-	
+	private String fk_position_no;     // 직급번호(외래키)     1 선임 2 책임  3 팀장   4 부문장  5 대표이사
+	private String fk_bumun_no;		   // -- 부문번호(외래키)  1 이사실 2 경영지원본부 3 IT사업부문 4 마케팅영업부문
+	private String fk_department_no;   // -- 부서번호(기본키)  1 이사실 2 인사총무팀 3개발팀 4 5 6 마케팅
 
 	
 	
@@ -176,7 +178,24 @@ public class MemberVO {
 	public void setAnnualcnt(String annualcnt) {
 		this.annualcnt = annualcnt;
 	}
-	
+	public String getFk_position_no() {
+		return fk_position_no;
+	}
+	public void setFk_position_no(String fk_position_no) {
+		this.fk_position_no = fk_position_no;
+	}
+	public String getFk_bumun_no() {
+		return fk_bumun_no;
+	}
+	public void setFk_bumun_no(String fk_bumun_no) {
+		this.fk_bumun_no = fk_bumun_no;
+	}
+	public String getFk_department_no() {
+		return fk_department_no;
+	}
+	public void setFk_department_no(String fk_department_no) {
+		this.fk_department_no = fk_department_no;
+	}
 	
 	
 	
