@@ -187,7 +187,7 @@
 		FROM TBL_EMPLOYEE E JOIN TBL_POSITION P 
 		ON E.POSITION = P.POSITION
 		WHERE EMPNO != #{empno}
-		<!-- AND POSITION_NO > #{fk_position_no} -->
+		AND POSITION_NO > #{fk_position_no}
 	</select>
 
 	<!-- 부문 목록 조회 -->
