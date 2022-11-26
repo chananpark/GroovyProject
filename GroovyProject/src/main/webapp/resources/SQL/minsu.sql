@@ -54,6 +54,7 @@ create table tbl_pay
 );
 -- Table TBL_PAY이(가) 생성되었습니다.
 
+drop table tbl_pay
 
 -- 급여테이블 시퀀스
 create sequence seq_tbl_pay
@@ -112,6 +113,15 @@ nocycle
 nocache;
 -- Sequence SEQ_TBL_CERTIFICATE이(가) 생성되었습니다.
 
+-- 재직증명서 신청기록 테이블
+create table tbl_proof_history
+(fk_empno         varchar2(40)            not null  --회원아이디
+,logindate         date default sysdate    not null  -- 로그인한 날짜
+,clientip          varchar2(20)            not null
+,constraint  FK_tbl_login_history_fk_userid   foreign key(fk_userid) references tbl_member(userid)
+);
+
+
 -- 이미지 칼럼 추가
 alter table tbl_employee
    add signimg varchar2(200); 
@@ -164,53 +174,68 @@ VALUES(SEQ_TBL_EMPLOYEE.NEXTVAL, 'mangdb@groovy.com', '맹단비', 'qwer1234$',
 
 commit
 
-
+-- 로그인 조회
 select empno, cpemail, name, pwd, position, jubun, postcode, address, detailaddress
      , extraaddress,empimg,birthday, bumun,department,pvemail,mobile,depttel,joindate
      ,empstauts,bank, account,annualcnt, empimg
 from tbl_employee
 where cpemail = minsu@groovy.com and  pwd = 'qwer1234$'
 
-delete from tbl_employee 
-where annualcnt = 15
-
-DELETE FROM tbl_employee 
-WHERE account = 210123456789
-
-
-select empno, name, position, department,cpemail,mobile,joindate
-from tbl_employee
-
-SELECT * 
-		FROM ( SELECT A.*, ROWNUM AS RNO
-		    FROM ( SELECT *
-		            FROM
-		            VIEW_MY_DRAFT_PROCESSED
-                
-		            ORDER BY sortType
-		            )A )
-		WHERE RNO BETWEEN #{startRno} AND #{endRno}
-		and FK_APPROVAL_EMPNO = #{empno}
 
 select *
-from (SELECT ROWNUM AS RNO, v.*
-from( 
-    select *
-    from tbl_employee
-    order by bumun
-)V)
+from tbl_employee
 
-WHERE RNO BETWEEN 1 AND 10
-		and empno =
-
-
-
-
+-- 사원테이블에 정보넣기
 INSERT INTO tbl_employee 
 (empno,cpemail,name,position,jubun,postcode,ADDRESS,DETAILADDRESS, EXTRAADDRESS
 ,EMPIMG,birthday, bumun,department,pvemail
 ,mobile,depttel,joindate,empstauts,bank,account,annualcnt,gender)
 VALUES
+
+
+select *
+from tbl_certificate
+
+
+-- 증명서테이블에 insert
+insert into tbl_certificate 
+values(seq_tbl_certificate.nextval, 13, sysdate, '1')
+
+-- 증명서 테이블신청내역 조회
+select proofno,fk_empno, issuedate, issueuse
+from tbl_certificate
+where fk_empno = '13' 
+commit
+
+select proofno,fk_empno, to_char(issuedate, 'yyyy-mm-dd') issuedate , issueuse
+from tbl_certificate
+
+select cpemail
+from tbl_enployee
+
+select position, bumun,department,
+		    fk_position_no, fk_bumun_no, fk_department_no
+		from tbl_employee
+
+5 대표이사
+4 부문장
+3 팀장
+2 책임
+1 선임
+
+
+1 이사실
+2 경영지원본부
+3 IT사업부문
+4 마케팅영업부문
+
+
+
+
+
+
+
+
 
 
 

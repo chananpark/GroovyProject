@@ -99,6 +99,10 @@
 <script type="text/javascript">
 
 $("div.error").hide();
+let b_flag_emailDuplicate_click = false;
+// "이메일중복확인" 을 클릭했는지 클릭을 안했는지 여부를 알아오기 위한 용도.
+
+
 	$(document).ready(function(){
 	
 		 $('.eachmenu3').show();
@@ -270,8 +274,25 @@ $("div.error").hide();
 			}); // end of $("input#hp3").blur() ----------------- // 아이디가 hp3 인 것은 포커스를 잃어버렸을 경우(blur) 이벤트를 처리해주는 것이다.
 
 			
+		/*	
+		
+		// === 회사이메일 확인버튼 === //
+		$("button#checkCpEmail").click(function(e){
 			
-		 
+			$("input#cpemail").bulr(function(e){
+				const cpemail = $(e.target).val();
+				if(cpemail == ""){
+					$("div#empnocheckResult").text("이메일을 입력해주세요.").show();
+					$("input#cpemail").focus();
+				}
+				else {
+					$("div#empnocheckResult").text("이메일을 입력해주세요.").hide();
+				}
+			
+			func_checkEmail();
+		});// $("button#checkCpEmail").click(function(){ ---------------------
+			
+		*/ 
 		
 		// === 수습시간 체크박스 버튼을 누르면 === // 
 		$("input#che_probation").click(function(){
@@ -389,7 +410,6 @@ $("div.error").hide();
 			opt.innerHTML = dept[i];
 			target.appendChild(opt);
 		}
-		
 	
 	} //function bumunchange(){ -------------------------
 		
@@ -399,50 +419,86 @@ $("div.error").hide();
 		}
 	
 	
-<%-- 	
-	
-	// >>> 등록버튼을 누르면 <<<
-	function btn_register() {
+	// >>> 회사이메일 확인버튼 누르면 <<<
+	function func_checkEmail(cpemail) {
 	 
-     // 보내야할 데이터를 선정하는 또 다른 방법
-	  // jQuery에서 사용하는 것으로써,
-	  // form태그의 선택자.serialize(); 을 해주면 form 태그내의 모든 값들을 name값을 키값으로 만들어서 보내준다. 
-	  const queryString = $("form[name=addWriteFrm]").serialize();
- 	 
-	   
-	 var queryString = $("form[name=addWriteFrm]").serialize();
-	 
-	 $("form[name=addWriteFrm]").ajaxForm({
-		  url:"<%= request.getContextPath()%>/manage/admin/registerInfoEnd.on",
-		  data:queryString,
-		  enctype:"multipart/form-data",
+		let b_flag_emailDuplicate_click = true;
+		
+		const $cpemail = $("input#cpemail").val();
+		
+		if($cpemail == "") {
+			$("div#cpemailCheck").text("이메일을 입력해주세요").show();
+			$("input#cpemail").focus();
+			
+		}
+		else {
+			$("div#cpemailCheck").text("이메일을 입력해주세요").hide();
+		
+		
+		/*
+		$("input#cpemail").blur(function(e) {
+			
+			const $target = $(e.target);
+			const regExp = new RegExp(/^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i);
+			// 이메일 정규표현식 객체 생성
+			const bool = regExp.test( $target.val() );
+			
+			if(!bool && $target == "") {
+				// 입력하지 않거나 공백만 입력한 경우
+				$target.prop("disabled", true);
+				$("div#cpemailCheck").text("이메일을 입력해주세요").show();
+				$("input#cpemail").focus();
+				
+			}
+			else {
+				$("div#cpemailCheck").text("이메일을 입력해주세요").hide();
+				
+			}
+		}); // end of $("input#userid").blur() ----------------- // 아이디가 userid 인 것은 포커스를 잃어버렸을 경우(blur) 이벤트를 처리해주는 것이다.
+		*/
+		
+		
+		
+		$.ajax({
+		  url:"<%= request.getContextPath()%>/manage/admin/checkCpEmail.on",
+		  data:{"cpemail":$("input#cpemail").val()},
 		  type:"POST",
 		  dataType:"JSON",
 		  success:function(json){
 			  
-			  if(json != "") {
-				  alert("사원등록 완료되었습니다.");
+			  if(json.n == 1) {
+				$("div#empnocheckResult").html($("input#cpemail").val()+" 은(는) 이미 사용중인 사원이메일 입니다.").css("color","red");
+	           	$("input#cpemail").val("");
 			  }
-			  alert("사원등록 실패.");
+			  else {
+				  $("div#empnocheckResult").html($("input#cpemail").val()+" 은(는) 사용가능한  사원이메일 입니다.").css("color","##086BDE");
+			  }
 		  },
 		  error: function(request, status, error){
 			  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
 		  }
 	  });
 		
+		}
 	} // end of function btn_register() { -----------------------------
 	
 	
-	 --%>
 	// >>> 등록버튼을 누르면 <<<
 	function btn_register() {
 		 
+		// 필수입력사항이 빈칸인경우
+		const $required =  $(".required");
+		const required = $required.val().trim();
 		
-		const frm = document.frm_manageInfo
-		frm.action = "<%= ctxPath%>/manage/admin/registerInfoEnd.on";
-		frm.method = "POST";
-		frm.submit();
-	
+		if(required == null){
+			alert("필수입력사항을 모두 기입해주세요.");
+		}
+		else {
+			const frm = document.frm_manageInfo
+			frm.action = "<%= ctxPath%>/manage/admin/registerInfo.on";
+			frm.method = "POST";
+			frm.submit();
+		}
 	}
 	
 	
@@ -466,20 +522,20 @@ $("div.error").hide();
 	
 	<table class="m-4 mb-3 table table-bordered table-sm" id="first_table">
 		<tr>
-			<td rowspan='4' style="width:2%;"><img class="float-center" src="<%= ctxPath%>/resources/images/picture/꼬미사진.jpg" height="150px;" width="150px" alt="..."/></td>
+			<td rowspan='4' style="width:2%;"><img name="empimg" class="float-center" src="<%= ctxPath%>/resources/images/picture/꼬미사진.jpg" height="150px;" width="150px" alt="..."/></td>
 			<th class="t1"><span class="alert_required" style="color: red;">*</span>사원번호</th>
 			<td>	
-				<input type="text" id="empno" name="empno" placeholder="자동입력됩니다." readonly/>
+				<input type="text" id="empno" name="empno" class="required"  placeholder="자동입력됩니다." readonly/>
 			</td>
 			
 			<th class="t1"><span class="alert_required" style="color: red;">*</span>성명</th>
-			<td><input type="text" id="name" name="name" /></td>
+			<td><input type="text" id="name" name="name" class="required" /></td>
 		</tr>
 		<tr >
 			<th class="t1"><span class="alert_required" style="color: red;">*</span>주민등록번호</th>
 				<td>
 					<span>
-						<input type="text" id="jubun" name="jubun" style="display: inline;" />
+						<input type="text" id="jubun" name="jubun" class="required" style="display: inline;" />
 					</span>
 					<div class="msg_error">형식에 올바르지 않습니다.</div>
 				</td>
@@ -492,7 +548,7 @@ $("div.error").hide();
 		<tr>
 			<th class="t1"><span class="alert_required" style="color: red;">*</span>생년월일</th>
 			<td>
-				<span id="birthday" name="birthday">
+				<span id="birthday" name="birthday" class="required">
 				    	<select name="birthyyyy" id="birthyyyy" title="년도" class=" requiredInfo" ></select>
 						<select name="birthmm" id="birthmm" title="월" class=" requiredInfo" ></select>
 						<select name="birthdd" id="birthdd" title="일" class=" requiredInfo"></select>
@@ -505,10 +561,10 @@ $("div.error").hide();
 			<th class="t1"><span class="alert_required" style="color: red;">*</span>자택주소</th>
 			<td colspan="3">
 			<span>
-				<input type="text" id="postcode" name="postcode" placeholder="우편번호" style="display: inline-block;"/>
-				<input type="text" id="address" name="address" class="input_style" placeholder="예)00동, 00로" readonly/>
-				<input type="text" id="detailaddress" name="detailaddress" class="input_style"  placeholder="상세주소" style="display: inline-block;  width: 190px;"/>
-				<input type="text" id="extraaddress" name="extraaddress" placeholder="참고항목" style="display: inline-block;  width: 190px;  margin: 10px 0 10px 8px;"readonly/>
+				<input type="text" id="postcode" name="postcode" class="required" placeholder="우편번호" style="display: inline-block;"/>
+				<input type="text" id="address" name="address" class="input_style required" placeholder="예)00동, 00로" readonly/>
+				<input type="text" id="detailaddress" name="detailaddress" class="input_style required"  placeholder="상세주소" style="display: inline-block;  width: 190px;"/>
+				<input type="text" id="extraaddress" name="extraaddress" class="required" placeholder="참고항목" style="display: inline-block;  width: 190px;  margin: 10px 0 10px 8px;"readonly/>
 				<button type="button" id="btn_adrsearch" onclick="openDaumPOST();" class="btn btn-sm ml-2">추가</button>
 			</span>
 			</td>
@@ -520,26 +576,29 @@ $("div.error").hide();
 		<tr>
 			<th><span class="alert_required"style="color: red;">*</span>내선번호</th>
 			<td>
-				<input type="text" id="depttel" name="depttel" />
+				<input type="text" id="depttel" class="required" name="depttel" readonly/>
 				<button class="btn btn-sm ml-5 btn_check" onclick="go_search" data-toggle="modal" data-target="#go_searchTel"><i class="fas fa-search"></i>찾기</button>
 			</td>
 			<th><span class="alert_required" style="color: red;">*</span>핸드폰번호</th>
 	         <td style="text-align: left;" id="mobile" name="mobile">
-	             <input type="text" id="hp1" name="hp1" size="6" maxlength="3" value="010" class="requiredInfo" />&nbsp;-&nbsp;
-	             <input type="text" id="hp2" name="hp2" size="6" maxlength="4" class="requiredInfo"/>&nbsp;-&nbsp;
-	             <input type="text" id="hp3" name="hp3" size="6" maxlength="4" class="requiredInfo"/>
+	             <input type="text" id="hp1" name="hp1" size="6" maxlength="3" value="010" class="requiredInfo required" />&nbsp;-&nbsp;
+	             <input type="text" id="hp2" name="hp2" size="6" maxlength="4" class="requiredInfo required"/>&nbsp;-&nbsp;
+	             <input type="text" id="hp3" name="hp3" size="6" maxlength="4" class="requiredInfo required"/>
 	         </td>
 
 		</tr>
 		<tr>
 			<th><span class="alert_required" style="color: red;">*</span>회사이메일</th>
 			<td>
-				<input type="email" id="cpemail" name="cpemail" />
-				<button type="button" class="btn btn-sm ml-5 btn_check">확인</button>
+				<input type="email" id="cpemail" class="required" name="cpemail" />
+				<button type="button" class="btn btn-sm ml-5 btn_check" id="checkCpEmail" onclick="func_checkEmail()">확인</button>
+				<div id="cpemailCheck"></div>
 				<div id="empnocheckResult"></div>
+				
+				
 			</td>
 			<th>외부이메일</th>
-			<td><input type="email" id="mobile" name="mobile" /></td>
+			<td><input type="email" id="pvemail" name="pvemail" /></td>
 
 		</tr>
 	</table>
@@ -548,16 +607,16 @@ $("div.error").hide();
 		<tr>
 			<th><span class="alert_required" style="color: red;">*</span>부문</th>
 			<td>
-				<select name="bumun" class="select_3" onchange="bumunchange(value)">
+				<select name="bumun" class="select_3 required" onchange="bumunchange(value)">
 					<option value="">부문을 선택해주세요</option>
 					<option value="경영지원부문">경영지원부문</option>
 					<option value="IT사업부문">IT사업부문</option>
 					<option value="마케팅영업부문">마케팅영업부문</option>
 				</select>
 			</td>
-			<th><span class="alert_required" style="color: red;">*</span>부서</th>
+			<th><span class="alert_required required" style="color: red;">*</span>부서</th>
 			<td>
-				<select name="department" id="department" class="select_3" >
+				<select name="department" id="department" class="select_3 required"  >
 						<option value="">부서를 선택해주세요</option>
 				</select>
 			</td>
@@ -566,7 +625,7 @@ $("div.error").hide();
 		<tr>
 			<th><span class="alert_required" style="color: red;">*</span>직급</th>
 			<td>
-				<select name="extension" class="select_3" >
+				<select name="extension" class="select_3 required" >
 					<option value="">직급을 선택해주세요</option>
 					<option value="부문장">부문장</option>
 					<option value="팀장">팀장</option>
@@ -575,7 +634,7 @@ $("div.error").hide();
 				</select>
 			</td>
 			<th><span class="alert_required" style="color: red;">*</span>급여계약기준</th>
-			<td><select name="empstatus" class="select_3" onchange="empstatus(value)">
+			<td><select name="empstatus" class="select_3 required" onchange="empstatus(value)">
 					<option value="">계약기준을 선택해주세요</option>
 					<option value="1">정규직</option>
 					<option value="2">계약직</option>
@@ -585,7 +644,7 @@ $("div.error").hide();
 		<tr>
 			<th>임금적용률</th>
 			<td>
-				<input type="text" class="emppay" name="emppay" readonly style="background-color: #d9d9d9;" />
+				<input type="text" class="emppay required" name="emppay" readonly style="background-color: #d9d9d9;" />
 			</td>
 			<th><span class="alert_required" style="color: red;">*</span>입사일자</th>
 			<td><input type="date" style="width: 165px;" /></td>
@@ -593,17 +652,17 @@ $("div.error").hide();
 		<tr>
 			<th><span class="alert_required" style="color: red;">*</span>은행</th>
 			<td>
-				<input type="text" class="emppay" name="emppay" readonly />
+				<input type="text" class="emppay required" name="emppay" readonly />
 			</td>
 			<th><span class="alert_required" style="color: red;">*</span>계좌</th>
-			<td><input type="text" style="width: 165px;" /></td>
+			<td><input type="text" name="account"  class="required" style="width: 165px;" /></td>
 		</tr>
 	</table>
 	
 	<%-- 정보수정 페이지에서 보이는 버튼 --%>
 	<div align="right" style="margin: 3% 0;">
 		<button id="btn_update" style="background-color:#F9F9F9; border: none; width: 80px;">삭제</button>
-		<button id="btn_register" onclick ="btn_register" style="color: white; background-color:#086BDE; border: none; width: 80px;">저장</button>
+		<button id="btn_register" onclick ="btn_register()" style="color: white; background-color:#086BDE; border: none; width: 80px;">저장</button>
 	</div>
 </div>
 </form>

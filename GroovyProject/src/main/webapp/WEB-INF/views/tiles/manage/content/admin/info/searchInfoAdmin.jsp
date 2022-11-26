@@ -109,11 +109,11 @@
 			<span class="float-right">
 			<span >
 				<select id="searchType" name="searchType" style="width: 110px; border:solid 1px #cccccc;">
-					<option value="1">사원명</option>
-					<option value="2">부서명</option>
+					<option value="name">사원명</option>
+					<option value="department">부서명</option>
 				</select> 
 			</span>
-			<input type="text" id="searchWord" placeholder="검색어를 입력하세요" style="width: 120px; border:solid 1px #cccccc;"/>
+			<input type="text" id="searchWord"  name="searchWord" placeholder="검색어를 입력하세요" style="width: 120px; border:solid 1px #cccccc;"/>
 			<button class="btn btn-sm mr-3" id="go_search" style="background-color: #086BDE; color:white;"><i class="fas fa-search"></i>검색</button>
 			</span>
 		</div>
@@ -155,3 +155,4 @@
 </div>
 </form>
 
+<div>${pagebar }</div>

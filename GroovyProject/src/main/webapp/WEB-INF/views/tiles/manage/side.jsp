@@ -68,8 +68,15 @@
       </ul> 
     </li>
     
-    <li class="menu topMenu nav-item">
-      <a class="nav-link" href="<%= ctxPath%>/manage/proof/proofEmployment.on">재직증명서</a> 
+    <li class="menu topMenu nav-item">재직증명서
+	  <ul class="menu subMenus eachmenu6">
+	      <li id="celebmenu1" > <a class="nav-link" href="<%= ctxPath%>/manage/proof/proofList.on">증명서목록</a> </li>	 
+	      <li><a class="nav-link" href="<%= ctxPath%>/manage/proof/proofEmployment.on">증명서신청</a></li>  
+      </ul> 
+    
+    
+    
+     
     </li>
     
      <li class="menu topMenu nav-item">급여관리
