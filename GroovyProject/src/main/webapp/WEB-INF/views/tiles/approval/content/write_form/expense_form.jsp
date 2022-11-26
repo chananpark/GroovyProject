@@ -168,9 +168,17 @@ const submitDraft = () => {
 /* 결재라인 불러오기 */
 const getMyApprovalLine = () => {
 	// 저장된 결재라인 불러오기
+	const popupWidth = 800;
+	const popupHeight = 500;
 
+	const popupX = (window.screen.width / 2) - (popupWidth / 2);
+	const popupY= (window.screen.height / 2) - (popupHeight / 2);
+	
+	window.open('<%=ctxPath%>/approval/getSavedAprvLine.on','결제라인 불러오기','height=' + popupHeight  + ', width=' + popupWidth  + ', left='+ popupX + ', top='+ popupY);
+	
+	
 	// 모달창 띄우기
-	$("#myApprovalLineModal").modal();
+	//$("#myApprovalLineModal").modal();
 }
 
 /* 모달에서 선택된 결재라인 적용하기 */
@@ -179,14 +187,14 @@ const applyApprovalLine = () => {
 }
 
 /* 결재라인 선택하기 */
-const setApprovalLine = empno => {
-	const popupWidth = 500;
-	const popupHeight = 400;
+const selectApprovalLine = () => {
+	const popupWidth = 800;
+	const popupHeight = 500;
 
 	const popupX = (window.screen.width / 2) - (popupWidth / 2);
 	const popupY= (window.screen.height / 2) - (popupHeight / 2);
 	
-	window.open('<%=ctxPath%>/approval/setApprovalLine.on?'+empno,'결제라인 선택','height=' + popupHeight  + ', width=' + popupWidth  + ', left='+ popupX + ', top='+ popupY);
+	window.open('<%=ctxPath%>/approval/selectApprovalLine.on','결제라인 선택','height=' + popupHeight  + ', width=' + popupWidth  + ', left='+ popupX + ', top='+ popupY);
 }
 </script>
 
@@ -241,7 +249,7 @@ const setApprovalLine = empno => {
 				<div class='approvalLineInfo' style='width: 60%; display:inline-block;'>
 				
 					<h5 class='my-4' style='display: inline-block; float: left'>결재라인</h5>
-					<button id='setLineBtn' type="button" class="btn btn-sm ml-2 my-4" onclick='setApprovalLine(${loginuser.empno})'>선택하기</button>
+					<button id='setLineBtn' type="button" class="btn btn-sm ml-2 my-4" onclick='selectApprovalLine()'>선택하기</button>
 					<button id='resetLineBtn' type="button" class="btn btn-sm apvLineBtn ml-2 my-4">비우기</button>
 					<button id='getLineBtn' type="button" class="btn btn-sm apvLineBtn my-4" onclick='getMyApprovalLine()'>불러오기</button>
 					

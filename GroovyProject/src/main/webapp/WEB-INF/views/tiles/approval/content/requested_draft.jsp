@@ -95,6 +95,7 @@ const excelDownLoad = () => {
 	<h6 class='mb-3'>결재해야 할 문서가 없습니다.</h6>
 	</c:if>
 
+	<c:if test="${not empty draftList}">
 	<form name="searchFrm">
 		<div class="text-right mb-3">
 				<%-- 검색 구분 --%>
@@ -131,6 +132,7 @@ const excelDownLoad = () => {
 			</div>
 		</div>
 	</form>
+	</c:if>
 
  	<form name="excelFrm">
 		<input type="hidden" name="downloadList"/> 

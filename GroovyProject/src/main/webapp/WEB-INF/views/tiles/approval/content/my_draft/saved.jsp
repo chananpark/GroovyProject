@@ -59,9 +59,6 @@ $(()=>{
 	// pageSize 유지시키기
 	$("select#pageSize").val("${paraMap.pageSize}");
 	
-	// sortType 유지시키기
-	$("select#sortType").val("${paraMap.sortType}");
-	
 	// sortOrder 유지시키기
 	$("select#sortOrder").val("${paraMap.sortOrder}");
 	
@@ -136,7 +133,7 @@ const deleteDraft = () => {
 		<div class="text-right mb-3">
 				<%-- 검색 구분 --%>
 				<select id="searchType" name="searchType" class="mr-1" style="padding: 3px">
-					<option value="draft_no">문서번호</option>
+					<option value="temp_draft_no">문서번호</option>
 					<option value="draft_type">종류</option>
 					<option value="draft_subject">제목</option>
 					<option value="draft_emp_name">기안자</option>
@@ -161,6 +158,7 @@ const deleteDraft = () => {
 					<option value="30">30</option>
 					<option value="50">50</option>
 				</select> 
+				<input type="hidden" name='sortType' value='draft_date'/>
 				<select id="sortOrder" name="sortOrder" onchange="goSearch()">
 					<option value="desc">최신순</option>
 					<option value="asc">오래된순</option>
@@ -180,17 +178,17 @@ const deleteDraft = () => {
 		</thead>
 		<tbody>
 			<c:choose>
-				<c:when test="${not empty draftList}">
-					<c:forEach items="${draftList}" var="draft" varStatus="sts">
+				<c:when test="${not empty tempDraftList}">
+					<c:forEach items="${tempDraftList}" var="temp" varStatus="sts">
 						<tr class='row'>
 							<td class='col col-2'>
-								<input type="hidden" id="seq${sts.index}" class="sequences" value="${draft.draft_seq}"/>
+								<input type="hidden" id="seq${sts.index}" class="sequences" value="${temp.draft_no}"/>
 								<input type="checkbox" id="check${sts.index}" class="checkboxes"/>
 								<label for="check${sts.index}" class='btn smallBtn'>&nbsp;문서 선택</label>
 							</td>
-							<td class='col col-2'>${draft.draft_date}</td>
-							<td class='col col-2'>${draft.draft_type}</td>
-							<td class='col'>${draft.draft_subject}</td>
+							<td class='col col-2'>${temp.draft_date}</td>
+							<td class='col col-2'>${temp.draft_type}</td>
+							<td class='col'>${temp.draft_subject}</td>
 						</tr>
 					</c:forEach>
 				</c:when>

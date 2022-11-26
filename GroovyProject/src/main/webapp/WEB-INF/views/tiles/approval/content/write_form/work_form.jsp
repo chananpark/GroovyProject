@@ -6,6 +6,10 @@
 	font-size: small;
 }
 
+label:hover {
+	cursor: pointer;
+}
+
 .card-header {
 	background-color: #E3F2FD;
 }
@@ -85,6 +89,7 @@
 	min-height: 50px;
 	min-height: 50px;
 	overflow:auto;
+	font-size: small;
 }
 
 .dropBox.active {
@@ -107,7 +112,7 @@ $(() => {
 	/* 네이버 스마트 에디터  프레임생성 */
 	nhn.husky.EZCreator.createInIFrame({
 		oAppRef: obj,
-		elPlaceHolder: "content",
+		elPlaceHolder: "draft_content",
 		sSkinURI: "<%=ctxPath%>/resources/smarteditor/SmartEditor2Skin.html",
 		htParams: {
 			// 툴바 사용 여부 (true:사용/ false:사용하지 않음)
@@ -120,38 +125,94 @@ $(() => {
 	});
 	
 
-	/* 확인 버튼 클릭 */
+	/* 확인 버튼 클릭 시 */
 	$("button#writeBtn").click(function(){
 		   
 		// 에디터에서 textarea에 대입
-		obj.getById["content"].exec("UPDATE_CONTENTS_FIELD", []);
+		obj.getById["draft_content"].exec("UPDATE_CONTENTS_FIELD", []);
 		
 		// 글제목 유효성 검사
-		checkSubjectValidity();
+		const draft_subject = $("input#draft_subject").val().trim();
+		if(draft_subject == "") {
+			swal("글제목을 입력하세요!");
+    		return;
+		}
 		
-		// 글내용 유효성검사 및 시큐어 코드
-		checkContentValidity();
-		secureContent();
+		// 글내용 유효성검사
+	    var draft_content = $("#draft_content").val();
+
+	    if( draft_content == ""  || draft_content == null || draft_content == '&nbsp;' || draft_content == '<p>&nbsp;</p>')  {
+			obj.getById["draft_content"].exec("FOCUS"); //포커싱
+			swal("글내용을 입력하세요!");
+			return;
+	         
+	    }
+	    
+	    // 결재라인 유효성검사
+	    let aprvLineInfo = aprvTblBody.html();
+	    if (aprvLineInfo.indexOf('tr') == -1) {
+	    	swal("결재라인을 설정하세요!");
+    		return;
+	    }
 		
 		// 의견 및 긴급 여부 체크 모달 띄우기
 		$("#myModal").modal();
 
 	});
 	
+	/* 임시저장 버튼 클릭 시 */
+	$("button#saveBtn").click(function(){
+		
+		// 에디터에서 textarea에 대입
+		obj.getById["draft_content"].exec("UPDATE_CONTENTS_FIELD", []);
+		
+		// 글제목 유효성 검사
+		const draft_subject = $("input#draft_subject").val().trim();
+		if(draft_subject == "") {
+			swal("글제목을 입력하세요!");
+    		return;
+		}
+		
+		saveTemp();
+		
+	});
+	
 	/* 파일 드래그 & 드롭 */
 	const $drop = document.querySelector(".dropBox");
-	const $title = document.querySelector(".dropBox span");
-
-	// 드래그한 파일 객체가 해당 영역에 놓였을 때
-	$drop.ondrop = (e) => {
-	  e.preventDefault();
-	  e.stopPropagation();
 	
-	  // 드롭된 파일 리스트 가져오기
-	  const files = Array.from(e.dataTransfer?.files);
-	  
-	  // 파일 리스트 띄우기
-	  $title.innerHTML = files.map(file => file.name).join("<br>");
+	// 드래그한 파일 객체가 해당 영역에 놓였을 때
+	$drop.ondrop = function(e) {
+		e.preventDefault();
+		e.stopPropagation();
+		
+		// 드롭된 파일 리스트 가져오기
+		const files = Array.from(e.dataTransfer.files);
+		
+		if(files != null && files != undefined){
+		    let tag = "";
+		    
+		    for(i=0; i<files.length; i++){
+		        let f = files[i];
+
+		        // 파일리스트 전역변수에 파일 담기
+		        fileList.push(f);
+		        
+		        let fileName = f.name;
+		        let fileSize = f.size / 1024 / 1024;
+		        fileSize = fileSize < 1 ? fileSize.toFixed(3) : fileSize.toFixed(1);
+		        
+		     	// 파일 정보 표시하기
+		        tag += 
+		                "<div class='fileList'>" +
+		                    "<span class='fileName'>"+fileName+"</span>" +
+		                    "<span class='fileSize'>"+fileSize+" MB</span>" +
+		                    "<a href='#' onclick='deleteFile(" + i + "); return false;' class='btn small bg_02'>삭제</a>" +
+		                "</div>";
+		    }
+		    $(".dropBox span").hide();
+		    $(this).append(tag);
+		    $(this).addClass('active');
+		}
 	}
 
 	$drop.ondragover = (e) => {
@@ -172,77 +233,219 @@ $(() => {
 	  e.stopPropagation();
 	  $drop.classList.remove("active");
 	}
-	
-	// 파일리스트 전역변수에 파일 담기
-	
+
 });
-/* 결재라인 행 추가 */
 
-/* 결재라인 행 삭제 */
+// 업로드 파일 삭제
+function deleteFile(fIndex){
+    
+    // 파일 배열에서 삭제
+    delete fileList[fIndex];
+}
 
-/* 결재라인 비우기 */
+// 긴급 여부 체크
+const checkUrgent = () => {
+	
+	let urgent = $("#urgent_status");
 
-/* 글제목 유효성 검사 */
-const checkSubjectValidity = () => {
-	const subject = $("input#subject").val().trim();
-	if(subject == "") {
-		swal("글제목을 입력하세요!");
-	   	return;
+	if(urgent.prop("checked")){
+		urgent.val(1);
+	}else{
+		urgent.val(0);
 	}
+	
+}
+
+// 첨부파일 가져오기
+const getFiles = formData => {
+
+    if(fileList.length > 0){
+        fileList.forEach(function(f){
+            formData.append("fileList", f);
+        });
+    }
 }
 
 /* 폼 제출하기 */
 const submitDraft = () => {
 	
-    let formData = new FormData($("#fileForm")[0]);
-    if(fileList.length > 0){
-        fileList.forEach(function(f){
-            formData.append("fileList", f);
-        });
-    } 
-/* 	
+	// 긴급 여부 체크
+	checkUrgent();
 	
-	$.ajax({
-		  url:"",
-		  data:queryString, 
-		  type:"POST",
-		  dataType:"JSON",
-		  success:function(json){
-			  
-		  },
-		  error: function(request, status, error){
-			  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-		  }
-	  }); */
-	  
-	swal("등록 완료", "기안이 상신되었습니다.", "success");
+	let formData = new FormData($("#draftForm")[0]);
+
+	// 첨부파일 가져오기
+	getFiles(formData);
 	
+    $.ajax({
+        url : "<%=ctxPath%>/approval/write/work.on",
+        data : formData,
+        type:'POST',
+        enctype:'multipart/form-data',
+        processData:false,
+        contentType:false,
+        dataType:'json',
+        cache:false,
+        success:function(json){
+        	if(json.result == true) {
+    	    	swal("등록 완료", "기안이 상신되었습니다.", "success")
+    	    	.then((value) => {
+	    	    	location.href = "<%=ctxPath%>/approval/personal/sent.on";
+   	    		});
+        	}
+        	else
+        		swal("등록 실패", "등록에 실패하였습니다.", "error");
+        },
+        error: function(request, status, error){
+		alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+		}
+    });
+	
+}
+
+/* 임시저장하가 */
+const saveTemp = () => {
+	
+    let formData = new FormData($("#draftForm")[0]);
+
+	// 첨부파일 가져오기
+	getFiles(formData);
+	
+    $.ajax({
+        url : "<%=ctxPath%>/approval/save/work.on",
+        data : formData,
+        type:'POST',
+        enctype:'multipart/form-data',
+        processData:false,
+        contentType:false,
+        dataType:'json',
+        cache:false,
+        success:function(json){
+        	if(json.result == true) {
+    	    	swal("저장 완료", "임시저장되었습니다.", "success")
+    	    	.then((value) => {
+	    	    	location.href = "<%=ctxPath%>/approval/personal/saved.on";
+   	    		});
+        	}
+        	else
+        		swal("저장 실패", "임시저장 실패하였습니다.", "error");
+        },
+        error: function(request, status, error){
+		alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+		}
+    });
 }
 
 /* 결재라인 불러오기 */
 const getMyApprovalLine = () => {
-	// 저장된 결재라인 불러오기
 	
-	// 모달창 띄우기
-	$("#myApprovalLineModal").modal();
+	$.ajax({
+		type: "GET",
+		url:"<%=ctxPath%>/approval/getSavedAprvLine.on",
+		dataType:"json",
+		success : function(aprvLine){
+			// 저장된 결재라인 불러오기
+			let html = "";
+			aprvLine.forEach((el, index) => {
+				html += "<tr>"
+						+ "<td><input type='radio' name='aprvLine' value=" + el.aprv_line_no + " id='" + index + "'></td>" 
+						+ "<td><label for='" + index + "'>" + el.aprv_line_name + "</label></td>"
+						+ "</tr>";
+			});
+			
+			$("#modalBody").html(html);
+			
+			$("#myApprovalLineModal").modal();
+			
+			$("#lineOkBtn").click(()=>{
+				// 결재자 정보 검색하기
+				getApprovalEmpInfo(aprvLine);
+			});
+		},
+		error: function(request, status, error){
+            alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+    	}
+	});
+	
 }
 
+// 불러온 결재자 정보 출력하기
+const getApprovalEmpInfo = aprvLine => {
+	const selectedNo = $('input[name=aprvLine]:checked').val();
+	
+	const selectedAprvLine = aprvLine.filter(el => el.aprv_line_no == selectedNo);
+	
+	$.ajax({
+		type: "GET",
+		url:"<%=ctxPath%>/approval/getSavedAprvEmpInfo.on",
+		data: {"selectedAprvLine": JSON.stringify(selectedAprvLine)},
+		dataType:"json",
+		success : function(json){
+						
+			emptyApprovalLine();
+			
+			json.forEach((emp, index) => {
 
-/* 모달에서 선택된 결재라인 적용하기 */
-const applyApprovalLine = () => {
-	console.log('');
+				var html = "<tr>"
+			 			+ "<td class='levelno'>" + (index+1) + "</td>"
+						+ "<td class='department'>" + emp.department + "</td>"
+						+ "<td class='position'>" + emp.position + "</td>"
+						+ "<input type='hidden' name='fk_approval_empno' value='" + emp.empno + "'></td>"
+						+ "<td class='name'>" + emp.name + "</td></tr>";
+					
+				aprvTblBody.append(html);
+			});
+		},
+		error: function(request, status, error){
+            alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+    	}
+	});
 }
+
 
 /* 결재라인 선택하기 */
-const setApprovalLine = empno => {
-	const popupWidth = 500;
-	const popupHeight = 400;
+const selectApprovalLine = empno => {
+	emptyApprovalLine();
+	
+	const popupWidth = 800;
+	const popupHeight = 500;
 
 	const popupX = (window.screen.width / 2) - (popupWidth / 2);
 	const popupY= (window.screen.height / 2) - (popupHeight / 2);
 	
-	window.open('<%=ctxPath%>/approval/setApprovalLine.on?'+empno,'결제라인 선택','height=' + popupHeight  + ', width=' + popupWidth  + ', left='+ popupX + ', top='+ popupY);
+	window.open('<%=ctxPath%>/approval/selectApprovalLine.on','결제라인 선택','height=' + popupHeight  + ', width=' + popupWidth  + ', left='+ popupX + ', top='+ popupY);
+}	
+
+
+/* 자식창에서 넘겨준 데이터를 받아 출력함 */
+const receiveMessage = async (e) =>
+{
+   	const jsonArr = e.data;
+
+   	// 선택된 사원을 테이블에 표시함
+	jsonArr.forEach((emp, index) => {
+
+		var html = "<tr>"
+	 			+ "<td class='levelno'>" + emp.levelno + "</td>"
+				+ "<td class='department'>" + emp.department + "</td>"
+				+ "<td class='position'>" + emp.position + "</td>"
+				+ "<input type='hidden' name='fk_approval_empno' value='" + emp.empno + "'></td>"
+				+ "<td class='name'>" + emp.name + "</td></tr>";
+			
+		aprvTblBody.append(html);
+		
+	});
+	
 }
+
+window.addEventListener("message", receiveMessage, false);
+
+
+/* 선택된 결재라인 비우기 */
+const emptyApprovalLine = () => {
+	aprvTblBody.empty();
+}
+
 </script>
 
 <div style='margin: 1% 0 5% 1%'>
@@ -251,9 +454,6 @@ const setApprovalLine = empno => {
 
 
 <div class="container workFrmContainer">
-	
-	<!-- 문서 작성  폼 -->
-	<!-- <form name="writeFrm" enctype="multipart/form-data"> -->
 		<div class="card">
 			<div class="card-header py-3" align="center">
 				<h3>
@@ -262,21 +462,27 @@ const setApprovalLine = empno => {
 
 			</div>
 			<div class="card-body text-center p-4">
+			
+				<!-- 기안문서 폼 -->
+			<form id="draftForm" enctype="multipart/form-data">
+				<input type='hidden' name='fk_draft_empno' value='${loginuser.empno}'/>
+				<input type='hidden' name='fk_draft_type_no' value='1'/>
+				
 				<!-- 문서정보 -->
 				<div class='draftInfo' style='width: 20%'>
 					<h5 class='text-left my-4'>문서정보</h5>
 					<table class='table table-sm table-bordered text-left'>
 						<tr>
 							<th>기안자</th>
-							<td>박찬안</td>
+							<td>${loginuser.name}</td>
 						</tr>
 						<tr>
 							<th>소속</th>
-							<td>개발팀</td>
+							<td>${loginuser.department}</td>
 						</tr>
 						<tr>
 							<th>기안일</th>
-							<td>2022-11-15(수)</td>
+							<td></td>
 						</tr>
 						<tr>
 							<th>문서번호</th>
@@ -284,77 +490,47 @@ const setApprovalLine = empno => {
 						</tr>
 					</table>
 				</div>
+				
 				<!-- 결재라인 -->
 				<div class='approvalLineInfo' style='width: 60%'>
 				
 					<h5 class='my-4' style='display: inline-block; float: left'>결재라인</h5>
-					<button id='setLineBtn' type="button" class="btn btn-sm ml-2 my-4" onclick='setApprovalLine(${loginuser.empno})'>선택하기</button>
-					<button id='resetLineBtn' type="button" class="btn btn-sm apvLineBtn ml-2 my-4">비우기</button>
+					<button id='setLineBtn' type="button" class="btn btn-sm ml-2 my-4" onclick='selectApprovalLine()'>선택하기</button>
+					<button id='resetLineBtn' type="button" class="btn btn-sm apvLineBtn ml-2 my-4" onclick='emptyApprovalLine()'>비우기</button>
 					<button id='getLineBtn' type="button" class="btn btn-sm apvLineBtn my-4" onclick='getMyApprovalLine()'>불러오기</button>
 					
 					<table class='mr-4 table table-sm table-bordered text-left' id='approvalLine'>
-						<tr>
-							<th>순서</th>
-							<th>소속</th>
-							<th>직급</th>
-							<th>성명</th>
-						</tr>
-						<tr>
-							<td>1</td>
-							<td>개발팀</td>
-							<td>책임</td>
-							<td>김개발</td>
-						</tr>
-						<tr>
-							<td>2</td>
-							<td>개발팀</td>
-							<td>팀장</td>
-							<td>윤팀장</td>
-						</tr>
-						<tr>
-							<td>3</td>
-							<td>IT부문</td>
-							<td>부문장</td>
-							<td>장최고</td>
-						</tr>
+					    <thead>
+					      <tr>
+					        <th>순서</th>
+					        <th>소속</th>
+					        <th>직급</th>
+					        <th>성명</th>
+					      </tr>
+					    </thead>
+					    <tbody id="aprvTblBody">
+					    </tbody>
 					</table>
 				</div>
-				<!-- 결재라인 끝 -->
+				
+				<script>
+					const aprvTblBody = $('#aprvTblBody');
+				</script>
 				
 				<div style="clear: both; height: 30px; padding-top: 8px; margin-bottom: 30px;">
 					<hr>
 				</div>
-
+	
 				<!-- 기안내용 -->
 				<h5 class='text-left mb-3'>제목</h5>
-				<input type="text" name="subject" id="subject" placeholder='제목을 입력하세요'
-					style='width: 100%; font-size: small;' />
-
+				<input type="text" name="draft_subject" id="draft_subject" placeholder='제목을 입력하세요' style='width: 100%; font-size: small;' />
+	
 				<div class='mb-3' style='margin-top: 30px; display: flex'>
 					<h5 style='display: inline-block;'>내용</h5>
 					<button id='saveBtn' type="button" class="btn btn-sm btn-light" style='display: inline-block; margin-left: auto;'>임시저장</button>
 				</div>
-				<textarea style="width: 100%; height: 612px;" name="content" id="content" placeholder='내용을 입력하세요'></textarea>
-				<!-- 기안내용 끝 -->
+				<textarea style="width: 100%; height: 612px;" name="draft_content" id="draft_content" placeholder='내용을 입력하세요'></textarea>
 				
-				<!-- 파일첨부 -->
-				<div class="filebox">
-					<div id='fileButtons' class='mt-2'>
-						<label id='fileAttachBtn' for="attach" class="btn btn-sm mr-2">파일첨부</label>
-						<label><button id='fileRemoveBtn' type="button"
-								class="btn btn-sm">파일삭제</button></label> <input type="file"
-							id="attach" name="attach" multiple>
-					</div>
-					<div class="dropBox">
-						<span style='font-size: small'>이곳에 파일을 드롭해주세요.</span>
-					</div>
-				</div>
-				<!-- 파일첨부 끝 -->
-
-				<div style="margin: 20px;">
-					<button type="button" class="btn btn-secondary btn-sm mr-3" id="writeBtn">확인</button>
-					<button type="button" class="btn btn-secondary btn-sm" onclick="javascript:history.back()">취소</button>
-				</div>
 				
 				<!-- 결재의견 및 긴급여부 체크 모달 -->
 				<div class="modal text-left" id="myModal">
@@ -370,9 +546,9 @@ const setApprovalLine = empno => {
 							<!-- Modal body -->
 							<div class="modal-body">
 								<h6 class='text-secondary'>기안의견</h6>
-								<textarea name="draftComment" placeholder="기안의견을 입력해주세요(선택)" style='width: 100%; min-height: 150px'></textarea>
+								<textarea name="draft_comment" placeholder="기안의견을 입력해주세요(선택)" style='width: 100%; min-height: 150px'></textarea>
 								<h6 class='text-secondary mt-4'>긴급문서</h6>
-								<input type="checkbox" id='urgentDraft' name='urgentDraft' value='urgent'/><label for='urgentDraft'>긴급(결재자의 대기문서 가장 상단에 표시됩니다.)</label>
+								<input type="checkbox" id='urgent_status' name='urgent_status'/><label for='urgentDraft'>긴급(결재자의 대기문서 가장 상단에 표시됩니다.)</label>
 							</div>
 			
 							<!-- Modal footer -->
@@ -383,19 +559,27 @@ const setApprovalLine = empno => {
 						</div>
 					</div>
 				</div>
-				<!-- 결재의견 및 긴급여부 체크 모달 끝 -->
-			</div>
+	
+				<div class="filebox">
+					<div class="dropBox mt-2">
+						<span style='font-size: small'>이곳에 파일을 드롭해주세요.</span>
+					</div>
+				</div>
+	
+				<div style="margin: 20px;">
+					<button type="button" class="btn btn-secondary " onclick="javascript:history.back()">취소</button>
+					<button type="button" class="btn btn-primary mr-3" id="writeBtn">확인</button>
+				</div>
+			</form>
 		</div>
-	<!-- </form> -->
-	<!-- 폼 끝 -->
+	</div>
 </div>
-
 <!-- 저장된 결재라인 불러오기 모달 -->
 <div class="modal text-left" id="myApprovalLineModal">
 	<div class="modal-dialog modal-dialog-centered ">
 		<div class="modal-content">
 
-			<!-- Modal Header -->
+	<!-- Modal Header -->
 	<div class="modal-header">
 		<h5 class="modal-title">결재라인 불러오기</h5>
 		<button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -410,7 +594,7 @@ const setApprovalLine = empno => {
 		        <th>결재라인명</th>
 		      </tr>
 		    </thead>
-		    <tbody>
+		    <tbody id="modalBody">
 		      <tr>
 		        <td><input type="radio"/></td>
 		        <td>기본 결재라인</td>
@@ -426,7 +610,7 @@ const setApprovalLine = empno => {
 	<!-- Modal footer -->
 	<div class="modal-footer">
 		<button type="button" id='lineCalcelBtn' class="btn btn-secondary" data-dismiss="modal">취소</button>
-		<button type="button" id='lineOkBtn' class="btn" data-dismiss="modal" onclick='applyApprovalLine()'>확인</button>
+		<button type="button" id='lineOkBtn' class="btn" data-dismiss="modal" >확인</button>
 			</div>
 		</div>
 	</div>

@@ -6,6 +6,8 @@ import java.util.Map;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Repository;
 
+import com.spring.groovy.management.model.MemberVO;
+
 @Repository
 public class ApprovalDAO implements InterApprovalDAO {
 	
@@ -78,6 +80,84 @@ public class ApprovalDAO implements InterApprovalDAO {
 	@Override
 	public List<DraftVO> getRequestedDraftList(Map<String, Object> paraMap) {
 		return sqlsession.selectList("chanan.getRequestedDraftList", paraMap);
+	}
+
+	// 사원 목록 가져오기
+	@Override
+	public List<Map<String, String>> getEmpList(MemberVO loginuser) {
+		return sqlsession.selectList("chanan.getEmpList", loginuser);
+	}
+	
+	// 부문 목록 가져오기
+	@Override
+	public List<Map<String, String>> getBumunList(MemberVO loginuser) {
+		return sqlsession.selectList("chanan.getBumunList", loginuser);
+	}
+
+	// 부서 목록 가져오기
+	@Override
+	public List<Map<String, String>> getDeptList(MemberVO loginuser) {
+		return sqlsession.selectList("chanan.getDeptList", loginuser);
+	}
+
+	// 환경설정 - 결재라인 저장
+	@Override
+	public int saveApprovalLine(SavedAprvLineVO sapVO) {
+		return sqlsession.insert("chanan.saveApprovalLine", sapVO);
+	}
+	
+	// 기안문서 번호 얻어오기
+	@Override
+	public int getDraftNo() {
+		return sqlsession.selectOne("chanan.getDraftNo");
+	}
+	
+	// draft 테이블에 insert
+	@Override
+	public int addDraft(DraftVO dvo) {
+		return sqlsession.insert("chanan.addDraft", dvo);
+	}
+	
+	// approval 테이블에 insert
+	@Override
+	public int addApproval(List<ApprovalVO> apvoList) {
+		return sqlsession.update("chanan.addApproval", apvoList);
+	}
+	
+	// draft_file 테이블에 insert
+	@Override
+	public int addFiles(List<DraftFileVO> fileList) {
+		return sqlsession.update("chanan.addFiles", fileList);
+	}
+
+	// 저장된 결재라인 불러오기
+	@Override
+	public List<SavedAprvLineVO> getSavedAprvLine(Map<String, String> paraMap) {
+		return sqlsession.selectList("chanan.getSavedAprvLine", paraMap);
+	}
+
+	// 저장된 결재라인 결재자 정보 가져오기
+	@Override
+	public List<MemberVO> getSavedAprvEmpInfo(List<String> aprvEmpList) {
+		return sqlsession.selectList("chanan.getSavedAprvEmpInfo", aprvEmpList);
+	}
+
+	// 임시저장 시퀀스 얻어오기
+	@Override
+	public int getTempDraftNo() {
+		return sqlsession.selectOne("chanan.getTempDraftNo");
+	}
+
+	// 기안 임시저장하기
+	@Override
+	public int saveDraft(DraftVO dvo) {
+		return sqlsession.insert("chanan.saveDraft", dvo);
+	}
+
+	// 결재정보 임시저장하기
+	@Override
+	public int saveApproval(List<ApprovalVO> apvoList) {
+		return sqlsession.update("chanan.saveApproval", apvoList);
 	}
 
 }

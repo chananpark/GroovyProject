@@ -158,7 +158,11 @@ const excelDownLoad = () => {
 							<td class='col'>${fn:substring(draft.draft_date, 0, 10)}</td>
 							<td class='col'>${draft.draft_type}</td>
 							<td class='col'>${draft.draft_no}</td>
-							<td class='col col-4'>${draft.draft_subject}</td>
+							<td class='col col-4'>
+							<c:if test="${draft.urgent_status == 1}">
+							<span class="badge badge-pill badge-danger">긴급</span>
+                            </c:if>
+							${draft.draft_subject}</td>
 							<td class='col'>${draft.draft_emp_name}</td>
 							<td class='col col-1'>
 								<c:if test="${draft.draft_status == '완료'}">

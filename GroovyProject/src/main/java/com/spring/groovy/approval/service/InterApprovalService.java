@@ -3,7 +3,11 @@ package com.spring.groovy.approval.service;
 import java.util.List;
 import java.util.Map;
 
+import org.json.JSONArray;
+
 import com.spring.groovy.approval.model.DraftVO;
+import com.spring.groovy.approval.model.SavedAprvLineVO;
+import com.spring.groovy.management.model.MemberVO;
 
 public interface InterApprovalService {
 
@@ -45,5 +49,29 @@ public interface InterApprovalService {
 	
 	// 결재대기문서 페이징처리한 리스트 조회
 	List<DraftVO> getRequestedDraftList(Map<String, Object> paraMap);
+
+	// 사원 목록 가져오기
+	List<Map<String, String>> getEmpList(MemberVO loginuser);
+
+	// 부문 목록 가져오기
+	List<Map<String, String>> getBumunList(MemberVO loginuser);
+	
+	// 부서 목록 가져오기
+	List<Map<String, String>> getDeptList(MemberVO loginuser);
+
+	// 환경설정 - 결재라인 저장
+	int saveApprovalLine(SavedAprvLineVO sapVO);
+
+	// 업무기안 작성하기
+	boolean addWorkDraft(Map<String, Object> paraMap);
+	
+	// 저장된 결재라인 불러오기
+	List<SavedAprvLineVO> getSavedAprvLine(Map<String, String> paraMap);
+
+	// 저장된 결재라인 결재자 정보 가져오기
+	List<MemberVO> getSavedAprvEmpInfo(List<String> aprvEmpList);
+	
+	// 업무기안 임시저장하기
+	boolean saveWorkDraft(Map<String, Object> paraMap);
 
 }

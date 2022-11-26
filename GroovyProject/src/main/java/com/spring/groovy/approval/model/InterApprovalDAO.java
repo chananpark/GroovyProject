@@ -3,6 +3,8 @@ package com.spring.groovy.approval.model;
 import java.util.List;
 import java.util.Map;
 
+import com.spring.groovy.management.model.MemberVO;
+
 public interface InterApprovalDAO {
 
 	// 팀문서함 전체 글 개수 조회
@@ -43,6 +45,45 @@ public interface InterApprovalDAO {
 
 	// 결재대기문서 페이징처리한 리스트 조회
 	List<DraftVO> getRequestedDraftList(Map<String, Object> paraMap);
+
+	// 사원 목록 가져오기
+	List<Map<String, String>> getEmpList(MemberVO loginuser);
+
+	// 부문 목록 가져오기
+	List<Map<String, String>> getBumunList(MemberVO loginuser);
+
+	// 부서 목록 가져오기
+	List<Map<String, String>> getDeptList(MemberVO loginuser);
+
+	// 환경설정 - 결재라인 저장
+	int saveApprovalLine(SavedAprvLineVO sapVO);
+
+	// 기안문서 번호 얻어오기
+	int getDraftNo();
+
+	// draft 테이블에 insert
+	int addDraft(DraftVO dvo);
+
+	// approval 테이블에 insert
+	int addApproval(List<ApprovalVO> apvoList);
+
+	// draft_file 테이블에 insert
+	int addFiles(List<DraftFileVO> fileList);
+
+	// 저장된 결재라인 불러오기
+	List<SavedAprvLineVO> getSavedAprvLine(Map<String, String> paraMap);
+
+	// 저장된 결재라인 결재자 정보 가져오기
+	List<MemberVO> getSavedAprvEmpInfo(List<String> aprvEmpList);
+
+	// 임시저장 번호 얻어오기
+	int getTempDraftNo();
+
+	// 기안 임시저장하기
+	int saveDraft(DraftVO dvo);
+
+	// 결재정보 임시저장하기
+	int saveApproval(List<ApprovalVO> apvoList);
 
 
 }

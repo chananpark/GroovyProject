@@ -37,6 +37,23 @@
 
 .table {
 	width: 50%;
+	font-size: small;
+}
+
+.table th {
+	background-color: #E3F2FD;
+	vertical-align: middle;
+	text-align: center;
+}
+
+#buttons {
+	width: 50%;
+	margin: 0 auto;
+}
+
+input {
+  width: 300px;
+  height: 30px;
 }
 
 </style>
@@ -47,14 +64,48 @@ $(()=>{
 	
 });
 
-const setApprovalLine = empno => {
+/* 결재라인 선택하기 */
+const selectApprovalLine = empno => {
 	const popupWidth = 800;
-	const popupHeight = 400;
+	const popupHeight = 500;
 
 	const popupX = (window.screen.width / 2) - (popupWidth / 2);
 	const popupY= (window.screen.height / 2) - (popupHeight / 2);
 	
-	window.open('<%=ctxPath%>/approval/setApprovalLine.on?'+empno,'결제라인 선택','height=' + popupHeight  + ', width=' + popupWidth  + ', left='+ popupX + ', top='+ popupY);
+	window.open('<%=ctxPath%>/approval/selectApprovalLine.on?'+empno,'결제라인 선택','height=' + popupHeight  + ', width=' + popupWidth  + ', left='+ popupX + ', top='+ popupY);
+}
+
+/* 자식창에서 넘겨준 데이터를 받아 출력함 */
+const receiveMessage = async (e) =>
+{
+   	const jsonArr = e.data;
+   	
+	const body = $('#tblBody');
+
+	// 선택된 사원을 테이블에 표시함
+	jsonArr.forEach((emp, index) => {
+
+		var html = "<tr>"
+	 			+ "<td class='levelno'>" + emp.levelno + "</td>"
+				+ "<td class='department'>" + emp.department + "</td>"
+				+ "<td class='position'>" + emp.position + "</td>"
+				+ "<input type='hidden' name='fk_approval_empno" + (index+1) + "' value='" + emp.empno + "'></td>"
+				+ "<td class='name'>" + emp.name + "</td></tr>";
+		
+		body.append(html);
+		
+	});
+	
+}
+
+window.addEventListener("message", receiveMessage, false);
+
+/* 결재라인 저장하기 */
+const saveAprvLine = () => {
+	const frm = document.aprvLineFrm;
+	frm.method = "post";
+	frm.action = "<%=ctxPath%>/approval/config/approvalLine/save.on";
+	frm.submit();
 }
 </script>
 
@@ -71,22 +122,28 @@ const setApprovalLine = empno => {
 	  <button type="button" class="btn btn-light activd" onclick="location.href='<%=ctxPath%>/approval/config/approvalLine/add.on'">결재라인 추가</button>
 	</div>
 	
-	<div class='mt-4'>
-		<span>결재라인 수정 후 반드시 저장버튼을 클릭해주세요.</span>
-		<button type="button" class="btn btn-sm" id='saveBtn'>저장</button>
-		<button type="button" class="btn btn-sm" id='selectBtn' onclick="setApprovalLine(${loginuser.empno})">결재자 선택하기</button>
-	</div>
-	
-	<table class="table mt-4">
-	    <thead>
-	      <tr>
-	        <th>순서</th>
-	        <th>소속</th>
-	        <th>직급</th>
-	        <th>성명</th>
-	      </tr>
-	    </thead>
-	    <tbody>
-	    </tbody>
-	  </table>
+	<form name="aprvLineFrm">
+		<div class='mt-4' id='buttons'>
+			<div style='float:left; margin-bottom: 10px'>
+				<input type="text" name="aprv_line_name" placeholder="결재라인 이름을 입력하세요" maxlength=50 required/>
+			</div>
+			<div style='float:right; margin-bottom: 10px'>
+				<button type="button" class="btn btn-sm btn-light" id='selectBtn' onclick="selectApprovalLine(${loginuser.empno})">결재자 선택하기</button>
+				<button type="button" class="btn btn-sm ml-2" id='saveBtn' onclick='saveAprvLine()'>저장</button>
+			</div>
+		</div>
+		<input type='hidden' name='fk_empno' value='${loginuser.empno}'/>
+		<table class="table mt-4 mx-auto text-center" style="clear:both">
+		    <thead>
+		      <tr>
+		        <th>순서</th>
+		        <th>소속</th>
+		        <th>직급</th>
+		        <th>성명</th>
+		      </tr>
+		    </thead>
+		    <tbody id="tblBody">
+		    </tbody>
+		</table>
+	</form>
 </div>

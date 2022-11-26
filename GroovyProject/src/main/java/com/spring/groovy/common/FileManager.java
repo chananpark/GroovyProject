@@ -22,11 +22,11 @@ public class FileManager {
 	/** 
 	 * 파일 업로드하기
 	 * @param bytes: 파일의 내용물
-	 * @param originalFileName: 첨부된 파일의 원래이름
+	 * @param originalFilename: 첨부된 파일의 원래이름
 	 * @param path: 업로드할 파일의 저장경로
 	 * @return 서버에 저장된 새로운 파일명
 	*/
-	public String doFileUpload(byte[] bytes, String originalFileName, String path) throws Exception {
+	public String doFileUpload(byte[] bytes, String originalFilename, String path) throws Exception {
 
 		String newFileName = null;
 
@@ -36,12 +36,12 @@ public class FileManager {
 		}
 
 		// 클라이언트가 업로드한 파일의 이름이 없다면
-		if ("".equals(originalFileName) || originalFileName == null) {
+		if ("".equals(originalFilename) || originalFilename == null) {
 			return null; // 끝내기
 		}
 
 		// 파일확장자
-		String fileExt = originalFileName.substring(originalFileName.lastIndexOf(".")); // => .png
+		String fileExt = originalFilename.substring(originalFilename.lastIndexOf(".")); // => .png
 
 		// 파일확장자가 없다면
 		if (fileExt == null || "".equals(fileExt) || ".".equals(fileExt)) {
@@ -189,16 +189,16 @@ public class FileManager {
 	}
 	
 	// 네이버 스마트 에디터를 사용한 사진첨부
-	public String doFileUpload(InputStream is, String originalFileName, String path) throws Exception {
+	public String doFileUpload(InputStream is, String originalFilename, String path) throws Exception {
 
 		String newFilename = null;
 
 		// 클라이언트가 업로드한 파일의 이름
-		if (originalFileName == null || originalFileName.equals(""))
+		if (originalFilename == null || originalFilename.equals(""))
 			return null;
 
 		// 확장자
-		String fileExt = originalFileName.substring(originalFileName.lastIndexOf("."));
+		String fileExt = originalFilename.substring(originalFilename.lastIndexOf("."));
 		if (fileExt == null || fileExt.equals(""))
 			return null;
 

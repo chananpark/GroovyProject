@@ -2,7 +2,7 @@
     pageEncoding="UTF-8"%>
 <% String ctxPath = request.getContextPath(); %>
 <style>
-#writeBtn:hover{
+#goWriteBtn:hover{
 	border: 1px solid #086BDE;
 	color: white;
 	background-color: #086BDE;

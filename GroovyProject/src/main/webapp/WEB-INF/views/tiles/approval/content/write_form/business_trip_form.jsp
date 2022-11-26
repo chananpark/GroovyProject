@@ -234,14 +234,14 @@ const applyApprovalLine = () => {
 }
 
 /* 결재라인 선택하기 */
-const setApprovalLine = empno => {
-	const popupWidth = 500;
-	const popupHeight = 400;
+const selectApprovalLine = empno => {
+	const popupWidth = 800;
+	const popupHeight = 500;
 
 	const popupX = (window.screen.width / 2) - (popupWidth / 2);
 	const popupY= (window.screen.height / 2) - (popupHeight / 2);
 	
-	window.open('<%=ctxPath%>/approval/setApprovalLine.on?'+empno,'결제라인 선택','height=' + popupHeight  + ', width=' + popupWidth  + ', left='+ popupX + ', top='+ popupY);
+	window.open('<%=ctxPath%>/approval/selectApprovalLine.on?'+empno,'결제라인 선택','height=' + popupHeight  + ', width=' + popupWidth  + ', left='+ popupX + ', top='+ popupY);
 }
 </script>
 
@@ -285,7 +285,7 @@ const setApprovalLine = empno => {
 			<div class='approvalLineInfo' style='width: 60%'>
 			
 				<h5 class='my-4' style='display: inline-block; float: left'>결재라인</h5>
-				<button id='setLineBtn' type="button" class="btn btn-sm ml-2 my-4" onclick='setApprovalLine(${loginuser.empno})'>선택하기</button>
+				<button id='setLineBtn' type="button" class="btn btn-sm ml-2 my-4" onclick='selectApprovalLine(${loginuser.empno})'>선택하기</button>
 				<button id='resetLineBtn' type="button" class="btn btn-sm apvLineBtn ml-2 my-4">비우기</button>
 				<button id='getLineBtn' type="button" class="btn btn-sm apvLineBtn my-4" onclick='getMyApprovalLine()'>불러오기</button>
 
