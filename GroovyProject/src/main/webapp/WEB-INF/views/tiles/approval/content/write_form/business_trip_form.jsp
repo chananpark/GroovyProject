@@ -241,7 +241,7 @@ const selectApprovalLine = empno => {
 	const popupX = (window.screen.width / 2) - (popupWidth / 2);
 	const popupY= (window.screen.height / 2) - (popupHeight / 2);
 	
-	window.open('<%=ctxPath%>/approval/selectApprovalLine.on?'+empno,'결제라인 선택','height=' + popupHeight  + ', width=' + popupWidth  + ', left='+ popupX + ', top='+ popupY);
+	window.open('<%=ctxPath%>/approval/selectApprovalLine.on?type=personal','결재라인 선택','height=' + popupHeight  + ', width=' + popupWidth  + ', left='+ popupX + ', top='+ popupY);
 }
 </script>
 

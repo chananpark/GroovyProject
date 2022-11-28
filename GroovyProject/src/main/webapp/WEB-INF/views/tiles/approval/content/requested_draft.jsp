@@ -160,10 +160,11 @@ const excelDownLoad = () => {
                             <td class='col'>${draft.draft_type}</td>
                             <td class='col'>${draft.draft_no}</td>
                             <td class='col col-4'>
+                            <a href='<%=ctxPath%>/approval/draftDetail.on?draft_no=${draft.draft_no}&fk_draft_type_no=${draft.fk_draft_type_no}'>
 							<c:if test="${draft.urgent_status == 1}">
 							<span class="badge badge-pill badge-danger">긴급</span>
                             </c:if>
-                            ${draft.draft_subject}</td>
+                            ${draft.draft_subject}</a></td>
                             <td class='col'>${draft.draft_department}</td>
                             <td class='col'>${draft.draft_emp_name}</td>
                         </tr>

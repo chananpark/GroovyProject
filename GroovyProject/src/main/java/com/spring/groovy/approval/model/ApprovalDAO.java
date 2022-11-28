@@ -1,5 +1,6 @@
 package com.spring.groovy.approval.model;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -84,20 +85,20 @@ public class ApprovalDAO implements InterApprovalDAO {
 
 	// 사원 목록 가져오기
 	@Override
-	public List<Map<String, String>> getEmpList(MemberVO loginuser) {
-		return sqlsession.selectList("chanan.getEmpList", loginuser);
+	public List<Map<String, String>> getEmpList(Map<String, Object> paraMap) {
+		return sqlsession.selectList("chanan.getEmpList", paraMap);
 	}
 	
 	// 부문 목록 가져오기
 	@Override
-	public List<Map<String, String>> getBumunList(MemberVO loginuser) {
-		return sqlsession.selectList("chanan.getBumunList", loginuser);
+	public List<Map<String, String>> getBumunList(Map<String, Object> paraMap) {
+		return sqlsession.selectList("chanan.getBumunList", paraMap);
 	}
 
 	// 부서 목록 가져오기
 	@Override
-	public List<Map<String, String>> getDeptList(MemberVO loginuser) {
-		return sqlsession.selectList("chanan.getDeptList", loginuser);
+	public List<Map<String, String>> getDeptList(Map<String, Object> paraMap) {
+		return sqlsession.selectList("chanan.getDeptList", paraMap);
 	}
 
 	// 환경설정 - 결재라인 저장
@@ -138,8 +139,8 @@ public class ApprovalDAO implements InterApprovalDAO {
 
 	// 저장된 결재라인 결재자 정보 가져오기
 	@Override
-	public List<MemberVO> getSavedAprvEmpInfo(List<String> aprvEmpList) {
-		return sqlsession.selectList("chanan.getSavedAprvEmpInfo", aprvEmpList);
+	public List<MemberVO> getSavedAprvEmpInfo(List<String> empnoList) {
+		return sqlsession.selectList("chanan.getSavedAprvEmpInfo", empnoList);
 	}
 
 	// 임시저장 시퀀스 얻어오기
@@ -159,5 +160,64 @@ public class ApprovalDAO implements InterApprovalDAO {
 	public int saveApproval(List<ApprovalVO> apvoList) {
 		return sqlsession.update("chanan.saveApproval", apvoList);
 	}
+	
+	// 30일 지난 임시저장 글 삭제하기
+	@Override
+	public void autoDeleteSavedDraft() {
+		sqlsession.delete("chanan.autoDeleteSavedDraft");
+	}
+
+	// 공통 결재라인 불러오기
+	@Override
+	public List<Map<String, String>> getOfficialAprvList() {
+		return sqlsession.selectList("chanan.getOfficialAprvList");
+	}
+
+	// 환경설정-공통결재라인 한개 불러오기
+	@Override
+	public List<MemberVO> getOneOfficialAprvLine(String official_aprv_line_no) {
+		return sqlsession.selectList("chanan.getOneOfficialAprvLine", official_aprv_line_no);
+	}
+
+	// draft에서 select
+	@Override
+	public DraftVO getDraftInfo(DraftVO dvo) {
+		return sqlsession.selectOne("chanan.getDraftInfo", dvo);
+	}
+
+	// approval에서 select
+	@Override
+	public List<ApprovalVO> getApprovalInfo(DraftVO dvo) {
+		return sqlsession.selectList("chanan.getApprovalInfo", dvo);
+	}
+
+	// file에서 select
+	@Override
+	public List<DraftFileVO> getDraftFileInfo(DraftVO dvo) {
+		return sqlsession.selectList("chanan.getDraftFileInfo", dvo);
+	}
+
+	// 자신의 결재 처리하기(승인 or 반려)
+	@Override
+	public int updateMyApproval(ApprovalVO avo) {
+		Map<String, Object> approvalMap = new HashMap<String, Object>();
+		approvalMap.put("avo", avo); // IN 파라미터
+		approvalMap.put("o_updateCnt", 0); // OUT 파라미터
+		
+		sqlsession.selectOne("chanan.updateMyApproval", approvalMap);
+		return (int) approvalMap.get("o_updateCnt");
+	}
+
+	// 대결 처리하기
+	@Override
+	public int updateApprovalProxy(ApprovalVO avo) {
+		Map<String, Object> approvalMap = new HashMap<String, Object>();
+		approvalMap.put("avo", avo); // IN 파라미터
+		approvalMap.put("o_updateCnt", 0); // OUT 파라미터
+		
+		sqlsession.selectOne("chanan.updateApprovalProxy", approvalMap);
+		return (int) approvalMap.get("o_updateCnt");
+	}
+
 
 }

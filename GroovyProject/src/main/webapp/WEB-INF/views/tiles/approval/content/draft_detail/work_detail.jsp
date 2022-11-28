@@ -1,4 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <% String ctxPath = request.getContextPath(); %>
 <style>
 
@@ -12,8 +14,18 @@
 	text-align: center;
 }
 
-.approvalLineInfo td {
+.approvalLineInfo .table td, .approvalLineInfo .table th{
+	text-align: center;
+	width: auto;
+}
+
+.approvalLineInfo table td {
 	font-size: small;
+	width: 100px !important;
+}
+.approvalLineInfo table th {
+	font-size: small;
+	width: 30px !important;
 }
 
 .draftInfo,
@@ -27,10 +39,6 @@
 
 .approvalLineInfo {
 	float: right;
-}
-
-.approvalLineInfo table td, .approvalLineInfo table th{
-	text-align: center;
 }
 
 .approvalLineInfo  tr:nth-child(3) > td {
@@ -85,13 +93,161 @@ a {
 }
 </style>
 
+<script>
+
+const avoList = new Array();
+let obj;
+
+<c:forEach items="${draftMap.avoList}" var="avo">
+	obj = new Object();
+	obj.fk_approval_empno = "${avo['fk_approval_empno']}";
+	obj.levelno = "${avo['levelno']}";
+	obj.approval_status = "${avo['approval_status']}";
+	
+	avoList.push(obj);
+</c:forEach>
+
+// 내 결재단계 및 결재상태가 담긴 배열
+const myApprovalInfo = avoList.filter(el => el.fk_approval_empno == "${loginuser.empno}");
+
+// 내 앞 결재자의 정보가 담긴 배열
+const priorApprovalInfo = avoList.filter(el => (el.levelno - 1) == myApprovalInfo.levelno);
+
+// 내 다음 결재자의 정보가 담긴 배열
+const nextApprovalInfo = avoList.filter(el => (el.levelno + 1) == myApprovalInfo.levelno);
+
+$(()=>{
+	
+	// 내가 결재라인에 없거나 내가 이미 결재했을때는 결재의견 작성란, 승인|반려|대결 버튼 감추기
+	if (myApprovalInfo.length == 0 || myApprovalInfo.approval_status != 0) {
+		$("#myComment").hide();
+		$(".myApprovalBtn").hide();
+		$(".proxyApprovalBtn").hide();
+	}	
+
+	// 결재라인에 내가 있고, 결재상태가 0이며, 나보다 앞 결재자의 결재상태가 1이거나 내가 첫번째 결재자일 때만 표시
+	else if (myApprovalInfo.levelno == 1 && priorApprovalInfo.approval_status == 1) {
+		$("#myComment").show();
+		$(".myApprovalBtn").show();
+	}
+	
+	// 결재라인에 내가 있고, 결재상태가1이며, 나보다 다음 결재자의 결재상태가 0일 때만 대결 버튼 표시
+	if (myApprovalInfo.approval_status == 1 && nextApprovalInfo.approval_status == 0) {
+		$(".myApprovalBtn").show();
+	}
+	
+	// 상신 취소 버튼 감추기
+	$("#cancelDraftBtn").hide();
+	
+	//  내가 작성한 기안이고 아직 결재가 시작되지 않았을 때만 보임 
+	let statusArr = avoList.map(el => Number(el.approval_status));
+	let status =  statusArr.reduce(function add(sum, currentVal) {
+		  return sum + currentVal;
+	}, 0);
+	
+	if (${draftMap.dvo.fk_draft_empno} == ${loginuser.empno} && status == 0 )
+		$("#cancelDraftBtn").show();
+	
+	// 승인 혹은 반려 버튼 클릭시 이벤트
+	$(".myApprovalBtn").click((e)=>{
+		const target = $(e.target);
+		const approval_status = target.attr('id');
+		updateApproval(approval_status);
+	});
+});
+
+// 결재 처리하기
+const updateApproval = approval_status => {
+	
+	let formData = new FormData($("approvalFrm")[0]);
+	
+	// 문서번호
+	formData.append("fk_draft_no", "${draftMap.dvo.draft_no}");
+
+	// 자신의 사원번호
+	formData.append("fk_approval_empno", "${loginuser.empno}");
+	
+	// 자신의 결재단계
+	formData.append("levelno", myApprovalInfo[0].levelno);
+	
+	// 처리 종류(승인 or 반려)
+	formData.append("approval_status", approval_status);
+	
+	// 폼 전송하기
+    $.ajax({
+        url : "<%=ctxPath%>/approval/updateMyApproval.on",
+        data : formData,
+        type:'POST',
+        processData:false,
+        contentType:false,
+        dataType:'json',
+        cache:false,
+        success:function(json){
+        	if(json.result == true) {
+    	    	swal("처리 완료", "기안을 처리하였습니다.", "success")
+    	    	.then((value) => {
+	    	    	location.href = "<%=ctxPath%>/approval/requested.on";
+   	    		});
+        	}
+        	else
+        		swal("처리 실패", "처리에 실패하였습니다.", "error");
+        },
+        error: function(request, status, error){
+		alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+		}
+    });
+}
+
+const proxyApproval = () => {
+	let formData = new FormData($("approvalFrm")[0]);
+	
+	// 문서번호
+	formData.append("fk_draft_no", "${draftMap.dvo.draft_no}");
+
+	// 자신의 사원번호
+	formData.append("fk_approval_empno", "${loginuser.empno}");
+	
+	// 자신의 결재단계
+	formData.append("levelno", (Number(myApprovalInfo[0].levelno)+1));
+	
+	// 결재의견
+	formData.set("approval_comment", "${loginuser.name}에 의해 대결 처리되었습니다.");
+	
+	// 폼 전송하기
+    $.ajax({
+        url : "<%=ctxPath%>/approval/updateApprovalProxy.on",
+        data : formData,
+        type:'POST',
+        processData:false,
+        contentType:false,
+        dataType:'json',
+        cache:false,
+        success:function(json){
+        	if(json.result == true) {
+    	    	swal("처리 완료", "대결 처리하였습니다.", "success")
+    	    	.then((value) => {
+	    	    	location.href = "<%=ctxPath%>/approval/requested.on";
+   	    		});
+        	}
+        	else
+        		swal("처리 실패", "대결 처리에 실패하였습니다.", "error");
+        },
+        error: function(request, status, error){
+		alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+		}
+    });
+}
+</script>
+
 <div class="container">
-	<!-- 내가 작성한 기안이고 아직 결재가 시작되지 않았을 때만 보임 -->	
-	<button type='button' class='btn btn-lg'><i class="far fa-window-close"></i> 상신 취소</button>
-	<span style='color: gray; font-size: small'>상신 취소 시 임시저장함에 저장됩니다.</span>
-	<!-- 상신취소버튼 끝 -->
-		
+	
+	<div id="cancelDraftBtn">
+		<button type='button' class='btn btn-lg'><i class="far fa-window-close"></i> 상신 취소</button>
+		<span style='color: gray; font-size: small'>상신 취소 시 임시저장함에 저장됩니다.</span>
+	</div>
+	
 	<div class="card">
+	<c:if test="${not empty draftMap}">
 		<div class="card-header py-3" align="center">
 			<h3>
 				<strong>업 무 품 의</strong>
@@ -105,19 +261,19 @@ a {
 				<table class='table table-bordered text-left'>
 					<tr>
 						<th>기안자</th>
-						<td>구루비</td>
+						<td>${draftMap.dvo.draft_emp_name}</td>
 					</tr>
 					<tr>
 						<th>소속</th>
-						<td>신사업개발팀</td>
+						<td>${draftMap.dvo.draft_department}</td>
 					</tr>
 					<tr>
 						<th>기안일</th>
-						<td>2022-11-15(수)</td>
+						<td>${fn:substring(draftMap.dvo.draft_date,0,10)}</td>
 					</tr>
 					<tr>
 						<th>문서번호</th>
-						<td>20221115-01</td>
+						<td>${draftMap.dvo.draft_no}</td>
 					</tr>
 				</table>
 			</div>
@@ -130,24 +286,28 @@ a {
 						<th rowspan='5' style='font-size: medium; vertical-align: middle;'>결<br>재<br>선</th>
 					</tr>
 					<tr>
-						<td>책임</td>
-						<td>팀장</td>
-						<td>부문장</td>
+					<c:forEach items="${draftMap.avoList}" var="avo" varStatus="sts">
+						<td>${avo.position}</td>
+					</c:forEach>
 					</tr>
 					<tr>
-						<td><img src='<%=ctxPath%>/resources/images/signature_pororo.png' width="100"/></td>
-						<td></td>
-						<td></td>
+					<c:forEach items="${draftMap.avoList}" var="avo">
+						<td>
+						<c:if test="${avo.approval_status == 1 }">
+						<img src='<%=ctxPath%>/resources/images/${avo.signimg}' width="100"/>
+						</c:if>
+						</td>
+					</c:forEach>
 					</tr>
 					<tr>
-						<td>김개발</td>
-						<td></td>
-						<td></td>
+					<c:forEach items="${draftMap.avoList}" var="avo">
+						<td>${avo.name}</td>
+					</c:forEach>
 					</tr>
 					<tr>
-						<td>2022/11/15</td>
-						<td></td>
-						<td></td>						
+					<c:forEach items="${draftMap.avoList}" var="avo">
+						<td>${fn:substring(avo.approval_date,0,10)}</td>
+					</c:forEach>
 					</tr>
 				</table>
 			</div>
@@ -159,46 +319,30 @@ a {
 			<!-- 문서내용 -->
 			<table class='mr-4 table table-sm table-bordered text-left'>
 				<tr>
-					<th class='p-2'>제목</th>
-					<td class='p-2'>AI 챗봇 개발 프로젝트 팀 편성의 건</td>
+					<th class='p-2' style='width: 20%'>제목</th>
+					<td class='p-2'>${draftMap.dvo.draft_subject}</td>
 				</tr>
 				<tr>
 					<td colspan='2' class='p-4'>
-						<p>
-							 개발부문 신사업개발팀에서는 'AI 챗봇 개발 프로젝트 팀 편성의 건'과 관련하여 다음과 같이 진행하고자 하오니 재가하여 주시기 바랍니다.<br>
-							<br>
-							1. 개요<br>
-							   1) 배경<br>
-							   - 24시간 CS 대응에 대한 수요 증가<br>
-							   - 성수기 시즌에 문의량 폭증으로 대응 인력 부족<br>
-							   - 요즘 AI챗봇 없는 데 없음<br>
-							   - 그냥 간지나니까<br>
-							<br>
-							2. 진행 방안 (변경 가능)<br>
-							   - 최고 엘리트들만 모인 프로젝트 팀을 구성할 것임<br>
-							   - 예산도 많이 받을거임<br>
-							   - 다음달 상반기 중 출시 예정<br>
-							<br>
-							3. 소요 예상 비용 (VAT 별도, 변경 가능)<br>
-							    3억7천만원<br>
-							<br>
-							4. 첨부<br>
-							    견적서 1부. 끝.
-						</p>
+						<p>${draftMap.dvo.draft_content}</p>
 					</td>
 				</tr>
 			</table>
 			<!-- 문서내용 끝 -->
 			
 			<!-- 첨부파일 -->
+			<c:if test="${not empty dfvoList}">
 			<table class='mr-4 table table-sm table-bordered text-left'>
 				<tr>
-					<th class='p-2 text-left'><i class="fas fa-paperclip"></i> 첨부파일 1개 (12.1Byte)</th>
+					<th class='p-2 text-left'><i class="fas fa-paperclip"></i> 첨부파일 ${fn:length(dfvoList)}개</th>
 				</tr>
+				<c:forEach items="${dfvoList}" var="file">
 				<tr>
-					<td class='p-2'><a href=#>견적서.xls</a></td>
+					<td class='p-2'><a href=#>${file.originalfilename} (${file.filesize}Byte)</a></td>
 				</tr>
+				</c:forEach>
 			</table>
+			</c:if>
 			<!-- 첨부파일 끝 -->
 			
 			<div style="clear:both; padding-top: 8px; margin-bottom: 30px;">
@@ -209,14 +353,19 @@ a {
 			<div class='card'>
 				<div class='card-body'>
 					<table class='commentTable'>
+					<c:if test="${not empty draftMap.dvo.draft_comment}">
 						<tr>
-							<td id='profile' rowspan='2'><img style='border-radius: 50%; display: inline-block' src='<%=ctxPath%>/resources/images/groovy_profile.jpg' width="100" /></td>
-							<td><h6>구루비 선임</h6></td>
-							<td id='date'><span style='color: #b3b3b3'>2022/11/15 10:21</span></td>
+							<td class='profile' rowspan='2'><img style='border-radius: 50%; display: inline-block' src='<%=ctxPath%>/resources/images/profile/${draftMap.dvo.empimg}' width="100" /></td>
+							<td style='text-align:left'><h6>${draftMap.dvo.draft_emp_name}&nbsp;${draftMap.dvo.position}</h6></td>
+							<td id='date'><span style='color: #b3b3b3'>${draftMap.dvo.draft_date}</span></td>
 						</tr>
 						<tr>
-							<td>긍정적 검토 바랍니다.</td>
+							<td style='text-align:left'>${draftMap.dvo.draft_comment}</td>
 						</tr>
+					</c:if>
+					<c:if test="${empty draftMap.dvo.draft_comment}">
+					<span style='text-align:left'>기안 의견이 없습니다.</span>
+					</c:if>
 					</table>
 				</div>
 			</div>
@@ -227,33 +376,43 @@ a {
 			<div class='card'>
 				<div class='card-body'>
 					<table class='commentTable'>
-						<tr>
-							<td id='profile' rowspan='2'><img style='border-radius: 50%; display: inline-block' src='<%=ctxPath%>/resources/images/groovy_profile2.jpg' width="100" /></td>
-							<td><h6>김개발 책임</h6></td>
-							<td id='date'><span style='color: #b3b3b3'>2022/11/15 14:30</span></td>
-						</tr>
-						<tr>
-							<td>굿굿 결재합니다</td>
-						</tr>
+					<c:forEach items="${draftMap.avoList}" var="avo">
+						<c:if test="${not empty avo.approval_comment}">
+							<tr>
+								<td class='profile' rowspan='2'><img style='border-radius: 50%; display: inline-block' src='<%=ctxPath%>/resources/images/profile/${avo.empimg}' width="100" /></td>
+								<td><h6>${avo.name}&nbsp;${avo.position}</h6></td>
+								<td id='date'><span style='color: #b3b3b3'>${avo.approval_date}</span></td>
+							</tr>
+							<tr>
+								<td>${avo.approval_comment}</td>
+							</tr>
+						</c:if>
+					</c:forEach>
 					</table>
-					<table class='commentTable mt-4' id='myComment'>
-						<tr>
-							<td id='profile' rowspan='2'><img style='border-radius: 50%; display: inline-block' src='<%=ctxPath%>/resources/images/default_profile.png' width="100" /></td>
-							<td rowspan='2'><input type='text' id='approvalComment' name='approvalComment' placeholder='결재의견을 입력해주세요(선택)' style='width: 70%'/></td>
-						</tr>
-					</table>
+					
+					<form id="approvalFrm">
+						<table class='commentTable mt-4' id='myComment'>
+							<tr>
+								<td id='profile' rowspan='2'><img style='border-radius: 50%; display: inline-block' src='<%=ctxPath%>/resources/images/default_profile.png' width="100" /></td>
+								<td rowspan='2'><input type='text' id='approval_comment' name='approval_comment' placeholder='결재의견을 입력해주세요(선택)' style='width: 70%'/></td>
+							</tr>
+						</table>
+					</form>
+					
 				</div>
 			</div>
 			<!-- 결재의견 끝 -->
 			
 			<!-- 결재버튼 -->
-			<!-- 내가 결재 순서일 때만 보임 -->
-			<div class='mt-4 text-left' >
-				<button type='button' class='btn btn-lg'><i class="fas fa-pen-nib"></i> 승인</button>
-				<button type='button' class='btn btn-lg'><i class="fas fa-undo"></i> 반려</button>
-				<!-- 대결 버튼은 내가 승인 후, 다음 사람이 결재하기 전에만 보임 -->
-				<button type='button' class='btn btn-lg'><i class="fas fa-arrow-right"></i> 대결</button>
+			<div class='mt-4 text-left' id="processBtns">
+				<button type='button' class='btn btn-lg myApprovalBtn' id='1'><i class="fas fa-pen-nib"></i> 승인</button>
+				<button type='button' class='btn btn-lg myApprovalBtn' id='2'><i class="fas fa-undo"></i> 반려</button>
+				<button type='button' class='btn btn-lg proxyApprovalBtn' onclick='proxyApproval()'><i class="fas fa-arrow-right"></i> 대결</button>
 			</div>
 		</div>
+	</c:if>
+	<c:if test="${empty draftMap}">
+	해당하는 문서가 없습니다.
+	</c:if>
 	</div>
 </div>

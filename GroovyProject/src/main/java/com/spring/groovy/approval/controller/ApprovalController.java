@@ -1,5 +1,7 @@
 package com.spring.groovy.approval.controller;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
+
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -34,6 +36,7 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
@@ -83,12 +86,22 @@ public class ApprovalController {
 
 		return mav;
 	}
-
+	
+	// 기안 문서 조회
+	@RequestMapping(value = "/draftDetail.on")
+	public ModelAndView getDraftDetail(ModelAndView mav, HttpServletRequest request, DraftVO dvo) {
+		
+		Map<String, Object> draftMap = service.getDraftDetail(dvo);
+		
+		mav.addObject("draftMap", draftMap);
+		mav.setViewName("approval/draft_detail/work_detail.tiles");
+		return mav;
+	}
+	
 	// 개인문서함-상신함 페이지요청
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/personal/sent.on")
-	public ModelAndView sentDraftList(ModelAndView mav, Pagination pagination, HttpServletRequest request)
-			throws Exception {
+	public ModelAndView sentDraftList(ModelAndView mav, Pagination pagination, HttpServletRequest request) throws Exception {
 
 		MemberVO loginuser = getLoginUser(request);
 
@@ -389,17 +402,31 @@ public class ApprovalController {
 		return mav;
 	}
 
-	// 업무기안 작성 페이지요청
-	@GetMapping(value = "/write/work.on")
-	public String showWorkDraftForm(HttpServletRequest request) {
+	// 기안 작성 페이지요청
+	@GetMapping(value = "/write.on")
+	public String showWorkDraftForm(@RequestParam("type") String type) {
+		
+		switch (type) {
+		
+		case "work":
+			return "approval/write_form/work_form.tiles";
 
-		return "approval/write_form/work_form.tiles";
+		case "expense":
+			return "approval/write_form/expense_form.tiles";
+		
+		case "businessTrip":
+			return "approval/write_form/business_trip_form.tiles";
+
+		default:
+			return "error";
+		}
+		
 	}
 
-	// 업무기안 작성하기
+	// 기안 작성하기
 	@ResponseBody
-	@PostMapping(value = "/write/work.on", produces = "text/plain;charset=UTF-8")
-	public String addWorkDraft(MultipartHttpServletRequest mtfRequest, DraftVO dvo) {
+	@PostMapping(value = "/addDraft.on", produces = "text/plain;charset=UTF-8")
+	public String addDraft(MultipartHttpServletRequest mtfRequest, DraftVO dvo, ApprovalVO avo) {
 
 		Map<String, Object> paraMap = new HashMap<>();
 
@@ -407,16 +434,7 @@ public class ApprovalController {
 		paraMap.put("dvo", dvo);
 
 		// 결재자 목록 리스트
-		List<ApprovalVO> apvoList = new ArrayList<ApprovalVO>();
-
-		String[] empnoArr = mtfRequest.getParameterValues("fk_approval_empno");
-
-		for (String empno : empnoArr) {
-			ApprovalVO apvo = new ApprovalVO();
-			apvo.setFk_approval_empno(Integer.parseInt(empno));
-
-			apvoList.add(apvo);
-		}
+		List<ApprovalVO> apvoList = avo.getAvoList();
 
 		paraMap.put("apvoList", apvoList);
 
@@ -429,7 +447,7 @@ public class ApprovalController {
 		}
 		paraMap.put("fileList", fileList);
 
-		boolean result = service.addWorkDraft(paraMap);
+		boolean result = service.addDraft(paraMap);
 
 		JSONObject jsonObj = new JSONObject();
 		jsonObj.put("result", result);
@@ -437,10 +455,10 @@ public class ApprovalController {
 		return jsonObj.toString();
 	}
 	
-	// 업무기안 임시저장하기
+	// 기안 임시저장하기
 	@ResponseBody
-	@PostMapping(value = "/save/work.on", produces = "text/plain;charset=UTF-8")
-	public String saveTemp(HttpServletRequest request, DraftVO dvo) {
+	@PostMapping(value = "/saveDraft.on", produces = "text/plain;charset=UTF-8")
+	public String saveTemp(HttpServletRequest request, DraftVO dvo, ApprovalVO avo) {
 		
 		Map<String, Object> paraMap = new HashMap<>();
 
@@ -512,48 +530,19 @@ public class ApprovalController {
 		}
 	}
 
-	// 지출결의서 작성 페이지요청
-	@RequestMapping(value = "/write/expense.on")
-	public String showExpenseReportForm(HttpServletRequest request) {
-
-		return "approval/write_form/expense_form.tiles";
-	}
-
-	// 출장보고서 작성 페이지요청
-	@RequestMapping(value = "/write/businessTrip.on")
-	public String showBusinessTripReportForm(HttpServletRequest request) {
-
-		return "approval/write_form/business_trip_form.tiles";
-	}
-
-	// 기안조회 페이지요청
-	@RequestMapping(value = "/detail.on")
-	public String showDraft(HttpServletRequest request) {
-
-		// if문으로 기안 종류에 따라 다른 페이지 리턴
-		return "approval/draft_detail/work_detail.tiles";
-	}
-
-	@RequestMapping(value = "/detail2.on")
-	public String showDraft2(HttpServletRequest request) {
-
-		return "approval/draft_detail/expense_detail.tiles";
-	}
-
-	@RequestMapping(value = "/detail3.on")
-	public String showDraft3(HttpServletRequest request) {
-
-		return "approval/draft_detail/business_trip_detail.tiles";
-	}
-
 	// 결재라인 선택 팝업창 요청
 	@RequestMapping(value = "/selectApprovalLine.on")
 	public ModelAndView selectApprovalLine(ModelAndView mav, HttpServletRequest request) {
 
 		MemberVO loginuser = getLoginUser(request);
+		String type = request.getParameter("type");
+		
+		Map<String, Object> paraMap = new HashMap<>();
+		paraMap.put("loginuser", loginuser);
+		paraMap.put("type", type);
 		
 		// 부문 목록 가져오기
-		List<Map<String, String>> bumunList = service.getBumunList(loginuser);
+		List<Map<String, String>> bumunList = service.getBumunList(paraMap);
 
 		JSONArray bumunArray = new JSONArray();
 
@@ -565,7 +554,7 @@ public class ApprovalController {
 		mav.addObject("bumunArray", bumunArray.toString());
 
 		// 부서 목록 가져오기
-		List<Map<String, String>> deptList = service.getDeptList(loginuser);
+		List<Map<String, String>> deptList = service.getDeptList(paraMap);
 
 		JSONArray deptArray = new JSONArray();
 
@@ -577,7 +566,7 @@ public class ApprovalController {
 		mav.addObject("deptArray", deptArray.toString());
 
 		// 사원 목록 가져오기
-		List<Map<String, String>> empList = service.getEmpList(loginuser);
+		List<Map<String, String>> empList = service.getEmpList(paraMap);
 
 		JSONArray empArray = new JSONArray();
 
@@ -594,7 +583,7 @@ public class ApprovalController {
 
 	}
 
-	// 저장된 결재라인 불러오기 팝업창 요청
+	// 저장된 결재라인 목록 불러오기 팝업창 요청
 	@ResponseBody
 	@RequestMapping(value = "/getSavedAprvLine.on", produces = "text/plain;charset=UTF-8")
 	public String getSavedAprvLine(Model model, HttpServletRequest request) {
@@ -604,7 +593,7 @@ public class ApprovalController {
 		Map<String, String> paraMap = new HashMap<>();
 		paraMap.put("empno", loginuser.getEmpno());
 
-		// 저장된 결재라인 불러오기
+		// 저장된 결재라인 목록 불러오기
 		List<SavedAprvLineVO> aprvLineList = service.getSavedAprvLine(paraMap);
 
 		JSONArray aprvLineArray = new JSONArray();
@@ -626,30 +615,49 @@ public class ApprovalController {
 		String param = request.getParameter("selectedAprvLine");
 
 		JSONArray jsonArray = new JSONArray(param);
-		JSONObject jsonObject = new JSONObject();
+		JSONObject jsonObject = jsonArray.getJSONObject(0);
 
-		List<String> aprvEmpList = new ArrayList<>();
+		// 결재자들의 사원번호를 담을 리스트
+		List<String> empnoList = new ArrayList<>();
 
-		for (int i = 0; i < jsonArray.length(); i++) {
-			jsonObject = jsonArray.getJSONObject(i);
-			
-			for (int j = 1; j < 4; j++) {
-				String searchKey = "fk_approval_empno" + j;
-				aprvEmpList.add(jsonObject.get(searchKey).toString());
-			}
+		for (int i = 1; i < 4; i++) {
+			String searchKey = "fk_approval_empno" + i;
+			empnoList.add(jsonObject.get(searchKey).toString());
 		}
 
-		List<MemberVO> aprvEmpInfo = service.getSavedAprvEmpInfo(aprvEmpList);
+		// 결재자들의 정보가 검색되어 담긴 리스트
+		List<MemberVO> aprvEmpInfo = service.getSavedAprvEmpInfo(empnoList);
 
-		JSONArray aprvArray = new JSONArray();
-
-		for (MemberVO emp : aprvEmpInfo) {
-			JSONObject json = new JSONObject(emp);
-			aprvArray.put(json);
-		}
+		JSONArray aprvArray = new JSONArray(aprvEmpInfo);
 
 		return aprvArray.toString();
 
+	}
+	
+	// 자신의 결재 처리하기(승인 or 반려)
+	@ResponseBody
+	@PostMapping(value = "/updateMyApproval.on", produces = "text/plain;charset=UTF-8")
+	public String updateMyApproval(ApprovalVO avo) {
+		
+		boolean result = service.updateMyApproval(avo);
+
+		JSONObject jsonObj = new JSONObject();
+		jsonObj.put("result", result);
+
+		return jsonObj.toString();
+	}
+	
+	// 대결 처리하기
+	@ResponseBody
+	@PostMapping(value = "/updateApprovalProxy.on", produces = "text/plain;charset=UTF-8")
+	public String updateApprovalProxy(ApprovalVO avo) {
+		
+		boolean result = service.updateApprovalProxy(avo);
+		
+		JSONObject jsonObj = new JSONObject();
+		jsonObj.put("result", result);
+		
+		return jsonObj.toString();
 	}
 
 	// 환경설정-결재라인관리 페이지요청
@@ -699,6 +707,39 @@ public class ApprovalController {
 		return "error";
 	}
 
+	
+	// 관리자메뉴-공통결재라인 설정 페이지요청
+	@RequestMapping(value = "/admin/officialApprovalLine.on")
+	public ModelAndView getOfficialApprovalLine(ModelAndView mav) {
+		
+		// 공통결재라인 목록 불러오기
+		List<Map<String, String>> officialAprvList = service.getOfficialAprvList(); 
+		
+		mav.addObject("officialAprvList", officialAprvList);
+		mav.setViewName("approval/admin/official_approvalLine.tiles");
+		return mav;
+	}
+	
+	// 관리자메뉴-공통결재라인 한개 불러오기
+	@ResponseBody
+	@RequestMapping(value = "/admin/getOneOfficialAprvLine.on", produces = "text/plain;charset=UTF-8")
+	public String getOneOfficialAprvLine(HttpServletRequest request) {
+
+		String official_aprv_line_no = request.getParameter("official_aprv_line_no");
+
+		List<MemberVO> officialAprvLine = service.getOneOfficialAprvLine(official_aprv_line_no); 
+
+		JSONArray aprvArray = new JSONArray();
+
+		for (MemberVO emp : officialAprvLine) {
+			JSONObject json = new JSONObject(emp);
+			aprvArray.put(json);
+		}
+
+		return aprvArray.toString();
+		
+	}
+	
 	// 로그인 사용자 정보 가져오기
 	private MemberVO getLoginUser(HttpServletRequest request) {
 		HttpSession session = request.getSession();

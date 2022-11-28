@@ -2,6 +2,7 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <% String ctxPath=request.getContextPath(); %>
+
 <style>
 #list {
 	font-size: small;
@@ -18,70 +19,10 @@
 	background-color: #086BDE;
 }
 
-#excelButton {
-	border-style: none;
-	background-color: transparent;
-}
-
-#excelButton:hover {
-	cursor: pointer;
-}
-
 </style>
 <script>
-$(()=>{
-	
-	$('a#teamList').css('color','#086BDE');
-	
-	// 검색창에서 엔터시 검색하기 함수 실행
-	$("#searchWord").bind("keydown", (e) => {
-		if (e.keyCode == 13) {
-			goSearch();
-		}
-	});
-	
-	// 검색어가 있을 경우 검색타입 및 검색어 유지시키기
-	if (${not empty paraMap.searchType}){
-		$("select#searchType").val("${paraMap.searchType}");
-		$("input#searchWord").val("${paraMap.searchWord}");
-	}
-	
-	// pageSize 유지시키기
-	$("select#pageSize").val("${paraMap.pageSize}");
-	
-	// sortType 유지시키기
-	$("select#sortType").val("${paraMap.sortType}");
-	
-	// sortOrder 유지시키기
-	$("select#sortOrder").val("${paraMap.sortOrder}");
-
-});
-	
-const goSearch = () => {
-	
-	const frm = document.searchFrm;
-	frm.method = "get";
-	frm.action = "<%=ctxPath%>/approval/team.on";
-	frm.submit();
-}
-
-const excelDownLoad = () => {
-	
-	let downloadArray = new Array();
-	downloadArray = Array.from($("#teamDraftTable > tbody > tr").children());
-	
-	let downloadList = downloadArray.map(el => el.innerText).join();
-	
-	const frm = document.excelFrm;
-	frm.downloadList.value = downloadList;
-	frm.listName.value = '팀문서함';
-	
-	frm.method="get";
-	frm.action="<%=ctxPath%>/approval/excel/downloadExcelFile.on";
-	frm.submit();
-	
-}
 </script>
+
 
 <div style='margin: 1% 0 5% 1%'>
 	<h4>팀 문서함</h4>
@@ -128,12 +69,6 @@ const excelDownLoad = () => {
 				</select>
 			</div>
 		</div>
-	</form>
-
- 	<form name="excelFrm">
-		<input type="hidden" name="downloadList"/>
-		<input type="hidden" name="listName" value="팀문서함" />
-		<input type="hidden" name="header" value="결재완료일,기안일,종류,문서번호,제목,기안자,결재상태" />
 	</form>
 	
 	<table class="table" id="teamDraftTable">

@@ -1,7 +1,9 @@
 package com.spring.groovy.approval.model;
 
+import java.util.List;
+
 public class ApprovalVO {
-	
+
 	private int approval_no; // 결재번호(기본키)         
 	private String fk_draft_no; // 기안문서번호(외래키)
 	private int fk_approval_empno; // 결재자 사원번호      
@@ -9,6 +11,15 @@ public class ApprovalVO {
 	private int approval_status; // 결재상태(0:미결, 1:결재, 2:반려, -1: 처리불가(아래에서 반려함))      
 	private String approval_comment; // 결재의견
 	private String approval_date; // 결재일자
+	
+	private String name; // 결재자 이름(join)
+	private String department; // 결재자 부서(join)
+	private String position; // 결재자 직급(join)
+	private String signimg; // 결재자 서명 이미지(join)
+	private String empimg; // 결재자 프로필이미지(join)
+	
+	private List<ApprovalVO> avoList;
+	
 	public int getApproval_no() {
 		return approval_no;
 	}
@@ -51,7 +62,43 @@ public class ApprovalVO {
 	public void setApproval_date(String approval_date) {
 		this.approval_date = approval_date;
 	}
+	public List<ApprovalVO> getAvoList() {
+		return avoList;
+	}
+	public void setAvoList(List<ApprovalVO> avoList) {
+		this.avoList = avoList;
+	}
+	public String getPosition() {
+		return position;
+	}
+	public void setPosition(String position) {
+		this.position = position;
+	}
 	
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
+	public String getDepartment() {
+		return department;
+	}
+	public void setDepartment(String department) {
+		this.department = department;
+	}
+	public String getSignimg() {
+		return signimg;
+	}
+	public void setSignimg(String signimg) {
+		this.signimg = signimg;
+	}
+	public String getEmpimg() {
+		return empimg;
+	}
+	public void setEmpimg(String empimg) {
+		this.empimg = empimg;
+	}
 	
 
 }

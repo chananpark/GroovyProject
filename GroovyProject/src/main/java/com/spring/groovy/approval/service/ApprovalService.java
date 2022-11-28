@@ -2,10 +2,12 @@ package com.spring.groovy.approval.service;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
@@ -95,20 +97,20 @@ public class ApprovalService implements InterApprovalService {
 
 	// 사원 목록 가져오기
 	@Override
-	public List<Map<String, String>> getEmpList(MemberVO loginuser) {
-		return dao.getEmpList(loginuser);
+	public List<Map<String, String>> getEmpList(Map<String, Object> paraMap) {
+		return dao.getEmpList(paraMap);
 	}
 	
 	// 부문 목록 가져오기
 	@Override
-	public List<Map<String, String>> getBumunList(MemberVO loginuser) {
-		return dao.getBumunList(loginuser);
+	public List<Map<String, String>> getBumunList(Map<String, Object> paraMap) {
+		return dao.getBumunList(paraMap);
 	}
 
 	// 부서 목록 가져오기
 	@Override
-	public List<Map<String, String>> getDeptList(MemberVO loginuser) {
-		return dao.getDeptList(loginuser);
+	public List<Map<String, String>> getDeptList(Map<String, Object> paraMap) {
+		return dao.getDeptList(paraMap);
 	}
 
 	// 환경설정 - 결재라인 저장
@@ -117,24 +119,41 @@ public class ApprovalService implements InterApprovalService {
 		return dao.saveApprovalLine(sapVO);
 	}
 
+	// 저장된 결재라인 불러오기
+	@Override
+	public List<SavedAprvLineVO> getSavedAprvLine(Map<String, String> paraMap) {
+		return dao.getSavedAprvLine(paraMap);
+	}
+
+	// 저장된 결재라인 결재자 정보 가져오기
+	@Override
+	public List<MemberVO> getSavedAprvEmpInfo(List<String> empnoList) {
+		return dao.getSavedAprvEmpInfo(empnoList);
+	}
+
+	// 공통결재라인 목록 불러오기
+	@Override
+	public List<Map<String, String>> getOfficialAprvList() {
+		return dao.getOfficialAprvList();
+	}
+
+	// 환경설정-공통결재라인 한개 불러오기
+	@Override
+	public List<MemberVO> getOneOfficialAprvLine(String official_aprv_line_no) {
+		return dao.getOneOfficialAprvLine(official_aprv_line_no);
+	}
+
 	// 업무기안 작성하기(트랜잭션)
 	@Override
 	@SuppressWarnings("unchecked")
 	@Transactional(propagation=Propagation.REQUIRED, isolation=Isolation.READ_COMMITTED, rollbackFor= {Throwable.class})
-	public boolean addWorkDraft(Map<String, Object> paraMap) {
+	public boolean addDraft(Map<String, Object> paraMap) {
 		
 		int n = 0;
 		boolean result = false;
 
-		Calendar currentDate = Calendar.getInstance(); // 현재날짜와 시간
-		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
-		String currentTime = dateFormat.format(currentDate.getTime());
-		
-		// 시퀀스 번호 얻어오기
-		int seq = dao.getDraftNo();
-		
-		// 기안번호 생성 (날짜-시퀀스번호)
-		String draft_no = currentTime + "-" + seq;
+		// 기안문서 번호 생성
+		String draft_no = getDraftNo();
 
 		DraftVO dvo = (DraftVO)paraMap.get("dvo");
 		dvo.setDraft_no(draft_no); // 생성된 기안번호 set
@@ -174,10 +193,28 @@ public class ApprovalService implements InterApprovalService {
 		n = dao.addFiles(fileList);
 		result = (n == fileList.size())? true : false;
 		
+		// 지출결의서라면
+		
+		// 출장보고서라면
+		
 		return result;
 	}
+
+	// 기안문서번호 생성하기
+	private String getDraftNo() {
+		Calendar currentDate = Calendar.getInstance(); // 현재날짜와 시간
+		SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
+		String currentTime = dateFormat.format(currentDate.getTime());
+		
+		// 시퀀스 번호 얻어오기
+		int seq = dao.getDraftNo();
+		
+		// 기안문서번호 생성 (날짜-시퀀스번호)
+		String draft_no = currentTime + "-" + seq;
+		return draft_no;
+	}
 	
-	// 업무기안 임시저장하기
+	// 업무기안 임시저장하기(트랜잭션)
 	@SuppressWarnings("unchecked")
 	@Override
 	@Transactional(propagation=Propagation.REQUIRED, isolation=Isolation.READ_COMMITTED, rollbackFor= {Throwable.class})
@@ -213,17 +250,61 @@ public class ApprovalService implements InterApprovalService {
 		
 		return result;
 	}
-
-	// 저장된 결재라인 불러오기
+	
+	// 30일 지난 임시저장 글 삭제하기
 	@Override
-	public List<SavedAprvLineVO> getSavedAprvLine(Map<String, String> paraMap) {
-		return dao.getSavedAprvLine(paraMap);
+	@Scheduled(cron="0 0 0 * * *")
+	public void autoDeleteSavedDraft() {
+		dao.autoDeleteSavedDraft();
 	}
 
-	// 저장된 결재라인 결재자 정보 가져오기
+	// 기안문서 조회
 	@Override
-	public List<MemberVO> getSavedAprvEmpInfo(List<String> aprvEmpList) {
-		return dao.getSavedAprvEmpInfo(aprvEmpList);
+	public Map<String, Object> getDraftDetail(DraftVO dvo) {
+				
+		Map<String, Object> draftMap = new HashMap<String, Object>();
+		
+		// draft에서 select
+		dvo = dao.getDraftInfo(dvo);
+		draftMap.put("dvo", dvo);
+		
+		// approval에서 select
+		List<ApprovalVO> avoList = dao.getApprovalInfo(dvo);
+		draftMap.put("avoList", avoList);
+		
+		// file에서 select
+		List<DraftFileVO> dfvoList = dao.getDraftFileInfo(dvo);
+		draftMap.put("dfvoList", dfvoList);
+		
+		// 지출결의서라면
+		if (dvo.getFk_draft_type_no() == 2) {
+			
+		}
+		
+		// 출장보고서라면
+		if (dvo.getFk_draft_type_no() == 3) {
+			
+		}
+		
+		return draftMap;
+	}
+
+	// 자신의 결재 처리하기(승인 or 반려)
+	@Override
+	public boolean updateMyApproval(ApprovalVO avo) {
+		
+		int n = dao.updateMyApproval(avo);
+		
+		return n > 0? true: false; 
+	}
+
+	// 대결 처리하기
+	@Override
+	public boolean updateApprovalProxy(ApprovalVO avo) {
+		
+		int n = dao.updateApprovalProxy(avo);
+		
+		return n > 0? true: false; 
 	}
 
 

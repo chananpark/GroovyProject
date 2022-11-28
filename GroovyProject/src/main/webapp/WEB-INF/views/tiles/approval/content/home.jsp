@@ -188,7 +188,9 @@ $(()=>{
 							<td class='col col-1'>${fn:substring(processed.approval_date, 0, 10)}</td>
                             <td class='col col-1'>${processed.draft_type}</td>
                             <td class='col col-2'>${processed.draft_no}</td>
-                            <td class='col'>${processed.draft_subject}</td>
+                            <td class='col'>
+                            <a href='<%=ctxPath%>/approval/draftDetail.on?draft_no=${draft.draft_no}&fk_draft_type_no=${draft.fk_draft_type_no}'>
+                            ${processed.draft_subject}</a></td>
 							<td class='col col-1'>${fn:substring(processed.draft_date, 0, 10)}</td>
                             <td class='col col-1'>
                             	<c:if test="${draft.draft_status == '완료'}">

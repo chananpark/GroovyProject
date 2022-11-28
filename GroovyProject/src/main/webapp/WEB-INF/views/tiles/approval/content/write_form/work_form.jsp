@@ -99,13 +99,12 @@ label:hover {
 
 <script>
 
-let submitFlag;
-
 // 네이버 스마트 에디터용 전역변수
 var obj = [];
 
 // 파일 정보를 담아 둘 배열
 let fileList = [];
+
 
 $(() => {
 
@@ -178,6 +177,7 @@ $(() => {
 	});
 	
 	/* 파일 드래그 & 드롭 */
+	// 파일 드롭 영역
 	const $drop = document.querySelector(".dropBox");
 	
 	// 드래그한 파일 객체가 해당 영역에 놓였을 때
@@ -241,6 +241,7 @@ function deleteFile(fIndex){
     
     // 파일 배열에서 삭제
     delete fileList[fIndex];
+
 }
 
 // 긴급 여부 체크
@@ -278,7 +279,7 @@ const submitDraft = () => {
 	getFiles(formData);
 	
     $.ajax({
-        url : "<%=ctxPath%>/approval/write/work.on",
+        url : "<%=ctxPath%>/approval/addDraft.on",
         data : formData,
         type:'POST',
         enctype:'multipart/form-data',
@@ -303,7 +304,7 @@ const submitDraft = () => {
 	
 }
 
-/* 임시저장하가 */
+/* 임시저장하기 */
 const saveTemp = () => {
 	
     let formData = new FormData($("#draftForm")[0]);
@@ -312,7 +313,7 @@ const saveTemp = () => {
 	getFiles(formData);
 	
     $.ajax({
-        url : "<%=ctxPath%>/approval/save/work.on",
+        url : "<%=ctxPath%>/approval/saveDraft.on",
         data : formData,
         type:'POST',
         enctype:'multipart/form-data',
@@ -336,7 +337,7 @@ const saveTemp = () => {
     });
 }
 
-/* 결재라인 불러오기 */
+/* 저장된 결재라인 선택창 */
 const getMyApprovalLine = () => {
 	
 	$.ajax({
@@ -369,7 +370,7 @@ const getMyApprovalLine = () => {
 	
 }
 
-// 불러온 결재자 정보 출력하기
+/* 선택한 저장된 결재라인 출력하기 */
 const getApprovalEmpInfo = aprvLine => {
 	const selectedNo = $('input[name=aprvLine]:checked').val();
 	
@@ -390,7 +391,8 @@ const getApprovalEmpInfo = aprvLine => {
 			 			+ "<td class='levelno'>" + (index+1) + "</td>"
 						+ "<td class='department'>" + emp.department + "</td>"
 						+ "<td class='position'>" + emp.position + "</td>"
-						+ "<input type='hidden' name='fk_approval_empno' value='" + emp.empno + "'></td>"
+						+ "<input type='hidden' name='avoList[" + index + "].levelno' value='" + (index+1) + "'></td>"
+						+ "<input type='hidden' name='avoList[" + index + "].fk_approval_empno' value='" + emp.empno + "'></td>"
 						+ "<td class='name'>" + emp.name + "</td></tr>";
 					
 				aprvTblBody.append(html);
@@ -403,7 +405,7 @@ const getApprovalEmpInfo = aprvLine => {
 }
 
 
-/* 결재라인 선택하기 */
+/* 결재자 선택하기 */
 const selectApprovalLine = empno => {
 	emptyApprovalLine();
 	
@@ -413,11 +415,11 @@ const selectApprovalLine = empno => {
 	const popupX = (window.screen.width / 2) - (popupWidth / 2);
 	const popupY= (window.screen.height / 2) - (popupHeight / 2);
 	
-	window.open('<%=ctxPath%>/approval/selectApprovalLine.on','결제라인 선택','height=' + popupHeight  + ', width=' + popupWidth  + ', left='+ popupX + ', top='+ popupY);
+	window.open('<%=ctxPath%>/approval/selectApprovalLine.on?type=personal','결재라인 선택','height=' + popupHeight  + ', width=' + popupWidth  + ', left='+ popupX + ', top='+ popupY);
 }	
 
 
-/* 자식창에서 넘겨준 데이터를 받아 출력함 */
+/* 선택된 결재자 출력하기 */
 const receiveMessage = async (e) =>
 {
    	const jsonArr = e.data;
@@ -429,7 +431,8 @@ const receiveMessage = async (e) =>
 	 			+ "<td class='levelno'>" + emp.levelno + "</td>"
 				+ "<td class='department'>" + emp.department + "</td>"
 				+ "<td class='position'>" + emp.position + "</td>"
-				+ "<input type='hidden' name='fk_approval_empno' value='" + emp.empno + "'></td>"
+				+ "<input type='hidden' name='avoList[" + index + "].levelno' value='" + emp.levelno + "'></td>"
+				+ "<input type='hidden' name='avoList[" + index + "].fk_approval_empno' value='" + emp.empno + "'></td>"
 				+ "<td class='name'>" + emp.name + "</td></tr>";
 			
 		aprvTblBody.append(html);
@@ -441,7 +444,7 @@ const receiveMessage = async (e) =>
 window.addEventListener("message", receiveMessage, false);
 
 
-/* 선택된 결재라인 비우기 */
+/* 결재라인 비우기 */
 const emptyApprovalLine = () => {
 	aprvTblBody.empty();
 }
@@ -615,4 +618,3 @@ const emptyApprovalLine = () => {
 		</div>
 	</div>
 </div>
-<!-- 저장된 결재라인 불러오기 모달 끝 -->

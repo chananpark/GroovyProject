@@ -174,7 +174,7 @@ const getMyApprovalLine = () => {
 	const popupX = (window.screen.width / 2) - (popupWidth / 2);
 	const popupY= (window.screen.height / 2) - (popupHeight / 2);
 	
-	window.open('<%=ctxPath%>/approval/getSavedAprvLine.on','결제라인 불러오기','height=' + popupHeight  + ', width=' + popupWidth  + ', left='+ popupX + ', top='+ popupY);
+	window.open('<%=ctxPath%>/approval/selectApprovalLine.on?type=personal','결재라인 선택','height=' + popupHeight  + ', width=' + popupWidth  + ', left='+ popupX + ', top='+ popupY);
 	
 	
 	// 모달창 띄우기
@@ -194,7 +194,7 @@ const selectApprovalLine = () => {
 	const popupX = (window.screen.width / 2) - (popupWidth / 2);
 	const popupY= (window.screen.height / 2) - (popupHeight / 2);
 	
-	window.open('<%=ctxPath%>/approval/selectApprovalLine.on','결제라인 선택','height=' + popupHeight  + ', width=' + popupWidth  + ', left='+ popupX + ', top='+ popupY);
+	window.open('<%=ctxPath%>/approval/selectApprovalLine.on?type=internal','결제라인 선택','height=' + popupHeight  + ', width=' + popupWidth  + ', left='+ popupX + ', top='+ popupY);
 }
 </script>
 
