@@ -145,17 +145,35 @@ CREATE TABLE TBL_EXPENSE_LIST
 ,CONSTRAINT FK_TBL_EXPENSE_LIST_FK_DRAFT_NO FOREIGN KEY(FK_DRAFT_NO) REFERENCES TBL_DRAFT(DRAFT_NO)
 );
 
+-- 지출 내역 시퀀스 --
+CREATE SEQUENCE SEQ_EXPENSE_LIST_NO
+START WITH 1
+INCREMENT BY 1
+NOMAXVALUE
+NOMINVALUE
+NOCYCLE
+NOCACHE;
+
 -- 출장 보고 테이블 --
-CREATE TABLE TBL_BIZ_TRIP_REP
-(BIZ_TRIP_REP_NO NUMBER -- 출장 보고 번호(기본키)
+CREATE TABLE TBL_BIZTRIP_REPORT
+(BIZTRIP_REPORT_NO NUMBER -- 출장 보고 번호(기본키)
 ,FK_DRAFT_NO NOT NULL -- 기안 문서 번호(외래키)
 ,TRIP_PURPOSE NVARCHAR2(300) NOT NULL -- 출장 목적
 ,TRIP_START_DATE DATE NOT NULL -- 출장 시작일
 ,TRIP_END_DATE DATE NOT NULL -- 출장 종료일
 ,TRIP_LOCATION NVARCHAR2(200) -- 출장 지역
-,CONSTRAINT PK_TBL_BIZ_TRIP_REP_BIZ_TRIP_REP_NO PRIMARY KEY(BIZ_TRIP_REP_NO)
-,CONSTRAINT FK_TBL_BIZ_TRIP_REP_FK_DRAFT_NO FOREIGN KEY(FK_DRAFT_NO) REFERENCES TBL_DRAFT(DRAFT_NO)
+,CONSTRAINT PK_TBL_BIZTRIP_REPORT_BIZTRIP_REPORT_NO PRIMARY KEY(BIZTRIP_REPORT_NO)
+,CONSTRAINT FK_TBL_BIZTRIP_REPORT_FK_DRAFT_NO FOREIGN KEY(FK_DRAFT_NO) REFERENCES TBL_DRAFT(DRAFT_NO)
 );
+
+-- 출장 보고 시퀀스 --
+CREATE SEQUENCE SEQ_BIZTRIP_REPORT_NO
+START WITH 1
+INCREMENT BY 1
+NOMAXVALUE
+NOMINVALUE
+NOCYCLE
+NOCACHE;
 
 -- 저장된 결재라인 테이블 --
 CREATE TABLE TBL_MY_APRV_LINE
@@ -196,7 +214,6 @@ CREATE TABLE TBL_OFFICIAL_APRV_LINE
 ,CONSTRAINT FK_TBL_OFFICIAL_APRV_LINE_FK_APPROVAL_EMPNO3 FOREIGN KEY(FK_APPROVAL_EMPNO3) REFERENCES TBL_EMPLOYEE(EMPNO)
 ,CONSTRAINT FK_TBL_OFFICIAL_APRV_LINE_FK_APPROVAL_EMPNO4 FOREIGN KEY(FK_APPROVAL_EMPNO4) REFERENCES TBL_EMPLOYEE(EMPNO)
 );
-
 
 -- 공통결재라인 번호 시퀀스 --
 CREATE SEQUENCE SEQ_OFFICIAL_APRV_LINE_NO
@@ -332,7 +349,6 @@ WHERE FK_EMPNO = 5;
 -- 결재 처리 프로시저
 create or replace procedure pcd_tbl_approval_update
 (p_FK_DRAFT_NO IN tbl_approval.FK_DRAFT_NO%type
-,p_FK_APPROVAL_EMPNO in tbl_approval.FK_APPROVAL_EMPNO%type
 ,p_LEVELNO in tbl_approval.LEVELNO%type
 ,p_APPROVAL_STATUS in tbl_approval.APPROVAL_STATUS%type
 ,p_APPROVAL_COMMENT in tbl_approval.APPROVAL_COMMENT%type
@@ -346,7 +362,7 @@ begin
 
     -- 결재 처리하기
         update tbl_approval set approval_status = p_APPROVAL_STATUS, APPROVAL_DATE = sysdate, APPROVAL_COMMENT = p_APPROVAL_COMMENT
-        where FK_DRAFT_NO = p_FK_DRAFT_NO and FK_APPROVAL_EMPNO = p_FK_APPROVAL_EMPNO;
+        where FK_DRAFT_NO = p_FK_DRAFT_NO and LEVELNO = p_LEVELNO;
     -- 만약 마지막 결재자라면 기안 테이블 완료처리
     if(p_LEVELNO = v_maxLevel) then
         update tbl_draft set DRAFT_STATUS = 1
@@ -356,8 +372,8 @@ begin
     if(p_approval_status = 2) then
         -- 윗 결재자들의 결재상태를 모두 -1로 update
         update tbl_approval set approval_status = -1 
-        where FK_DRAFT_NO = p_FK_DRAFT_NO and FK_APPROVAL_EMPNO in
-        (select FK_APPROVAL_EMPNO from tbl_approval where LEVELNO > p_LEVELNO);
+        where FK_DRAFT_NO = p_FK_DRAFT_NO and LEVELNO in
+        (select LEVELNO from tbl_approval where LEVELNO > p_LEVELNO);
         -- 기안 테이블 반려처리
         update tbl_draft set DRAFT_STATUS = 2
         where DRAFT_NO = p_FK_DRAFT_NO;
@@ -397,12 +413,3 @@ begin
    o_updateCnt := SQL%rowcount;
    
 end pcd_tbl_approval_proxy;
-
---------------------------------------------------------------------------------
-
-DESC TBL_SAVED_APRV_LINE;
-
-desc tbl_saved_aprv_line;
-
-desc tbl_approval;
-

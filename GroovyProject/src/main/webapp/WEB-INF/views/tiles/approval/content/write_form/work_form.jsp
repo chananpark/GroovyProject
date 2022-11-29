@@ -1,4 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <% String ctxPath=request.getContextPath(); %>
 
 <style>
@@ -98,6 +99,9 @@ label:hover {
 </style>
 
 <script>
+
+//수신처 배열
+const recipientArr = JSON.parse('${recipientArr}');
 
 // 네이버 스마트 에디터용 전역변수
 var obj = [];
@@ -242,6 +246,8 @@ function deleteFile(fIndex){
     // 파일 배열에서 삭제
     delete fileList[fIndex];
 
+    // 표시영역에서 제거
+    $(".fileList"+fIndex).remove();
 }
 
 // 긴급 여부 체크
@@ -277,6 +283,20 @@ const submitDraft = () => {
 
 	// 첨부파일 가져오기
 	getFiles(formData);
+	
+	// 수신처 결재라인 추가하기
+	if (recipientArr != null && recipientArr.length > 0) {
+		
+		// 내부결재라인 결재자 수
+		const aprvLength = aprvTblBody.children('tr').length;
+		
+		// 수신처 결재자 추가
+		recipientArr.forEach((el, i) => {
+			formData.append("avoList[" + (aprvLength + i)+ "].levelno", (aprvLength + i + 1));
+			formData.append("avoList[" + (aprvLength + i) + "].fk_approval_empno", el.empno);
+			formData.append("avoList[" + (aprvLength + i) + "].external", 1);
+		});
+	}
 	
     $.ajax({
         url : "<%=ctxPath%>/approval/addDraft.on",
@@ -393,6 +413,7 @@ const getApprovalEmpInfo = aprvLine => {
 						+ "<td class='position'>" + emp.position + "</td>"
 						+ "<input type='hidden' name='avoList[" + index + "].levelno' value='" + (index+1) + "'></td>"
 						+ "<input type='hidden' name='avoList[" + index + "].fk_approval_empno' value='" + emp.empno + "'></td>"
+						+ "<input type='hidden' name='avoList[" + index + "].external' value='0'></td>"
 						+ "<td class='name'>" + emp.name + "</td></tr>";
 					
 				aprvTblBody.append(html);
@@ -433,6 +454,7 @@ const receiveMessage = async (e) =>
 				+ "<td class='position'>" + emp.position + "</td>"
 				+ "<input type='hidden' name='avoList[" + index + "].levelno' value='" + emp.levelno + "'></td>"
 				+ "<input type='hidden' name='avoList[" + index + "].fk_approval_empno' value='" + emp.empno + "'></td>"
+				+ "<input type='hidden' name='avoList[" + index + "].external' value='0'></td>"
 				+ "<td class='name'>" + emp.name + "</td></tr>";
 			
 		aprvTblBody.append(html);
@@ -519,6 +541,41 @@ const emptyApprovalLine = () => {
 				<script>
 					const aprvTblBody = $('#aprvTblBody');
 				</script>
+				
+				
+				<!-- 수신처 -->
+				<c:if test="${recipientArr != '[]'}">
+				<div class='recipientLineInfo' style='width: 60%'>
+					<h5 class='my-4' style='display: inline-block; float: left'>수신처</h5>
+					<table class='mr-4 table table-sm table-bordered text-left' id='recipient'>
+					    <thead>
+					      <tr>
+					        <th>순서</th>
+					        <th>소속</th>
+					        <th>직급</th>
+					        <th>성명</th>
+					      </tr>
+					    </thead>
+					    <tbody id="recipientTblBody">
+					    </tbody>
+					</table>
+				    <script>
+				    	const recipientTblBody = $('#recipientTblBody');
+				    	// 수신처 결재라인을 테이블에 표시함
+				    	recipientArr.forEach((emp, index) => {
+
+				    		var html = "<tr>"
+				    	 			+ "<td class='levelno'>" + (index + 1) + "</td>"
+				    				+ "<td class='department'>" + emp.department + "</td>"
+				    				+ "<td class='position'>" + emp.position + "</td>"
+				    				+ "<td class='name'>" + emp.name + "</td></tr>";
+				    			
+		    				recipientTblBody.append(html);
+				    		
+				    	});
+				    </script>
+				</div>
+				</c:if>
 				
 				<div style="clear: both; height: 30px; padding-top: 8px; margin-bottom: 30px;">
 					<hr>

@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.spring.groovy.approval.model.ApprovalVO;
+import com.spring.groovy.approval.model.BiztripReportVO;
 import com.spring.groovy.approval.model.DraftFileVO;
 import com.spring.groovy.approval.model.DraftVO;
 import com.spring.groovy.approval.model.ExpenseListVO;
@@ -219,6 +220,18 @@ public class ApprovalService implements InterApprovalService {
 		}
 		
 		// 출장보고서라면
+		BiztripReportVO brvo = (BiztripReportVO)paraMap.get("brvo");
+		if (brvo != null) {
+			brvo.setFk_draft_no(draft_no); // 기안번호 set하기
+			
+			// 출장보고 insert
+			n = dao.addBiztripReport(brvo);
+			result = (n == 1)? true : false;
+			
+			// 출장보고 테이블 insert가 실패했으면 리턴
+			if (!result)
+				return result;
+		}
 		
 		return result;
 	}
@@ -301,12 +314,14 @@ public class ApprovalService implements InterApprovalService {
 		
 		// 지출결의서라면
 		if (dvo.getFk_draft_type_no() == 2) {
-			
+			List<ExpenseListVO> evoList = dao.getExpenseListInfo(dvo);
+			draftMap.put("evoList", evoList);
 		}
 		
 		// 출장보고서라면
 		if (dvo.getFk_draft_type_no() == 3) {
-			
+			BiztripReportVO brvo = dao.getBiztripReportInfo(dvo);
+			draftMap.put("brvo", brvo);
 		}
 		
 		return draftMap;

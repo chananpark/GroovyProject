@@ -115,6 +115,7 @@ $(() => {
 	// 행삭제버튼 숨기기
 	$("#delBtn").hide();
 
+	// 행 한개 추가
 	addRow();
 	
 	/* 확인 버튼 클릭 시 */
@@ -183,9 +184,6 @@ $(() => {
 	
 	/* 임시저장 버튼 클릭 시 */
 	$("button#saveBtn").click(function(){
-		
-		// 에디터에서 textarea에 대입
-		obj.getById["draft_content"].exec("UPDATE_CONTENTS_FIELD", []);
 		
 		// 글제목 유효성 검사
 		const draft_subject = $("input#draft_subject").val().trim();
@@ -285,11 +283,11 @@ const checkUrgent = () => {
 //첨부파일 가져오기
 const getFiles = formData => {
 
- if(fileList.length > 0){
-     fileList.forEach(function(f){
-         formData.append("fileList", f);
-     });
- }
+	if(fileList.length > 0){
+	    fileList.forEach(function(f){
+	        formData.append("fileList", f);
+	    });
+	}
 }
 
 // 행 추가하기
@@ -380,16 +378,9 @@ const submitDraft = () => {
 		recipientArr.forEach((el, i) => {
 			formData.append("avoList[" + (aprvLength + i)+ "].levelno", (aprvLength + i + 1));
 			formData.append("avoList[" + (aprvLength + i) + "].fk_approval_empno", el.empno);
+			formData.append("avoList[" + (aprvLength + i) + "].external", 1);
 		});
 	}
-	
-	for(var key of formData.keys()) { 
-        console.log(key); 
-} 
-       
-for(var value of formData.values()) { 
-        console.log(value); 
-}
 	
 	 $.ajax({
 	     url : "<%=ctxPath%>/approval/addDraft.on",
@@ -506,6 +497,7 @@ const getApprovalEmpInfo = aprvLine => {
 						+ "<td class='position'>" + emp.position + "</td>"
 						+ "<input type='hidden' name='avoList[" + index + "].levelno' value='" + (index+1) + "'></td>"
 						+ "<input type='hidden' name='avoList[" + index + "].fk_approval_empno' value='" + emp.empno + "'></td>"
+						+ "<input type='hidden' name='avoList[" + index + "].external' value='0'></td>"
 						+ "<td class='name'>" + emp.name + "</td></tr>";
 					
 				aprvTblBody.append(html);
@@ -546,6 +538,7 @@ const receiveMessage = async (e) =>
 				+ "<td class='position'>" + emp.position + "</td>"
 				+ "<input type='hidden' name='avoList[" + index + "].levelno' value='" + emp.levelno + "'></td>"
 				+ "<input type='hidden' name='avoList[" + index + "].fk_approval_empno' value='" + emp.empno + "'></td>"
+				+ "<input type='hidden' name='avoList[" + index + "].external' value='0'></td>"
 				+ "<td class='name'>" + emp.name + "</td></tr>";
 			
 		aprvTblBody.append(html);
@@ -636,7 +629,7 @@ const emptyApprovalLine = () => {
 				</script>
 
 				<!-- 수신처 -->
-				<c:if test="${not empty recipientArr}">
+				<c:if test="${recipientArr != '[]'}">
 				<div class='recipientLineInfo' style='width: 60%'>
 					<h5 class='my-4' style='display: inline-block; float: left'>수신처</h5>
 					<table class='mr-4 table table-sm table-bordered text-left' id='recipient'>
@@ -669,7 +662,6 @@ const emptyApprovalLine = () => {
 				</div>
 				</c:if>
 
-				
 				<div style="clear: both; height: 30px; padding-top: 8px; margin-bottom: 30px;">
 					<hr>
 				</div>

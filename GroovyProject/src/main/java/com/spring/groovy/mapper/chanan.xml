@@ -289,13 +289,14 @@
 	
 	<!-- 결재정보 등록하기 -->
 	<update id="addApproval" parameterType="java.util.List">
-		INSERT INTO TBL_APPROVAL (APPROVAL_NO, FK_DRAFT_NO, FK_APPROVAL_EMPNO, LEVELNO)
+		INSERT INTO TBL_APPROVAL (APPROVAL_NO, FK_DRAFT_NO, FK_APPROVAL_EMPNO, LEVELNO, EXTERNAL)
 		SELECT SEQ_APPROVAL_NO.NEXTVAL AS APPROVAL_NO, A.* 
 		FROM (
 		<foreach collection="list" item="apvo" index="index" separator="union all">
 			SELECT #{apvo.fk_draft_no} as FK_DRAFT_NO
 	        , #{apvo.fk_approval_empno} as FK_APPROVAL_EMPNO
 	        , #{apvo.levelno} as LEVELNO
+	        , #{apvo.external} as EXTERNAL
 	 		FROM DUAL
        </foreach>) A
 	</update>
@@ -323,6 +324,13 @@
 			#{evo.expense_amount} AS EXPENSE_AMOUNT, #{evo.expense_remark, jdbcType = VARCHAR} AS EXPENSE_REMARK FROM DUAL
 		</foreach>) A
 	</update>
+		
+	<!-- 출장보고 등록하기 -->
+	<insert id="addBiztripReport" parameterType="com.spring.groovy.approval.model.BiztripReportVO">
+		INSERT INTO TBL_BIZTRIP_REPORT
+		(BIZTRIP_REPORT_NO, FK_DRAFT_NO, TRIP_PURPOSE, TRIP_START_DATE, TRIP_END_DATE, TRIP_LOCATION)
+		VALUES (SEQ_BIZTRIP_REPORT_NO.NEXTVAL, #{fk_draft_no}, #{trip_purpose}, #{trip_start_date}, #{trip_end_date}, #{trip_location})
+	</insert>
 	
 	<!-- 임시저장문서 시퀀스번호 얻어오기 -->
 	<select id="getTempDraftNo" resultType="int">
@@ -346,6 +354,7 @@
 			SELECT #{apvo.fk_draft_no} as FK_DRAFT_NO
 	        , #{apvo.fk_approval_empno} as FK_APPROVAL_EMPNO
 	        , (${index}+1) as LEVELNO
+	        , #{apvo.external} as EXTERNAL
 	 		FROM DUAL
        </foreach>) A
 	</update>
@@ -385,6 +394,18 @@
 	<!-- 기안 문서 파일 조회 -->
 	<select id="getDraftFileInfo" resultType="com.spring.groovy.approval.model.DraftFileVO" parameterType="com.spring.groovy.approval.model.DraftVO" >
 		SELECT * FROM TBL_DRAFT_FILE
+		WHERE FK_DRAFT_NO = #{draft_no}
+	</select>
+
+	<!-- 지출내역 조회 -->
+	<select id="getExpenseListInfo" resultType="com.spring.groovy.approval.model.ExpenseListVO" parameterType="com.spring.groovy.approval.model.DraftVO" >
+		SELECT * FROM TBL_EXPENSE_LIST
+		WHERE FK_DRAFT_NO = #{draft_no}
+	</select>
+	
+	<!-- 출장보고 조회 -->
+	<select id="getBiztripReportInfo" resultType="com.spring.groovy.approval.model.BiztripReportVO" parameterType="com.spring.groovy.approval.model.DraftVO" >
+		SELECT * FROM TBL_BIZTRIP_REPORT
 		WHERE FK_DRAFT_NO = #{draft_no}
 	</select>
 	

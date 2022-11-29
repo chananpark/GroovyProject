@@ -40,8 +40,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.google.gson.JsonArray;
 import com.spring.groovy.approval.model.ApprovalVO;
+import com.spring.groovy.approval.model.BiztripReportVO;
 import com.spring.groovy.approval.model.DraftFileVO;
 import com.spring.groovy.approval.model.DraftVO;
 import com.spring.groovy.approval.model.ExpenseListVO;
@@ -93,8 +93,27 @@ public class ApprovalController {
 		
 		Map<String, Object> draftMap = service.getDraftDetail(dvo);
 		
+		String fk_draft_type_no = request.getParameter("fk_draft_type_no");
+		
+		switch (fk_draft_type_no) {
+		case "1":
+			mav.setViewName("approval/draft_detail/work_detail.tiles");
+			break;
+
+		case "2":
+			mav.setViewName("approval/draft_detail/expense_detail.tiles");
+			break;
+		
+		case "3":
+			mav.setViewName("approval/draft_detail/business_trip_detail.tiles");
+			break;
+
+		default:
+			mav.setViewName("error");
+			break;
+		}
+		
 		mav.addObject("draftMap", draftMap);
-		mav.setViewName("approval/draft_detail/work_detail.tiles");
 		return mav;
 	}
 	
@@ -436,7 +455,7 @@ public class ApprovalController {
 	// 기안 작성하기
 	@ResponseBody
 	@PostMapping(value = "/addDraft.on", produces = "text/plain;charset=UTF-8")
-	public String addDraft(MultipartHttpServletRequest mtfRequest, DraftVO dvo, ApprovalVO avo, ExpenseListVO evo) {
+	public String addDraft(MultipartHttpServletRequest mtfRequest, DraftVO dvo, ApprovalVO avo, ExpenseListVO evo, BiztripReportVO brvo) {
 
 		Map<String, Object> paraMap = new HashMap<>();
 
@@ -463,6 +482,9 @@ public class ApprovalController {
 		// 지출내역 리스트
 		List<ExpenseListVO> evoList = evo.getEvoList();
 		paraMap.put("evoList", evoList);
+		
+		// 출장보고 정보
+		paraMap.put("brvo", brvo);
 
 		boolean result = service.addDraft(paraMap);
 

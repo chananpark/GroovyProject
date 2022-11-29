@@ -137,6 +137,12 @@ public class ApprovalDAO implements InterApprovalDAO {
 		return sqlsession.update("chanan.addExpenseList", evoList);
 	}
 
+	// 출장보고 insert
+	@Override
+	public int addBiztripReport(BiztripReportVO brvo) {
+		return sqlsession.insert("chanan.addBiztripReport", brvo);
+	}
+
 	// 저장된 결재라인 불러오기
 	@Override
 	public List<SavedAprvLineVO> getSavedAprvLine(Map<String, String> paraMap) {
@@ -203,6 +209,18 @@ public class ApprovalDAO implements InterApprovalDAO {
 		return sqlsession.selectList("chanan.getDraftFileInfo", dvo);
 	}
 
+	// 지출내역 select
+	@Override
+	public List<ExpenseListVO> getExpenseListInfo(DraftVO dvo) {
+		return sqlsession.selectList("chanan.getExpenseListInfo", dvo);
+	}
+	
+	// 출장보고 select
+	@Override
+	public BiztripReportVO getBiztripReportInfo(DraftVO dvo) {
+		return sqlsession.selectOne("chanan.getBiztripReportInfo", dvo);
+	}
+	
 	// 결재 처리하기
 	@Override
 	public int updateApproval(ApprovalVO avo) {
@@ -219,6 +237,7 @@ public class ApprovalDAO implements InterApprovalDAO {
 	public List<MemberVO> getRecipientList(String type_no) {
 		return sqlsession.selectList("chanan.getRecipientList", type_no);
 	}
+
 
 
 }

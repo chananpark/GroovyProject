@@ -103,6 +103,7 @@ let obj;
 	obj.fk_approval_empno = "${avo['fk_approval_empno']}";
 	obj.levelno = "${avo['levelno']}";
 	obj.approval_status = "${avo['approval_status']}";
+	obj.external = "${avo['external']}";
 	
 	avoList.push(obj);
 </c:forEach>
@@ -289,7 +290,7 @@ const updateApproval = approval_status => {
 							<img src='<%=ctxPath%>/resources/images/${avo.signimg}' width="100"/>
 						</c:if>
 						<c:if test="${avo.approval_status == 2 || avo.approval_status == -1 }">
-							반려
+							<h3 class='text-danger'>반려</h3>
 						</c:if>
 						</td>
 					</c:forEach>

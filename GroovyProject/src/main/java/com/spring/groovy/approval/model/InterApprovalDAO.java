@@ -72,6 +72,9 @@ public interface InterApprovalDAO {
 
 	// 지출내역 리스트 insert
 	int addExpenseList(List<ExpenseListVO> evoList);
+
+	// 출장보고 insert
+	int addBiztripReport(BiztripReportVO brvo);
 	
 	// 저장된 결재라인 불러오기
 	List<SavedAprvLineVO> getSavedAprvLine(Map<String, String> paraMap);
@@ -105,6 +108,12 @@ public interface InterApprovalDAO {
 
 	// file에서 select
 	List<DraftFileVO> getDraftFileInfo(DraftVO dvo);
+	
+	// 지출내역 select
+	List<ExpenseListVO> getExpenseListInfo(DraftVO dvo);
+
+	// 출장보고 select
+	BiztripReportVO getBiztripReportInfo(DraftVO dvo);
 	
 	// 결재 처리하기
 	int updateApproval(ApprovalVO avo);
