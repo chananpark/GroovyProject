@@ -91,36 +91,40 @@ th{
    	  		<tr>
 				<th style="width: 15%;">받는사람:</th>
 				<td>
-					<span>받는사람 이메일</span>
+					<span>${requestScope.mailVO.fK_recipient_address}</span>
 				</td>
 			</tr>
 			<tr>
 				<th style="width: 15%;">보낸사람:</th>
 				<td>
-					<span>보낸사람 이메일</span>
+					<span>${requestScope.mailVO.fK_sender_address}</span>
 				</td>
 			</tr>
 			<tr>
 				<th style="width: 15%;">보낸날짜</th>
 				<td>
-					<span>2022/11/09 수요일 16:48:20</span>
+					<fmt:formatDate value="${mailVO.send_time_date}" pattern="yyyy-MM-dd HH:mm:ss" var="sendTime"/>
+					<span>${sendTime}</span>
 				</td>
 			</tr>
 			
-			<tr>
-				<th style="width: 15%;">파일첨부</th>
-				<td>
-					파일목록
-				</td>
-	
-			</tr>
+			<c:if test="${not empty mailVO.filename}">
+				<tr>
+					<th style="width: 15%;">파일첨부</th>
+					<td>
+							<c:forEach var="orgFileName" items="${mailVO.orgfilename_array}" varStatus="status">
+								<div><a href="<%= request.getContextPath()%>/mail/download.on?mailNo=${requestScope.mailVO.mail_no}&index=${status.index}">${orgFileName}&nbsp&nbsp${mailVO.filesize_array[status.index]} </a></div>
+							</c:forEach>
+					</td>		
+				</tr>
+			</c:if>
 		
 			
 			<tr>
 				<th style="width: 15%;">제목</th>
 				<td>
 					<i class="fas fa-flag"></i>
-				         제목
+				         ${mailVO.subject}
 			     <a href="#"><i class="fas fa-tag" style="color:#6691e5"></i></a>
 		    	 <a href="#"><i class="fas fa-tag" style="color:#fbe983"></i></a>
 		    	 <a href="#"><i class="fas fa-tag" style="color:#fa573c"></i></a>
@@ -130,9 +134,7 @@ th{
 			<tr>
 				<th style="width: 15%;">내용</th>
 				<td>
-					내용
-					<br><br><br><br><br><br><br><br><br><br><br>
-					내용
+					${mailVO.contents}
 				</td>
 			</tr>
 			

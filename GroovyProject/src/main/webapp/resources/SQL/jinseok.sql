@@ -56,7 +56,7 @@ commit;
 --,SENDER_IMPORTANT,Recipient_IMPORTANT,fileName,orgFilename,fileSize,MAIL_PWD
 
 insert into tbl_mail(MAIL_NO, FK_Sender_address,FK_Recipient_address,SUBJECT, CONTENTS,SEND_TIME)
-values(109,'kjsaj0525@groovy.com','kjskjskjs@groovy.com','제목10','내용10',sysdate);
+values(112,'kjsaj0525@groovy.com','kjskjskjs@groovy.com','xptmxm','내용10',null);
 
 select * from tbl_mail;
 
@@ -161,3 +161,102 @@ commit;
 select * 
 from tbl_tag
 where FK_mail_address = 'kjsaj0525@groovy.com';
+
+
+create sequence seq_mail_no
+start with 1                 
+increment by 1              
+nomaxvalue                   
+nominvalue                   
+nocycle                      
+nocache;
+
+commit;
+insert into tbl_mail(MAIL_NO, FK_Sender_address,FK_Recipient_address,SUBJECT, CONTENTS,
+							SEND_TIME,mail_pwd,orgFilename,fileName,fileSize)
+					values(seq_mail_no.nextval, 'kjsaj0525@groovy.com' ,'kjsaj0525@groovy.com','wpa2222hr','sodyd',
+			to_date('2022-11-28 15:17:26','yyyy-mm-dd hh24:mi:ss'),
+			null,
+			null,
+			null,
+			null
+    );
+    
+    commit;
+    select * from tbl_mail
+    order by send_time asc;
+    
+    select to_char(SEND_TIME,'yyyy-mm-dd hh24:mi:ss')
+    from tbl_mail;
+    
+    
+    
+    insert into tbl_mail(MAIL_NO, FK_Sender_address,FK_Recipient_address,SUBJECT, CONTENTS,
+							SEND_TIME,mail_pwd,orgFilename,fileName,fileSize)
+					values(seq_mail_no.nextval, 'kjsaj0525@groovy.com' ,'kjsaj0525@groovy.com','?','?',
+		
+		 
+	    	    sysdate,
+	    	 
+	    
+	     
+	    	    null,
+                null,
+                null,
+                null
+                
+
+
+		)
+        
+        
+        rollback;
+        
+        
+        commit;
+        
+        
+        select '"'||department||position||name||'<'||cpemail||'>'||'"' as cpemail
+		from tbl_employee;
+        
+        select * from tbl_mail order by send_time asc;
+        
+        
+        select *
+	    from tbl_tag
+        where FK_MAIL_ADDRESS = 'kjsaj0525@groovy.com'
+        and MAIL_NO like '%'||lower('102')||'%'; 
+   
+   select * from tbl_mail
+   where substr(FK_RECIPIENT_ADDRESS, 2*1+1, 1) = 's';
+        
+   update tbl_mail set read_check = 1
+   where MAIL_NO = 102;
+
+create sequence seq_mail_recipient_no
+start with 1                 
+increment by 1              
+nomaxvalue                   
+nominvalue                   
+nocycle                      
+nocache;
+
+create table TBL_MAIL_Recipient
+(MAIL_Recipient_NO number not null -- 관리번호 시퀀스
+,FK_MAIL_NO number not null--메일번호      시퀀스
+,FK_Recipient_address  VARCHAR2(200 BYTE) --수신자메일주소
+,FK_Referenced_address  VARCHAR2(200 BYTE) --참조메일주소
+,read_check Number(1) default 0 not null --읽음여부 check 0 안읽음 1 읽음    // 표시용
+,Recipient_delete Number(1) default 0 not null -- 받은 쪽에서 받은메일함에서 안보이게 지울때
+,Recipient_IMPORTANT Number(1) default 0 not null --중요표시(받는이) check 0 안중요 1 중요
+
+-- 기존의 임시저장칼럼은 DATE 가 NULL 인 애들조회로 가능하게
+,constraint PK_TBL_MAIL_Recipient_MAIL_Recipient_NO primary key(MAIL_Recipient_NO)
+,constraint FK_TBL_MAIL_Recipient_FK_Recipient_address foreign key(FK_Recipient_address) references tbl_EMPLOYEE(CPEMAIL)
+,constraint FK_TBL_MAIL_Recipient_FK_Referenced_address foreign key(FK_Referenced_address) references tbl_EMPLOYEE(CPEMAIL)
+,constraint CK_tbl_MAIL_Recipient_read_check check( read_check in (0,1) )
+,constraint CK_tbl_MAIL_Recipient_Recipient_delete check( Recipient_delete in (0,1) )
+,constraint CK_tbl_MAIL_Recipient_Recipient_IMPORTANT check( Recipient_IMPORTANT in (0,1) )
+);
+
+commit;

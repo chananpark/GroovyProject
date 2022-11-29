@@ -8,9 +8,9 @@
 	background-color: #086BDE;
 }
 </style>
-<link rel="stylesheet" href="/resources/colorPicker/src/colorPick.dark.theme.css"/>
+<%-- <link rel="stylesheet" href="/resources/colorPicker/src/colorPick.dark.theme.css"/>
 
-<script src="${ctxPath}/resources/colorPicker/src/colorPick.js"></script>
+<script src="${ctxPath}/resources/colorPicker/src/colorPick.js"></script> --%>
 <script type="text/javascript">
 	$(document).ready(function(){
 	
@@ -50,9 +50,10 @@
 	      	
       	</ul>
     </li>
+    <!-- 
     <li><div id ="tagAdd" class="nav-link" onclick="">태그 추가</div></li>
     <li><div class="colorPickSelector"  ></div></li>
-    
+     -->
 
   </ul>
   

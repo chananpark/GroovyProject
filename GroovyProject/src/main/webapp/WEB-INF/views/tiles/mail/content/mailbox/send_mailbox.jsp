@@ -6,6 +6,7 @@
 	String ctxPath = request.getContextPath();
 %>  
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
 <jsp:useBean id="now" class="java.util.Date" />
 <fmt:formatDate value="${now}" pattern="yyyy-MM-dd" var="today" />
@@ -121,6 +122,11 @@ i.fa-flag{
 		frm.action = "<%= ctxPath%>/mail/receiveMailBox.on";
 		frm.submit();
 	}// end of function goSearch()--------------------
+	
+	function goMail(mailno){
+		
+		location.href="<%=ctxPath%>/mail/viewMail.on?mailNo="+ mailno ;
+	}
 </script>
 
 <div style="margin: 1% 0 5% 1%">
@@ -166,7 +172,7 @@ i.fa-flag{
 		<button type="button" class="btn btn-outline-dark toolbtn"><i class="far fa-envelope-open"></i> 읽음</button>
 
 		
-
+		
 		
 		
 
@@ -198,15 +204,29 @@ i.fa-flag{
 			    	 	</tr>
 			    	</c:if>
 			    </c:if> 
-			    <tr>
+			    <tr onclick = 'goMail(${mailVO.mail_no})'>
 			  	  <td class="mail_list_option">
 			      	<input type="checkbox" id="mailLCheck" value="off" style="vertical-align:middle">
-			      	<i class="fas fa-flag"></i>
-			      	<!-- 색조정 or 다른 아이콘 -->
-			      	<i class="far fa-envelope"></i>
-			      	<!-- 봤다면 <i class="far fa-envelope-open"></i> -->
+			      	<c:if test="${mailVO.sender_important == 0 }">
+			      		<i class="fas fa-flag" style="color:darkgray;"></i>
+			      	</c:if>
+			      	<c:if test="${mailVO.sender_important == 1 }">
+			      		<i class="fas fa-flag"></i>
+			      	</c:if>
+
 			      </td>
-			      <td class = "mail_list_sender" >${mailVO.fK_recipient_address}</td>
+			      <td class = "mail_list_sender" >
+				      <c:choose>
+					        <c:when test="${fn:length(mailVO.fK_recipient_address) gt 25}">
+						        <c:out value="${fn:substring(mailVO.fK_recipient_address, 0, 23)}...">
+						        </c:out>
+					        </c:when>
+					        <c:otherwise>
+						        <c:out value="${mailVO.fK_recipient_address}">
+						        </c:out>
+					        </c:otherwise>
+					  </c:choose>
+			      </td>
 			
 			      <td class = "mail_list_subject">
 			      	<c:forEach var="tagVO" items="${requestScope.tagList}" varStatus="status">   		

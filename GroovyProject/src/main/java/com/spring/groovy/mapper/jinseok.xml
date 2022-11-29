@@ -18,11 +18,11 @@
 	    from tbl_mail
 	    <![CDATA[where SEND_TIME <= sysdate]]>	    
 	    <if test='listType == "FK_Recipient_address" or listType == "FK_Sender_address"'>    	
-    		and  ${listType} =  #{mail_address}
+    		and  ${listType} like '%'||#{mail_address}||'%'  
     	</if>
     	<if test='listType == "important"'>    	
-    		and ((FK_Recipient_address = #{mail_address} and Recipient_IMPORTANT = 1)
-    			  or (FK_Sender_address = #{mail_address} and SENDER_IMPORTANT = 1))
+    		and ((FK_Recipient_address like '%'||#{mail_address}||'%' and substr(Recipient_IMPORTANT, 2*#{userindex}+1, 1) = 1)
+    			  or (FK_Sender_address like '%'||#{mail_address}||'%' and SENDER_IMPORTANT = 1))
     	</if>
 	    <if test='searchType != "" and searchWord != "" '>
 	    	and lower(${searchType}) like '%'||lower(#{searchWord})||'%'
@@ -46,7 +46,7 @@
 		        <![CDATA[where SEND_TIME <= sysdate]]>
 		        <if test='listType != ""'>		
 		        	<if test='listType == "FK_Recipient_address" or listType == "FK_Sender_address"'>    	
-			    		and  ${listType} =  #{mail_address}
+			    		and  ${listType} like '%'||#{mail_address}||'%'
 			    	</if>
 			    	<if test='listType == "important"'>    	
 			    		and ((FK_Recipient_address = #{mail_address} and Recipient_IMPORTANT = 1)
@@ -71,6 +71,92 @@
 		from tbl_tag
 		where FK_mail_address = #{mail_address}
 	</select>
+	
+	<!-- 태그 리스트 가져오기 -->
+	<select id="getTagListByMailNo" parameterType="HashMap" resultType="com.spring.groovy.mail.model.TagVO"> 
+		select * 
+		from tbl_tag
+		where FK_mail_address = #{FK_MAIL_ADDRESS}
+		<if test="mailNo != null">
+			and MAIL_NO like '%'||lower(${mailNo})||'%'
+		</if>
+	</select>
+	
+	<!-- 메일 추가하기 -->
+	<insert id="addMail" parameterType="HashMap">
+		insert into tbl_mail(MAIL_NO, FK_Sender_address,FK_Recipient_address,SUBJECT, CONTENTS,
+							SEND_TIME,mail_pwd,orgFilename,fileName,fileSize)
+					values(seq_mail_no.nextval, #{FK_Sender_address} ,#{FK_Recipient_address},#{subject},#{contents},
 		
+		<choose>
+	    	<when test="send_time == ''">
+	    	    sysdate,
+	    	</when>
+	    	<otherwise>
+	    	    to_date(#{send_time},'mm/dd/yyyy hh24:mi:ss'),
+	    	</otherwise>
+	    </choose>
+	    
+	    <choose>
+	    	<when test="mail_pwd == ''">
+	    	    null,
+	    	</when>
+	    	<otherwise>
+	    	    to_date(#{send_time},'mm/dd/yyyy hh24:mi:ss'),
+	    	</otherwise>
+	    </choose>
+	    
+	    <choose>
+	    	<when test="originalFilename == ''">
+	    	    null,
+	    	</when>
+	    	<otherwise>
+	    	    #{originalFilename},
+	    	</otherwise>
+	    </choose>
+	    
+	    <choose>
+	    	<when test="newFileName == ''">
+	    	    null,
+	    	</when>
+	    	<otherwise>
+	    	    #{newFileName},
+	    	</otherwise>
+	    </choose>
+	    <choose>
+	    	<when test="fileSize == ''">
+	    	    null
+	    	</when>
+	    	<otherwise>
+	    	    #{fileSize}
+	    	</otherwise>
+	    </choose>
+		
+		
+
+		
+		)
+		
+	</insert>
+	
+	
+	<!-- 메일 하나 가져오기 -->
+	<select id="getOneMail" parameterType="String" resultType="com.spring.groovy.mail.model.MailVO"> 
+		select * 
+		from tbl_mail
+		where mail_no = #{mailNo}
+	</select>
+	
+	<!--  메일리스트 가져오기 (자동완성용) -->
+	<select id="getMailList" resultType="String"> 
+		select '"'||department||' '||position||' '||name||'<![CDATA[<]]>'||cpemail||'<![CDATA[>]]>'||'"' as cpemail
+		from tbl_employee
+	</select>
+		
+	<!--  메일 읽음 처리하기 -->
+	<update id="readMail" parameterType = "HashMap" >
+		update tbl_mail set read_check =  ${read_check}
+   		where MAIL_NO = ${mailNo}
+	</update>	
 		
 </mapper>

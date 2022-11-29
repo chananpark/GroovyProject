@@ -22,8 +22,10 @@
 
 	$(document).ready(function(){
 		
-			});// end of $(document).ready(function(){})-------------------
-
+	});// end of $(document).ready(function(){})-------------------
+	
+	function showChatroom() { window.open('<%=ctxPath%>/chat/chatroom.on','채팅방', height=400, width=300, left=100, top=50);}
+	
 </script>
 
 <h2>채팅</h2>
@@ -31,46 +33,75 @@
 
 <div class="row row-cols-1 row-cols-md-3 g-4">
   <div class="col mb-3">
-    <div class="card" style="height: 250px;">
-      <div class="card-body text-center" style="line-height:200px">
+    <div class="card" style="height: 250px; background-color: lavender;" onclick = "showChatroom()">
+      <div style= "padding: 5px 10px;"> <i class="fas fa-users"></i> 5</div>
+      <div class="card-body text-center" style="line-height:150px">
+      
         	방이름
       </div>
     </div>
   </div>
   <div class="col mb-3">
-    <div class="card" style="height: 250px;">
-      <div class="card-body text-center" style="line-height:200px">
+    <div class="card" style="height: 250px; background-color: lavender;">
+      <div style= "padding: 5px 10px;"> <i class="fas fa-users"></i> 5</div>
+      <div class="card-body text-center" style="line-height:150px">
+      
         	방이름
       </div>
     </div>
   </div>
   <div class="col mb-3">
-    <div class="card" style="height: 250px;">
-      <div class="card-body text-center" style="line-height:200px">
+    <div class="card" style="height: 250px; background-color: lavender;">
+      <div style= "padding: 5px 10px;"> <i class="fas fa-users"></i> 5</div>
+      <div class="card-body text-center" style="line-height:150px">
+      
         	방이름
       </div>
     </div>
   </div>
   <div class="col mb-3">
-    <div class="card" style="height: 250px;">
-      <div class="card-body text-center" style="line-height:200px">
+    <div class="card" style="height: 250px; background-color: lavender;">
+      <div style= "padding: 5px 10px;"> <i class="fas fa-users"></i> 5</div>
+      <div class="card-body text-center" style="line-height:150px">
+      
         	방이름
       </div>
     </div>
   </div>
   <div class="col mb-3">
-    <div class="card" style="height: 250px;">
-      <div class="card-body text-center" style="line-height:200px">
+    <div class="card" style="height: 250px; background-color: lavender;">
+      <div style= "padding: 5px 10px;"> <i class="fas fa-users"></i> 5</div>
+      <div class="card-body text-center" style="line-height:150px">
+      
         	방이름
       </div>
     </div>
   </div>
   <div class="col mb-3">
-    <div class="card" style="height: 250px;">
-      <div class="card-body text-center" style="line-height:200px">
+    <div class="card" style="height: 250px; background-color: lavender;">
+      <div style= "padding: 5px 10px;"> <i class="fas fa-users"></i> 5</div>
+      <div class="card-body text-center" style="line-height:150px">
+      
         	방이름
       </div>
     </div>
-  </div>	
- 
+  </div>
+  <div class="col mb-3">
+    <div class="card" style="height: 250px; background-color: lavender;">
+      <div style= "padding: 5px 10px;"> <i class="fas fa-users"></i> 5</div>
+      <div class="card-body text-center" style="line-height:150px">
+      
+        	방이름
+      </div>
+    </div>
+  </div>
+  <div class="col mb-3">
+    <div class="card" style="height: 250px; background-color: lavender;">
+      <div style= "padding: 5px 10px;"> <i class="fas fa-users"></i> 5</div>
+      <div class="card-body text-center" style="line-height:150px">
+      
+        	방이름
+      </div>
+    </div>
+  </div>
 </div>

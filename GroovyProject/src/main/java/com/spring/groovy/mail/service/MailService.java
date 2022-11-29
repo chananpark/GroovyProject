@@ -36,4 +36,33 @@ public class MailService implements InterMailService {
 		return tagList;
 	}
 
+	@Override
+	public int addMail(Map<String, Object> paraMap) {
+		int n = dao.addMail(paraMap);
+		return n;
+	}
+
+	@Override
+	public MailVO getOneMail(String mail_no) {
+		MailVO mail = dao.getOneMail(mail_no);
+		return mail;
+	}
+
+	@Override
+	public List<String> getMailList() {
+
+		List<String> mailList = dao.getMailList();
+		return mailList;
+	}
+
+	@Override
+	public List<TagVO> getTagListByMailNo(Map<String, String> paraMap) {
+		List<TagVO> tagList = dao.getTagListByMailNo(paraMap);
+		if(paraMap.get("mailNo") != null) {
+			dao.readMail(paraMap);
+		}
+		
+		return tagList;
+	}
+
 }

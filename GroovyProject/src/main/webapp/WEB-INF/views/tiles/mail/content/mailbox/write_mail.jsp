@@ -7,6 +7,12 @@
 <%
 	String ctxPath = request.getContextPath();
 %> 
+
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+
+<jsp:useBean id="now" class="java.util.Date" />
+
+
 <style type="text/css">
 
 .tool_bar .optional {
@@ -47,6 +53,12 @@ td{
     margin: 1px 5px;
     background-color: #E3F2FD;
 }
+.non-email-ids{
+	padding: 1px 5px;
+    margin: 1px 5px;
+    background-color: lightcoral;
+}
+
 .removeAddress{
 	margin: 0 5px;
 }
@@ -70,18 +82,17 @@ td{
 
 </style>
 <link rel="stylesheet" href="http://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-
-<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 <script type="text/javascript">
 var fileNo = 0;
-var formData = new FormData();
+
+var total_fileList = [];
+var recipient_addressList = [];
+var fileSizeList = [];
 	$(document).ready(function(){
+
 		var formArray = {};  //파일을 담을 객체 key, value 형태로 파일을 담든다.
 		var fileList = new Object();
-		
-		
-		
 		
 		
 		
@@ -115,12 +126,12 @@ var formData = new FormData();
 		
 		<%-- === 스마트 에디터 구현 시작 === --%>
 		//전역변수
-	    var obj = [];
+	    var editor = [];
 	    
 	    //스마트에디터 프레임생성
 	    nhn.husky.EZCreator.createInIFrame({
-	        oAppRef: obj,
-	        elPlaceHolder: "content",
+	        oAppRef: editor,
+	        elPlaceHolder: "contents",
 	        sSkinURI: "<%= ctxPath%>/resources/smarteditor/SmartEditor2Skin.html",
 	        htParams : {
 	            // 툴바 사용 여부 (true:사용/ false:사용하지 않음)
@@ -135,59 +146,194 @@ var formData = new FormData();
 	    
 		// 글쓰기 버튼
 		$("button#btnWrite").click(function(){
-			
-			<%-- === 스마트 에디터 구현 시작 === --%>
+
 			// id가 content인 textarea에 에디터에서 대입
-	        obj.getById["content"].exec("UPDATE_CONTENTS_FIELD", []);
-		    <%-- === 스마트 에디터 구현 끝 === --%>
+	        editor.getById['contents'].exec("UPDATE_CONTENTS_FIELD", []);
+	
+			
+			// 받는 사람 이메일 검사
+			if($("span.rounded-pill").length ==0 ){
+				// 받는사람이 존재하지 않음
+				swal('발송 실패!', '메일을 보낼 대상을 선택해주세요.', 'warning')
+				return false;
+			}
+			
+			if($("span.rounded-pill").hasClass("non-email-ids") === true ) {
+			// class가 존재함.
+				swal('발송 실패!', '메일을 보낼 수 없는 대상이 포함되어 있습니다.', 'warning')
+				return false;
+				
+
+			}
+			var recipient_address = "";
+			for(let i = 0; i < recipient_addressList.length; i++) {
+    	 		
+				recipient_address += recipient_addressList[i]+",";
+    	 		  
+    	 	}
+			recipient_address = recipient_address.slice(0, -1);
+			// console.log(recipient_address);
+			
 			
 			// 글제목 유효성 검사
 			const subject = $("input#subject").val().trim();
 			if(subject == "") {
-				alert("글제목을 입력하세요!!");
-				return;
-			}
+				swal('발송 실패!', '글 제목을 입력하세요.', 'warning')
 			
-		<%--	
-			// 글내용 유효성 검사(스마트 에디터 사용 안 할 경우)
-			const content = $("textarea#content").val().trim();
-			if(content == "") {
-				alert("글내용을 입력하세요!!");
 				return;
-			}
-		--%>	
+			} 
 		
-		<%-- === 글내용 유효성 검사(스마트 에디터 사용 할 경우) 시작 === --%>
-		    var contentval = $("textarea#content").val();
+		
+ 			// 글내용 유효성 검사
+		    var contentval = $("textarea#contents").val();
+		    console.log("contentval"+contentval);
 		        
 
-            contentval = contentval.replace(/&nbsp;/gi, ""); // 공백을 "" 으로 변환
+            contentval = contentval.replace(/&nbsp;/gi, " "); // 공백을 " " 으로 변환
          
-         
+         /*
            contentval = contentval.substring(contentval.indexOf("<p>")+3);   // "             </p>"
            contentval = contentval.substring(0, contentval.indexOf("</p>")); // "             "
-                  
+           */       
            if(contentval.trim().length == 0) {
-        	   alert("글내용을 입력하세요!!");
+        	   swal('발송 실패!', '글 내용을 입력하세요.', 'warning')
                return;
            }
-		 <%-- === 글내용 유효성 검사(스마트 에디터 사용 할 경우) 끝 === --%>
-		
-		   // 글암호 유효성 검사
-		   /*
-		   const pw = $("input#pw").val().trim();
-		   if(pw == "") {
-			  alert("글암호를 입력하세요!!");
-			  return;
+           console.log("contentval2"+contentval);
+           // 시간 검사
+           var date = "";
+           var hour = "";
+           var minute = "";
+           var send_time = "";
+		   if($('#reservationTime').is(':visible')){
+				
+			   date = $("input#datepicker").val();
+			   // 11/28/2022
+			   
+			   var sttDt = date.split("/");
+			   var sttYear = sttDt[2];
+			   var sttMonth = sttDt[0];
+			   var sttDay = sttDt[1];
+			   
+			   
+	           var stthour = $("input#hour").val();
+	           var sttminute = $("input#minute").val();	
+	           
+	           var reservation_date = new Date(sttYear, sttMonth, sttDay, stthour, sttminute);    
+
+	           
+	           
+		        // 현재시간 
+		        var now = new Date();
+		        var year = now.getFullYear();     // 연도
+		        var month = now.getMonth()+1;     // 월(+1해줘야됨)                             
+		        var day = now.getDate();          // 일
+		        var hours = now.getHours();       // 현재 시간
+		        var minutes = now.getMinutes();   // 현재 분
+		        
+		        now_date = new Date(year, month, day, hours, minutes);
+		        
+		        console.log("now_date"+now_date);
+		        console.log("reservation_date"+reservation_date);
+		        
+		        if(now_date>reservation_date){
+		        	// 지금 시점보다 이전으로 예약을 하면
+		        	swal('발송 실패!', "현 시각 이전으로 예약메일을 전송할 순 없습니다.", 'warning')
+		        	
+		        	return false;
+		        }
+		        
+		        send_time =date+" "+hour+":"+minute;
+	         
+	           
+			  
 		   }
-		   */
 		   
+		   // 암호 검사
+           var pwd = "";
+
+		   if($('#password').is(':visible')){
+			   console.log($("input#pwd").val());		
+
+			   pwd = $("input#pwd").val();
+		   }
+		   
+		   // 파일 사이즈리스트 
+		   var fileSizeStr = "";
+		   for(let i = 0; i < fileSizeList.length; i++) {
+    	 		
+			   fileSizeStr += fileSizeList[i]+",";
+    	 		  
+    	 	}
+		   fileSizeStr = fileSizeStr.slice(0, -1);
+		  	
+
 		   // 폼(form)을 전송(submit)
-		   const frm = document.addFrm;
-		   frm.method = "POST";
-		   frm.action = "<%= ctxPath%>/mailAdd.action";
-		   frm.submit();
+		   var formData = new FormData();
+		   if(total_fileList.length > 0){
+			   total_fileList.forEach(function(f){
+	                formData.append("fileList", f);
+	            });
+	        } 
+		   formData.append("contents",contentval);
+		   formData.append("subject",subject);
+		   formData.append("recipient_address",recipient_address);
+		   // 시간
+		   formData.append("date",date);
+		   formData.append("hour",hour);
+		   formData.append("minute",minute);
+		   formData.append("send_time",send_time);
+		   // 비밀번호
+		   formData.append("password",pwd);
+		   // 
+		   formData.append("fileSize",fileSizeStr);
+           
+           console.log(date);		
+		   console.log(hour);
+		   console.log(minute);
+			
+
+		  
+		   $.ajax({
+	            url : '<%= ctxPath%>/addMail.on',
+	            data : formData,
+	            type:'POST',
+	            enctype:'multipart/form-data',
+	            processData:false,
+	            contentType:false,
+	            dataType:'json',
+	            cache:false,
+	            success:function(json){
+	            	if(json.n == 1){
+	            		swal('메일발송에 성공하였습니다.', "버튼을 누르면 보낸 메일함으로 이동합니다.", 'success')
+	            		location.href = "<%=ctxPath%>/mail/sendMailBox.on";
+	            	}
+	            	if(n==0){
+	            		swal('메일발송이 실패하셨습니다.', "이 상태가 지속되면 지원팀에 문의해주세요.", 'warning')
+	            		return false;
+	            	}
+	            	if(n==-1){
+	            		swal('메일발송이 실패하셨습니다.', "파일 업로드 진행중 문제가 발생하였습니다.", 'warning')
+	            		return false;
+	            	}
+	            	
+	            },error: function(request, status, error){
+	                alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+	            } 
+	        }); 
+		   
+		   
+		   
+		   
 		});
+		
+		// 이메일 자동완성
+		var emailList = ${requestScope.mailList}
+		
+		$("#receieveName").autocomplete({
+			source : emailList
+		});
+		
 		
 		
 		// 받는사람 입력후 스페이스바나 엔터 누르면 한 단위로 묶기
@@ -196,12 +342,43 @@ var formData = new FormData();
 				var getValue = $(this).val();
 				console.log("getValue: "+getValue);
 				
-				if(getValue.trim()!= null && getValue.trim() != ""){
+				var inList = false;
+				for(let i = 0; i < emailList.length; i++) {
+	    	 		if(emailList[i] == getValue )  {
+	    	 			// 가져온 리스트 안의값이라면 
+	    	 			inList = true;
+	    	 			break;
+	    	 		  }
+	    	 	}
+
+				var emailStartIdx = getValue.indexOf("<")+2;
+				var emailEndIdx = getValue.indexOf(">")-1;
+				var emailOnly = getValue.substring(emailStartIdx, emailEndIdx);
+				// 이미 가져온 값인지 비교
+				for(let i = 0; i < recipient_addressList.length; i++) {
+	    	 		if(recipient_addressList[i] == emailOnly )  {
+	    	 			swal('중복된 이메일입니다', "다른 이메일을 선택해주세요.", 'warning')
+	    	 			$("input#receieveName").val('');
+	    	 			return false;
+	    	 		  }
+	    	 	}
+				console.log("emailOnly"+emailOnly)
+				
+				if(inList == true){
 					$("#receiver").append('<span class="rounded-pill email-ids" name="email-container">'
 							+ getValue + '<span class = "removeAddress" name="removeAddress"><i class="far fa-window-close"></i></span></span>');
 					$("#receieveName").val("")
 				}
+				else{
+					$("#receiver").append('<span class="rounded-pill non-email-ids" name="email-container">'
+							+ getValue + '<span class = "removeAddress" name="removeAddress"><i class="far fa-window-close"></i></span></span>');
+					$("#receieveName").val("")
+					
+				}
 				
+				
+				
+				recipient_addressList.push(emailOnly);
 			}
 			
 			
@@ -209,19 +386,54 @@ var formData = new FormData();
 		
 		$("#selfMail").change(function(){
 	        if($("#selfMail").is(":checked")){
-	        	$("#receiver").append('<span class="rounded-pill email-ids myMail" name="email-container">'
-						+ '내이메일' + '<span class = "removeAddress" name="removeAddress"><i class="far fa-window-close"></i></span></span>');
-				
+	        	
+	        	
+	        	for(let i = 0; i < recipient_addressList.length; i++) {
+	    	 		if(recipient_addressList[i] == '${sessionScope.loginuser.cpemail}' )  {
+	    	 			swal('중복된 이메일입니다', "다른 이메일을 선택해주세요.", 'warning')
+	    	 			$("input#receieveName").val('');
+	    	 			$("#selfMail").prop("checked", false);
+	    	 			return false;
+	    	 		  }
+	    	 	}
+	        	
+	        	$("#receiver").append(`<span class="rounded-pill email-ids myMail" name="email-container">`
+	        						 + '${sessionScope.loginuser.department } '+ '${sessionScope.loginuser.position } '+ '${sessionScope.loginuser.name}'
+	        						 + '&lt;'+'${sessionScope.loginuser.cpemail}' +'&gt;'
+	        						 + '<span class = "removeAddress" name="removeAddress"><i class="far fa-window-close"></i></span></span>');
+	        	
+	        	
+	        	recipient_addressList.push('${sessionScope.loginuser.cpemail}');
+	        	
 	        }else{
+	        	for(let i = 0; i < recipient_addressList.length; i++) {
+	    	 		if(recipient_addressList[i] == '${sessionScope.loginuser.cpemail}' )  {
+	    	 			recipient_addressList.splice(i, 1);
+	    	 		    i--;
+	    	 		  }
+	    	 	}
 	        	$(".myMail").remove();
 	        }
 	    });
 		
+		// 주소 삭제버튼 클릭
 		$(document).on('click','[name=removeAddress]', function(){
 			$(this).parent().remove();
 			if($(this).parent().hasClass("myMail")){
 				$("input:checkbox[id='selfMail']").prop("checked", false);
 			}
+			var emailStartIdx = $(this).parent().text().indexOf("<")+2;
+			var emailEndIdx = $(this).parent().text().indexOf(">")-1;
+			var delete_address = $(this).parent().text().substring(emailStartIdx, emailEndIdx);
+			
+			for(let i = 0; i < recipient_addressList.length; i++) {
+    	 		if(recipient_addressList[i] == delete_address )  {
+    	 			recipient_addressList.splice(i, 1);
+    	 		    i--;
+    	 		  }
+    	 	}
+			console.log(recipient_addressList);
+			
 		});
 		
 		// 파일 다중 선택시 리스트로 받아와서 처리하기
@@ -268,17 +480,29 @@ var formData = new FormData();
 		// 파일 삭제버튼 클릭시
 	     $(document).on('click','[name=removeFile]', function(){
 	    	 	console.log(this);
-	    	 	console.log($(this).attr('no'));
-	    	 	no = $(this).attr('no');
+	    	 	console.log($(this).attr('file_name'));
+	    	 	delete_file_name =$(this).attr('file_name');
+	    	 	console.log($(this).attr('file_size'));
+	    	 	delete_file_size =$(this).attr('file_size');
 	    	 	
-	    	 	formData.delete('file'+no);
+	    	 	for(let i = 0; i < total_fileList.length; i++) {
+	    	 		if(total_fileList[i].name = delete_file_name && delete_file_size == total_fileList[i].size)  {
+	    	 			total_fileList.splice(i, 1);
+	    	 			fileSizeList.splice(i, 1);
+	    	 		    i--;
+	    	 		  }
+	    	 	}
+	    	 	
+
+	    	 	console.log(total_fileList);
 	    	 	
 	    	 // FormData의 값 확인
-	    	 	/* for (var pair of formData.entries()) {
+	    	 /*
+	    	 	 for (var pair of formData.entries()) {
 	    	 	  console.log(pair[0]+ ', ' + pair[1]);
 	    	 	  console.log(pair[1])
-	    	 	} */
-	    	 
+	    	 	} 
+	    	 */
 				$(this).parent().parent().remove();
 				uploadFileCheck();
 			});
@@ -339,16 +563,14 @@ var formData = new FormData();
 	function addFile(fileList){
 		for(var i=0;i < fileList.length;i++){
 	        var file = fileList[i];
-	        
-	        formData.append('file'+fileNo, file);  //파일을 더해준다.
-	        
-	        console.log(file);
+	        total_fileList.push(file);
+	        console.log(total_fileList);
 	        
 	        fileSize = setUnitString(file.size);
-	        $('#dropzone').append('<div class="uploadFile" style="display:flow-root"><span style="float:left">'+file.name+'</span><span style="float:right">'+fileSize+'<span class = "removeFile" name="removeFile" no="'+fileNo+'"><i class="far fa-window-close"></i></span></span></div>');
+	        fileSizeList.push(fileSize);
 	        
+	        $('#dropzone').append('<div class="uploadFile" style="display:flow-root"><span style="float:left">'+file.name+'</span><span style="float:right">'+fileSize+'<span class = "removeFile" name="removeFile" file_size="'+file.size+'"file_name="'+file.name+'"><i class="far fa-window-close"></i></span></span></div>');
 	        
-	        console.log(formData.get('file'+fileNo));
 	        fileNo++;
 	        uploadFileCheck();
 	    }
@@ -364,8 +586,7 @@ var formData = new FormData();
 		}
 	}
 	
-	
-	
+
 </script>
 
 
@@ -389,14 +610,14 @@ var formData = new FormData();
 						<th style="width: 15%; background-color: #E3F2FD;">받는사람 <br>
 						나에게 쓰기<input type="checkbox" id="selfMail" style="margin-left: 3px;"></th>
 						<td ><span id="receiver"></span>
-							<input class="bottomLine" id="receieveName" type="text" name="receieveName" value="받는사람"/>
+							<input class="bottomLine" id="receieveName" type="text" name="receieveName" placeholder="받는사람"/>
 	
 						</td>
 					</tr>
 					<tr>
 						<th style="width: 15%; background-color: #E3F2FD;">보내는사람</th>
 						<td>
-							<input class="bottomLine" type="text" name="name" value="보내는사람" readonly />
+							<input class="bottomLine" type="text" name="name" value="${sessionScope.loginuser.cpemail }" readonly />
 						</td>
 					</tr>
 					
@@ -432,7 +653,7 @@ var formData = new FormData();
 					<tr>
 						<th style="width: 15%; background-color: #E3F2FD;">내용</th>
 						<td>
-							<textarea style="width: 100%; height: 612px;" name="content" id="content"></textarea>
+							<textarea style="width: 100%; height: 612px;" name="contents" id="contents"></textarea>
 						</td>
 					</tr>
 					

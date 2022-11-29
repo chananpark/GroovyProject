@@ -32,4 +32,36 @@ public class MailDAO implements InterMailDAO {
 		return tagList;
 	}
 
+	@Override
+	public int addMail(Map<String, Object> paraMap) {
+		int n = sqlsession.insert("jinseok.addMail",paraMap);
+		return n;
+	}
+
+	@Override
+	public MailVO getOneMail(String mailNo) {
+		System.out.println(mailNo);
+		MailVO mail = sqlsession.selectOne("jinseok.getOneMail",mailNo);
+		return mail;
+	}
+
+	@Override
+	public List<String> getMailList() {
+		List<String> mailList = sqlsession.selectList("jinseok.getMailList");
+		return mailList;
+	}
+
+	@Override
+	public List<TagVO> getTagListByMailNo(Map<String, String> paraMap) {
+		List<TagVO> tagList = sqlsession.selectList("jinseok.getTagListByMailNo",paraMap);
+		return tagList;
+	}
+
+	@Override
+	public void readMail(Map<String, String> paraMap) {
+		
+		sqlsession.update("jinseok.readMail",paraMap);
+		
+	}
+
 }

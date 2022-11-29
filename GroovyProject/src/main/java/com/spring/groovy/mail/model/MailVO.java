@@ -2,7 +2,10 @@ package com.spring.groovy.mail.model;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
 
 public class MailVO {
 	
@@ -25,6 +28,9 @@ public class MailVO {
 	private String mail_pwd;       // 메일암호
 	
 	private Date send_time_date; // 비교용 날짜
+	
+	
+	
 	
 
 
@@ -146,6 +152,94 @@ public class MailVO {
         // 문자열 -> Date
         this.send_time_date = to;
 	}
+	
+	public List<String> getFK_recipient_address_array	() {
+
+		List<String> resultList = commaArray(fK_recipient_address);
+		
+		return resultList;
+	 }
+	
+	public List<String> getRead_check_array	() {
+
+		List<String> resultList = commaArray(read_check);
+		
+		return resultList;
+	 }
+	
+	public List<String> getFK_referenced_address_array	() {
+
+		List<String> resultList = commaArray(fK_referenced_address);
+		
+		return resultList;
+	 }
+	
+	public List<String> getFilename_array	() {
+
+		List<String> resultList = commaArray(filename);
+		
+		return resultList;
+	 }
+	public List<String> getOrgfilename_array	() {
+
+		List<String> resultList = commaArray(orgfilename);
+		
+		return resultList;
+	 }
+	public List<String> getFilesize_array	() {
+
+		List<String> resultList = commaArray(filesize);
+		
+		return resultList;
+	 }
+	
+	
+	public int getUserindex(String cpemail) {
+		
+		List<String> resultList = commaArray(fK_recipient_address);
+		
+		int n = 0;
+		for(int i=0; i<resultList.size() ;i++) {
+			if(cpemail == resultList.get(i)) {
+				n = i;
+				break;
+			}
+		}
+		return n;
+	}
+	
+
+	
+	public List<String> commaArray(String str){
+		List<String> resultList = new ArrayList<String>();
+		
+		if(!str.trim().isEmpty()) {
+			resultList = new ArrayList<String>(Arrays.asList(str.split(","))); 
+		}
+		return resultList;
+	}
+	
+	
+	public String changeArr(List<String> arr, int index, String val){
+		StringBuilder sb =new StringBuilder();
+		for(int i=0 ; i<arr.size(); i++ ) {
+			if(i == index) {
+				sb.append(val);
+			}
+			else {
+				sb.append(arr.get(i));
+			}
+			sb.append(",");
+		}
+		String result = sb.toString();
+		if (result.endsWith(",")) {
+            return result.substring(0, result.length() - 1);
+        }
+		return result;
+	}
+	
+	
+	
 	
 	
 }

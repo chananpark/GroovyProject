@@ -51,21 +51,22 @@ public class TagVO {
 	}
 
 	public List<String> getMail_no_list() {
-		List<String> resultList = new ArrayList<String>();
-				
-			if(mail_no.trim().isEmpty()) {
-				return resultList;
-			}
-			else {
-				resultList = new ArrayList<String>(Arrays.asList(mail_no.split(","))); 
-				 
-				return resultList;
-			}
-	}
+		List<String> resultList = commaArray(mail_no);
 	
-	// 지정 못하게 막음
-	private void setMail_no_list(List<String> mail_no_list) {
-		this.mail_no_list = mail_no_list;
+		return resultList;
+
+	}
+
+	
+
+	
+	public List<String> commaArray(String str){
+		List<String> resultList = new ArrayList<String>();
+		
+		if(!str.trim().isEmpty()) {
+			resultList = new ArrayList<String>(Arrays.asList(str.split(","))); 
+		}
+		return resultList;
 	}
 	
 
