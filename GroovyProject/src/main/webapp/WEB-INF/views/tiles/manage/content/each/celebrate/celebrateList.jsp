@@ -2,7 +2,7 @@
     pageEncoding="UTF-8"%>
 
 <% String ctxPath = request.getContextPath(); %>   
-
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
     
 <!-- Font Awesome 5 Icons !!이걸써줘야 아이콘웹에서 아이콘 쓸 수 있다!!-->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
@@ -110,19 +110,17 @@
 	</div>
 
 	<div class='mx-4'  style="background-color:#e3f2fd; width: 100%; height: 45px;">
-		<div class="pt-2">
-			<span class="mx-5 my-3 ">신청일자 <input type="date" style="border:solid 1px #cccccc;"/>  ~  <input type="date" style="border:solid 1px #cccccc;"/></span>
-			<span class="float-right">
-			<span >
-				<select style="width: 100px; border:solid 1px #cccccc;">
-					<option value="">명절상여금</option>
-					<option>생일상여금</option>
-					<option>휴가비</option>
+		<div style="margin-left: 73%;" class="pt-1">
+			<span>
+				<select style="width: 100px; border:solid 1px #cccccc;" name="searchType">
+					<option> ====== </option>
+					<option value="1">명절상여금</option>
+					<option value="2">생일상여금</option>
+					<option value="3">휴가비</option>
 				</select> 
 			</span>
-			<input type="text"style="width: 120px; border:solid 1px #cccccc;"/>
+			<input type="text"style="width: 120px; border:solid 1px #cccccc;" name="searchWord"/>
 			<button class="btn btn-sm mr-3" style="background-color: #086BDE; color:white;"><i class="fas fa-search"></i>검색</button>
-			</span>
 		</div>
 	</div>
 
@@ -132,32 +130,53 @@
 	<table class="table table-bordered table-sm mx-4 ">
 		<thead>
 			<tr>
-				<th>No</th>
 				<th>신청번호</th>
 				<th>경조구분</th>
-				<th>대상자</th>
+				<th>사원이름</th>
 				<th>경조금액</th>
 				<th>전자결재상태</th>
 				<th>신청일</th>
 			</tr>
 		</thead>
-		<tbody  onclick="go_detailInfo" data-toggle="modal" data-target="#viewDetailinfo">
-			<tr text-center border>
-				<td>1</td>
-				<td>223</td>
-				<td>명절상여금</td>
-				<td>김민수</td>
-				<td>200,000</td>
-				<td>완료</td>
-				<td>2022-11-12</td>
-			</tr>
+		<tbody>   <!-- onclick="go_detailInfo" data-toggle="modal" data-target="#viewDetailinfo" -->
+			<c:forEach var="celebList" items="${requestScope.celebList}"  varStatus="status">
+				<tr class="text-center border">
+					<td></td>
+					<td>${celebList.clbno}</td>
+					<td>
+						<c:choose>
+							<c:when test="${celebList.clbtype eq '1'}">명절상여금</c:when>
+							<c:when test="${celebList.clbpay eq '2'}">생일상여금</c:when>
+							<c:otherwise>휴가비</c:otherwise>
+						</c:choose>
+					</td>
+					<td>${celebList.fk_empno}</td>
+					<td>
+						<c:choose>
+							<c:when test="${celebList.clbpay eq '1'}">500,000</c:when>
+							<c:when test="${celebList.clbpay eq '2'}">200,000</c:when>
+							<c:otherwise>200,000</c:otherwise>
+						</c:choose>
+					</td>
+					<td>
+						<c:choose>
+							<c:when test="${celebList.clbstatus eq '0'}">미승인</c:when>
+							<c:otherwise>승인완료</c:otherwise>
+						</c:choose>
+					</td>
+					<td>${celebList.clbdate}</td>
+				</tr>
+			</c:forEach>
 		</tbody>
 	</table>
 	</div>
 </div>
 </form>
+<div>${pagebar}</div>
 
 
+
+<!-- 
 <div class="modal" id="viewDetailinfo" >
    <div class="modal-dialog" >
       <div class="modal-content modals-fullsize">
@@ -213,6 +232,6 @@
        </div>
     </div>
  </div>
-
+ -->
 
 

@@ -63,14 +63,14 @@
     
     <li class="menu topMenu nav-item" >경조비관리
       <ul class="menu subMenus eachmenu1">
+      	<li><a class="nav-link" href="<%= ctxPath%>/manage/celebrate/celebrateList.on">경조비신청목록</a></li>  
       	<li id="celebmenu1" ><a class="nav-link" href="<%= ctxPath%>/manage/celebrate/receiptCelebrate.on">경조비신청</a></li>	 
-        <li><a class="nav-link" href="<%= ctxPath%>/manage/celebrate/searchReceiptCelebrate.on">경조비신청조회</a></li>  
       </ul> 
     </li>
     
     <li class="menu topMenu nav-item">재직증명서
 	  <ul class="menu subMenus eachmenu6">
-	      <li id="celebmenu1" > <a class="nav-link" href="<%= ctxPath%>/manage/proof/proofList.on">증명서목록</a> </li>	 
+	      <li id="celebmenu1" > <a class="nav-link" href="<%= ctxPath%>/manage/proof/proofList.on">증명서신청목록</a> </li>	 
 	      <li><a class="nav-link" href="<%= ctxPath%>/manage/proof/proofEmployment.on">증명서신청</a></li>  
       </ul> 
     

@@ -75,6 +75,20 @@
 	$(document).ready(function(){
 		
 		 $('.eachmenu6').show();
+		 
+		 $("#viewDetailProof").on("show.bs.modal", function(e) {
+				var data1 = $(e.relatedTarget).data('proofList');
+				var data2 = $(e.relatedTarget).data('loginuser');
+				
+				alert(data1 +":"+ data2);
+				
+			/*     $("#contents.modal-body").val(data1);
+			    $("#text-contents.body-contents").html(data1);
+			    $("#contents.modal-body").val(data2);
+			    $("#text-contents.body-contents").html(data2); */
+			});
+		 
+		 
 	
 	}); // end  of $(document).ready(function(){--------------------
 	
@@ -131,6 +145,7 @@
 			</tr>
 		</thead>
 		<tbody>
+			<c:if test="${requestScope.proofList != null }">
 			<c:forEach var="emp"  items="${requestScope.proofList}"  varStatus="status">
 			<tr class="text-center border">
 				<td>${emp.proofno}</td>
@@ -138,9 +153,16 @@
 				<td>${emp.fk_empno}</td>
 				<td><c:choose><c:when test="${emp.issueuse eq '1'}">은행제출용</c:when><c:otherwise>공공기관제출용</c:otherwise></c:choose></td>
 				<td>${emp.issuedate}</td>
-				<td><button class="btn btn-sm" style="background-color:#F9F9F9" data-toggle="modal" data-target="#viewDetailProof" data-issueuse="${emp.issueuse}">출력</button></td> 
+				<td>
+					<button class="btn btn-sm" id="detail"style="background-color:#F9F9F9">출력
+						<a href="#" data-toggle="modal" data-target="#viewDetailProof" <%-- data-loginuser="${loginuser}" data-proofList="${emp.issueuse} --%>" data-backdrop="static">팝업호출</a>
+					</button>
+				</td> 
 			</tr>
-				</c:forEach>
+			</c:forEach>
+			</c:if>
+			<c:if test="${requestScope.proofList == null }"> 신청하신 내역이 존재하지 않습니다.
+			</c:if>
 		</tbody>
 	</table>
 	<div align="right">
@@ -155,14 +177,14 @@
 
 
 <%-- 재직증명서 상세보기 모달창 --%>
-<div class="modal" id="viewDetailProof" >
+<%-- <div class="modal" id="viewDetailProof" >
    <div class="modal-dialog" role="document">
       <div class="modal-content modals-fullsize">
       	
       	<div style="margin-top: 2%;">
       		<button class="close" data-dismiss="modal" aria-hodden="true">X</button>
       	</div>
-         <div class='modal-body px-3'>
+         <div class='modal-body px-3' id="contents">
           <div align="center" style="padding: 2%; margin: 8% auto;">
                   
          <h4 class="float-center mb-5">재직증명서</h4>
@@ -171,18 +193,18 @@
          	<thead>
          		<tr><th colspan='4'>인적사항</th></tr>
          	</thead>
-	         <tbody class="font">
+	         <tbody class="font body-contents" id="text-contents">
 	         <tr>
 	         	<th>성명</th>
 	         	<td><input type="text" style="border: none;" name="name" value="${session.loginuser.name}"/></td>
 	         	<th>주민번호</th>
-	         	<td><input type="text" style="border: none; name="jubun" value="${session.loginuser.jubun}" /></td>
+	         	<td><input type="text" style="border: none;" name="jubun" value="${session.loginuser.jubun}" /></td>
 	         </tr>
 	         <tr>
 	         	<th>연락처</th>
-	         	<td><input type="text" style="border: none; name="mobile" value="${session.loginuser.mobile}"/></td>
+	         	<td><input type="text" style="border: none;" name="mobile" value="${session.loginuser.mobile}"/></td>
 	         	<th>주소 </th>
-	         	<td><input type="text" style="border: none; name="address" value="${session.loginuser.address}"/></td>
+	         	<td><input type="text" style="border: none;" name="address" value="${session.loginuser.address}"/></td>
 	         </tr>
 	         </tbody>
          </table>
@@ -196,25 +218,25 @@
 	         <tbody class="font">
 		         <tr>
 		         	<th>회사명</th>
-		         	<td><input type="text" style="border: none; value="(주)그루비"/></td>
+		         	<td><input type="text" style="border: none;" value="(주)그루비"/></td>
 		         	<th>대표자 </th>
-		         	<td><input type="text" style="border: none; name="" /></td>
+		         	<td><input type="text" style="border: none;" name="" /></td>
 		         </tr>
 		        <tr>
 		         	<th>근무부서</th>
-		         	<td><input type="text" style="border: none; name="department" value="${session.loginuser.department}"/></td>
+		         	<td><input type="text" style="border: none;" name="department" value="${loginuser.department}"/></td>
 		         	<th>입사일 </th>
-		         	<td><input type="text" style="border: none; name="joindate" value="${session.loginuser.joindate}"/></td>
+		         	<td><input type="text" style="border: none;" name="joindate" value="${loginuser.joindate}"/></td>
 		         </tr>
 		          <tr>
 		         	<th>직급</th>
-		         	<td><input type="text" style="border: none;" name="position" value="${session.loginuser.position}"/></td>
+		         	<td><input type="text" style="border: none;" name="position" value="${loginuser.position}"/></td>
 		         	<th>재직기간</th>
 		         	<td><input type="text" style="border: none;"/></td>
 		         </tr>
 		         <tr>
 		         	<th>사용용도</th>
-		         	<td><input type="text" style="border: none;" id="modalissueuse"name="issueuse" "/></td>
+		         	<td><input type="text" style="border: none;" id="modalissueuse" name="issueuse" value="${proofList.issueuse}" /></td>
 		         	<th></th>
 		         	<td><input type="text" style="border: none;"/></td>
 		         </tr>
@@ -222,7 +244,7 @@
          </table>
          
          <div class="float-center mt-5" style="font-size: 16px;">
-        	 <div> 2022년 11월 15일 </div> <%-- 현재날짜 넣기 --%>
+        	 <div> 2022년 11월 15일 </div> 현재날짜 넣기
         	 <div>(주) Groovy</div>
          </div>
          
@@ -232,5 +254,5 @@
     </div>
  </div>
 
-	
+	 --%>
 

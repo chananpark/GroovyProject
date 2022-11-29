@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.spring.groovy.common.Pagination;
+import com.spring.groovy.management.model.CelebrateVO;
 import com.spring.groovy.management.model.MemberVO;
 import com.spring.groovy.management.model.ProofVO;
 
@@ -23,27 +24,47 @@ public interface InterManagementService {
 	
 	// 재직증명서 신청내역을 가져오기(select)
 	List<ProofVO> getProofList(String empno);
+
+	//공용 경조비관리 - 경조비신청
+	int receiptCelebrate(CelebrateVO cvo);
+
+
+	//공용 경조비관리 - 경조비신청목록
+	List<CelebrateVO> getCelebrateList(String empno);
 	
-	
+	// 경조비 목록 - 한 페이지에 표시할 글 목록 (페이징)
+	List<CelebrateVO> getCelebPageCnt(Map<String, Object> paraMap);
+		
+		
+		
+		
 	// ================================================================================= //
 	//관리자 사원관리 - 사원조회
 	List<MemberVO> searchInfoAdmin(Map<String, Object> paraMap);
 
-	// 전체 글 개수 구하기
-	int getcountList(Pagination pagination);
-
-	// 한 페이지에 표시할 글 목록
+	
+	// 한 페이지에 표시할 글 목록 (페이징)
 	List<MemberVO> getOnePageCnt(Map<String, Object> paraMap);
+
+	
+	//관리자 사원관리 - 사원등록(이메일중복확인 Ajax)
+	int checkCpEmail(String cpemail);
+	
 
 	//관리자 사원관리 - 사원등록
 	int getRegisterInfo(Map<String, Object> paraMap);
 
-	//관리자 사원관리 - 사원등록(이메일중복확인 Ajax)
-	int checkCpEmail(String cpemail);
+	// 사원등록 - 내선번호를 갖고오기위해 필요함
+	List<MemberVO> manageList();
+
 
 
 
 	
+
+	// ================================================================================= //
+	// 전체 글 개수 구하기 (페이징)
+	int getcountList(Pagination pagination);
 
 
 
