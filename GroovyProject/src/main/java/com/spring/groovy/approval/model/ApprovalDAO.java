@@ -131,6 +131,12 @@ public class ApprovalDAO implements InterApprovalDAO {
 		return sqlsession.update("chanan.addFiles", fileList);
 	}
 
+	// 지출내역 리스트 insert
+	@Override
+	public int addExpenseList(List<ExpenseListVO> evoList) {
+		return sqlsession.update("chanan.addExpenseList", evoList);
+	}
+
 	// 저장된 결재라인 불러오기
 	@Override
 	public List<SavedAprvLineVO> getSavedAprvLine(Map<String, String> paraMap) {
@@ -197,26 +203,21 @@ public class ApprovalDAO implements InterApprovalDAO {
 		return sqlsession.selectList("chanan.getDraftFileInfo", dvo);
 	}
 
-	// 자신의 결재 처리하기(승인 or 반려)
+	// 결재 처리하기
 	@Override
-	public int updateMyApproval(ApprovalVO avo) {
+	public int updateApproval(ApprovalVO avo) {
 		Map<String, Object> approvalMap = new HashMap<String, Object>();
 		approvalMap.put("avo", avo); // IN 파라미터
 		approvalMap.put("o_updateCnt", 0); // OUT 파라미터
 		
-		sqlsession.selectOne("chanan.updateMyApproval", approvalMap);
+		sqlsession.selectOne("chanan.updateApproval", approvalMap);
 		return (int) approvalMap.get("o_updateCnt");
 	}
-
-	// 대결 처리하기
+	
+	// 공통 결재라인 가져오기
 	@Override
-	public int updateApprovalProxy(ApprovalVO avo) {
-		Map<String, Object> approvalMap = new HashMap<String, Object>();
-		approvalMap.put("avo", avo); // IN 파라미터
-		approvalMap.put("o_updateCnt", 0); // OUT 파라미터
-		
-		sqlsession.selectOne("chanan.updateApprovalProxy", approvalMap);
-		return (int) approvalMap.get("o_updateCnt");
+	public List<MemberVO> getRecipientList(String type_no) {
+		return sqlsession.selectList("chanan.getRecipientList", type_no);
 	}
 
 

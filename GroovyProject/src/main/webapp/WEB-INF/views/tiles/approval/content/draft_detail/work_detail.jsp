@@ -107,34 +107,39 @@ let obj;
 	avoList.push(obj);
 </c:forEach>
 
-// 내 결재단계 및 결재상태가 담긴 배열
-const myApprovalInfo = avoList.filter(el => el.fk_approval_empno == "${loginuser.empno}");
+// 내 결재정보
+const myApprovalInfo = avoList.filter(el => el.fk_approval_empno == "${loginuser.empno}")[0];
 
-// 내 앞 결재자의 정보가 담긴 배열
-const priorApprovalInfo = avoList.filter(el => (el.levelno - 1) == myApprovalInfo.levelno);
-
-// 내 다음 결재자의 정보가 담긴 배열
-const nextApprovalInfo = avoList.filter(el => (el.levelno + 1) == myApprovalInfo.levelno);
+if (myApprovalInfo != null) {
+	// 내 앞 결재자의 정보
+	const priorApprovalInfo = avoList.filter(el => (Number(myApprovalInfo.levelno) - 1) == el.levelno)[0];
+	
+	// 내 다음 결재자의 정보
+	const nextApprovalInfo = avoList.filter(el => (Number(myApprovalInfo.levelno) + 1) == el.levelno)[0];
+}
 
 $(()=>{
 	
-	// 내가 결재라인에 없거나 내가 이미 결재했을때는 결재의견 작성란, 승인|반려|대결 버튼 감추기
-	if (myApprovalInfo.length == 0 || myApprovalInfo.approval_status != 0) {
-		$("#myComment").hide();
-		$(".myApprovalBtn").hide();
-		$(".proxyApprovalBtn").hide();
-	}	
-
-	// 결재라인에 내가 있고, 결재상태가 0이며, 나보다 앞 결재자의 결재상태가 1이거나 내가 첫번째 결재자일 때만 표시
-	else if (myApprovalInfo.levelno == 1 && priorApprovalInfo.approval_status == 1) {
-		$("#myComment").show();
-		$(".myApprovalBtn").show();
-	}
+	$("#myComment").hide();
+	$(".myApprovalBtn").hide();
+	$(".proxyApprovalBtn").hide();
 	
-	// 결재라인에 내가 있고, 결재상태가1이며, 나보다 다음 결재자의 결재상태가 0일 때만 대결 버튼 표시
-	if (myApprovalInfo.approval_status == 1 && nextApprovalInfo.approval_status == 0) {
-		$(".myApprovalBtn").show();
-	}
+
+	if (myApprovalInfo != null) {
+		let aa = myApprovalInfo.approval_status;
+		let bb = myApprovalInfo.levelno;
+		let cc= priorApprovalInfo.approval_status;
+		
+		// 결재라인에 내가 있고, 결재상태가 0이며, 나보다 앞 결재자의 결재상태가 1이거나 내가 첫번째 결재자일 때만 결재의견 작성란, 승인|반려 버튼 표시
+		if (myApprovalInfo.approval_status == 0 && myApprovalInfo.levelno == 1 || priorApprovalInfo.approval_status == 1) {
+			$("#myComment").show();
+			$(".myApprovalBtn").show();
+		}
+		// 결재라인에 내가 있고, 결재상태가1이며, 나보다 다음 결재자의 결재상태가 0일 때만 대결 버튼 표시
+		if (myApprovalInfo.approval_status == 1 && nextApprovalInfo.approval_status == 0) {
+			$(".proxyApprovalBtn").show();
+		}
+	}	
 	
 	// 상신 취소 버튼 감추기
 	$("#cancelDraftBtn").hide();
@@ -145,11 +150,18 @@ $(()=>{
 		  return sum + currentVal;
 	}, 0);
 	
-	if (${draftMap.dvo.fk_draft_empno} == ${loginuser.empno} && status == 0 )
+	if (${draftMap.dvo.fk_draft_empno} == ${loginuser.empno} && status == 0)
 		$("#cancelDraftBtn").show();
 	
 	// 승인 혹은 반려 버튼 클릭시 이벤트
 	$(".myApprovalBtn").click((e)=>{
+		const target = $(e.target);
+		const approval_status = target.attr('id');
+		updateApproval(approval_status);
+	});
+	
+	// 대결 버튼 클릭시 이벤트
+	$(".proxyApprovalBtn").click((e)=>{
 		const target = $(e.target);
 		const approval_status = target.attr('id');
 		updateApproval(approval_status);
@@ -167,15 +179,34 @@ const updateApproval = approval_status => {
 	// 자신의 사원번호
 	formData.append("fk_approval_empno", "${loginuser.empno}");
 	
-	// 자신의 결재단계
-	formData.append("levelno", myApprovalInfo[0].levelno);
+	// 승인 혹은 반려일 경우
+	if (approval_status != 3) {
+
+		// 자신의 결재단계
+		formData.append("levelno", myApprovalInfo.levelno);
+		
+		// 처리 종류(승인 or 반려)
+		formData.append("approval_status", approval_status);
+		
+	}
 	
-	// 처리 종류(승인 or 반려)
-	formData.append("approval_status", approval_status);
+	// 대결일 경우
+	else {
+		
+		// 자신의 결재단계
+		formData.append("levelno", (Number(myApprovalInfo.levelno)+1));
+		
+		// 결재의견
+		formData.set("approval_comment", "${loginuser.name}에 의해 대결 처리되었습니다.");
+		
+		// 처리 종류
+		formData.append("approval_status", 1);
+	}
+	
 	
 	// 폼 전송하기
     $.ajax({
-        url : "<%=ctxPath%>/approval/updateMyApproval.on",
+        url : "<%=ctxPath%>/approval/updateApproval.on",
         data : formData,
         type:'POST',
         processData:false,
@@ -198,45 +229,6 @@ const updateApproval = approval_status => {
     });
 }
 
-const proxyApproval = () => {
-	let formData = new FormData($("approvalFrm")[0]);
-	
-	// 문서번호
-	formData.append("fk_draft_no", "${draftMap.dvo.draft_no}");
-
-	// 자신의 사원번호
-	formData.append("fk_approval_empno", "${loginuser.empno}");
-	
-	// 자신의 결재단계
-	formData.append("levelno", (Number(myApprovalInfo[0].levelno)+1));
-	
-	// 결재의견
-	formData.set("approval_comment", "${loginuser.name}에 의해 대결 처리되었습니다.");
-	
-	// 폼 전송하기
-    $.ajax({
-        url : "<%=ctxPath%>/approval/updateApprovalProxy.on",
-        data : formData,
-        type:'POST',
-        processData:false,
-        contentType:false,
-        dataType:'json',
-        cache:false,
-        success:function(json){
-        	if(json.result == true) {
-    	    	swal("처리 완료", "대결 처리하였습니다.", "success")
-    	    	.then((value) => {
-	    	    	location.href = "<%=ctxPath%>/approval/requested.on";
-   	    		});
-        	}
-        	else
-        		swal("처리 실패", "대결 처리에 실패하였습니다.", "error");
-        },
-        error: function(request, status, error){
-		alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-		}
-    });
-}
 </script>
 
 <div class="container">
@@ -294,7 +286,10 @@ const proxyApproval = () => {
 					<c:forEach items="${draftMap.avoList}" var="avo">
 						<td>
 						<c:if test="${avo.approval_status == 1 }">
-						<img src='<%=ctxPath%>/resources/images/${avo.signimg}' width="100"/>
+							<img src='<%=ctxPath%>/resources/images/${avo.signimg}' width="100"/>
+						</c:if>
+						<c:if test="${avo.approval_status == 2 || avo.approval_status == -1 }">
+							반려
 						</c:if>
 						</td>
 					</c:forEach>
@@ -407,7 +402,7 @@ const proxyApproval = () => {
 			<div class='mt-4 text-left' id="processBtns">
 				<button type='button' class='btn btn-lg myApprovalBtn' id='1'><i class="fas fa-pen-nib"></i> 승인</button>
 				<button type='button' class='btn btn-lg myApprovalBtn' id='2'><i class="fas fa-undo"></i> 반려</button>
-				<button type='button' class='btn btn-lg proxyApprovalBtn' onclick='proxyApproval()'><i class="fas fa-arrow-right"></i> 대결</button>
+				<button type='button' class='btn btn-lg proxyApprovalBtn' id='3'><i class="fas fa-arrow-right"></i> 대결</button>
 			</div>
 		</div>
 	</c:if>

@@ -87,10 +87,10 @@ public interface InterApprovalService {
 	// 기안문서 조회
 	Map<String, Object> getDraftDetail(DraftVO dvo);
 
-	// 자신의 결재 처리하기(승인 or 반려)
-	boolean updateMyApproval(ApprovalVO avo);
-	
-	// 대결 처리하기
-	boolean updateApprovalProxy(ApprovalVO avo);
+	// 결재 처리하기
+	boolean updateApproval(ApprovalVO avo);
+
+	// 공통 결재라인 가져오기
+	List<MemberVO> getRecipientList(String type_no);
 
 }

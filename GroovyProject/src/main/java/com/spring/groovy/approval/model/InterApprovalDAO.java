@@ -70,6 +70,9 @@ public interface InterApprovalDAO {
 	// draft_file 테이블에 insert
 	int addFiles(List<DraftFileVO> fileList);
 
+	// 지출내역 리스트 insert
+	int addExpenseList(List<ExpenseListVO> evoList);
+	
 	// 저장된 결재라인 불러오기
 	List<SavedAprvLineVO> getSavedAprvLine(Map<String, String> paraMap);
 
@@ -102,11 +105,11 @@ public interface InterApprovalDAO {
 
 	// file에서 select
 	List<DraftFileVO> getDraftFileInfo(DraftVO dvo);
+	
+	// 결재 처리하기
+	int updateApproval(ApprovalVO avo);
 
-	// 자신의 결재 처리하기(승인 or 반려)
-	int updateMyApproval(ApprovalVO avo);
-
-	// 대결 처리하기
-	int updateApprovalProxy(ApprovalVO avo);
+	// 공통 결재라인 가져오기
+	List<MemberVO> getRecipientList(String type_no);
 
 }

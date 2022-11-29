@@ -257,7 +257,7 @@
 		ON FK_DRAFT_TYPE_NO = DRAFT_TYPE_NO
 	</select>
 
-	<!-- 공통결재라인 한개 가져오기 -->	
+	<!-- 공통결재라인 이름으로 조회 -->	
 	<select id="getOneOfficialAprvLine" resultType="com.spring.groovy.management.model.MemberVO" parameterType="String">
 		SELECT EMPNO, NAME, POSITION, FK_POSITION_NO, DEPARTMENT
 		FROM TBL_EMPLOYEE
@@ -308,6 +308,19 @@
 		<foreach collection="list" item="dfvo" separator="union all">
 			SELECT #{dfvo.fk_draft_no} AS FK_DRAFT_NO, #{dfvo.originalFilename} AS ORIGINALFILENAME,
 			#{dfvo.filename} AS FILENAME, #{dfvo.filesize} AS FILESIZE FROM DUAL
+		</foreach>) A
+	</update>
+	
+	<!-- 지출내역 등록하기 -->
+	<update id="addExpenseList" parameterType="java.util.List">
+		INSERT INTO TBL_EXPENSE_LIST (EXPENSE_LIST_NO, FK_DRAFT_NO, EXPENSE_DATE, EXPENSE_TYPE, 
+									EXPENSE_DETAIL, EXPENSE_AMOUNT, EXPENSE_REMARK)
+		SELECT SEQ_EXPENSE_LIST_NO.NEXTVAL AS EXPENSE_LIST_NO, A.* 
+		FROM (
+		<foreach collection="list" item="evo" separator="union all">
+			SELECT #{evo.fk_draft_no} AS FK_DRAFT_NO, #{evo.expense_date} AS EXPENSE_DATE,
+			#{evo.expense_type} AS EXPENSE_TYPE, #{evo.expense_detail} AS EXPENSE_DETAIL,
+			#{evo.expense_amount} AS EXPENSE_AMOUNT, #{evo.expense_remark, jdbcType = VARCHAR} AS EXPENSE_REMARK FROM DUAL
 		</foreach>) A
 	</update>
 	
@@ -366,6 +379,7 @@
 		FROM TBL_APPROVAL A JOIN TBL_EMPLOYEE
 		ON EMPNO = FK_APPROVAL_EMPNO
 		WHERE FK_DRAFT_NO = #{draft_no}
+		ORDER BY LEVELNO
 	</select>
 
 	<!-- 기안 문서 파일 조회 -->
@@ -375,17 +389,27 @@
 	</select>
 	
 	<!-- 결재 처리하기(프로시저) -->
-	<select id="updateMyApproval" statementType="CALLABLE" >
-        { CALL pcd_tbl_approval_update(#{avo.fk_draft_no}, #{avo.fk_approval_empno}, 
+	<select id="updateApproval" statementType="CALLABLE" >
+        { CALL pcd_tbl_approval_update(#{avo.fk_draft_no}, 
            		#{avo.levelno}, #{avo.approval_status}, #{avo.approval_comment,jdbcType=CHAR}, 
            		#{o_updateCnt, mode=OUT, jdbcType=INTEGER, javaType=Integer})
        	}	
 	</select>
 	
-	<!-- 대결 처리하기 -->
-	<select id="updateApprovalProxy" statementType="CALLABLE" >
-        { CALL pcd_tbl_approval_proxy(#{avo.fk_draft_no}, #{avo.levelno}, #{avo.approval_comment,jdbcType=CHAR}, 
-           		#{o_updateCnt, mode=OUT, jdbcType=INTEGER, javaType=Integer})
-       	}	
+	<!-- 양식번호로 공통 결재라인 조회 -->
+	<select id="getRecipientList" resultType="com.spring.groovy.management.model.MemberVO" parameterType="String">
+		SELECT EMPNO, NAME, DEPARTMENT, SIGNIMG, POSITION, FK_POSITION_NO, EMPIMG
+		FROM TBL_EMPLOYEE
+		WHERE EXISTS
+					(SELECT 1
+					FROM TBL_OFFICIAL_APRV_LINE
+					WHERE 
+					FK_DRAFT_TYPE_NO = #{type_no}
+					AND (
+					EMPNO = FK_APPROVAL_EMPNO1
+					OR EMPNO = FK_APPROVAL_EMPNO2
+					OR EMPNO = FK_APPROVAL_EMPNO3
+					OR EMPNO = FK_APPROVAL_EMPNO4))
+		ORDER BY FK_POSITION_NO
 	</select>
 </mapper>

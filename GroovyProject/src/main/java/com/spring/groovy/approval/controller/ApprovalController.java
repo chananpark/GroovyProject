@@ -1,7 +1,5 @@
 package com.spring.groovy.approval.controller;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Enumeration;
@@ -42,9 +40,11 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.google.gson.JsonArray;
 import com.spring.groovy.approval.model.ApprovalVO;
 import com.spring.groovy.approval.model.DraftFileVO;
 import com.spring.groovy.approval.model.DraftVO;
+import com.spring.groovy.approval.model.ExpenseListVO;
 import com.spring.groovy.approval.model.SavedAprvLineVO;
 import com.spring.groovy.approval.service.InterApprovalService;
 import com.spring.groovy.common.FileManager;
@@ -120,7 +120,7 @@ public class ApprovalController {
 		mav.addObject("draftList", service.getSentDraftList(paraMap));
 
 		// 페이지바
-		mav.addObject("pagebar", pagination.getPagebar(request.getContextPath() + "/personal/sent.on"));
+		mav.addObject("pagebar", pagination.getPagebar(request.getContextPath() + "/approval/personal/sent.on"));
 		mav.addObject("paraMap", paraMap);
 
 		mav.setViewName("approval/my_draft/sent.tiles");
@@ -150,7 +150,7 @@ public class ApprovalController {
 		mav.addObject("draftList", service.getProcessedDraftList(paraMap));
 
 		// 페이지바
-		mav.addObject("pagebar", pagination.getPagebar(request.getContextPath() + "/personal/processed.on"));
+		mav.addObject("pagebar", pagination.getPagebar(request.getContextPath() + "/approval/personal/processed.on"));
 		mav.addObject("paraMap", paraMap);
 
 		mav.setViewName("approval/my_draft/processed.tiles");
@@ -180,7 +180,7 @@ public class ApprovalController {
 		mav.addObject("tempDraftList", service.getSavedDraftList(paraMap));
 
 		// 페이지바
-		mav.addObject("pagebar", pagination.getPagebar(request.getContextPath() + "/personal/processed.on"));
+		mav.addObject("pagebar", pagination.getPagebar(request.getContextPath() + "/approval/personal/processed.on"));
 		mav.addObject("paraMap", paraMap);
 
 		mav.setViewName("approval/my_draft/saved.tiles");
@@ -228,7 +228,7 @@ public class ApprovalController {
 		mav.addObject("draftList", service.getTeamDraftList(paraMap));
 
 		// 페이지바
-		mav.addObject("pagebar", pagination.getPagebar(request.getContextPath() + "/team.on"));
+		mav.addObject("pagebar", pagination.getPagebar(request.getContextPath() + "/approval/team.on"));
 		mav.addObject("paraMap", paraMap);
 
 		mav.setViewName("approval/team_draft.tiles"); // View
@@ -395,7 +395,7 @@ public class ApprovalController {
 		mav.addObject("draftList", service.getRequestedDraftList(paraMap));
 
 		// 페이지바
-		mav.addObject("pagebar", pagination.getPagebar(request.getContextPath() + "/requested.on"));
+		mav.addObject("pagebar", pagination.getPagebar(request.getContextPath() + "/approval/requested.on"));
 		mav.addObject("paraMap", paraMap);
 
 		mav.setViewName("approval/requested_draft.tiles");
@@ -404,21 +404,31 @@ public class ApprovalController {
 
 	// 기안 작성 페이지요청
 	@GetMapping(value = "/write.on")
-	public String showWorkDraftForm(@RequestParam("type") String type) {
+	public ModelAndView showWorkDraftForm(ModelAndView mav, @RequestParam("type_no") String type_no) {
 		
-		switch (type) {
+		// 공통 결재라인 가져오기
+		List<MemberVO> recipientList = service.getRecipientList(type_no);
+		JSONArray recipientArr = new JSONArray(recipientList);
 		
-		case "work":
-			return "approval/write_form/work_form.tiles";
+		mav.addObject("recipientArr", String.valueOf(recipientArr));
+		
+		switch (type_no) {
+		
+		case "1":
+			mav.setViewName("approval/write_form/work_form.tiles");
+			return mav;
 
-		case "expense":
-			return "approval/write_form/expense_form.tiles";
+		case "2":
+			mav.setViewName("approval/write_form/expense_form.tiles");
+			return mav;
 		
-		case "businessTrip":
-			return "approval/write_form/business_trip_form.tiles";
+		case "3":
+			mav.setViewName("approval/write_form/business_trip_form.tiles");
+			return mav;
 
 		default:
-			return "error";
+			mav.setViewName("error");
+			return mav;
 		}
 		
 	}
@@ -426,16 +436,19 @@ public class ApprovalController {
 	// 기안 작성하기
 	@ResponseBody
 	@PostMapping(value = "/addDraft.on", produces = "text/plain;charset=UTF-8")
-	public String addDraft(MultipartHttpServletRequest mtfRequest, DraftVO dvo, ApprovalVO avo) {
+	public String addDraft(MultipartHttpServletRequest mtfRequest, DraftVO dvo, ApprovalVO avo, ExpenseListVO evo) {
 
 		Map<String, Object> paraMap = new HashMap<>();
 
+		System.out.println(mtfRequest.getParameter("fk_draft_empno"));
+		System.out.println(mtfRequest.getParameter("fk_draft_type_no"));
+		System.out.println(mtfRequest.getParameter("draft_type"));
+		
 		// 기안 정보
 		paraMap.put("dvo", dvo);
 
 		// 결재자 목록 리스트
 		List<ApprovalVO> apvoList = avo.getAvoList();
-
 		paraMap.put("apvoList", apvoList);
 
 		// service로 넘길 파일정보가 담긴 리스트
@@ -446,6 +459,10 @@ public class ApprovalController {
 			upLoadFiles(mtfRequest, fileList); // 첨부파일 업로드
 		}
 		paraMap.put("fileList", fileList);
+		
+		// 지출내역 리스트
+		List<ExpenseListVO> evoList = evo.getEvoList();
+		paraMap.put("evoList", evoList);
 
 		boolean result = service.addDraft(paraMap);
 
@@ -615,14 +632,15 @@ public class ApprovalController {
 		String param = request.getParameter("selectedAprvLine");
 
 		JSONArray jsonArray = new JSONArray(param);
-		JSONObject jsonObject = jsonArray.getJSONObject(0);
+		JSONObject json = jsonArray.getJSONObject(0);
 
 		// 결재자들의 사원번호를 담을 리스트
 		List<String> empnoList = new ArrayList<>();
 
 		for (int i = 1; i < 4; i++) {
 			String searchKey = "fk_approval_empno" + i;
-			empnoList.add(jsonObject.get(searchKey).toString());
+			if (json.has(searchKey))
+				empnoList.add(String.valueOf(json.get(searchKey)));
 		}
 
 		// 결재자들의 정보가 검색되어 담긴 리스트
@@ -636,27 +654,14 @@ public class ApprovalController {
 	
 	// 자신의 결재 처리하기(승인 or 반려)
 	@ResponseBody
-	@PostMapping(value = "/updateMyApproval.on", produces = "text/plain;charset=UTF-8")
-	public String updateMyApproval(ApprovalVO avo) {
+	@PostMapping(value = "/updateApproval.on", produces = "text/plain;charset=UTF-8")
+	public String updateApproval(ApprovalVO avo) {
 		
-		boolean result = service.updateMyApproval(avo);
+		boolean result = service.updateApproval(avo);
 
 		JSONObject jsonObj = new JSONObject();
 		jsonObj.put("result", result);
 
-		return jsonObj.toString();
-	}
-	
-	// 대결 처리하기
-	@ResponseBody
-	@PostMapping(value = "/updateApprovalProxy.on", produces = "text/plain;charset=UTF-8")
-	public String updateApprovalProxy(ApprovalVO avo) {
-		
-		boolean result = service.updateApprovalProxy(avo);
-		
-		JSONObject jsonObj = new JSONObject();
-		jsonObj.put("result", result);
-		
 		return jsonObj.toString();
 	}
 
