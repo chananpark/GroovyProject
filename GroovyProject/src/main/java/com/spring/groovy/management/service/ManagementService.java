@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.spring.groovy.common.AES256;
 import com.spring.groovy.common.Pagination;
+import com.spring.groovy.management.model.CelebrateVO;
 import com.spring.groovy.management.model.InterManagementDAO;
 import com.spring.groovy.management.model.MemberVO;
 import com.spring.groovy.management.model.ProofVO;
@@ -82,6 +83,33 @@ public class ManagementService implements InterManagementService {
 	}
 	
 	
+
+	//공용 경조비관리 - 경조비신청
+	@Override
+	public int receiptCelebrate(CelebrateVO cvo) {
+		int n = dao.receiptCelebrate(cvo);
+		return n;
+	}
+	
+
+	//공용 경조비관리 - 경조비신청목록
+	@Override
+	public List<CelebrateVO> getCelebrateList(String empno) {
+		List<CelebrateVO> celebList = dao.getCelebrateList(empno);
+		return celebList;
+	}
+
+
+	// 경조비 목록 - 한 페이지에 표시할 글 목록 (페이징)
+	@Override
+	public List<CelebrateVO> getCelebPageCnt(Map<String, Object> paraMap) {
+		List<CelebrateVO> getCelebPageCnt = dao.getCelebPageCnt(paraMap);
+		return getCelebPageCnt;
+	}
+
+		
+
+	
 	// ================================================================================= //
 	
 	//관리자 사원관리 - 사원조회
@@ -91,14 +119,8 @@ public class ManagementService implements InterManagementService {
 		return empList;
 	}
 
-	// 관리자 사원관리 - 사원조회 전체 글 개수 구하기
-	@Override
-	public int getcountList(Pagination pagination) {
-		int n = dao.getcountList(pagination);
-		return n;
-	}
 
-	// 관리자 사원관리 - 사원조회 한 페이지에 표시할 글 목록
+	// 관리자 사원관리 - 사원조회 한 페이지에 표시할 글 목록(페이징)
 	@Override
 	public List<MemberVO> getOnePageCnt(Map<String, Object> paraMap) {
 		return dao.getOnePageCnt(paraMap);
@@ -118,11 +140,29 @@ public class ManagementService implements InterManagementService {
 		return n;
 	}
 
+	// 사원등록 - 내선번호를 갖고오기위해 필요함
+	@Override
+	public List<MemberVO> manageList() {
+		List<MemberVO> manageList = dao.manageList();
+		return manageList;
+	}
+
 	
-
-
-
-
+	
+	
+	
+	
+	
+	
+	
+	
+	// ================================================================================= //
+	// 관리자 사원관리 - 사원조회 전체 글 개수 구하기
+	@Override
+	public int getcountList(Pagination pagination) {
+		int n = dao.getcountList(pagination);
+		return n;
+	}
 
 
 	

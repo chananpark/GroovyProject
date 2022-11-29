@@ -13,10 +13,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.spring.groovy.common.Pagination;
+import com.spring.groovy.management.model.CelebrateVO;
 import com.spring.groovy.management.model.MemberVO;
 import com.spring.groovy.management.model.ProofVO;
 import com.spring.groovy.management.service.InterManagementService;
@@ -42,18 +44,80 @@ public class ManagementController {
 		return mav; 
 	}
 
+	
+	
 	//공용 경조비관리 - 경조비신청
 	@RequestMapping(value="/manage/celebrate/receiptCelebrate.on")
-	public String receiptCelebrate(HttpServletRequest request) {
-		
-		return "manage/each/celebrate/receiptCelebrate.tiles";
-	}
+	public ModelAndView receiptCelebrate(HttpServletRequest request, ModelAndView mav, CelebrateVO cvo) {
 
-	//공용 경조비관리 - 경조비신청조회
-	@RequestMapping(value="/manage/celebrate/searchReceiptCelebrate.on")
-	public String searchReceiptCelebrate(HttpServletRequest request) {
+		HttpSession session = request.getSession();
+		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
 		
-		return "manage/each/celebrate/searchReceiptCelebrate.tiles";
+		String method= request.getMethod();
+		
+		if("POST".equals(method)){
+			
+			System.out.println(cvo.getClbpay());
+			
+			int n = service.receiptCelebrate(cvo);
+			
+			if(n != 1) {
+				String message = "신청이 취소되었습니다.";
+				String loc = "javascript:history.back()";
+				
+				mav.addObject("message", message);
+				mav.addObject("loc", loc);
+				return mav;
+			}
+			
+			String message = "경조비 신청이 정상적으로 신청되었습니다.";
+			mav.addObject("message", message);
+			mav.addObject("cvo", cvo);
+			mav.setViewName("redirect:/manage/celebrate/celebrateList.on");
+			return mav;
+		}
+		
+		mav.addObject("loginuser", loginuser);
+		mav.setViewName("manage/each/celebrate/receiptCelebrate.tiles");
+		return mav;
+	}
+	
+	
+	
+
+	//공용 경조비관리 - 경조비신청목록
+	@RequestMapping(value="/manage/celebrate/celebrateList.on")
+	public ModelAndView receiptCelebrateList(ModelAndView mav, HttpServletRequest request, CelebrateVO cvo, Pagination pagination) {
+		
+		HttpSession session = request.getSession();
+		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
+		
+		String empno = loginuser.getEmpno();
+		
+		// 재직증명서 신청내역을 가져오기
+		List<CelebrateVO> celebList = service.getCelebrateList(empno);
+		
+		 // 전체 글 개수 구하기 
+		//int listCnt = service.getcountList(pagination);
+		
+		// 페이지수 알아오기
+		//Map<String, Object> paraMap = pagination.getPageRange(listCnt);// startRno, endRno
+	
+		// 경조비 목록 - 한 페이지에 표시할 글 목록 (페이징)
+		//mav.addObject("pageCnt", service.getCelebPageCnt(paraMap));
+		
+		 // 페이지바
+		//mav.addObject("pagebar",pagination.getPagebar(request.getContextPath()+"/manage/celebrate/celebrateList.on"));
+		//mav.addObject("paraMap", paraMap);
+		
+		
+		mav.addObject("celebList", celebList);
+		mav.addObject("empno", empno);
+		
+		
+		
+		mav.setViewName("manage/each/celebrate/celebrateList.tiles");
+		return mav;
 	}
 	
 	
@@ -115,18 +179,20 @@ public class ManagementController {
 		// 재직증명서 신청내역을 가져오기
 		List<ProofVO> proofList = service.getProofList(empno);
 		
-		/*
-		 * // 전체 글 개수 구하기 int listCnt = service.getcountList(pagination);
-		 * 
-		 * // 페이지수 알아오기 Map<String, Object> paraMap = pagination.getPageRange(listCnt);
-		 * // startRno, endRno
-		 * 
-		 * // 한 페이지에 표시할 글 목록 mav.addObject("pageCnt", service.getOnePageCnt(paraMap));
-		 * 
-		 * // 페이지바 mav.addObject("pagebar",
-		 * pagination.getPagebar(request.getContextPath()+"/manage/proof/proofList.on"))
-		 * ; mav.addObject("paraMap", paraMap);
-		 */
+		
+		 // 전체 글 개수 구하기 (페이징)
+		int listCnt = service.getcountList(pagination);
+		  
+		 // 페이지수 알아오기 (페이징)
+		Map<String, Object> paraMap = pagination.getPageRange(listCnt);// startRno, endRno
+		 
+		// 한 페이지에 표시할 글 목록  (페이징)
+		mav.addObject("pageCnt", service.getOnePageCnt(paraMap));
+		
+		 // 페이지바
+		mav.addObject("pagebar",pagination.getPagebar(request.getContextPath()+"/manage/proof/proofList.on"));
+		mav.addObject("paraMap", paraMap);
+		 
 		mav.addObject("proofList", proofList);
 		mav.addObject("empno", empno);
 		
@@ -181,54 +247,7 @@ public class ManagementController {
 	}
 	
 	
-	//관리자 사원관리 - 사원등록
-	@RequestMapping(value="/manage/admin/registerInfo.on")
-	public ModelAndView registerInfo(ModelAndView mav, HttpServletRequest request, MemberVO mvo) {
-
-		String method = request.getMethod();
-		
-		if("POST".equals(method)) {
-			
-			String hp1 = request.getParameter("hp1");
-			String hp2 = request.getParameter("hp2");
-			String hp3 = request.getParameter("hp3");
-			String birthyyyy = request.getParameter("birthyyyy"); 
-		    String birthmm = request.getParameter("birthmm"); 
-		    String birthdd = request.getParameter("birthdd");
-		     
-		    String mobile = hp1 + "-"+ hp2 +"-"+ hp3;
-		    String birthday = birthyyyy+"-"+birthmm+"-"+birthdd; 
-			
-			
-			Map<String,Object> paraMap = new HashMap<>();
-			paraMap.put("mvo", mvo);
-			paraMap.put("mobile", mobile);
-			paraMap.put("birthday", birthday);
-			
-			
-			// 사원등록
-			int n = service.getRegisterInfo(paraMap);
-			
-			if(n==1) {
-				String message="사원등록 성공";
-				mav.addObject("message", message);
-				mav.setViewName("redirect:/manage/admin/registerInfo.on");
-				return mav; 
-			}
-			
-			String message = "등록실패";
-			String loc = "javascript:history.back()";
-			
-			mav.addObject("message", message);
-			mav.addObject("loc", loc);
-			return mav;
-			
-		}
-		
-		mav.setViewName("manage/admin/info/registerInfo.tiles");
-		return mav; 
-	}
-	
+	// ============= 사원관리 다음기회에 =====================//
 	
 	//관리자 사원관리 - 사원등록(이메일중복확인 Ajax)
 	@ResponseBody
@@ -244,24 +263,25 @@ public class ManagementController {
 	
 		return json.toString();
 	}
-	
 
 	
-	
-	
-	/*
 	//관리자 사원관리 - 사원등록
 	@RequestMapping(value="/manage/admin/registerInfo.on")
-	public ModelAndView registerInfo(ModelAndView mav, HttpServletRequest request) {
+	public ModelAndView registerInfo(ModelAndView mav, HttpServletRequest request, MemberVO  mvo) {
+		
+		// 사원등록 - 내선번호를 갖고오기위해 필요함
+		
+		 List<MemberVO> manageList = service.manageList();
+		 mav.addObject("manageList", manageList);
+		 
 		mav.setViewName("manage/admin/info/registerInfo.tiles");
 		return mav; 
 	}
-	*/
 	
 	
-	/*
 	//관리자 사원관리 - 사원등록
-	@RequestMapping(value="/manage/admin/registerInfoEnd.on", method= {RequestMethod.POST}, produces="text/plain;charset=UTF-8")
+	@ResponseBody
+	@RequestMapping(value="/manage/admin/registerEnd.on", method= {RequestMethod.POST}, produces="text/plain;charset=UTF-8")
 	public String registerInfoEnd(HttpServletRequest request, MemberVO mvo) {
 
 		String hp1 = request.getParameter("hp1");
@@ -285,14 +305,12 @@ public class ManagementController {
 		// 사원등록
 		int n = service.getRegisterInfo(paraMap);
 		
-		JSONObject jsonObj = new JSONObject();
-		jsonObj.put("n", n);
+		JSONObject json = new JSONObject();
+		json.put("n", n);
 		
-		
-		return jsonObj.toString(); // "{"n":1,"name":"서영학"}" 또는 "{"n":0,"name":"서영학"}"
+		return json.toString(); // "{"n":1,"name":"서영학"}" 또는 "{"n":0,"name":"서영학"}"
 	}
 	
-	*/
 	
 	
 	

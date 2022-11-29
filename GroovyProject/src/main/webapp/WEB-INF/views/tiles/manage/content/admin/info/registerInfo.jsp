@@ -65,6 +65,7 @@
 		color: red;
 	}
 	
+
 	
 	 /* === 모달 CSS === */
 	
@@ -419,7 +420,8 @@ let b_flag_emailDuplicate_click = false;
 		}
 	
 	
-	// >>> 회사이메일 확인버튼 누르면 <<<
+	
+	// >>> 회사이메일 확인버튼 누르면 (ajax)<<<
 	function func_checkEmail(cpemail) {
 	 
 		let b_flag_emailDuplicate_click = true;
@@ -433,31 +435,6 @@ let b_flag_emailDuplicate_click = false;
 		}
 		else {
 			$("div#cpemailCheck").text("이메일을 입력해주세요").hide();
-		
-		
-		/*
-		$("input#cpemail").blur(function(e) {
-			
-			const $target = $(e.target);
-			const regExp = new RegExp(/^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i);
-			// 이메일 정규표현식 객체 생성
-			const bool = regExp.test( $target.val() );
-			
-			if(!bool && $target == "") {
-				// 입력하지 않거나 공백만 입력한 경우
-				$target.prop("disabled", true);
-				$("div#cpemailCheck").text("이메일을 입력해주세요").show();
-				$("input#cpemail").focus();
-				
-			}
-			else {
-				$("div#cpemailCheck").text("이메일을 입력해주세요").hide();
-				
-			}
-		}); // end of $("input#userid").blur() ----------------- // 아이디가 userid 인 것은 포커스를 잃어버렸을 경우(blur) 이벤트를 처리해주는 것이다.
-		*/
-		
-		
 		
 		$.ajax({
 		  url:"<%= request.getContextPath()%>/manage/admin/checkCpEmail.on",
@@ -485,20 +462,35 @@ let b_flag_emailDuplicate_click = false;
 	
 	// >>> 등록버튼을 누르면 <<<
 	function btn_register() {
-		 
-		// 필수입력사항이 빈칸인경우
-		const $required =  $(".required");
-		const required = $required.val().trim();
+		<%--  
+		  // 보내야할 데이터를 선정하는 또 다른 방법
+		  // jQuery에서 사용하는 것으로써,
+		  // form태그의 선택자.serialize(); 을 해주면 form 태그내의 모든 값들을 name값을 키값으로 만들어서 보내준다. 
+		  const queryString = $("form[name='addWriteFrm']").serialize();
+		--%>
+		const queryString = $("form[name='frm_manageInfo']").serialize();
+		$.ajax({
+			url:"<%= request.getContextPath()%>/manage/admin/registerEnd.on",
+			data:queryString, 
+			type:"POST",
+		  	dataType:"JSON",
+		  	success:function(json){
+		  		 
+		  		alert(json.n)
+		  		
+		  		/* if(json.n == 1) {
+		  			alert("사원정보 등록성공")
+		  		}
+		  		else {
+		  			alert("사원정보 등록실패")
+		  		}  */
+		  	},
+		  	 error: function(request, status, error){
+				  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			  }
 		
-		if(required == null){
-			alert("필수입력사항을 모두 기입해주세요.");
-		}
-		else {
-			const frm = document.frm_manageInfo
-			frm.action = "<%= ctxPath%>/manage/admin/registerInfo.on";
-			frm.method = "POST";
-			frm.submit();
-		}
+		});
+		
 	}
 	
 	
@@ -522,36 +514,36 @@ let b_flag_emailDuplicate_click = false;
 	
 	<table class="m-4 mb-3 table table-bordered table-sm" id="first_table">
 		<tr>
-			<td rowspan='4' style="width:2%;"><img name="empimg" class="float-center" src="<%= ctxPath%>/resources/images/picture/꼬미사진.jpg" height="150px;" width="150px" alt="..."/></td>
+			<td rowspan='4' style="width:10%;"><i class="fas fa-user-plus"></i></td>
 			<th class="t1"><span class="alert_required" style="color: red;">*</span>사원번호</th>
 			<td>	
-				<input type="text" id="empno" name="empno" class="required"  placeholder="자동입력됩니다." readonly/>
+				<input type="text" id="empno" name="empno" required placeholder="자동입력됩니다." readonly/>
 			</td>
 			
 			<th class="t1"><span class="alert_required" style="color: red;">*</span>성명</th>
-			<td><input type="text" id="name" name="name" class="required" /></td>
+			<td><input type="text" id="name" name="name" required /></td>
 		</tr>
 		<tr >
 			<th class="t1"><span class="alert_required" style="color: red;">*</span>주민등록번호</th>
 				<td>
 					<span>
-						<input type="text" id="jubun" name="jubun" class="required" style="display: inline;" />
+						<input type="text" id="jubun" name="jubun"required style="display: inline;" />
 					</span>
 					<div class="msg_error">형식에 올바르지 않습니다.</div>
 				</td>
 			<th class="t1">성별</th>
 			 <td style="text-align: left;">
-	            <input type="radio" id="male" name="gender" value="1" /><label for="male" style="margin-left: 2%;">남자</label>
-	            <input type="radio" id="female" name="gender" value="2" style="margin-left: 10%;" /><label for="female" style="margin-left: 2%;">여자</label>
+	            <input type="radio" id="male" name="gender" value="1" required/><label for="male" style="margin-left: 2%;">남자</label>
+	            <input type="radio" id="female" name="gender" value="2" style="margin-left: 10%;" required /><label for="female" style="margin-left: 2%;">여자</label>
 	         </td>
 		</tr>
 		<tr>
 			<th class="t1"><span class="alert_required" style="color: red;">*</span>생년월일</th>
 			<td>
-				<span id="birthday" name="birthday" class="required">
-				    	<select name="birthyyyy" id="birthyyyy" title="년도" class=" requiredInfo" ></select>
-						<select name="birthmm" id="birthmm" title="월" class=" requiredInfo" ></select>
-						<select name="birthdd" id="birthdd" title="일" class=" requiredInfo"></select>
+				<span id="birthday" name="birthday" class="required" required>
+				    	<select name="birthyyyy" id="birthyyyy" title="년도" class=" requiredInfo" required ></select>
+						<select name="birthmm" id="birthmm" title="월" class=" requiredInfo"  required></select>
+						<select name="birthdd" id="birthdd" title="일" class=" requiredInfo" required></select>
 				</span>
 			</td>
 			<th></th>
@@ -561,10 +553,10 @@ let b_flag_emailDuplicate_click = false;
 			<th class="t1"><span class="alert_required" style="color: red;">*</span>자택주소</th>
 			<td colspan="3">
 			<span>
-				<input type="text" id="postcode" name="postcode" class="required" placeholder="우편번호" style="display: inline-block;"/>
-				<input type="text" id="address" name="address" class="input_style required" placeholder="예)00동, 00로" readonly/>
-				<input type="text" id="detailaddress" name="detailaddress" class="input_style required"  placeholder="상세주소" style="display: inline-block;  width: 190px;"/>
-				<input type="text" id="extraaddress" name="extraaddress" class="required" placeholder="참고항목" style="display: inline-block;  width: 190px;  margin: 10px 0 10px 8px;"readonly/>
+				<input type="text" id="postcode" name="postcode"required placeholder="우편번호" style="display: inline-block;"/>
+				<input type="text" id="address" name="address" class="input_style" required placeholder="예)00동, 00로" readonly/>
+				<input type="text" id="detailaddress" name="detailaddress" class="input_style"  placeholder="상세주소" style="display: inline-block;  width: 190px;"/>
+				<input type="text" id="extraaddress" name="extraaddress" required placeholder="참고항목" style="display: inline-block;  width: 190px;  margin: 10px 0 10px 8px;"readonly/>
 				<button type="button" id="btn_adrsearch" onclick="openDaumPOST();" class="btn btn-sm ml-2">추가</button>
 			</span>
 			</td>
@@ -576,21 +568,21 @@ let b_flag_emailDuplicate_click = false;
 		<tr>
 			<th><span class="alert_required"style="color: red;">*</span>내선번호</th>
 			<td>
-				<input type="text" id="depttel" class="required" name="depttel" readonly/>
-				<button class="btn btn-sm ml-5 btn_check" onclick="go_search" data-toggle="modal" data-target="#go_searchTel"><i class="fas fa-search"></i>찾기</button>
+				<input type="text" id="depttel" class="required" name="depttel" required/>
+				<!-- <button class="btn btn-sm ml-5 btn_check" onclick="go_search" data-toggle="modal" data-target="#go_searchTel"><i class="fas fa-search"></i>찾기</button> -->
 			</td>
 			<th><span class="alert_required" style="color: red;">*</span>핸드폰번호</th>
 	         <td style="text-align: left;" id="mobile" name="mobile">
-	             <input type="text" id="hp1" name="hp1" size="6" maxlength="3" value="010" class="requiredInfo required" />&nbsp;-&nbsp;
-	             <input type="text" id="hp2" name="hp2" size="6" maxlength="4" class="requiredInfo required"/>&nbsp;-&nbsp;
-	             <input type="text" id="hp3" name="hp3" size="6" maxlength="4" class="requiredInfo required"/>
+	             <input type="text" id="hp1" name="hp1" size="6" maxlength="3" value="010" class="requiredInfo" required />&nbsp;-&nbsp;
+	             <input type="text" id="hp2" name="hp2" size="6" maxlength="4" class="requiredInfo" required/>&nbsp;-&nbsp;
+	             <input type="text" id="hp3" name="hp3" size="6" maxlength="4" class="requiredInfo" required/>
 	         </td>
 
 		</tr>
 		<tr>
 			<th><span class="alert_required" style="color: red;">*</span>회사이메일</th>
 			<td>
-				<input type="email" id="cpemail" class="required" name="cpemail" />
+				<input type="email" id="cpemail" class="required" name="cpemail" required />
 				<button type="button" class="btn btn-sm ml-5 btn_check" id="checkCpEmail" onclick="func_checkEmail()">확인</button>
 				<div id="cpemailCheck"></div>
 				<div id="empnocheckResult"></div>
@@ -607,7 +599,7 @@ let b_flag_emailDuplicate_click = false;
 		<tr>
 			<th><span class="alert_required" style="color: red;">*</span>부문</th>
 			<td>
-				<select name="bumun" class="select_3 required" onchange="bumunchange(value)">
+				<select name="bumun" class="select_3" required onchange="bumunchange(value)">
 					<option value="">부문을 선택해주세요</option>
 					<option value="경영지원부문">경영지원부문</option>
 					<option value="IT사업부문">IT사업부문</option>
@@ -616,7 +608,7 @@ let b_flag_emailDuplicate_click = false;
 			</td>
 			<th><span class="alert_required required" style="color: red;">*</span>부서</th>
 			<td>
-				<select name="department" id="department" class="select_3 required"  >
+				<select name="department" id="department" class="select_3" required  >
 						<option value="">부서를 선택해주세요</option>
 				</select>
 			</td>
@@ -625,7 +617,7 @@ let b_flag_emailDuplicate_click = false;
 		<tr>
 			<th><span class="alert_required" style="color: red;">*</span>직급</th>
 			<td>
-				<select name="extension" class="select_3 required" >
+				<select name="extension" class="select_3"  required >
 					<option value="">직급을 선택해주세요</option>
 					<option value="부문장">부문장</option>
 					<option value="팀장">팀장</option>
@@ -634,7 +626,7 @@ let b_flag_emailDuplicate_click = false;
 				</select>
 			</td>
 			<th><span class="alert_required" style="color: red;">*</span>급여계약기준</th>
-			<td><select name="empstatus" class="select_3 required" onchange="empstatus(value)">
+			<td><select name="empstatus" class="select_3" required onchange="empstatus(value)">
 					<option value="">계약기준을 선택해주세요</option>
 					<option value="1">정규직</option>
 					<option value="2">계약직</option>
@@ -647,15 +639,15 @@ let b_flag_emailDuplicate_click = false;
 				<input type="text" class="emppay required" name="emppay" readonly style="background-color: #d9d9d9;" />
 			</td>
 			<th><span class="alert_required" style="color: red;">*</span>입사일자</th>
-			<td><input type="date" style="width: 165px;" /></td>
+			<td><input type="date" style="width: 165px;" required value="${requestScope.joindate}"/></td>
 		</tr>
 		<tr>
 			<th><span class="alert_required" style="color: red;">*</span>은행</th>
 			<td>
-				<input type="text" class="emppay required" name="emppay" readonly />
+				<input type="text" class="emppay" name="emppay" required />
 			</td>
 			<th><span class="alert_required" style="color: red;">*</span>계좌</th>
-			<td><input type="text" name="account"  class="required" style="width: 165px;" /></td>
+			<td><input type="text" name="account" required style="width: 165px;" /></td>
 		</tr>
 	</table>
 	
@@ -671,9 +663,9 @@ let b_flag_emailDuplicate_click = false;
 
 
 
+<%-- 
 
-
-<%-- 급여상세 모달창 --%>
+급여상세 모달창
 <div class="modal" id="go_searchTel" style="font-size: 12px;">
    <div class="modal-dialog" >
       <div class="modal-content modals-fullsize">
@@ -696,12 +688,12 @@ let b_flag_emailDuplicate_click = false;
          	</thead>
 	         <tbody>
 	         <tr class="text-center">
-		         <c:forEach  var="employee" items="${requestScope.n}" varStatus="status">
+		         <c:forEach  var="manageList" items="${requestScope.manageList}" varStatus="status">
 					<tr>
 			         	<td style="width: 5px;"><input type="checkbox" /></td>
-						<td>${employee.bumun}</td>
-						<td>${employee.department}</td>
-						<td>${employee.depttel}</td>
+						<td>${manageList.bumun}</td>
+						<td>${manageList.department}</td>
+						<td>${manageList.depttel}</td>
 					</tr>
 				</c:forEach>
 	         </tr>
@@ -715,4 +707,4 @@ let b_flag_emailDuplicate_click = false;
  </div>
 
 
-
+ --%>

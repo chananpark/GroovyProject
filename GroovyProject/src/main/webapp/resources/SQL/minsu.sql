@@ -71,14 +71,27 @@ create table tbl_celebrate
 (clbno               number                  not null   -- 경조비신청번호
 ,fk_empno            number                  not null   -- 사원번호
 ,clbdate             date default sysdate    not null   -- 신청일자
-,clbpay              number(30)              not null   -- 신청금액
-,clbtype             Nvarchar2(20)           not null  -- 경조구분
-,clbstatus           varchar2(1)             not null  -- 승인여부(1명절상여금, 2생일상여금, 3휴가상여금)
+,clbpay              number(30)              not null   -- 신청금액  (1- 50, 2-20, 3-30 )
+,clbtype             Nvarchar2(20)           not null  -- 경조구분 (1명절상여금, 2생일상여금, 3휴가상여금)
+,clbstatus           varchar2(1)    default 0    not null  -- 승인여부  (0 미승인, 1 승인)
 ,constraint PK_tbl_celebrate_clbno primary key(clbno)
 ,constraint FK_tbl_celebrate_fk_empno foreign key(fk_empno) references tbl_employee(empno)
-,constraint CK_tbl_celebrate_clbstatus check( clbstatus in('1','2','3') )
+,constraint CK_tbl_celebrate_clbtype check( clbtype in('1','2','3') )
+,constraint CK_tbl_celebrate_clbpay check( clbpay in('1','2','3') )
+,constraint CK_tbl_celebrate_clbstatus check( clbstatus in('0','1') )
 );
 -- Table TBL_CELEBRATE이(가) 생성되었습니다.
+
+drop table tbl_celebrate
+commit
+
+insert into tbl_celebrate (clbno, fk_empno, clbdate, clbpay, clbtype, clbstatus)
+values(seq_tbl_celebrate.nextval, 13, sysdate, 1, 1, default)
+
+select *
+from tbl_celebrate
+
+rollback
 
 -- 경조비테이블시퀀스
 create sequence seq_tbl_celebrate
@@ -211,7 +224,7 @@ select proofno,fk_empno, to_char(issuedate, 'yyyy-mm-dd') issuedate , issueuse
 from tbl_certificate
 
 select cpemail
-from tbl_enployee
+from tbl_employee
 
 select position, bumun,department,
 		    fk_position_no, fk_bumun_no, fk_department_no
@@ -232,19 +245,34 @@ select position, bumun,department,
 
 
 
+insert into tbl_employee (empimg)
+values ('dog.png')
+where 
 
 
 
 
+select *
+from tbl_employee
+
+-- 칼럼 값변경
+ALTER TABLE tbl_employee MODIFY pwd varchar2(200) DEFAULT 1111;
+ALTER TABLE tbl_employee MODIFY joindate varchar2(10) DEFAULT SYSDATE;
+
+-- 경조비 목록 조회
+select clbno, fk_empno, to_char(clbdate, 'yyyy-mm-dd') AS clbdate, clbpay, clbtype, clbstatus
+from tbl_celebrate
+where fk_empno = 13
+
+create table tbl_celebrate
+(clbno               number                  not null   -- 경조비신청번호
+,fk_empno            number                  not null   -- 사원번호
+,clbdate             date default sysdate    not null   -- 신청일자
+,clbpay              number(30)              not null   -- 신청금액  (1- 50, 2-20, 3-30 )
+,clbtype             Nvarchar2(20)           not null  -- 경조구분 (1명절상여금, 2생일상여금, 3휴가상여금)
+,clbstatus           varchar2(1)    default 0    not null  -- 승인여부  (0 미승인, 1 승인)
 
 
-
-
-
-
-
-
-
-
-
+drop table tbl_celebrate
+drop sequence tbl_celebrate
 

@@ -38,7 +38,36 @@
 	
 	
 	
+	<!-- 공용 경조비관리 - 경조비신청 -->
+<!--  내일 다시해보기	
+	<insert id="receiptCelebrate" parameterType="com.spring.groovy.management.model.CelebrateVO">
+		insert into tbl_celebrate (clbno, fk_empno, clbdate, clbpay, clbtype, clbstatus)
+		values(seq_tbl_celebrate.nextval, #{fk_empno}, sysdate, #{clbpay}, #{clbtype}, default)
+	</insert> -->
 	
+	
+	<!-- 공용 경조비관리 - 경조비신청목록 -->
+	<select id="getCelebrateList" parameterType="String" resultType="com.spring.groovy.management.model.CelebrateVO">
+		select clbno, fk_empno, to_char(clbdate, 'yyyy-mm-dd') clbdate, clbpay, clbtype, clbstatus
+		from tbl_celebrate
+		where fk_empno = #{empno}
+	</select>
+	
+	
+	<!-- 경조비 목록 - 한 페이지에 표시할 글 목록 (페이징) -->
+	<select id="getCelebPageCnt" parameterType="HashMap" resultType="com.spring.groovy.management.model.CelebrateVO">
+		select *
+		from (SELECT ROWNUM AS RNO, v.*
+			from( 
+			    select *
+			    from tbl_celebrate
+			     <if test='searchType != "" and searchWord != "" '>
+		            WHERE LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
+	            </if>
+	            ORDER BY clbdate desc
+			)V)
+		WHERE RNO BETWEEN #{startRno} AND #{endRno}
+	</select>
 	
 	
 	
@@ -65,16 +94,8 @@
 		from tbl_employee
 	</select>
 	
-	<!-- 관리자 사원조회 - 회원목록 수 조회  -->
-	<select id="getcountList" resultType="int" parameterType="com.spring.groovy.common.Pagination" >
-		SELECT COUNT(*) FROM tbl_employee
-		<if test='searchType != "" and searchWord != "" '>
-		WHERE LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
-		</if>
-
-	</select>
 	
-	<!-- 관리자 사원관리 - 사원조회 한 페이지에 표시할 글 목록조회-->
+	<!-- 관리자 사원관리 - 사원조회 한 페이지에 표시할 글 목록조회 (페이징)-->
 	<select id="getOnePageCnt" resultType="com.spring.groovy.management.model.MemberVO" parameterType="HashMap" >
 		select *
 		from (SELECT ROWNUM AS RNO, v.*
@@ -90,17 +111,21 @@
 	</select>
 	
 	
-	
+	<!-- 사원등록 - 내선번호를 갖고오기위해 필요함 -->
+	<select id="manageList" resultType="com.spring.groovy.management.model.MemberVO">
+		select bumun, department, depttel
+		from tbl_employee
+	</select>
 	
 	<!-- 관리자 사원관리 - 사원등록 -->
 	<insert id="getRegisterInfo" parameterType="HashMap" >
 		insert into tbl_employee 
-			(empno,cpemail,name,position,jubun,postcode,address,detailaddress, extraaddress
+			(empno, pwd,cpemail,name,position,jubun,postcode,address,detailaddress, extraaddress
 			,empimg,birthday, bumun,department,pvemail
-			,mobile,depttel,joindate,empstauts,bank,account,annualcnt,gender, fk_position_no, fk_bumun_no, fk_department_no )
-		values( ${empno}, ${cpemail}, ${name}, ${position}, ${jubun}, ${postcode}, ${address}, ${detailaddress}, ${extraaddress}
+			,mobile,depttel,joindate,empstauts,bank,account,annualcnt,gender)
+		values( seq_tbl_employee.nextval, default, ${cpemail}, ${name}, ${position}, ${jubun}, ${postcode}, ${address}, ${detailaddress}, ${extraaddress}
 				,${empimg}, ${birthday}, ${bumun}, ${department}, ${pvemail}, ${mobile}, ${depttel}, ${joindate}, ${empstauts}
-				, ${bank}, ${account}, ${annualcnt}, ${gender},${fk_position_no}, ${fk_bumun_no}, ${fk_department_no})
+				, ${bank}, ${account}, ${annualcnt}, ${gender})
 	</insert>
 	
 	
@@ -110,24 +135,24 @@
 		from tbl_employee
 		where cpemail = #{cpemail}
 	</select>
+
+
+
+
+
+
+
+
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	<!-- =============================================================================================================================  -->
+	<!-- 관리자 사원조회 - 회원목록 수 조회  -->
+	<select id="getcountList" resultType="int" parameterType="com.spring.groovy.common.Pagination" >
+		SELECT COUNT(*) FROM tbl_employee
+		<if test='searchType != "" and searchWord != "" '>
+		WHERE LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
+		</if>
+
+	</select>
 	
 		
 </mapper>
