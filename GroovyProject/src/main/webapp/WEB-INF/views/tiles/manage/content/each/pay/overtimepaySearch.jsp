@@ -75,18 +75,16 @@
 	</div>
 	
 	<div class='mx-4'  style="background-color:#e3f2fd; width: 100%; height: 45px;">
-		<div class="pt-2">
-			<span class="mx-5 my-3 ">기간조회 <input type="date" style="border:solid 1px #cccccc;"/>  ~  <input type="date" style="border:solid 1px #cccccc;"/></span>
-			<span class="float-right">
-			<span >
-				<select style="width: 110px; border:solid 1px #cccccc;">
-					<option value="">추가근무수당</option>
-					<option>연차수당</option>
+		<div style="margin-left: 73%;" class="pt-1">
+			<span>
+				<select style="width: 100px; border:solid 1px #cccccc;" name="searchType"> 
+					<option> ====== </option>
+					<option value="1">추가근무수당</option>
+					<option value="2">연차근무수당</option>
 				</select> 
 			</span>
-			<input type="text"style="width: 120px; border:solid 1px #cccccc;"/>
-			<button class="btn btn-sm mr-3" style="background-color: #086BDE; color:white;"><i class="fas fa-search"></i>검색</button>
-			</span>
+			<input type="text"style="width: 120px; border:solid 1px #cccccc;" name="searchWord"/>
+			<button class="btn btn-sm" style="background-color: #086BDE; color:white; width: 60px;font-size:14px;"><i class="fas fa-search"></i>검색</button>
 		</div>
 	</div>
 	

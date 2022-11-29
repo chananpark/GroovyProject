@@ -68,8 +68,8 @@ nocache;
 
 -- 경조비테이블
 create table tbl_celebrate
-(clbno               number                  not null   -- 경조비신청번호
-,fk_empno            number                  not null   -- 사원번호
+(clbno               number(30)                 not null   -- 경조비신청번호
+,fk_empno            number (30)                 not null   -- 사원번호
 ,clbdate             date default sysdate    not null   -- 신청일자
 ,clbpay              number(30)              not null   -- 신청금액  (1- 50, 2-20, 3-30 )
 ,clbtype             Nvarchar2(20)           not null  -- 경조구분 (1명절상여금, 2생일상여금, 3휴가상여금)
@@ -263,14 +263,6 @@ ALTER TABLE tbl_employee MODIFY joindate varchar2(10) DEFAULT SYSDATE;
 select clbno, fk_empno, to_char(clbdate, 'yyyy-mm-dd') AS clbdate, clbpay, clbtype, clbstatus
 from tbl_celebrate
 where fk_empno = 13
-
-create table tbl_celebrate
-(clbno               number                  not null   -- 경조비신청번호
-,fk_empno            number                  not null   -- 사원번호
-,clbdate             date default sysdate    not null   -- 신청일자
-,clbpay              number(30)              not null   -- 신청금액  (1- 50, 2-20, 3-30 )
-,clbtype             Nvarchar2(20)           not null  -- 경조구분 (1명절상여금, 2생일상여금, 3휴가상여금)
-,clbstatus           varchar2(1)    default 0    not null  -- 승인여부  (0 미승인, 1 승인)
 
 
 drop table tbl_celebrate

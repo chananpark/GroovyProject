@@ -93,18 +93,16 @@
 	</div>
 
 	<div class='mx-4'  style="background-color:#e3f2fd; width: 100%; height: 45px;">
-		<div class="pt-2">
-			<span class="mx-5 my-3 ">신청일자 <input type="date" style="border:solid 1px #cccccc;"/>  ~  <input type="date" style="border:solid 1px #cccccc;"/></span>
-			<span class="float-right">
-			<span >
-				<select style="width: 100px; border:solid 1px #cccccc;">
-					<option value="">용도</option>
-					<option>사원명</option>
+		<div style="margin-left: 73%;" class="pt-1">
+			<span>
+				<select style="width: 100px; border:solid 1px #cccccc;" name="searchType"> 
+					<option> ====== </option>
+					<option value="1">은행제출용</option>
+					<option value="2">공공기관제출용</option>
 				</select> 
 			</span>
-			<input type="text"style="width: 120px; border:solid 1px #cccccc;"/>
-			<button class="btn btn-sm mr-3" style="background-color: #086BDE; color:white;"><i class="fas fa-search"></i>검색</button>
-			</span>
+			<input type="text"style="width: 120px; border:solid 1px #cccccc;" name="searchWord"/>
+			<button class="btn btn-sm" style="background-color: #086BDE; color:white; width: 60px;font-size:14px;"><i class="fas fa-search"></i>검색</button>
 		</div>
 	</div>
 
