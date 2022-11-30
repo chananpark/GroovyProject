@@ -35,6 +35,26 @@ public class ManagementDAO implements InterManagementDAO {
 
 	
 	// ================================================================================= //
+	
+	
+	// 사원정보 수정
+	@Override
+	public int viewInfoEnd(MemberVO mvo) {
+		int n = sqlsession.update("minsu.viewInfoEnd", mvo);
+		return n;
+	}
+	
+	// 사원정보 수정 - 이메일 (이메일중복확인 Ajax)
+	@Override
+	public int checkPvEmail(String pvemail) {
+		int n = sqlsession.selectOne("minsu.checkPvEmail", pvemail);
+		return n;
+	}
+	
+	
+	
+	
+	
 	//재직증명서 - 재직증명서신청 (insert)
 	@Override
 	public int proofEmployment(ProofVO pvo) {
@@ -63,13 +83,6 @@ public class ManagementDAO implements InterManagementDAO {
 		List<CelebrateVO> celebList = sqlsession.selectList("minsu.getCelebrateList",empno);
 		return celebList;
 	}
-	
-	// 경조비 목록 - 한 페이지에 표시할 글 목록 (페이징)
-	@Override
-	public List<CelebrateVO> getCelebPageCnt(Map<String, Object> paraMap) {
-		List<CelebrateVO> getCelebPageCnt = sqlsession.selectList("minsu.getCelebPageCnt",paraMap);
-		return getCelebPageCnt;
-	}
 
 
 	
@@ -83,6 +96,13 @@ public class ManagementDAO implements InterManagementDAO {
 		return empList;
 	}
 
+	// 관리자 사원관리 - 사원조회 한 페이지에 표시할 사원조회 전체 글 개수 구하기(페이징)
+	@Override
+	public int getcountList(Pagination pagination) {
+		int n = sqlsession.selectOne("minsu.getcountList", pagination);
+		return n;
+	}
+	
 	// 관리자 사원관리 - 사원조회 한 페이지에 표시할 글 목록(페이징)
 	@Override
 	public List<MemberVO> getOnePageCnt(Map<String, Object> paraMap) {
@@ -115,15 +135,38 @@ public class ManagementDAO implements InterManagementDAO {
 	
 	// ================================================================================= //
 
-	// 관리자 사원관리 - 사원조회 한 페이지에 표시할 사원조회 전체 글 개수 구하기(페이징)
+
+
+	
+	// 재직증명서 한 페이지에 표시할 재직증명서 전체 글 개수 구하기(페이징)
 	@Override
-	public int getcountList(Pagination pagination) {
-		int n = sqlsession.selectOne("minsu.getcountList", pagination);
+	public int getcountPfList(Pagination pagination) {
+		int n = sqlsession.selectOne("minsu.getcountPfList",pagination);
 		return n;
 	}
+
+	// 재직증명서 - 한 페이지에 표시할 글 목록   (페이징)
+	@Override
+	public List<ProofVO> getOnePagePfCnt(Map<String, Object> paraMap) {
+		return sqlsession.selectList("minsu.getOnePagePfCnt", paraMap);
+	}
+
+	 // 경조비 목록 - 전체 글 개수 구하기(페이징) 
+	@Override
+	public int getcountCelebList(Pagination pagination) {
+		int n = sqlsession.selectOne("minsu.getcountCelebList", pagination);
+		return n;
+	}
+
+	// 경조비 목록 - 한 페이지에 표시할 글 목록 (페이징)
+	@Override
+	public List<CelebrateVO> getCelebPageCelebCnt(Map<String, Object> paraMap) {
+		return sqlsession.selectList("minsu.getCelebPageCelebCnt", paraMap);
+	}
+
 	
-	
-	
+
+
 	
 	
 	

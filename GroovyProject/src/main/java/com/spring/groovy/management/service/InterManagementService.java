@@ -19,6 +19,15 @@ public interface InterManagementService {
 	MemberVO login2(Map<String, String> paraMap);
 
 	// ================================================================================= //
+	
+	// 사원정보 수정
+	int viewInfoEnd(MemberVO mvo);
+	
+
+	// 사원정보 수정 - 이메일 (이메일중복확인 Ajax)
+	int checkPvEmail(String pvemail);
+
+	
 	//재직증명서 - 재직증명서신청 (insert)
 	int proofEmployment(ProofVO pvo);
 	
@@ -32,16 +41,14 @@ public interface InterManagementService {
 	//공용 경조비관리 - 경조비신청목록
 	List<CelebrateVO> getCelebrateList(String empno);
 	
-	// 경조비 목록 - 한 페이지에 표시할 글 목록 (페이징)
-	List<CelebrateVO> getCelebPageCnt(Map<String, Object> paraMap);
-		
-		
 		
 		
 	// ================================================================================= //
 	//관리자 사원관리 - 사원조회
 	List<MemberVO> searchInfoAdmin(Map<String, Object> paraMap);
 
+	// 관리자 사원관리 - 사원조회 한 페이지에 표시할 사원조회 전체 글 개수 구하기(페이징)
+	int getcountList(Pagination pagination);
 	
 	// 한 페이지에 표시할 글 목록 (페이징)
 	List<MemberVO> getOnePageCnt(Map<String, Object> paraMap);
@@ -63,8 +70,22 @@ public interface InterManagementService {
 	
 
 	// ================================================================================= //
-	// 전체 글 개수 구하기 (페이징)
-	int getcountList(Pagination pagination);
+
+
+	// 재직증명서 한 페이지에 표시할 재직증명서 전체 글 개수 구하기(페이징)
+	int getcountPfList(Pagination pagination);
+
+
+	// 재직증명서 - 한 페이지에 표시할 글 목록  (페이징)
+	List<ProofVO> getOnePagePfCnt(Map<String, Object> paraMap);
+
+	 // 경조비 목록 - 전체 글 개수 구하기(페이징) 
+	int getcountCelebList(Pagination pagination);
+
+	// 경조비 목록 - 한 페이지에 표시할 글 목록 (페이징)
+	List<CelebrateVO> getCelebPageCelebCnt(Map<String, Object> paraMap);
+
+
 
 
 

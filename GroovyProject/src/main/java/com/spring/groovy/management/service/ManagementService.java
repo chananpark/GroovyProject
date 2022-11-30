@@ -66,6 +66,25 @@ public class ManagementService implements InterManagementService {
 		return loginuser;
 	}
 	// ================================================================================= //
+
+	// 사원정보 수정
+	@Override
+	public int viewInfoEnd(MemberVO mvo) {
+		int n = dao.viewInfoEnd(mvo);
+		return n;
+	}
+
+
+	// 사원정보 수정 - 이메일 (이메일중복확인 Ajax)
+	@Override
+	public int checkPvEmail(String pvemail) {
+		int n = dao.checkPvEmail(pvemail);
+		return n;
+	}
+
+
+	
+
 	
 	
 	//재직증명서 - 재직증명서신청 (insert)
@@ -100,14 +119,6 @@ public class ManagementService implements InterManagementService {
 	}
 
 
-	// 경조비 목록 - 한 페이지에 표시할 글 목록 (페이징)
-	@Override
-	public List<CelebrateVO> getCelebPageCnt(Map<String, Object> paraMap) {
-		List<CelebrateVO> getCelebPageCnt = dao.getCelebPageCnt(paraMap);
-		return getCelebPageCnt;
-	}
-
-		
 
 	
 	// ================================================================================= //
@@ -119,7 +130,13 @@ public class ManagementService implements InterManagementService {
 		return empList;
 	}
 
-
+	// 관리자 사원관리 - 사원조회 한 페이지에 표시할 사원조회 전체 글 개수 구하기(페이징)
+	@Override
+	public int getcountList(Pagination pagination) {
+		int n = dao.getcountList(pagination);
+		return n;
+	}
+		
 	// 관리자 사원관리 - 사원조회 한 페이지에 표시할 글 목록(페이징)
 	@Override
 	public List<MemberVO> getOnePageCnt(Map<String, Object> paraMap) {
@@ -157,18 +174,36 @@ public class ManagementService implements InterManagementService {
 	
 	
 	// ================================================================================= //
-	// 관리자 사원관리 - 사원조회 전체 글 개수 구하기
+	
+
+	// 재직증명서 한 페이지에 표시할 재직증명서 전체 글 개수 구하기(페이징)
 	@Override
-	public int getcountList(Pagination pagination) {
-		int n = dao.getcountList(pagination);
+	public int getcountPfList(Pagination pagination) {
+		int n = dao.getcountPfList(pagination);
 		return n;
 	}
 
+	// 재직증명서 - 한 페이지에 표시할 글 목록   (페이징)
+	@Override
+	public List<ProofVO> getOnePagePfCnt(Map<String, Object> paraMap) {
+		return dao.getOnePagePfCnt(paraMap);
+	}
+
+	 // 경조비 목록 - 전체 글 개수 구하기(페이징) 
+	@Override
+	public int getcountCelebList(Pagination pagination) {
+		int n = dao.getcountCelebList(pagination);
+		return n;
+	}
+
+	// 경조비 목록 - 한 페이지에 표시할 글 목록 (페이징)
+	@Override
+	public List<CelebrateVO> getCelebPageCelebCnt(Map<String, Object> paraMap) {
+		return dao.getCelebPageCelebCnt(paraMap);
+	}
 
 	
 
-	
-	
 	
 	
 }

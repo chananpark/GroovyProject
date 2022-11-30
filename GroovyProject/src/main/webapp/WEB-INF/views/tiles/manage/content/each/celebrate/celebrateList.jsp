@@ -3,6 +3,7 @@
 
 <% String ctxPath = request.getContextPath(); %>   
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
     
 <!-- Font Awesome 5 Icons !!이걸써줘야 아이콘웹에서 아이콘 쓸 수 있다!!-->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
@@ -130,10 +131,11 @@
 	<table class="table table-bordered table-sm mx-4 ">
 		<thead>
 			<tr>
-				<th>신청번호</th>
-				<th>경조구분</th>
+				<th>증명서번호</th>
+				<th>사원번호</th>
 				<th>사원이름</th>
-				<th>경조금액</th>
+				<th>경조구분</th>
+				<th>금액</th>
 				<th>전자결재상태</th>
 				<th>신청일</th>
 			</tr>
@@ -141,23 +143,19 @@
 		<tbody>   <!-- onclick="go_detailInfo" data-toggle="modal" data-target="#viewDetailinfo" -->
 			<c:forEach var="celebList" items="${requestScope.celebList}"  varStatus="status">
 				<tr class="text-center border">
-					<td></td>
 					<td>${celebList.clbno}</td>
+					<td>${celebList.fk_empno}</td>
+					<td>${loginuser.name}</td>
 					<td>
 						<c:choose>
 							<c:when test="${celebList.clbtype eq '1'}">명절상여금</c:when>
-							<c:when test="${celebList.clbpay eq '2'}">생일상여금</c:when>
+							<c:when test="${celebList.clbtype eq '2'}">생일상여금</c:when>
 							<c:otherwise>휴가비</c:otherwise>
 						</c:choose>
 					</td>
-					<td>${celebList.fk_empno}</td>
-					<td>
-						<c:choose>
-							<c:when test="${celebList.clbpay eq '1'}">500,000</c:when>
-							<c:when test="${celebList.clbpay eq '2'}">200,000</c:when>
-							<c:otherwise>200,000</c:otherwise>
-						</c:choose>
-					</td>
+					
+					<td><fmt:formatNumber value="${celebList.clbpay}" pattern="#,###" /></td>
+
 					<td>
 						<c:choose>
 							<c:when test="${celebList.clbstatus eq '0'}">미승인</c:when>

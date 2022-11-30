@@ -22,6 +22,23 @@
 	</select>
 	<!-- ================================================================================================= -->
 	
+	<!-- 사원정보 수정-->
+	<update id="viewInfoEnd" parameterType="com.spring.groovy.management.model.MemberVO"> 
+		update tbl_employee set postcode = #{postcode} , address= #{address}, detailaddress= #{detailaddress}, extraaddress= #{extraaddress}
+							  , empimg= #{empimg}, pvemail= #{pvemail}, mobile= #{mobile}, bank=#{bank}, account = #{account}
+	</update>
+	
+	
+	<!-- 관리자 사원관리 - 사원등록(이메일중복확인 Ajax)-->
+	<select id="checkPvEmail" parameterType="String" resultType="int">
+		select count(*)
+		from tbl_employee
+		where pvemail = #{pvemail}
+	</select>
+	
+	
+	
+	
 	<!-- 재직증명서 - 재직증명서신청 (insert) -->
 	<insert id="proofEmployment" parameterType="com.spring.groovy.management.model.ProofVO">
 		insert into tbl_certificate (proofno, fk_empno, issuedate, issueuse)
@@ -36,26 +53,58 @@
 		where fk_empno = #{empno}
 	</select>
 	
+		
+	<!-- 재직증명서 한 페이지에 표시할 재직증명서 전체 글 개수 구하기(페이징)  -->
+	<select id="getcountPfList" resultType="int" parameterType="com.spring.groovy.common.Pagination" >
+		SELECT COUNT(*) FROM tbl_celebrate
+		<if test='searchType != "" and searchWord != "" '>
+		WHERE LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
+		</if>
+	</select>	
+	
+	
+	<!-- 재직증명서 - 한 페이지에 표시할 글 목록   (페이징) -->
+	<select id="getOnePagePfCnt" parameterType="HashMap" resultType="com.spring.groovy.management.model.ProofVO">
+		select *
+		from (SELECT ROWNUM AS RNO, v.*
+			from( 
+			    select *
+			    from tbl_certificate
+			     <if test='searchType != "" and searchWord != "" '>
+		            WHERE LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
+	            </if>
+	            ORDER BY proofno desc
+			)V)
+		WHERE RNO BETWEEN #{startRno} AND #{endRno} 
+	</select>
+	
 	
 	
 	<!-- 공용 경조비관리 - 경조비신청 -->
-<!--  내일 다시해보기	
 	<insert id="receiptCelebrate" parameterType="com.spring.groovy.management.model.CelebrateVO">
 		insert into tbl_celebrate (clbno, fk_empno, clbdate, clbpay, clbtype, clbstatus)
 		values(seq_tbl_celebrate.nextval, #{fk_empno}, sysdate, #{clbpay}, #{clbtype}, default)
-	</insert> -->
+	</insert>
 	
 	
 	<!-- 공용 경조비관리 - 경조비신청목록 -->
 	<select id="getCelebrateList" parameterType="String" resultType="com.spring.groovy.management.model.CelebrateVO">
-		select clbno, fk_empno, to_char(clbdate, 'yyyy-mm-dd') clbdate, clbpay, clbtype, clbstatus
+		select clbno, fk_empno, to_char(clbdate, 'yyyy-mm-dd') AS clbdate, clbpay, clbtype, clbstatus
 		from tbl_celebrate
 		where fk_empno = #{empno}
 	</select>
 	
 	
+	<!-- 경조비 목록 - 전체 글 개수 구하기(페이징)  -->
+	<select id="getcountCelebList" parameterType="com.spring.groovy.common.Pagination" resultType="int" >
+		SELECT COUNT(*) FROM tbl_celebrate
+		<if test='searchType != "" and searchWord != "" '>
+		WHERE LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
+		</if>
+	</select>
+	
 	<!-- 경조비 목록 - 한 페이지에 표시할 글 목록 (페이징) -->
-	<select id="getCelebPageCnt" parameterType="HashMap" resultType="com.spring.groovy.management.model.CelebrateVO">
+	<select id="getCelebPageCelebCnt" parameterType="HashMap" resultType="com.spring.groovy.management.model.CelebrateVO">
 		select *
 		from (SELECT ROWNUM AS RNO, v.*
 			from( 
@@ -64,11 +113,10 @@
 			     <if test='searchType != "" and searchWord != "" '>
 		            WHERE LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
 	            </if>
-	            ORDER BY clbdate desc
+	            ORDER BY clbno desc
 			)V)
 		WHERE RNO BETWEEN #{startRno} AND #{endRno}
 	</select>
-	
 	
 	
 	
@@ -92,6 +140,14 @@
 	<select id="searchInfoAdmin" resultType="com.spring.groovy.management.model.MemberVO">
 		select empno, name, position, department,cpemail,mobile,joindate
 		from tbl_employee
+	</select>
+	
+	<!-- 관리자 사원관리 - 사원조회 한 페이지에 표시할 사원조회 전체 글 개수 구하기(페이징)  -->
+	<select id="getcountList" resultType="int" parameterType="com.spring.groovy.common.Pagination" >
+		SELECT COUNT(*) FROM tbl_employee
+		<if test='searchType != "" and searchWord != "" '>
+		WHERE LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
+		</if>
 	</select>
 	
 	
@@ -138,21 +194,24 @@
 
 
 
-
-
-
-
-
 	
-	<!-- =============================================================================================================================  -->
-	<!-- 관리자 사원조회 - 회원목록 수 조회  -->
-	<select id="getcountList" resultType="int" parameterType="com.spring.groovy.common.Pagination" >
-		SELECT COUNT(*) FROM tbl_employee
-		<if test='searchType != "" and searchWord != "" '>
-		WHERE LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
-		</if>
-
-	</select>
 	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+
+
+		
 		
 </mapper>

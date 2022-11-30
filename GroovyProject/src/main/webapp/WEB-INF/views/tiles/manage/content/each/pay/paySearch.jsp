@@ -124,7 +124,6 @@
 		<div style="margin-left: 82%;" class="pt-1">
 			<input type="text"style="width: 120px; border:solid 1px #cccccc;" name="searchWord"/>
 			<button class="btn btn-sm" style="background-color: #086BDE; color:white; width: 60px;font-size:14px;"><i class="fas fa-search"></i>검색</button>
-			</span>
 		</div>
 	</div>
 	
@@ -149,7 +148,7 @@
 				<tr class="text-center border" id="list">
 					<td>1</td>
 					<td>223</td>
-					<td>명절상여금</td>
+					<td>${requestScope.loginuser.empno }</td>
 					<td>김민수</td>
 					<td>200,000</td>
 					<td>완료</td>

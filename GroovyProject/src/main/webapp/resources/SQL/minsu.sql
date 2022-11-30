@@ -7,7 +7,7 @@ create table tbl_employee
 ,pwd                varchar2(200)  not null  -- 비밀번호 (SHA-256 암호화 대상)
 ,position           Nvarchar2(20)            -- 직급
 ,jubun              varchar2(15)   not null  -- 주민번호
-,postcode           varchar2(5)    not null  -- 우편번호
+,postcode           varchar2(5)              -- 우편번호
 ,address            varchar2(200)            -- 주소
 ,detailaddress      varchar2(200)            -- 상세주소
 ,extraaddress       varchar2(200)            -- 참고항목
@@ -19,7 +19,7 @@ create table tbl_employee
 ,mobile             varchar2(200)  not null  -- 연락처 (AES-256 암호화/복호화 대상)
 ,depttel            varchar2(30)   not null  -- 내선번호
 ,joindate           varchar2(10)   not null  -- 입사일자
-,empstauts          varchar2(1)    not null  -- 재직구분 (3개월이후 정직원)
+,empstauts          varchar2(1)    not null  -- 재직구분 (3개월이후 정직원 1정규직, 2비정규직)
 ,bank               Nvarchar2(20)  not null  -- 은행
 ,account            number(20)     not null  -- 계좌번호
 ,annualcnt          number(10)     not null  -- 연차갯수
@@ -30,7 +30,7 @@ create table tbl_employee
 );
 -- Table TBL_EMPLOYEE이(가) 생성되었습니다.
 
-
+ALTER TABLE tbl_employee add constraint  CK_tbl_employee_empstauts varchar2(1)  DEFAULT 1;
 -- 사원테이블 시퀀스
 create sequence seq_tbl_employee
 start with 1
@@ -77,7 +77,6 @@ create table tbl_celebrate
 ,constraint PK_tbl_celebrate_clbno primary key(clbno)
 ,constraint FK_tbl_celebrate_fk_empno foreign key(fk_empno) references tbl_employee(empno)
 ,constraint CK_tbl_celebrate_clbtype check( clbtype in('1','2','3') )
-,constraint CK_tbl_celebrate_clbpay check( clbpay in('1','2','3') )
 ,constraint CK_tbl_celebrate_clbstatus check( clbstatus in('0','1') )
 );
 -- Table TBL_CELEBRATE이(가) 생성되었습니다.
@@ -145,7 +144,7 @@ desc TBL_EMPLOYEE
 alter table tbl_employee add gender varchar2(2);
 
 -- 칼럼 변경
-alter table tbl_employee modify empno varchar2(15) null;
+alter table tbl_employee modify postcode  varchar2(5) null;
 
 
 alter table tbl_employee MODIFY annualcnt varchar2(5);
@@ -254,6 +253,7 @@ where
 
 select *
 from tbl_employee
+where empno = 13
 
 -- 칼럼 값변경
 ALTER TABLE tbl_employee MODIFY pwd varchar2(200) DEFAULT 1111;
@@ -267,4 +267,25 @@ where fk_empno = 13
 
 drop table tbl_celebrate
 drop sequence tbl_celebrate
+
+ALTER TABLE tbl_employee MODIFY EMPSTAUTS varchar2(1)  DEFAULT 1;
+
+update tbl_employee set postcode = '48060' , address = '부산 해운대구 APEC로 17' , DETAILADDRESS='108동', EXTRAADDRESS='우동', EMPIMG= 'null', PVEMAIL='alstn8109@naver.com'
+where empno = 13
+
+rollback
+
+commit
+
+
+select count(*)
+		from tbl_employee
+		where pvemail = 'alstn8109@naver.com'
+        
+        
+
+
+
+
+
 

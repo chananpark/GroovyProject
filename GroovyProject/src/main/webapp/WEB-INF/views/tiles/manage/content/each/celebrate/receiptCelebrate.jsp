@@ -58,21 +58,24 @@
 		
 		 $('.eachmenu1').show();
 		 
-		// === 용도 선택여부=== //
-		$("button#btn_submit").click(function(e){
+		 $("button#btn_submit").click(function(){
+			 
+			const clbtype = $("select#clbtype").val();
+		 
+			 if(clbtype == ''){
+				 alert('gfg');
+				 return;
+			 }
+			 
+			 func_submit();
+		 });
+			 
 			
-			$("select#clbtype").change(function(e){
-				
-				const $option = $("#clbtype option:selected").val();
-
-				if($option == "") {
-					alert("종류를 선택해주세요");
-				}
-				
-			})
-			
-			go_submit();
-		}); // $("select[name='issueuse']").change(function(){  
+			 
+			 
+		 
+		 
+		 
 		 
 		
 	}); // end of $(document).ready(function(){-----------------------
@@ -80,9 +83,9 @@
 	// >>> 부문선택값에 따라 하위 셀렉트 팀옵션 다르게 하기 <<< // 
 	function func_clbtype(value){
 		
-		var clbpay_1 = ["500,000"]; 
-		var clbpay_2 = ["200,000"]; 
-		var clbpay_3 =  ["200,000"]; 
+		var clbpay_1 = ["500000"]; 
+		var clbpay_2 = ["200000"]; 
+		var clbpay_3 =  ["200000"]; 
 		var target = document.getElementById("clbpay");
 		
 		if(value == "1") {
@@ -107,11 +110,13 @@
 		
 	} //function bumunchange(){ -------------------------
 		
-	function go_submit() {
+	function func_submit() {
+		 
+
 		
 		const frm = document.frm_celebApply
 		frm.action = "<%= ctxPath%>/manage/celebrate/receiptCelebrate.on";
-		frm.method = "post";
+		frm.method = "POST";
 		frm.submit();
 	}
 		
@@ -121,7 +126,7 @@
 </script>
 
 
-<form name="frm_celebApply">
+<form name="frm_celebApply" id="frm_celebApply">
 <div id="div_celebApply">
 	
 	
@@ -157,7 +162,7 @@
 			</td>
 			<th><span style="color:red;">*</span>신청금액</th>
 			<td>
-				<select type="text" id="clbpay" name="clbpay" readonly>
+				<select type="text" id="clbpay" name="clbpay" readonly >
 					<option value=""></option>
 				</select>
 			</td>
@@ -177,10 +182,7 @@
 	</c:if>
 	</table>
 	<div class="float-right">
-		<c:if test="${cvo.clbstatus == 1}">
-			<button style="background-color:##F9F9F9" class="btn-sm" onclick="close()">삭제</button> <%-- 담당자가 '완료'하지 않은 상태라면 삭제가능  --%>
-		</c:if>
-		<button style="color: white; background-color:#086BDE" class="btn-sm" id="btn_submit" onclick="go_submit()">저장</button> <%-- 상여금을 받을 수 있을때만 저장이 가능하다 --%>
+		<button style="color: white; background-color:#086BDE" class="btn-sm" id="btn_submit">신청</button> <%-- 상여금을 받을 수 있을때만 저장이 가능하다 --%>
 	</div>
 	
 </div>

@@ -305,14 +305,12 @@ let b_flag_emailDuplicate_click = false;
 			
 			$( "select[name=empstatus]").change(function(){
 				var value = $("option:selected").val();
-				var inputText = $(this).find('input.emppay');
+				var inputText = $("input#emppay");
 				
-				if (value == '1') {
-					$(inputText).val('');
+				if (value == '계약직') {
+					inputText.text('80%');
 				}
-				else if(value == '2'){
-					$(inputText).val('80%');
-				}
+				
 				
 			});
 			
@@ -636,7 +634,7 @@ let b_flag_emailDuplicate_click = false;
 		<tr>
 			<th>임금적용률</th>
 			<td>
-				<input type="text" class="emppay required" name="emppay" readonly style="background-color: #d9d9d9;" />
+				<input type="text" id="emppay" class="required" name="emppay" readonly style="background-color: #d9d9d9;" />
 			</td>
 			<th><span class="alert_required" style="color: red;">*</span>입사일자</th>
 			<td><input type="date" style="width: 165px;" required value="${requestScope.joindate}"/></td>
