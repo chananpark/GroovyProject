@@ -1,6 +1,7 @@
 package com.spring.groovy.approval.service;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -307,6 +308,20 @@ public class ApprovalService implements InterApprovalService {
 		// approval에서 select
 		List<ApprovalVO> avoList = dao.getApprovalInfo(dvo);
 		draftMap.put("avoList", avoList);
+		
+		// 내부 결재자 리스트
+		List<ApprovalVO> internalList = new ArrayList<ApprovalVO>();
+		
+		// 외부 결재자 리스트
+		List<ApprovalVO> externalList = new ArrayList<ApprovalVO>();
+		
+		for(ApprovalVO avo : avoList) {
+			if (avo.getExternal() == 0)
+				internalList.add(avo);
+			else externalList.add(avo);
+		}
+		draftMap.put("internalList", internalList);
+		draftMap.put("externalList", externalList);
 		
 		// file에서 select
 		List<DraftFileVO> dfvoList = dao.getDraftFileInfo(dvo);

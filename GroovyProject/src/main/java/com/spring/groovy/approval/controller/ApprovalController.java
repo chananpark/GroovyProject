@@ -88,10 +88,12 @@ public class ApprovalController {
 	}
 	
 	// 기안 문서 조회
+	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/draftDetail.on")
 	public ModelAndView getDraftDetail(ModelAndView mav, HttpServletRequest request, DraftVO dvo) {
 		
 		Map<String, Object> draftMap = service.getDraftDetail(dvo);
+		mav.addObject("draftMap", draftMap);
 		
 		String fk_draft_type_no = request.getParameter("fk_draft_type_no");
 		
@@ -113,7 +115,18 @@ public class ApprovalController {
 			break;
 		}
 		
-		mav.addObject("draftMap", draftMap);
+		// 전체 결재자 정보 리스트
+		JSONArray avoList = new JSONArray((List<ApprovalVO>)draftMap.get("avoList"));		
+		
+		// 내부 결재자 정보 리스트
+		JSONArray internalList = new JSONArray((List<ApprovalVO>)draftMap.get("internalList"));
+		
+		// 외부 결재자 정보 리스트
+		JSONArray externalList = new JSONArray((List<ApprovalVO>)draftMap.get("externalList"));
+		
+		mav.addObject("avoList", String.valueOf(avoList));
+		mav.addObject("internalList", String.valueOf(internalList));
+		mav.addObject("externalList", String.valueOf(externalList));
 		return mav;
 	}
 	
@@ -458,10 +471,6 @@ public class ApprovalController {
 	public String addDraft(MultipartHttpServletRequest mtfRequest, DraftVO dvo, ApprovalVO avo, ExpenseListVO evo, BiztripReportVO brvo) {
 
 		Map<String, Object> paraMap = new HashMap<>();
-
-		System.out.println(mtfRequest.getParameter("fk_draft_empno"));
-		System.out.println(mtfRequest.getParameter("fk_draft_type_no"));
-		System.out.println(mtfRequest.getParameter("draft_type"));
 		
 		// 기안 정보
 		paraMap.put("dvo", dvo);
