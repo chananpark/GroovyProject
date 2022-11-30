@@ -353,7 +353,7 @@ const sum = () => {
 	    return sum+n
 	});
 
-	$("#sum").text(sumValue);
+	$("#sum").text(sumValue.toLocaleString('en'));
 }
 
 /* 폼 제출하기 */

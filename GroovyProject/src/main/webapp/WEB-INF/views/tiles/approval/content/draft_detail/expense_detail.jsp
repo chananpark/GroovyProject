@@ -162,7 +162,7 @@ $(()=>{
 // 결재 처리하기
 const updateApproval = approval_status => {
 	
-	let formData = new FormData($("approvalFrm")[0]);
+	let formData = new FormData($("#approvalFrm")[0]);
 	
 	// 문서번호
 	formData.append("fk_draft_no", "${draftMap.dvo.draft_no}");
@@ -388,6 +388,7 @@ const updateApproval = approval_status => {
 					</tr>
 					<script>
 						sum += ${evo.expense_amount};
+						sum = sum.toLocaleString('en');
 					</script>
 					</c:forEach>
 					
@@ -464,7 +465,7 @@ const updateApproval = approval_status => {
 					<form id="approvalFrm">
 						<table class='commentTable mt-4' id='myComment'>
 							<tr>
-								<td id='profile' rowspan='2'><img style='border-radius: 50%; display: inline-block' src='<%=ctxPath%>/resources/images/default_profile.png' width="100" /></td>
+								<td id='profile' rowspan='2'><img style='border-radius: 50%; display: inline-block' src='<%=ctxPath%>/resources/images/profile/${loginuser.empimg}' width="100" /></td>
 								<td rowspan='2'><input type='text' id='approval_comment' name='approval_comment' placeholder='결재의견을 입력해주세요(선택)' style='width: 70%'/></td>
 							</tr>
 						</table>

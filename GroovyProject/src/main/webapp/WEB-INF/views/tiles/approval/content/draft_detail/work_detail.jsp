@@ -101,12 +101,15 @@ const avoList = JSON.parse('${avoList}');
 // 내 결재정보
 const myApprovalInfo = avoList.filter(el => el.fk_approval_empno == "${loginuser.empno}")[0];
 
+//내 앞 결재자의 정보
+let priorApprovalInfo;
+
+//내 다음 결재자의 정보
+let nextApprovalInfo;
+
 if (myApprovalInfo != null) {
-	// 내 앞 결재자의 정보
-	const priorApprovalInfo = avoList.filter(el => (Number(myApprovalInfo.levelno) - 1) == el.levelno)[0];
-	
-	// 내 다음 결재자의 정보
-	const nextApprovalInfo = avoList.filter(el => (Number(myApprovalInfo.levelno) + 1) == el.levelno)[0];
+	priorApprovalInfo = avoList.filter(el => (Number(myApprovalInfo.levelno) - 1) == el.levelno)[0];
+	nextApprovalInfo = avoList.filter(el => (Number(myApprovalInfo.levelno) + 1) == el.levelno)[0];
 }
 
 $(()=>{
@@ -115,16 +118,17 @@ $(()=>{
 	$(".myApprovalBtn").hide();
 	$(".proxyApprovalBtn").hide();
 	
-
+	// 내가 결재라인에 있을때
 	if (myApprovalInfo != null) {
 		
-		// 결재라인에 내가 있고, 결재상태가 0이며, 나보다 앞 결재자의 결재상태가 1이거나 내가 첫번째 결재자일 때만 결재의견 작성란, 승인|반려 버튼 표시
-		if (myApprovalInfo.approval_status == 0 && myApprovalInfo.levelno == 1 || priorApprovalInfo.approval_status == 1) {
+		// 내 결재상태가 0이며, 나보다 앞 결재자의 결재상태가 1이거나 내가 첫번째 결재자일 때만 결재의견 작성란, 승인|반려 버튼 표시
+		if ( (myApprovalInfo.approval_status == 0 && myApprovalInfo.levelno == 1) || 
+				(priorApprovalInfo !== undefined && priorApprovalInfo.approval_status == 1)) {
 			$("#myComment").show();
 			$(".myApprovalBtn").show();
 		}
-		// 결재라인에 내가 있고, 결재상태가1이며, 나보다 다음 결재자의 결재상태가 0일 때만 대결 버튼 표시
-		if (myApprovalInfo.approval_status == 1 && nextApprovalInfo.approval_status == 0) {
+		// 내 결재상태가1이며, 나보다 다음 결재자의 결재상태가 0일 때만 대결 버튼 표시
+		if (myApprovalInfo.approval_status == 1 && nextApprovalInfo !== undefined && nextApprovalInfo.approval_status == 0) {
 			$(".proxyApprovalBtn").show();
 		}
 	}	
@@ -159,7 +163,12 @@ $(()=>{
 // 결재 처리하기
 const updateApproval = approval_status => {
 	
-	let formData = new FormData($("approvalFrm")[0]);
+	let formData = new FormData($("#approvalFrm")[0]);
+	
+	let aa = formData.get("approval_comment");
+	for (let key of formData.keys()) {
+		console.log(key, ":", formData.get(key));
+	}
 	
 	// 문서번호
 	formData.append("fk_draft_no", "${draftMap.dvo.draft_no}");
@@ -364,14 +373,14 @@ const updateApproval = approval_status => {
 			<!-- 문서내용 끝 -->
 			
 			<!-- 첨부파일 -->
-			<c:if test="${not empty dfvoList}">
+			<c:if test="${not empty draftMap.dfvoList}">
 			<table class='mr-4 table table-sm table-bordered text-left'>
+					<c:forEach items="${draftMap.dfvoList}" var="file" varStatus="sts">
+					<th class='p-2 text-left'><i class="fas fa-paperclip"></i> 첨부파일 ${sts.count}개</th>
+					</c:forEach>
+				<c:forEach items="${draftMap.dfvoList}" var="file">
 				<tr>
-					<th class='p-2 text-left'><i class="fas fa-paperclip"></i> 첨부파일 ${fn:length(dfvoList)}개</th>
-				</tr>
-				<c:forEach items="${dfvoList}" var="file">
-				<tr>
-					<td class='p-2'><a href=#>${file.originalfilename} (${file.filesize}Byte)</a></td>
+					<td class='p-2'><a href=#>${file.originalFilename} (${file.filesize}Byte)</a></td>
 				</tr>
 				</c:forEach>
 			</table>
@@ -426,7 +435,7 @@ const updateApproval = approval_status => {
 					<form id="approvalFrm">
 						<table class='commentTable mt-4' id='myComment'>
 							<tr>
-								<td id='profile' rowspan='2'><img style='border-radius: 50%; display: inline-block' src='<%=ctxPath%>/resources/images/default_profile.png' width="100" /></td>
+								<td id='profile' rowspan='2'><img style='border-radius: 50%; display: inline-block' src='<%=ctxPath%>/resources/images/profile/${loginuser.empimg}' width="100" /></td>
 								<td rowspan='2'><input type='text' id='approval_comment' name='approval_comment' placeholder='결재의견을 입력해주세요(선택)' style='width: 70%'/></td>
 							</tr>
 						</table>

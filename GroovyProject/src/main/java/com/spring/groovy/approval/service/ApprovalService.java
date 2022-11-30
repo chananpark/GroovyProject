@@ -222,7 +222,7 @@ public class ApprovalService implements InterApprovalService {
 		
 		// 출장보고서라면
 		BiztripReportVO brvo = (BiztripReportVO)paraMap.get("brvo");
-		if (brvo != null) {
+		if (dvo.getFk_draft_type_no() == 3) {
 			brvo.setFk_draft_no(draft_no); // 기안번호 set하기
 			
 			// 출장보고 insert

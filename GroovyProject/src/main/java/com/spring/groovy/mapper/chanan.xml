@@ -236,7 +236,7 @@
 		ON A.POSITION = B.POSITION
 		WHERE EMPNO IN
 		<foreach collection="list" item="list" open="(" close=")" separator=",">
-			#{list, jdbcType=CHAR}
+			#{list, jdbcType=VARCHAR}
 		</foreach>
 		ORDER BY POSITION_NO
 	</select>
@@ -412,7 +412,7 @@
 	<!-- 결재 처리하기(프로시저) -->
 	<select id="updateApproval" statementType="CALLABLE" >
         { CALL pcd_tbl_approval_update(#{avo.fk_draft_no}, 
-           		#{avo.levelno}, #{avo.approval_status}, #{avo.approval_comment,jdbcType=CHAR}, 
+           		#{avo.levelno}, #{avo.approval_status}, #{avo.approval_comment,jdbcType=VARCHAR}, 
            		#{o_updateCnt, mode=OUT, jdbcType=INTEGER, javaType=Integer})
        	}	
 	</select>
