@@ -82,10 +82,6 @@
 		 width: 190px;
 	}
 	
-	.readonly{
-		
-	}
-	
 	
 	
 </style>

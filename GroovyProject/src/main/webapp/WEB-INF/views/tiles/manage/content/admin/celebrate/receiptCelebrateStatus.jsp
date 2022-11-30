@@ -39,7 +39,7 @@
 
 	$(document).ready(function(){
 		
-
+		 $('.subadmenu').show();
 		 $('.eachmenu4').show();
 		
 	}); // end of $(document).ready(function(){
@@ -68,22 +68,21 @@
 		<h4>경조비관리</h4>
 	</div>
 	
-	<div class='mx-4'  style="background-color:#e3f2fd; width: 100%; height: 45px;">
-		<div class="pt-2">
-			<span class="mx-5 my-3 ">신청일자 <input type="date" style="border:solid 1px #cccccc;"/>  ~  <input type="date" style="border:solid 1px #cccccc;"/></span>
-			<span class="float-right">
-			<span >
-				<select style="width: 100px; border:solid 1px #cccccc;">
-					<option value="">명절상여금</option>
-					<option>생일상여금</option>
-					<option>휴가비</option>
+		<div class='mx-4'  style="background-color:#e3f2fd; width: 100%; height: 45px;">
+		<div style="margin-left: 73%;" class="pt-1">
+			<span>
+				<select style="width: 100px; border:solid 1px #cccccc;" name="searchType"> 
+					<option> ====== </option>
+					<option value="1">명절상여금</option>
+					<option value="2">생일상여금</option>
+					<option value="3">휴가비</option>
 				</select> 
 			</span>
-			<input type="text"style="width: 120px; border:solid 1px #cccccc;"/>
-			<button class="btn btn-sm mr-3" style="background-color: #086BDE; color:white;"><i class="fas fa-search"></i>검색</button>
-			</span>
+			<input type="text"style="width: 120px; border:solid 1px #cccccc;" name="searchWord"/>
+			<button class="btn btn-sm" style="background-color: #086BDE; color:white; width: 60px;font-size:14px;"><i class="fas fa-search"></i>검색</button>
 		</div>
 	</div>
+	
 	
 	<div style="margin-top: 7%;">
 	<h5 class='mx-4'>경조비신청현황</h5>

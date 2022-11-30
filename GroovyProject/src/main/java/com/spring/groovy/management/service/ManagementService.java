@@ -13,6 +13,7 @@ import com.spring.groovy.common.Pagination;
 import com.spring.groovy.management.model.CelebrateVO;
 import com.spring.groovy.management.model.InterManagementDAO;
 import com.spring.groovy.management.model.MemberVO;
+import com.spring.groovy.management.model.PayVO;
 import com.spring.groovy.management.model.ProofVO;
 
 @Service
@@ -202,8 +203,26 @@ public class ManagementService implements InterManagementService {
 		return dao.getCelebPageCelebCnt(paraMap);
 	}
 
-	
+	// 공용 증명서 - 월급리스트
+	@Override
+	public List<PayVO> paySearch(Map<String, Object> paramap) {
+		List<PayVO> payList =dao.paySearch(paramap);
+		
+		
+		return payList;
+	}
 
+	
+	
+	
+	//관리자 사원관리 - 경조비지급목록
+	@Override
+	public List<Map<String, Object>> receiptcelebrateList(Map<String, Object> paramap) {
+		List<Map<String,Object>> celebList = dao.receiptcelebrateList(paramap);
+		return celebList;
+	}
+
+	
 	
 	
 }

@@ -106,6 +106,7 @@ let b_flag_emailDuplicate_click = false;
 
 	$(document).ready(function(){
 	
+		$('.subadmenu').show();
 		 $('.eachmenu3').show();
 		 $("div.msg_error").hide();
 		 $("div#msg_probation").hide();

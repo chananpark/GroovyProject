@@ -82,6 +82,7 @@
 
 	$(document).ready(function(){
 		
+		$('.subadmenu').show();
 		 $('.eachmenu5').show();
 		
 		$("div#detailPay").hide();

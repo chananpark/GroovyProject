@@ -64,7 +64,7 @@
 <script>
 
 	$(document).ready(function(){
-		
+		$('.subadmenu').show();
 	
 	
 	}); // end  of $(document).ready(function(){--------------------

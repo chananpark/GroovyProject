@@ -164,7 +164,24 @@ public class ManagementDAO implements InterManagementDAO {
 		return sqlsession.selectList("minsu.getCelebPageCelebCnt", paraMap);
 	}
 
+	// 공용 증명서 - 월급리스트
+	@Override
+	public List<PayVO> paySearch(Map<String, Object> paramap) {
+		List<PayVO> payList = sqlsession.selectList("minsu.paySearch", paramap);
+		return payList;
+	}
+
 	
+	//관리자 사원관리 - 경조비지급목록
+	@Override
+	public List<Map<String, Object>> receiptcelebrateList(Map<String, Object> paramap) {
+		List<Map<String,Object>> celebList = sqlsession.selectList("minsu.receiptcelebrateList", paramap);
+		return celebList;
+	}
+
+	
+	
+
 
 
 	

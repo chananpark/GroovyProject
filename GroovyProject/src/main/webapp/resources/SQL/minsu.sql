@@ -285,7 +285,29 @@ select count(*)
         
 
 
+select payno, fk_empno,pay,annualpay,overtimepay,paymentdate
+from tbl_pay
+
+insert tbl_pay into payno='seq_tbl_pay.nextval', fk_empno='13', pay= 3000000, annualpay=100000, overtimepay=100000, paymentdate = sysdate
+where empno = 13
+
+insert into tbl_pay  
+values(seq_tbl_pay.nextval, 13, 3000000, 100000, 100000,sysdate)
+
+select payno, fk_empno, pay, annualpay, overtimepay, paymentdate
+from tbl_pay 
 
 
+-- 경조비 테이블 목록 조회
+select name, payno, fk_empno, pay, annualpay, overtimepay, paymentdate
+from tbl_pay P join tbl_employee e
+on p.fk_empno = e.empno
 
-
+commit
+create table tbl_pay
+(payno               number        not null   -- 급여번호
+,fk_empno            number        not null   -- 사원번호
+,pay                 number(30)    not null   -- 기본급
+,annualpay           number(30)               -- 연차수당
+,overtimepay         number(30)               -- 초과근무수당
+,paymentdate         date  default sysdate    -- 지급일자(특정일자)

@@ -6,6 +6,7 @@ import java.util.Map;
 import com.spring.groovy.common.Pagination;
 import com.spring.groovy.management.model.CelebrateVO;
 import com.spring.groovy.management.model.MemberVO;
+import com.spring.groovy.management.model.PayVO;
 import com.spring.groovy.management.model.ProofVO;
 
 public interface InterManagementService {
@@ -84,6 +85,13 @@ public interface InterManagementService {
 
 	// 경조비 목록 - 한 페이지에 표시할 글 목록 (페이징)
 	List<CelebrateVO> getCelebPageCelebCnt(Map<String, Object> paraMap);
+
+	// 공용 증명서 - 월급리스트
+	List<PayVO> paySearch(Map<String, Object> paramap);
+
+	//관리자 사원관리 - 경조비지급목록
+	List<Map<String, Object>> receiptcelebrateList(Map<String, Object> paramap);
+
 
 
 

@@ -37,16 +37,19 @@
 		font-size: 14px;
 	}
 	
-	
+	button#detail {
+		background-color:#F9F9F9
+	}
 	
 	 /* === 모달 CSS === */
 	
     .modal-dialog.modals-fullsize_viewDetailProof {
-	    width: 800px;
-	    height: 40%;
+	    min-width:1200px;
+	    min-height: 50px;
+	    border: solid 1px red;
     }
     
-    .modals-fullsize {
+/*     .modals-fullsize {
     	width:800px;
     	height: 800px;
     }
@@ -66,7 +69,17 @@
  
 	.font > tr> th {
 		font-weight: normal;
+	} */
+ 	
+	.modal-content {
+		width:700px;
+		border: solid 1px orange;
 	}
+	
+	.font > tr> th {
+		font-weight: normal;
+	}
+	
 	
 </style>
 
@@ -88,6 +101,10 @@
 			    $("#text-contents.body-contents").html(data2); */
 			});
 		 
+		 $(".readonly").attr('readonly',false); // 수정불가
+		 
+			
+		 
 		 
 	
 	}); // end  of $(document).ready(function(){--------------------
@@ -95,12 +112,13 @@
 	
 	// >>> Function Declartion<<<	
 	// >>> 해당 회원을 클릭하면<<< 
-	function go_detailproof(){
+	/* function go_detailproof(){
 		
-	
-	
 	} // end of function go_detailInfo(){
-		
+		 */
+	
+
+	
 
 
 </script>
@@ -126,7 +144,6 @@
 			</span>
 			<input type="text"style="width: 120px; border:solid 1px #cccccc;" name="searchWord"/>
 			<button class="btn btn-sm" style="background-color: #086BDE; color:white; width: 60px;font-size:14px;"><i class="fas fa-search"></i>검색</button>
-			</span>
 		</div>
 	</div>
 
@@ -148,15 +165,15 @@
 			<c:if test="${requestScope.proofList != null }">
 			<c:forEach var="emp"  items="${requestScope.proofList}"  varStatus="status">
 			<tr class="text-center border">
-				<td>${emp.proofno}</td>
+				<td name="proofno">${emp.proofno}</td>
 				<td>재직증명서</td>
-				<td>${emp.fk_empno}</td>
-				<td><c:choose><c:when test="${emp.issueuse eq '1'}">은행제출용</c:when><c:otherwise>공공기관제출용</c:otherwise></c:choose></td>
-				<td>${emp.issuedate}</td>
+				<td name="fk_empno">${emp.fk_empno}</td>
+				<td name="issueuse"><c:choose><c:when test="${emp.issueuse eq '1'}">은행제출용</c:when><c:otherwise>공공기관제출용</c:otherwise></c:choose></td>
+				<td name="issuedate">${emp.issuedate}</td>
 				<td>
-					<button class="btn btn-sm" id="detail"style="background-color:#F9F9F9">출력
-						<a href="#" data-toggle="modal" data-target="#viewDetailProof" <%-- data-loginuser="${loginuser}" data-proofList="${emp.issueuse} --%>" data-backdrop="static">팝업호출</a>
-					</button>
+					<!-- <button class="btn btn-sm" id="detail" data-toggle="modal" data-target="#viewDetailProof" > -->
+						<a href="#" id="detail" data-toggle="modal" data-target="#viewDetailProof"  data-backdrop="static">출력</a> 
+					<!-- </button> -->
 				</td> 
 			</tr>
 			</c:forEach>
@@ -177,15 +194,20 @@
 
 
 <%-- 재직증명서 상세보기 모달창 --%>
-<%-- <div class="modal" id="viewDetailProof" >
+ <div class="modal" id="viewDetailProof" >
    <div class="modal-dialog" role="document">
-      <div class="modal-content modals-fullsize">
       	
-      	<div style="margin-top: 2%;">
-      		<button class="close" data-dismiss="modal" aria-hodden="true">X</button>
-      	</div>
+       <div class="modal-content">
+        <div class="modal-header">
+        
+          <!-- 모달창의 header 부분에 해당한다.  -->
+          <h4 class="modal-title"></h4>
+          <input type="button" onclick="window.print()" value="인쇄" style="background-color:#086BDE; color:white; border:none;"/>
+          <button type="button" class="close" data-dismiss="modal">×</button>
+        </div>
+
          <div class='modal-body px-3' id="contents">
-          <div align="center" style="padding: 2%; margin: 8% auto;">
+          <div align="center" style="padding: 2%; ">
                   
          <h4 class="float-center mb-5">재직증명서</h4>
          
@@ -196,15 +218,19 @@
 	         <tbody class="font body-contents" id="text-contents">
 	         <tr>
 	         	<th>성명</th>
-	         	<td><input type="text" style="border: none;" name="name" value="${session.loginuser.name}"/></td>
+	         	<td><input type="text" style="border: none;" name="name" value="${loginuser.name}" readonly/></td>
 	         	<th>주민번호</th>
-	         	<td><input type="text" style="border: none;" name="jubun" value="${session.loginuser.jubun}" /></td>
+	         	<td><input type="text" style="border: none;" name="jubun" value="${loginuser.jubun}" readonly/></td>
 	         </tr>
 	         <tr>
 	         	<th>연락처</th>
-	         	<td><input type="text" style="border: none;" name="mobile" value="${session.loginuser.mobile}"/></td>
-	         	<th>주소 </th>
-	         	<td><input type="text" style="border: none;" name="address" value="${session.loginuser.address}"/></td>
+	         	<td><input type="text" style="border: none;" name="mobile" value="${loginuser.mobile}" readonly/></td>
+	         	<th>연락처</th>
+	         	<td><input type="text" style="border: none;" name="mobile" value="${loginuser.mobile}" readonly/></td>
+	         </tr>
+	         <tr>
+	         	<th >주소 </th>
+	         	<td colspan="3"><input type="text" style="border: none; width: 500px;" name="address" readonly value="${loginuser.postcode}${loginuser.address}${loginuser.detailaddress}${loginuser.extraaddress}"/></td>
 	         </tr>
 	         </tbody>
          </table>
@@ -218,33 +244,28 @@
 	         <tbody class="font">
 		         <tr>
 		         	<th>회사명</th>
-		         	<td><input type="text" style="border: none;" value="(주)그루비"/></td>
-		         	<th>대표자 </th>
-		         	<td><input type="text" style="border: none;" name="" /></td>
+		         	<td><input type="text" style="border: none;" value="(주)그루비" readonly/></td>
+		         	<th>사용용도</th>
+		         	<td name="issueuse"><c:choose><c:when test="${emp.issueuse eq '1'}">은행제출용</c:when><c:otherwise>공공기관제출용</c:otherwise></c:choose></td>
 		         </tr>
 		        <tr>
 		         	<th>근무부서</th>
-		         	<td><input type="text" style="border: none;" name="department" value="${loginuser.department}"/></td>
+		         	<td><input type="text" style="border: none;" name="department" value="${loginuser.department}" readonly/></td>
 		         	<th>입사일 </th>
-		         	<td><input type="text" style="border: none;" name="joindate" value="${loginuser.joindate}"/></td>
+		         	<td><input type="text" style="border: none;" name="joindate" value="${loginuser.joindate}" readonly/></td>
 		         </tr>
 		          <tr>
 		         	<th>직급</th>
-		         	<td><input type="text" style="border: none;" name="position" value="${loginuser.position}"/></td>
+		         	<td><input type="text" style="border: none;" name="position" value="${loginuser.position}" readonly/></td>
 		         	<th>재직기간</th>
-		         	<td><input type="text" style="border: none;"/></td>
+		         	<td><input type="text" style="border: none;" readonly/></td>
 		         </tr>
-		         <tr>
-		         	<th>사용용도</th>
-		         	<td><input type="text" style="border: none;" id="modalissueuse" name="issueuse" value="${proofList.issueuse}" /></td>
-		         	<th></th>
-		         	<td><input type="text" style="border: none;"/></td>
-		         </tr>
+		       
 	         </tbody>
          </table>
          
          <div class="float-center mt-5" style="font-size: 16px;">
-        	 <div> 2022년 11월 15일 </div> 현재날짜 넣기
+        	 <input type="text"  style="border: none;" name="issuedate" value="${emp.issuedate}" readonly/>
         	 <div>(주) Groovy</div>
          </div>
          
@@ -254,5 +275,5 @@
     </div>
  </div>
 
-	 --%>
+
 

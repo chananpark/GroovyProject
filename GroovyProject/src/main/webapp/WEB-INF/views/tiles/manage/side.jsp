@@ -113,25 +113,25 @@
     <c:if test="${sessionScope.loginuser != null && loginuser.department ==  '인사총무팀'}"> 
 	    <div id="manage_menu">인사관리</div>
 	    <ul>
-		    <li class="menu topMenu admenu1 nav-item ">▶사원정보
+		    <li class="menu topMenu admenu1 nav-item subadmenu">▶사원정보
 		      <ul class="menu subMenus admenu2 eachmenu3">
 		      	<li><a class="nav-link" href="<%= ctxPath%>/manage/admin/searchInfoAdmin.on">사원조회</a></li>		
 		        <li><a class="nav-link" href="<%= ctxPath%>/manage/admin/registerInfo.on">사원등록</a></li> 
 		      </ul> 
 		    </li>
 		    
-		    <li class="menu topMenu admenu1 nav-item ">▶경조비관리
+		    <li class="menu topMenu admenu1 nav-item subadmenu">▶경조비관리
 		      <ul class="menu subMenus admenu2 eachmenu4">
 		        <li><a class="nav-link" href="<%= ctxPath%>/manage/admin/receiptCelebrateStatus.on">경조비신청현황</a></li>  
 		        <li><a class="nav-link" href="<%= ctxPath%>/manage/admin/receiptcelebrateList.on">경조비지급목록</a></li>  
 		      </ul> 
 		    </li>
 		    
-		    <li class="menu topMenu admenu1 nav-item ">
+		    <li class="menu topMenu admenu1 nav-item subadmenu ">
 		      <a class="nav-link" href="<%= ctxPath%>/manage/proof/proofEmploymentSearch.on">▶ 재직증명서</a> 
 		    </li>
 		    
-		     <li class="menu topMenu admenu1 nav-item ">▶급여관리
+		     <li class="menu topMenu admenu1 nav-item subadmenu">▶급여관리
 		       <ul class="menu subMenus admenu2 eachmenu5">
 		      	<li><a class="nav-link" href="<%= ctxPath%>/manage/pay/paySearchAdmin.on">급여조회</a></li>		
 		      	<li><a class="nav-link" href="<%= ctxPath%>/manage/pay/overtimepaySearchAdmin.on">기본외수당조회</a></li>	

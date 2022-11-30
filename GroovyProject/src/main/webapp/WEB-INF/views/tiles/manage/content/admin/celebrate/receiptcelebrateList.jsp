@@ -2,6 +2,7 @@
     pageEncoding="UTF-8"%>
 
 <% String ctxPath = request.getContextPath(); %>   
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
     
 <!-- Font Awesome 5 Icons !!이걸써줘야 아이콘웹에서 아이콘 쓸 수 있다!!-->
@@ -67,7 +68,8 @@
 
 	$(document).ready(function(){
 		
-		 $('.eachmenu4').show();
+		$('.subadmenu').show();
+		$('.eachmenu4').show();
 		
 	}); // end of $(document).ready(function(){
 		
@@ -95,10 +97,10 @@
 		<h4>경조비관리</h4>
 	</div>
 	
-	<div class='mx-4' style="background-color:#e3f2fd; width: 100%; height: 45px;">
+	<div class='mx-4'  style="background-color:#e3f2fd; width: 100%; height: 45px;">
 		<div style="margin-left: 73%;" class="pt-1">
 			<span>
-				<select style="width: 100px; border:solid 1px #cccccc;" name="searchType">
+				<select style="width: 100px; border:solid 1px #cccccc;" name="searchType"> 
 					<option> ====== </option>
 					<option value="1">명절상여금</option>
 					<option value="2">생일상여금</option>
@@ -106,10 +108,10 @@
 				</select> 
 			</span>
 			<input type="text"style="width: 120px; border:solid 1px #cccccc;" name="searchWord"/>
-			<button class="btn btn-sm mr-3" style="background-color: #086BDE; color:white;"><i class="fas fa-search"></i>검색</button>
+			<button class="btn btn-sm" style="background-color: #086BDE; color:white; width: 60px;font-size:14px;"><i class="fas fa-search"></i>검색</button>
 		</div>
 	</div>
-
+	
 
 	
 	<div style="margin-top: 7%;">
@@ -117,7 +119,6 @@
 	<table class="table table-bordered table-sm mx-4 ">
 		<thead>
 			<tr>
-				<th>No</th>
 				<th>신청번호</th>
 				<th>사원번호</th>
 				<th>사원명</th>
@@ -128,16 +129,18 @@
 			</tr>
 		</thead>
 		<tbody onclick="go_detailCelebrate" data-toggle="modal" data-target="#detailCelebrate">
+		<c:forEach var="allemp" items="${requestScope.celebList}" varStatus="status">
 			<tr class="text-center border">
-				<td>1</td>
-				<td>223</td>
-				<td>p234234</td>
-				<td>김민수</td>
-				<td>생일상여금</td>
-				<td>200,000</td>
-				<td>승인(완료)</td>
-				<td>2022-11-12</td>
+				<td>${allemp.clbno}</td>
+				<td>${allemp.fk_empno}</td>
+				<td></td>
+				<td>${allemp.clbtype}</td>
+				<td>${allemp.clbpay}</td>
+				<td><c:choose><c:when test=" ${allemp.clbstatus eq '1'}">승인(완료)</c:when><c:otherwise>미승인</c:otherwise></c:choose></td>
+				<td>${allemp.clbno}</td>
+				<td>${allemp.clbdate}</td>
 			</tr>
+			</c:forEach>
 		</tbody>
 	</table>
 	</div>

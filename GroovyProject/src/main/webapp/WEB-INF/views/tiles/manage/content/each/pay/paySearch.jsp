@@ -134,30 +134,33 @@
 		<table class="table table-bordered table-sm mx-4 ">
 			<thead>
 				<tr>
-					<th>No</th>
-					<th>지급기준일</th>
 					<th>사원번호</th>
 					<th>사원명</th>
+					<th>부문</th>
 					<th>부서</th>
+					<th>직급</th>
 					<th>지급총액</th>
-					<th>공제급액</th>
+					<th>공제총액</th>
 					<th>실지급액</th>
+					<th>지급일</th>
 				</tr>
 			</thead>
 			<tbody  onclick="go_detailInfo">
 				<tr class="text-center border" id="list">
-					<td>1</td>
-					<td>223</td>
-					<td>${requestScope.loginuser.empno }</td>
-					<td>김민수</td>
-					<td>200,000</td>
-					<td>완료</td>
-					<td>2022-11-12</td>
+					<td>${loginuser.empno}</td>
+					<td>${loginuser.name}</td>
+					<td>${loginuser.bumun}</td>
+					<td>${loginuser.department}</td>
+					<td>${loginuser.position}</td>
+					<td></td>
+					<td></td>
+					<td></td>
+					<td></td>
 				</tr>
 			</tbody>
 		</table>
 	</div>
-	
+	<div>${pagebar}</div>
 	
 	<div class="mt-5" id="detailPay">
 		<h5 class='mx-4'>급여상세</h5>

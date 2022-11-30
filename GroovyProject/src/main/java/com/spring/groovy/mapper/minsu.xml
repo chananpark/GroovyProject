@@ -120,8 +120,11 @@
 	
 	
 	
-	
-	
+	<!-- 공용 증명서 - 월급리스트 -->
+	<select id="paySearch" parameterType="HashMap" resultType="com.spring.groovy.management.model.PayVO">
+		select payno, fk_empno, pay, annualpay, overtimepay, paymentdate
+		from tbl_pay
+	</select>
 	
 	
 	
@@ -195,7 +198,12 @@
 
 
 	
-	
+	<!-- 관리자 사원관리 - 경조비지급목록 -->
+	<select id="receiptcelebrateList" resultType="com.spring.groovy.management.model.CelebrateVO" parameterType="com.spring.groovy.management.model.CelebrateVO">
+		select name, payno, fk_empno, pay, annualpay, overtimepay, paymentdate
+		from tbl_pay P join tbl_employee e
+		on p.fk_empno = e.empno
+	</select>
 	
 	
 	

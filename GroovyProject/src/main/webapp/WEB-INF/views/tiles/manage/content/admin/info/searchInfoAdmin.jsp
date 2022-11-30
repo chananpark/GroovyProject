@@ -42,6 +42,7 @@
 
 	$(document).ready(function(){
 	
+		$('.subadmenu').show();
 		$('.eachmenu3').show();
 		
 		// *** select 태그에 대한 이벤트는 click이 아닌 change이다. ***//

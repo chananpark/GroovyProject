@@ -1,7 +1,6 @@
 package com.spring.groovy.management.controller;
 
 
-import java.lang.reflect.Member;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +21,7 @@ import com.spring.groovy.common.FileManager;
 import com.spring.groovy.common.Pagination;
 import com.spring.groovy.management.model.CelebrateVO;
 import com.spring.groovy.management.model.MemberVO;
+import com.spring.groovy.management.model.PayVO;
 import com.spring.groovy.management.model.ProofVO;
 import com.spring.groovy.management.service.InterManagementService;
 
@@ -232,15 +232,24 @@ public class ManagementController {
 	}
 	
 	
-	//공용 증명서 -  급여관리(급여조회)
+	
+	
+	// ====== 나중에 꼭 하기!! ===== //
+	//공용 증명서 - 급여관리(급여조회)
 	@RequestMapping(value="/manage/pay/paySearch.on")
-	public ModelAndView paySearch(ModelAndView mav, HttpServletRequest request) {
+	public ModelAndView paySearch(ModelAndView mav, HttpServletRequest request, PayVO pvo) {
 		
-
 		HttpSession session = request.getSession();
 		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
 		
+		Map<String,Object> paramap = new HashMap<>();
+		paramap.put("pvo", pvo);
+		
+		// 공용 증명서 - 월급리스트
+		List<PayVO> payList = service.paySearch(paramap);
+		
 		mav.addObject("loginuser", loginuser);
+		mav.addObject("payList", payList);
 		mav.setViewName( "manage/each/pay/paySearch.tiles");
 		return mav;
 	}
@@ -363,9 +372,18 @@ public class ManagementController {
 
 	//관리자 사원관리 - 경조비지급목록
 	@RequestMapping(value="/manage/admin/receiptcelebrateList.on")
-	public String receiptcelebrateList(HttpServletRequest request) {
+	public ModelAndView receiptcelebrateList(ModelAndView mav, HttpServletRequest request, CelebrateVO cvo, MemberVO mvo) {
+
 		
-		return "manage/admin/celebrate/receiptcelebrateList.tiles";
+		Map<String,Object> paramap = new HashMap<>();
+		paramap.put("cvo", cvo);
+		paramap.put("mvo", mvo);
+		
+		List<Map<String,Object>> celebList = service.receiptcelebrateList(paramap);
+		
+		mav.addObject("celebList", celebList);
+		mav.setViewName("manage/admin/celebrate/receiptcelebrateList.tiles");
+		return mav;
 	}
 
 
