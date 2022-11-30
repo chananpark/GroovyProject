@@ -80,7 +80,7 @@ const goWriteForm = () => {
 		<a id="home" class="nav-link" href="<%=ctxPath%>/approval/home.on">홈</a>
     </li>
     <li class="nav-item">
-		<a id="requestedList" class="nav-link" href="<%=ctxPath%>/approval/requested.on">결재하기<span class="badge badge-pill badge-primary ml-1">7</span></a>
+		<a id="requestedList" class="nav-link" href="<%=ctxPath%>/approval/requested.on">결재하기</a>
     </li>
     <li class="nav-item topMenu">개인 문서함
 		<ul class='subMenus personalMenu'>

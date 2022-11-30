@@ -365,20 +365,27 @@ const getMyApprovalLine = () => {
 		url:"<%=ctxPath%>/approval/getSavedAprvLine.on",
 		dataType:"json",
 		success : function(aprvLine){
+
 			// 저장된 결재라인 불러오기
 			let html = "";
-			aprvLine.forEach((el, index) => {
-				html += "<tr>"
-						+ "<td><input type='radio' name='aprvLine' value=" + el.aprv_line_no + " id='" + index + "'></td>" 
-						+ "<td><label for='" + index + "'>" + el.aprv_line_name + "</label></td>"
-						+ "</tr>";
-			});
+			
+			if (aprvLine.length > 0) {
+				aprvLine.forEach((el, index) => {
+					html += "<tr>"
+							+ "<td><input type='radio' name='aprvLine' value=" + el.aprv_line_no + " id='radio" + index + "'></td>" 
+							+ "<td><label for='radio" + index + "'>" + el.aprv_line_name + "</label></td>"
+							+ "</tr>";
+				});
+			} else {
+				html = "<tr><td colspan='2' style='text-align: center'>저장된 결재라인이 없습니다.</td></tr>";
+			}
 			
 			$("#modalBody").html(html);
 			
 			$("#myApprovalLineModal").modal();
 			
 			$("#lineOkBtn").click(()=>{
+
 				// 결재자 정보 검색하기
 				getApprovalEmpInfo(aprvLine);
 			});
@@ -390,19 +397,23 @@ const getMyApprovalLine = () => {
 	
 }
 
-/* 선택한 저장된 결재라인 출력하기 */
+/* 선택한 저장된 결재자 출력하기 */
 const getApprovalEmpInfo = aprvLine => {
 	const selectedNo = $('input[name=aprvLine]:checked').val();
 	
 	const selectedAprvLine = aprvLine.filter(el => el.aprv_line_no == selectedNo);
+	
+	if (selectedAprvLine.length == 0) {
+		swal("선택된 결재라인이 없습니다.");
+		return;
+	}
 	
 	$.ajax({
 		type: "GET",
 		url:"<%=ctxPath%>/approval/getSavedAprvEmpInfo.on",
 		data: {"selectedAprvLine": JSON.stringify(selectedAprvLine)},
 		dataType:"json",
-		success : function(json){
-						
+		success : function(json){		
 			emptyApprovalLine();
 			
 			json.forEach((emp, index) => {
@@ -442,9 +453,9 @@ const selectApprovalLine = empno => {
 
 /* 선택된 결재자 출력하기 */
 const receiveMessage = async (e) =>
-{
+{	
    	const jsonArr = e.data;
-
+	
    	// 선택된 사원을 테이블에 표시함
 	jsonArr.forEach((emp, index) => {
 
@@ -655,14 +666,6 @@ const emptyApprovalLine = () => {
 		      </tr>
 		    </thead>
 		    <tbody id="modalBody">
-		      <tr>
-		        <td><input type="radio"/></td>
-		        <td>기본 결재라인</td>
-		      </tr>
-		      <tr>
-		        <td><input type="radio"/></td>
-		        <td>간략 결재라인</td>
-		      </tr>
 		    </tbody>
 		</table>
 	</div>

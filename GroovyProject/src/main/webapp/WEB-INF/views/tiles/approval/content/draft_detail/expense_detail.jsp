@@ -93,28 +93,21 @@ a {
 // 합계용 전역변수
 let sum = 0;
 
-const avoList = new Array();
-let obj;
-
-<c:forEach items="${draftMap.avoList}" var="avo">
-	obj = new Object();
-	obj.fk_approval_empno = "${avo['fk_approval_empno']}";
-	obj.levelno = "${avo['levelno']}";
-	obj.approval_status = "${avo['approval_status']}";
-	obj.external = "${avo['external']}";
-	
-	avoList.push(obj);
-</c:forEach>
+// 전체 결재자 리스트
+const avoList = JSON.parse('${avoList}');
 
 // 내 결재정보
 const myApprovalInfo = avoList.filter(el => el.fk_approval_empno == "${loginuser.empno}")[0];
 
+//내 앞 결재자의 정보
+let priorApprovalInfo;
+
+//내 다음 결재자의 정보
+let nextApprovalInfo;
+
 if (myApprovalInfo != null) {
-	// 내 앞 결재자의 정보
-	const priorApprovalInfo = avoList.filter(el => (Number(myApprovalInfo.levelno) - 1) == el.levelno)[0];
-	
-	// 내 다음 결재자의 정보
-	const nextApprovalInfo = avoList.filter(el => (Number(myApprovalInfo.levelno) + 1) == el.levelno)[0];
+	priorApprovalInfo = avoList.filter(el => (Number(myApprovalInfo.levelno) - 1) == el.levelno)[0];
+	nextApprovalInfo = avoList.filter(el => (Number(myApprovalInfo.levelno) + 1) == el.levelno)[0];
 }
 
 $(()=>{
@@ -123,20 +116,18 @@ $(()=>{
 	$("#myComment").hide();
 	$(".myApprovalBtn").hide();
 	$(".proxyApprovalBtn").hide();
-	
 
+	// 내가 결재라인에 있을때
 	if (myApprovalInfo != null) {
-		let aa = myApprovalInfo.approval_status;
-		let bb = myApprovalInfo.levelno;
-		let cc= priorApprovalInfo.approval_status;
 		
-		// 결재라인에 내가 있고, 결재상태가 0이며, 나보다 앞 결재자의 결재상태가 1이거나 내가 첫번째 결재자일 때만 결재의견 작성란, 승인|반려 버튼 표시
-		if (myApprovalInfo.approval_status == 0 && myApprovalInfo.levelno == 1 || priorApprovalInfo.approval_status == 1) {
+		// 내 결재상태가 0이며, 나보다 앞 결재자의 결재상태가 1이거나 내가 첫번째 결재자일 때만 결재의견 작성란, 승인|반려 버튼 표시
+		if ( (myApprovalInfo.approval_status == 0 && myApprovalInfo.levelno == 1) || 
+				(priorApprovalInfo !== undefined && priorApprovalInfo.approval_status == 1)) {
 			$("#myComment").show();
 			$(".myApprovalBtn").show();
 		}
-		// 결재라인에 내가 있고, 결재상태가1이며, 나보다 다음 결재자의 결재상태가 0일 때만 대결 버튼 표시
-		if (myApprovalInfo.approval_status == 1 && nextApprovalInfo.approval_status == 0) {
+		// 내 결재상태가1이며, 나보다 다음 결재자의 결재상태가 0일 때만 대결 버튼 표시
+		if (myApprovalInfo.approval_status == 1 && nextApprovalInfo !== undefined && nextApprovalInfo.approval_status == 0) {
 			$(".proxyApprovalBtn").show();
 		}
 	}	
@@ -277,35 +268,85 @@ const updateApproval = approval_status => {
 					<tr>
 						<th rowspan='5' style='font-size: medium; vertical-align: middle;'>결<br>재<br>선</th>
 					</tr>
-					<tr>
-					<c:forEach items="${draftMap.avoList}" var="avo" varStatus="sts">
-						<td>${avo.position}</td>
-					</c:forEach>
+					<tr class='in position'>
 					</tr>
-					<tr>
-					<c:forEach items="${draftMap.avoList}" var="avo">
-						<td>
-						<c:if test="${avo.approval_status == 1 }">
-							<img src='<%=ctxPath%>/resources/images/${avo.signimg}' width="100"/>
-						</c:if>
-						<c:if test="${avo.approval_status == 2 || avo.approval_status == -1 }">
-							<h3 class='text-danger'>반려</h3>
-						</c:if>
-						</td>
-					</c:forEach>
+					<tr class='in approval_status'>
 					</tr>
-					<tr>
-					<c:forEach items="${draftMap.avoList}" var="avo">
-						<td>${avo.name}</td>
-					</c:forEach>
+					<tr class='in name'>
 					</tr>
-					<tr>
-					<c:forEach items="${draftMap.avoList}" var="avo">
-						<td>${fn:substring(avo.approval_date,0,10)}</td>
-					</c:forEach>
+					<tr class='in approval_date'>
 					</tr>
 				</table>
 			</div>
+			<script>
+				const internalList = JSON.parse('${internalList}');
+				const externalList = JSON.parse('${externalList}');
+				
+				let html = "";
+				internalList.forEach(el => {
+					html = "<td>" + el.position + "</td>";
+					$("tr.in.position").append(html);
+					
+					let approval_status = "";
+					if (el.approval_status == 1)
+						approval_status = "<img src='<%=ctxPath%>/resources/images/"+el.signimg+"' width='100'/>";
+					else if (el.approval_status == 2 || el.approval_status == -1) 
+						approval_status = "<h3 class='text-danger'>반려</h3>";
+
+					html = "<td>"+approval_status+"</td>";					
+					$("tr.in.approval_status").append(html);
+					
+					html = "<td>" + el.name + "</td>";
+					$("tr.in.name").append(html);
+					
+					let approval_date = el.approval_date || "";
+					html = "<td>" + approval_date.substring(0,10) + "</td>";
+					$("tr.in.approval_date").append(html);
+				});
+				
+			</script>
+			<!-- 수신처 -->
+			<c:if test="${externalList != '[]'}">
+			<div class='approvalLineInfo' style='width: 40%; clear:both'>
+				<table class='mr-4 table table-sm table-bordered text-left'>
+					<tr>
+						<th rowspan='5' style='font-size: medium; vertical-align: middle;'>수<br>신</th>
+					</tr>
+					<tr class='position ex'>
+					</tr>
+					<tr class='approval_status ex'>
+					</tr>
+					<tr class='name ex'>
+					</tr>
+					<tr class='approval_date ex'>
+					</tr>
+				</table>
+			</div>
+			</c:if>
+			<script>
+				html = "";
+				externalList.forEach(el => {
+					html = "<td>" + el.position + "</td>";
+					$("tr.ex.position").append(html);
+					
+					let approval_status = "";
+					if (el.approval_status == 1)
+						approval_status = "<img src='<%=ctxPath%>/resources/images/"+el.signimg+"' width='100'/>";
+					else if (el.approval_status == 2 || el.approval_status == -1) 
+						approval_status = "<h3 class='text-danger'>반려</h3>";
+
+					html = "<td>"+approval_status+"</td>";					
+					$("tr.ex.approval_status").append(html);
+					
+					html = "<td>" + el.name + "</td>";
+					$("tr.ex.name").append(html);
+					
+					let approval_date = el.approval_date || "";
+					html = "<td>" + approval_date.substring(0,10) + "</td>";
+					$("tr.ex.approval_date").append(html);
+				});
+				
+			</script>
 			<!-- 결재라인 끝 -->
 			
 			<div style="clear:both; padding-top: 8px; margin-bottom: 30px;">

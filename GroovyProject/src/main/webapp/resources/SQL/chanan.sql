@@ -300,10 +300,12 @@ on empno = fk_draft_empno
 
 
 -- 개인문서함 결재함 목록 뷰 --
-create or replace view view_my_draft_processed
+create or replace view view_draft_processed
 as
-SELECT case when DRAFT_status = 0 then null else APPROVAL_DATE end as APPROVAL_DATE, DRAFT_DATE, FK_DRAFT_TYPE_NO, DRAFT_TYPE, DRAFT_NO,
-FK_DRAFT_EMPNO, NAME as DRAFT_EMP_NAME, fk_approval_empno, DRAFT_SUBJECT,department as draft_DEPARTMENT, urgent_status, DRAFT_status
+SELECT case when DRAFT_status = 0 then null else APPROVAL_DATE end as APPROVAL_DATE, 
+DRAFT_DATE, FK_DRAFT_TYPE_NO, DRAFT_TYPE, DRAFT_NO,
+FK_DRAFT_EMPNO, NAME as DRAFT_EMP_NAME, fk_approval_empno, DRAFT_SUBJECT, 
+department as draft_DEPARTMENT, urgent_status, DRAFT_status
 FROM TBL_DRAFT JOIN (select APPROVAL_DATE, approval_STATUS, fk_approval_empno, FK_DRAFT_NO from tbl_approval)
 ON DRAFT_NO = FK_DRAFT_NO
 and approval_STATUS IN (1,2) join
