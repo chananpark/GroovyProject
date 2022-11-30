@@ -290,7 +290,7 @@ const updateApproval = approval_status => {
 					let approval_status = "";
 					if (el.approval_status == 1)
 						approval_status = "<img src='<%=ctxPath%>/resources/images/"+el.signimg+"' width='100'/>";
-					else if (el.approval_status == 2 || el.approval_status == -1) 
+					else if (el.approval_status == 2) 
 						approval_status = "<h3 class='text-danger'>반려</h3>";
 
 					html = "<td>"+approval_status+"</td>";					
@@ -332,7 +332,7 @@ const updateApproval = approval_status => {
 					let approval_status = "";
 					if (el.approval_status == 1)
 						approval_status = "<img src='<%=ctxPath%>/resources/images/"+el.signimg+"' width='100'/>";
-					else if (el.approval_status == 2 || el.approval_status == -1) 
+					else if (el.approval_status == 2) 
 						approval_status = "<h3 class='text-danger'>반려</h3>";
 
 					html = "<td>"+approval_status+"</td>";					
@@ -411,7 +411,9 @@ const updateApproval = approval_status => {
 				</tr>
 				<c:forEach items="${draftMap.dfvoList}" var="file">
 				<tr>
-					<td class='p-2'><a href=#>${file.originalFilename} (${file.filesize}Byte)</a></td>
+					<td class='p-2'>
+					<a href="<%=ctxPath%>/approval/download.on?draft_file_no=${file.draft_file_no}">${file.originalFilename} (${file.filesize}Byte)</a>
+					</td>
 				</tr>
 				</c:forEach>
 			</table>

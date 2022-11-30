@@ -357,6 +357,18 @@ public class ApprovalService implements InterApprovalService {
 		return dao.getRecipientList(type_no);
 	}
 
+	// 첨부파일 1개 조회
+	@Override
+	public DraftFileVO getAttachedFile(String draft_file_no) {
+		return dao.getAttachedFile(draft_file_no);
+	}
+
+	// 환경설정-저장된 결재라인 한개 불러오기
+	@Override
+	public List<MemberVO> getOneAprvLine(String aprv_line_no) {
+		return dao.getOneAprvLine(aprv_line_no);
+	}
+
 
 }
 	

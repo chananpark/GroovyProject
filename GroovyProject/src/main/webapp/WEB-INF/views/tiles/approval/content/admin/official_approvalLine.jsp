@@ -75,7 +75,7 @@ $(()=>{
 	    } else {
 	      panel.style.display = "block";
 	    }
-	    getAprvLine(this.id)
+	    getAprvLine(this.id);
 	  });
 	}
 });

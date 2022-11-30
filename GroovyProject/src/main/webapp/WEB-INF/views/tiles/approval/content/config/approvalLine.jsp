@@ -66,6 +66,7 @@ $(()=>{
 	    } else {
 	      panel.style.display = "block";
 	    }
+	    getAprvLine(this.id);
 	  });
 	}
 	
@@ -95,6 +96,37 @@ $(()=>{
 	});
 	
 });
+
+//결재라인 불러오기
+const getAprvLine = (aprv_line_no) => {
+	
+    $.ajax({
+        url : "<%=ctxPath%>/approval/admin/getOneAprvLine.on",
+        type:'GET',
+        data: {'aprv_line_no': aprv_line_no},
+        dataType:'json',
+        cache:false,
+        success : function(json){
+			const aprvTblBody = $("#body"+aprv_line_no);
+			aprvTblBody.empty();
+        	
+			json.forEach((emp, index) => {
+
+				var html = "<tr>"
+			 			+ "<td class='levelno'>" + (index+1) + "</td>"
+						+ "<td class='department'>" + emp.department + "</td>"
+						+ "<td class='position'>" + emp.position + "</td>"
+						+ "<input type='hidden' name='fk_approval_empno' value='" + emp.empno + "'></td>"
+						+ "<td class='name'>" + emp.name + "</td></tr>";
+					
+				aprvTblBody.append(html);
+			});
+		},
+        error: function(request, status, error){
+		alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+		}
+    });
+}
 </script>
 
 <div style='margin: 1% 0 5% 1%'>
@@ -110,46 +142,29 @@ $(()=>{
 	  <button type="button" class="btn btn-light" onclick="location.href='<%=ctxPath%>/approval/config/approvalLine/add.on'">결재라인 추가</button>
 	</div>
 	
-	<button class="accordion"><i class="fas fa-chevron-down mr-2"></i>기본결재라인</button>
-	<div class='panel'>
-		<div class='approvalLine mb-4'>
-			<div class='my-4'>
-				<button type="button" class="btn btn-sm" id='editBtn'>수정</button>
-				<button type="button" class="btn btn-sm btn-light" id='deleteBtn'>삭제</button>
-				<span class='ml-2'>결재라인 수정 후 반드시 저장버튼을 클릭해주세요.</span>
-				<button type="button" class="btn btn-sm" id='saveBtn'>저장</button>
+	<c:forEach items="${aprvLineList}" var="item">
+		<button class="accordion" id='${item.aprv_line_no}'> <i class="fas fa-chevron-down mr-2"></i>${item.aprv_line_name}</button>
+		<div class='panel'>
+			<div class='approvalLine mb-4'>
+				<div class='my-4'>
+					<button type="button" class="btn btn-sm" id='editBtn'>수정</button>
+					<span class='ml-2'>결재라인 수정 후 반드시 저장버튼을 클릭해주세요.</span>
+					<button type="button" class="btn btn-sm" id='saveBtn'>저장</button>
+				</div>
+	
 			</div>
-
+			<table class="table">
+				<thead>
+					<tr>
+						<th>순서</th>
+						<th>소속</th>
+						<th>직급</th>
+						<th>성명</th>
+					</tr>
+				</thead>
+				<tbody id='body${item.aprv_line_no}'>
+				</tbody>
+			</table>
 		</div>
-		<table class="table">
-		    <thead>
-		      <tr>
-		        <th>순서</th>
-		        <th>소속</th>
-		        <th>직급</th>
-		        <th>성명</th>
-		      </tr>
-		    </thead>
-		    <tbody>
-		      <tr>
-		        <td>1</td>
-		        <td>개발팀</td>
-		        <td>책임</td>
-		        <td>김개발</td>
-		      </tr>
-		      <tr>
-		        <td>2</td>
-		        <td>개발팀</td>
-		        <td>팀장</td>
-		        <td>윤팀장</td>
-		      </tr>
-		      <tr>
-		        <td>3</td>
-		        <td>이사실</td>
-		        <td>CEO</td>
-		        <td>찰스 데이비드 황</td>
-		      </tr>
-		    </tbody>
-		  </table>
-		</div>
+	</c:forEach>
 </div>

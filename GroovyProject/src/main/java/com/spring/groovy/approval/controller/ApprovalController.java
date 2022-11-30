@@ -1,6 +1,8 @@
 package com.spring.groovy.approval.controller;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -9,6 +11,7 @@ import java.util.Locale;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.beanutils.BeanUtils;
@@ -129,6 +132,58 @@ public class ApprovalController {
 		mav.addObject("externalList", String.valueOf(externalList));
 		return mav;
 	}
+	
+	// 파일 다운로드
+	@ResponseBody
+	@RequestMapping(value = "/download.on")
+	public void fileDownload(HttpServletRequest request, HttpServletResponse response) {
+		
+		// 첨부파일 번호
+		String draft_file_no = request.getParameter("draft_file_no");
+		
+		response.setContentType("text/html; charset=UTF-8");
+		PrintWriter out = null;
+
+		try {
+			DraftFileVO dfvo = service.getAttachedFile(draft_file_no); // 파일 조회
+			
+			// 글번호가 없거나 파일 이름이 없다면
+			if (dfvo == null || (dfvo != null && dfvo.getFilename() == null)) {
+				out = response.getWriter();
+				out.println("<script type='text/javascript'>alert('존재하지 않는 파일입니다.'); history.back();</script>");
+				return;
+			}
+			
+			String filename = dfvo.getFilename(); // 저장된 파일 이름
+			String originalFilename = dfvo.getOriginalFilename(); // 원본 파일 이름
+			
+			// 첨부파일이 저장되어 있는 WAS 서버의 디스크 경로명을 알아온다.
+			HttpSession session = request.getSession();
+			String root = session.getServletContext().getRealPath("/");
+			
+			String path = root+"resources"+File.separator+"files";
+			
+			boolean flag = false;// file 다운로드 성공, 실패를 알려주는 용도
+			
+			// FileManager의 파일 다운로드 메소드 호출
+			flag = fileManager.doFileDownload(filename, originalFilename, path, response);
+			
+			if (!flag) { // 파일 다운로드 실패 시
+				out = response.getWriter();
+				out.println("<script type='text/javascript'>alert('파일 다운로드 실패');</script>");
+			}
+			
+		} catch (IOException e) { // 입출력예외가 발생한 경우
+			try {
+				e.printStackTrace();
+				out = response.getWriter();
+				out.println("<script type='text/javascript'>alert('파일 다운로드 불가');</script>");
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+		}
+	}
+	
 	
 	// 개인문서함-상신함 페이지요청
 	@SuppressWarnings("unchecked")
@@ -536,6 +591,7 @@ public class ApprovalController {
 		return jsonObj.toString();
 	}
 	
+	// 파일 업로드하기
 	private void upLoadFiles(MultipartHttpServletRequest mtfRequest, List<DraftFileVO> fileList) {
 		// 파일 업로드 경로 지정
 		HttpSession session = mtfRequest.getSession();
@@ -698,9 +754,38 @@ public class ApprovalController {
 
 	// 환경설정-결재라인관리 페이지요청
 	@RequestMapping(value = "/config/approvalLine.on")
-	public String configApprovalLine(HttpServletRequest request) {
+	public ModelAndView configApprovalLine(ModelAndView mav, HttpServletRequest request) {
+		MemberVO loginuser = getLoginUser(request);
 
-		return "approval/config/approvalLine.tiles";
+		Map<String, String> paraMap = new HashMap<>();
+		paraMap.put("empno", loginuser.getEmpno());
+		
+		// 저장된 결재라인 목록 불러오기
+		List<SavedAprvLineVO> aprvLineList = service.getSavedAprvLine(paraMap);
+		
+		mav.addObject("aprvLineList", aprvLineList);
+		mav.setViewName("approval/config/approvalLine.tiles");
+		return mav;
+	}
+	
+	// 환경설정-저장된 결재라인 한개 불러오기
+	@ResponseBody
+	@RequestMapping(value = "/admin/getOneAprvLine.on", produces = "text/plain;charset=UTF-8")
+	public String getOneAprvLine(HttpServletRequest request) {
+
+		String aprv_line_no = request.getParameter("aprv_line_no");
+
+		List<MemberVO> savedAprvLine = service.getOneAprvLine(aprv_line_no); 
+
+		JSONArray aprvArray = new JSONArray();
+
+		for (MemberVO emp : savedAprvLine) {
+			JSONObject json = new JSONObject(emp);
+			aprvArray.put(json);
+		}
+
+		return aprvArray.toString();
+		
 	}
 
 	// 환경설정-결재라인 추가 페이지요청

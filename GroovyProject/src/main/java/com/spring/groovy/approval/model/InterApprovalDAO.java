@@ -115,10 +115,16 @@ public interface InterApprovalDAO {
 	// 출장보고 select
 	BiztripReportVO getBiztripReportInfo(DraftVO dvo);
 	
+	// 첨부파일 1개 조회
+	DraftFileVO getAttachedFile(String draft_file_no);
+	
 	// 결재 처리하기
 	int updateApproval(ApprovalVO avo);
 
 	// 공통 결재라인 가져오기
 	List<MemberVO> getRecipientList(String type_no);
+	
+	// 환경설정-저장된 결재라인 한개 불러오기
+	List<MemberVO> getOneAprvLine(String aprv_line_no);
 
 }

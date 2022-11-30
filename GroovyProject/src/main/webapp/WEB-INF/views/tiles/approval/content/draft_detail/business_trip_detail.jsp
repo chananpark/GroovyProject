@@ -241,19 +241,19 @@ const updateApproval = approval_status => {
 				<table class='table table-bordered text-left'>
 					<tr>
 						<th>기안자</th>
-						<td>구루비</td>
+						<td>${draftMap.dvo.draft_emp_name}</td>
 					</tr>
 					<tr>
 						<th>소속</th>
-						<td>신사업개발팀</td>
+						<td>${draftMap.dvo.draft_department}</td>
 					</tr>
 					<tr>
 						<th>기안일</th>
-						<td>2022-11-15(수)</td>
+						<td>${fn:substring(draftMap.dvo.draft_date,0,10)}</td>
 					</tr>
 					<tr>
 						<th>문서번호</th>
-						<td>20221115-01</td>
+						<td>${draftMap.dvo.draft_no}</td>
 					</tr>
 				</table>
 			</div>
@@ -287,7 +287,7 @@ const updateApproval = approval_status => {
 					let approval_status = "";
 					if (el.approval_status == 1)
 						approval_status = "<img src='<%=ctxPath%>/resources/images/"+el.signimg+"' width='100'/>";
-					else if (el.approval_status == 2 || el.approval_status == -1) 
+					else if (el.approval_status == 2) 
 						approval_status = "<h3 class='text-danger'>반려</h3>";
 
 					html = "<td>"+approval_status+"</td>";					
@@ -329,7 +329,7 @@ const updateApproval = approval_status => {
 					let approval_status = "";
 					if (el.approval_status == 1)
 						approval_status = "<img src='<%=ctxPath%>/resources/images/"+el.signimg+"' width='100'/>";
-					else if (el.approval_status == 2 || el.approval_status == -1) 
+					else if (el.approval_status == 2) 
 						approval_status = "<h3 class='text-danger'>반려</h3>";
 
 					html = "<td>"+approval_status+"</td>";					
@@ -362,8 +362,8 @@ const updateApproval = approval_status => {
 				<tr>
 					<th>출장기간</th>
 					<td>
-						${draftMap.brvo.trip_start_date} ~ 
-						${draftMap.brvo.trip_end_date}
+						${fn:substring(draftMap.brvo.trip_start_date,0,10)} ~ 
+						${fn:substring(draftMap.brvo.trip_end_date,0,10)}
 					</td>
 				</tr>
 				<tr>
@@ -387,7 +387,9 @@ const updateApproval = approval_status => {
 				</tr>
 				<c:forEach items="${draftMap.dfvoList}" var="file">
 				<tr>
-					<td class='p-2'><a href=#>${file.originalFilename} (${file.filesize}Byte)</a></td>
+					<td class='p-2'>
+					<a href="<%=ctxPath%>/approval/download.on?draft_file_no=${file.draft_file_no}">${file.originalFilename} (${file.filesize}Byte)</a>
+					</td>
 				</tr>
 				</c:forEach>
 			</table>
