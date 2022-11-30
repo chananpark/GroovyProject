@@ -11,6 +11,7 @@ public class ApprovalVO {
 	private int approval_status; // 결재상태(0:미결, 1:결재, 2:반려, -1: 처리불가(아래에서 반려함))      
 	private String approval_comment; // 결재의견
 	private String approval_date; // 결재일자
+	private int external; // 결재선 성격(0: 내부결재, 1:외부결재)
 	
 	private String name; // 결재자 이름(join)
 	private String department; // 결재자 부서(join)
@@ -98,6 +99,12 @@ public class ApprovalVO {
 	}
 	public void setEmpimg(String empimg) {
 		this.empimg = empimg;
+	}
+	public int getExternal() {
+		return external;
+	}
+	public void setExternal(int external) {
+		this.external = external;
 	}
 	
 

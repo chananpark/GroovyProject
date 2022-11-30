@@ -1,6 +1,7 @@
 package com.spring.groovy.approval.service;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -14,8 +15,10 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.spring.groovy.approval.model.ApprovalVO;
+import com.spring.groovy.approval.model.BiztripReportVO;
 import com.spring.groovy.approval.model.DraftFileVO;
 import com.spring.groovy.approval.model.DraftVO;
+import com.spring.groovy.approval.model.ExpenseListVO;
 import com.spring.groovy.approval.model.InterApprovalDAO;
 import com.spring.groovy.approval.model.SavedAprvLineVO;
 import com.spring.groovy.management.model.MemberVO;
@@ -163,9 +166,8 @@ public class ApprovalService implements InterApprovalService {
 		result = (n == 1)? true : false;
 
 		// 기안 테이블 insert가 실패했으면 리턴
-		if (!result) {
+		if (!result)
 			return result;
-		}
 		
 		// 결재 정보 리스트
 		List<ApprovalVO> apvoList = (List<ApprovalVO>) paraMap.get("apvoList");
@@ -177,25 +179,60 @@ public class ApprovalService implements InterApprovalService {
 		// 결재 테이블 insert
 		n = dao.addApproval(apvoList);
 		result = (n == apvoList.size())? true : false;
-
+		
+		// 결재테이블 insert가 실패했으면 리턴
+		if (!result)
+			return result;
+		
 		// 첨부 파일 리스트
 		List<DraftFileVO> fileList = (List<DraftFileVO>) paraMap.get("fileList");
 		
-		// 결재테이블 insert가 실패했거나 첨부파일이 없으면 그대로 result 리턴
-		if (!result || fileList.size() == 0) {
-			return result;
+		// 첨부파일이 있다면
+		if (fileList != null && fileList.size() > 0) {
+			for (DraftFileVO dfvo : fileList) {
+				dfvo.setFk_draft_no(draft_no); // 기안번호 set하기
+			}
+			
+			// 첨부 파일 insert
+			n = dao.addFiles(fileList);
+			result = (n == fileList.size())? true : false;
+			
+			// 첨부 파일 테이블 insert가 실패했으면 리턴
+			if (!result)
+				return result;
 		}
 		
-		for (DraftFileVO dfvo : fileList) {
-			dfvo.setFk_draft_no(draft_no); // 기안번호 set하기
+		// 지출내역 리스트
+		List<ExpenseListVO> evoList = (List<ExpenseListVO>) paraMap.get("evoList");
+		
+		// 지출내역이  있다면
+		if (evoList != null && evoList.size() > 0) {
+			for (ExpenseListVO evo : evoList) {
+				evo.setFk_draft_no(draft_no); // 기안번호 set하기
+			}
+			
+			// 지출내역 insert
+			n = dao.addExpenseList(evoList);
+			result = (n == evoList.size())? true : false;
+			
+			// 지출내역 테이블 insert가 실패했으면 리턴
+			if (!result)
+				return result;
 		}
-		
-		n = dao.addFiles(fileList);
-		result = (n == fileList.size())? true : false;
-		
-		// 지출결의서라면
 		
 		// 출장보고서라면
+		BiztripReportVO brvo = (BiztripReportVO)paraMap.get("brvo");
+		if (dvo.getFk_draft_type_no() == 3) {
+			brvo.setFk_draft_no(draft_no); // 기안번호 set하기
+			
+			// 출장보고 insert
+			n = dao.addBiztripReport(brvo);
+			result = (n == 1)? true : false;
+			
+			// 출장보고 테이블 insert가 실패했으면 리턴
+			if (!result)
+				return result;
+		}
 		
 		return result;
 	}
@@ -272,39 +309,64 @@ public class ApprovalService implements InterApprovalService {
 		List<ApprovalVO> avoList = dao.getApprovalInfo(dvo);
 		draftMap.put("avoList", avoList);
 		
+		// 내부 결재자 리스트
+		List<ApprovalVO> internalList = new ArrayList<ApprovalVO>();
+		
+		// 외부 결재자 리스트
+		List<ApprovalVO> externalList = new ArrayList<ApprovalVO>();
+		
+		for(ApprovalVO avo : avoList) {
+			if (avo.getExternal() == 0)
+				internalList.add(avo);
+			else externalList.add(avo);
+		}
+		draftMap.put("internalList", internalList);
+		draftMap.put("externalList", externalList);
+		
 		// file에서 select
 		List<DraftFileVO> dfvoList = dao.getDraftFileInfo(dvo);
 		draftMap.put("dfvoList", dfvoList);
 		
 		// 지출결의서라면
 		if (dvo.getFk_draft_type_no() == 2) {
-			
+			List<ExpenseListVO> evoList = dao.getExpenseListInfo(dvo);
+			draftMap.put("evoList", evoList);
 		}
 		
 		// 출장보고서라면
 		if (dvo.getFk_draft_type_no() == 3) {
-			
+			BiztripReportVO brvo = dao.getBiztripReportInfo(dvo);
+			draftMap.put("brvo", brvo);
 		}
 		
 		return draftMap;
 	}
 
-	// 자신의 결재 처리하기(승인 or 반려)
+	// 결재 처리하기
 	@Override
-	public boolean updateMyApproval(ApprovalVO avo) {
+	public boolean updateApproval(ApprovalVO avo) {
 		
-		int n = dao.updateMyApproval(avo);
+		int n = dao.updateApproval(avo);
 		
 		return n > 0? true: false; 
 	}
 
-	// 대결 처리하기
+	// 공통 결재라인 가져오기
 	@Override
-	public boolean updateApprovalProxy(ApprovalVO avo) {
-		
-		int n = dao.updateApprovalProxy(avo);
-		
-		return n > 0? true: false; 
+	public List<MemberVO> getRecipientList(String type_no) {
+		return dao.getRecipientList(type_no);
+	}
+
+	// 첨부파일 1개 조회
+	@Override
+	public DraftFileVO getAttachedFile(String draft_file_no) {
+		return dao.getAttachedFile(draft_file_no);
+	}
+
+	// 환경설정-저장된 결재라인 한개 불러오기
+	@Override
+	public List<MemberVO> getOneAprvLine(String aprv_line_no) {
+		return dao.getOneAprvLine(aprv_line_no);
 	}
 
 

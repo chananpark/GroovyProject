@@ -8,6 +8,10 @@
 	margin-bottom: 50px !important;
 }
 
+a {
+	color: black;
+}
+
 #pageList a{
 	font-size: small;
 	color: black;

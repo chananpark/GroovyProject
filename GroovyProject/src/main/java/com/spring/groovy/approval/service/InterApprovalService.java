@@ -6,6 +6,7 @@ import java.util.Map;
 import org.json.JSONArray;
 
 import com.spring.groovy.approval.model.ApprovalVO;
+import com.spring.groovy.approval.model.DraftFileVO;
 import com.spring.groovy.approval.model.DraftVO;
 import com.spring.groovy.approval.model.SavedAprvLineVO;
 import com.spring.groovy.management.model.MemberVO;
@@ -87,10 +88,17 @@ public interface InterApprovalService {
 	// 기안문서 조회
 	Map<String, Object> getDraftDetail(DraftVO dvo);
 
-	// 자신의 결재 처리하기(승인 or 반려)
-	boolean updateMyApproval(ApprovalVO avo);
+	// 첨부파일 1개 조회
+	DraftFileVO getAttachedFile(String draft_file_no);
 	
-	// 대결 처리하기
-	boolean updateApprovalProxy(ApprovalVO avo);
+	// 결재 처리하기
+	boolean updateApproval(ApprovalVO avo);
+
+	// 공통 결재라인 가져오기
+	List<MemberVO> getRecipientList(String type_no);
+
+	// 환경설정-저장된 결재라인 한개 불러오기
+	List<MemberVO> getOneAprvLine(String aprv_line_no);
+
 
 }

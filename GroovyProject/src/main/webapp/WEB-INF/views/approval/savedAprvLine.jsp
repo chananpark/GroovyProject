@@ -48,9 +48,7 @@ ul {
 let aprvLineArray = JSON.parse('${aprvLineArray}');
 
 $(()=>{
-	
-	console.log(aprvLineArray);
-	
+		
 	let html = "";
 	aprvLineArray.forEach((el) => {
 		html += "<li>"

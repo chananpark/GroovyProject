@@ -25,6 +25,11 @@
 .modal-body > div {
 	display: table-row-group;
 }
+
+label:hover {
+	cursor: pointer;
+	background-color: #E3F2FD;
+}
 </style>
 
 <script>
@@ -54,7 +59,7 @@ const goWriteForm = () => {
 	const forms = Array.from($('.formChoice'));
 	const selected = forms.filter(el => $(el).is(':checked'))[0].id;
 	
-	location.href="<%=ctxPath%>/approval/write.on?type="+selected;
+	location.href="<%=ctxPath%>/approval/write.on?type_no="+selected;
 }
 </script>
 
@@ -75,7 +80,7 @@ const goWriteForm = () => {
 		<a id="home" class="nav-link" href="<%=ctxPath%>/approval/home.on">홈</a>
     </li>
     <li class="nav-item">
-		<a id="requestedList" class="nav-link" href="<%=ctxPath%>/approval/requested.on">결재하기<span class="badge badge-pill badge-primary ml-1">7</span></a>
+		<a id="requestedList" class="nav-link" href="<%=ctxPath%>/approval/requested.on">결재하기</a>
     </li>
     <li class="nav-item topMenu">개인 문서함
 		<ul class='subMenus personalMenu'>
@@ -123,16 +128,16 @@ const goWriteForm = () => {
 	<!-- Modal body -->
 	<div class="modal-body" style='display: table'>
 		<div>
-			<input type="radio" id="work" name="formChoice" class='formChoice mr-3'>
-			<label for='work'>업무품의</label>
+			<input type="radio" id="1" name="formChoice" class='formChoice mr-3'>
+			<label for='1'>업무품의</label>
 		</div>
 		<div>
-			<input type="radio" id="expense" name="formChoice" class='formChoice mr-3'>
-			<label for='expense'>지출결의서</label>
+			<input type="radio" id="2" name="formChoice" class='formChoice mr-3'>
+			<label for='2'>지출결의서</label>
 		</div>
 		<div>
-			<input type="radio" id="businessTrip" name="formChoice" class='formChoice mr-3'>
-			<label for='businessTrip'>출장보고서</label>
+			<input type="radio" id="3" name="formChoice" class='formChoice mr-3'>
+			<label for='3'>출장보고서</label>
 		</div>
 	</div>
 

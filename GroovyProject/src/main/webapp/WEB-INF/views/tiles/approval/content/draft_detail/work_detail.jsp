@@ -95,46 +95,43 @@ a {
 
 <script>
 
-const avoList = new Array();
-let obj;
+//전체 결재자 리스트
+const avoList = JSON.parse('${avoList}');
 
-<c:forEach items="${draftMap.avoList}" var="avo">
-	obj = new Object();
-	obj.fk_approval_empno = "${avo['fk_approval_empno']}";
-	obj.levelno = "${avo['levelno']}";
-	obj.approval_status = "${avo['approval_status']}";
-	
-	avoList.push(obj);
-</c:forEach>
+// 내 결재정보
+const myApprovalInfo = avoList.filter(el => el.fk_approval_empno == "${loginuser.empno}")[0];
 
-// 내 결재단계 및 결재상태가 담긴 배열
-const myApprovalInfo = avoList.filter(el => el.fk_approval_empno == "${loginuser.empno}");
+//내 앞 결재자의 정보
+let priorApprovalInfo;
 
-// 내 앞 결재자의 정보가 담긴 배열
-const priorApprovalInfo = avoList.filter(el => (el.levelno - 1) == myApprovalInfo.levelno);
+//내 다음 결재자의 정보
+let nextApprovalInfo;
 
-// 내 다음 결재자의 정보가 담긴 배열
-const nextApprovalInfo = avoList.filter(el => (el.levelno + 1) == myApprovalInfo.levelno);
+if (myApprovalInfo != null) {
+	priorApprovalInfo = avoList.filter(el => (Number(myApprovalInfo.levelno) - 1) == el.levelno)[0];
+	nextApprovalInfo = avoList.filter(el => (Number(myApprovalInfo.levelno) + 1) == el.levelno)[0];
+}
 
 $(()=>{
 	
-	// 내가 결재라인에 없거나 내가 이미 결재했을때는 결재의견 작성란, 승인|반려|대결 버튼 감추기
-	if (myApprovalInfo.length == 0 || myApprovalInfo.approval_status != 0) {
-		$("#myComment").hide();
-		$(".myApprovalBtn").hide();
-		$(".proxyApprovalBtn").hide();
-	}	
-
-	// 결재라인에 내가 있고, 결재상태가 0이며, 나보다 앞 결재자의 결재상태가 1이거나 내가 첫번째 결재자일 때만 표시
-	else if (myApprovalInfo.levelno == 1 && priorApprovalInfo.approval_status == 1) {
-		$("#myComment").show();
-		$(".myApprovalBtn").show();
-	}
+	$("#myComment").hide();
+	$(".myApprovalBtn").hide();
+	$(".proxyApprovalBtn").hide();
 	
-	// 결재라인에 내가 있고, 결재상태가1이며, 나보다 다음 결재자의 결재상태가 0일 때만 대결 버튼 표시
-	if (myApprovalInfo.approval_status == 1 && nextApprovalInfo.approval_status == 0) {
-		$(".myApprovalBtn").show();
-	}
+	// 내가 결재라인에 있을때
+	if (myApprovalInfo != null) {
+		
+		// 내 결재상태가 0이며, 나보다 앞 결재자의 결재상태가 1이거나 내가 첫번째 결재자일 때만 결재의견 작성란, 승인|반려 버튼 표시
+		if ( (myApprovalInfo.approval_status == 0 && myApprovalInfo.levelno == 1) || 
+				(priorApprovalInfo !== undefined && priorApprovalInfo.approval_status == 1)) {
+			$("#myComment").show();
+			$(".myApprovalBtn").show();
+		}
+		// 내 결재상태가1이며, 나보다 다음 결재자의 결재상태가 0일 때만 대결 버튼 표시
+		if (myApprovalInfo.approval_status == 1 && nextApprovalInfo !== undefined && nextApprovalInfo.approval_status == 0) {
+			$(".proxyApprovalBtn").show();
+		}
+	}	
 	
 	// 상신 취소 버튼 감추기
 	$("#cancelDraftBtn").hide();
@@ -145,11 +142,18 @@ $(()=>{
 		  return sum + currentVal;
 	}, 0);
 	
-	if (${draftMap.dvo.fk_draft_empno} == ${loginuser.empno} && status == 0 )
+	if (${draftMap.dvo.fk_draft_empno} == ${loginuser.empno} && status == 0)
 		$("#cancelDraftBtn").show();
 	
 	// 승인 혹은 반려 버튼 클릭시 이벤트
 	$(".myApprovalBtn").click((e)=>{
+		const target = $(e.target);
+		const approval_status = target.attr('id');
+		updateApproval(approval_status);
+	});
+	
+	// 대결 버튼 클릭시 이벤트
+	$(".proxyApprovalBtn").click((e)=>{
 		const target = $(e.target);
 		const approval_status = target.attr('id');
 		updateApproval(approval_status);
@@ -159,7 +163,12 @@ $(()=>{
 // 결재 처리하기
 const updateApproval = approval_status => {
 	
-	let formData = new FormData($("approvalFrm")[0]);
+	let formData = new FormData($("#approvalFrm")[0]);
+	
+	let aa = formData.get("approval_comment");
+	for (let key of formData.keys()) {
+		console.log(key, ":", formData.get(key));
+	}
 	
 	// 문서번호
 	formData.append("fk_draft_no", "${draftMap.dvo.draft_no}");
@@ -167,15 +176,34 @@ const updateApproval = approval_status => {
 	// 자신의 사원번호
 	formData.append("fk_approval_empno", "${loginuser.empno}");
 	
-	// 자신의 결재단계
-	formData.append("levelno", myApprovalInfo[0].levelno);
+	// 승인 혹은 반려일 경우
+	if (approval_status != 3) {
+
+		// 자신의 결재단계
+		formData.append("levelno", myApprovalInfo.levelno);
+		
+		// 처리 종류(승인 or 반려)
+		formData.append("approval_status", approval_status);
+		
+	}
 	
-	// 처리 종류(승인 or 반려)
-	formData.append("approval_status", approval_status);
+	// 대결일 경우
+	else {
+		
+		// 자신의 결재단계
+		formData.append("levelno", (Number(myApprovalInfo.levelno)+1));
+		
+		// 결재의견
+		formData.set("approval_comment", "${loginuser.name}에 의해 대결 처리되었습니다.");
+		
+		// 처리 종류
+		formData.append("approval_status", 1);
+	}
+	
 	
 	// 폼 전송하기
     $.ajax({
-        url : "<%=ctxPath%>/approval/updateMyApproval.on",
+        url : "<%=ctxPath%>/approval/updateApproval.on",
         data : formData,
         type:'POST',
         processData:false,
@@ -198,45 +226,6 @@ const updateApproval = approval_status => {
     });
 }
 
-const proxyApproval = () => {
-	let formData = new FormData($("approvalFrm")[0]);
-	
-	// 문서번호
-	formData.append("fk_draft_no", "${draftMap.dvo.draft_no}");
-
-	// 자신의 사원번호
-	formData.append("fk_approval_empno", "${loginuser.empno}");
-	
-	// 자신의 결재단계
-	formData.append("levelno", (Number(myApprovalInfo[0].levelno)+1));
-	
-	// 결재의견
-	formData.set("approval_comment", "${loginuser.name}에 의해 대결 처리되었습니다.");
-	
-	// 폼 전송하기
-    $.ajax({
-        url : "<%=ctxPath%>/approval/updateApprovalProxy.on",
-        data : formData,
-        type:'POST',
-        processData:false,
-        contentType:false,
-        dataType:'json',
-        cache:false,
-        success:function(json){
-        	if(json.result == true) {
-    	    	swal("처리 완료", "대결 처리하였습니다.", "success")
-    	    	.then((value) => {
-	    	    	location.href = "<%=ctxPath%>/approval/requested.on";
-   	    		});
-        	}
-        	else
-        		swal("처리 실패", "대결 처리에 실패하였습니다.", "error");
-        },
-        error: function(request, status, error){
-		alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-		}
-    });
-}
 </script>
 
 <div class="container">
@@ -277,7 +266,7 @@ const proxyApproval = () => {
 					</tr>
 				</table>
 			</div>
-			
+
 			<!-- 결재라인 -->
 			<div class='approvalLineInfo' style='width: 40%'>
 				<h5 class='text-left my-4'>결재라인</h5>
@@ -285,32 +274,85 @@ const proxyApproval = () => {
 					<tr>
 						<th rowspan='5' style='font-size: medium; vertical-align: middle;'>결<br>재<br>선</th>
 					</tr>
-					<tr>
-					<c:forEach items="${draftMap.avoList}" var="avo" varStatus="sts">
-						<td>${avo.position}</td>
-					</c:forEach>
+					<tr class='in position'>
 					</tr>
-					<tr>
-					<c:forEach items="${draftMap.avoList}" var="avo">
-						<td>
-						<c:if test="${avo.approval_status == 1 }">
-						<img src='<%=ctxPath%>/resources/images/${avo.signimg}' width="100"/>
-						</c:if>
-						</td>
-					</c:forEach>
+					<tr class='in approval_status'>
 					</tr>
-					<tr>
-					<c:forEach items="${draftMap.avoList}" var="avo">
-						<td>${avo.name}</td>
-					</c:forEach>
+					<tr class='in name'>
 					</tr>
-					<tr>
-					<c:forEach items="${draftMap.avoList}" var="avo">
-						<td>${fn:substring(avo.approval_date,0,10)}</td>
-					</c:forEach>
+					<tr class='in approval_date'>
 					</tr>
 				</table>
 			</div>
+			<script>
+				const internalList = JSON.parse('${internalList}');
+				const externalList = JSON.parse('${externalList}');
+				
+				let html = "";
+				internalList.forEach(el => {
+					html = "<td>" + el.position + "</td>";
+					$("tr.in.position").append(html);
+					
+					let approval_status = "";
+					if (el.approval_status == 1)
+						approval_status = "<img src='<%=ctxPath%>/resources/images/"+el.signimg+"' width='100'/>";
+					else if (el.approval_status == 2) 
+						approval_status = "<h3 class='text-danger'>반려</h3>";
+
+					html = "<td>"+approval_status+"</td>";					
+					$("tr.in.approval_status").append(html);
+					
+					html = "<td>" + el.name + "</td>";
+					$("tr.in.name").append(html);
+					
+					let approval_date = el.approval_date || "";
+					html = "<td>" + approval_date.substring(0,10) + "</td>";
+					$("tr.in.approval_date").append(html);
+				});
+				
+			</script>
+			<!-- 수신처 -->
+			<c:if test="${externalList != '[]'}">
+			<div class='approvalLineInfo' style='width: 40%; clear:both'>
+				<table class='mr-4 table table-sm table-bordered text-left'>
+					<tr>
+						<th rowspan='5' style='font-size: medium; vertical-align: middle;'>수<br>신</th>
+					</tr>
+					<tr class='position ex'>
+					</tr>
+					<tr class='approval_status ex'>
+					</tr>
+					<tr class='name ex'>
+					</tr>
+					<tr class='approval_date ex'>
+					</tr>
+				</table>
+			</div>
+			</c:if>
+			<script>
+				html = "";
+				externalList.forEach(el => {
+					html = "<td>" + el.position + "</td>";
+					$("tr.ex.position").append(html);
+					
+					let approval_status = "";
+					if (el.approval_status == 1)
+						approval_status = "<img src='<%=ctxPath%>/resources/images/"+el.signimg+"' width='100'/>";
+					else if (el.approval_status == 2) 
+						approval_status = "<h3 class='text-danger'>반려</h3>";
+
+					html = "<td>"+approval_status+"</td>";					
+					$("tr.ex.approval_status").append(html);
+					
+					html = "<td>" + el.name + "</td>";
+					$("tr.ex.name").append(html);
+					
+					let approval_date = el.approval_date || "";
+					html = "<td>" + approval_date.substring(0,10) + "</td>";
+					$("tr.ex.approval_date").append(html);
+				});
+				
+			</script>
 			<!-- 결재라인 끝 -->
 			
 			<div style="clear:both; padding-top: 8px; margin-bottom: 30px;">
@@ -331,14 +373,15 @@ const proxyApproval = () => {
 			<!-- 문서내용 끝 -->
 			
 			<!-- 첨부파일 -->
-			<c:if test="${not empty dfvoList}">
+			<c:if test="${not empty draftMap.dfvoList}">
 			<table class='mr-4 table table-sm table-bordered text-left'>
+				<c:forEach items="${draftMap.dfvoList}" var="file" varStatus="sts">
+				<th class='p-2 text-left'><i class="fas fa-paperclip"></i> 첨부파일 ${sts.count}개</th>
+				</c:forEach>
+				<c:forEach items="${draftMap.dfvoList}" var="file">
 				<tr>
-					<th class='p-2 text-left'><i class="fas fa-paperclip"></i> 첨부파일 ${fn:length(dfvoList)}개</th>
-				</tr>
-				<c:forEach items="${dfvoList}" var="file">
-				<tr>
-					<td class='p-2'><a href=#>${file.originalfilename} (${file.filesize}Byte)</a></td>
+					<td class='p-2'>
+					<a href="<%=ctxPath%>/approval/download.on?draft_file_no=${file.draft_file_no}">${file.originalFilename} (${file.filesize}Byte)</a></td>
 				</tr>
 				</c:forEach>
 			</table>
@@ -393,7 +436,7 @@ const proxyApproval = () => {
 					<form id="approvalFrm">
 						<table class='commentTable mt-4' id='myComment'>
 							<tr>
-								<td id='profile' rowspan='2'><img style='border-radius: 50%; display: inline-block' src='<%=ctxPath%>/resources/images/default_profile.png' width="100" /></td>
+								<td id='profile' rowspan='2'><img style='border-radius: 50%; display: inline-block' src='<%=ctxPath%>/resources/images/profile/${loginuser.empimg}' width="100" /></td>
 								<td rowspan='2'><input type='text' id='approval_comment' name='approval_comment' placeholder='결재의견을 입력해주세요(선택)' style='width: 70%'/></td>
 							</tr>
 						</table>
@@ -407,7 +450,7 @@ const proxyApproval = () => {
 			<div class='mt-4 text-left' id="processBtns">
 				<button type='button' class='btn btn-lg myApprovalBtn' id='1'><i class="fas fa-pen-nib"></i> 승인</button>
 				<button type='button' class='btn btn-lg myApprovalBtn' id='2'><i class="fas fa-undo"></i> 반려</button>
-				<button type='button' class='btn btn-lg proxyApprovalBtn' onclick='proxyApproval()'><i class="fas fa-arrow-right"></i> 대결</button>
+				<button type='button' class='btn btn-lg proxyApprovalBtn' id='3'><i class="fas fa-arrow-right"></i> 대결</button>
 			</div>
 		</div>
 	</c:if>
