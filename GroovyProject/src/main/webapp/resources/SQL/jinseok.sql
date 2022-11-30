@@ -33,7 +33,7 @@ create table TBL_MAIL
 
 commit;
 rollback;
- -- drop table TBL_tag purge; 삭제
+-- drop table TBL_tag purge; 삭제
 select * from tbl_mail;
 
 --태그테이블
@@ -130,25 +130,44 @@ select count(*)
 
 -- 태그 테이블 생성
 create table tbl_tag
-(FK_mail_address VARCHAR2(200 BYTE) not null
+(tag_no number not null
+,FK_mail_address VARCHAR2(200 BYTE) not null
 , tag_color char(6) not null
 , tag_name  Nchar(10) not null
-, mail_no NVARCHAR2(400)
-, constraint FK_tbl_tag_FK_mail_address_tag_color primary key(FK_mail_address, tag_color)
+, fk_MAIL_NO number
+, constraint FK_tbl_tag_tag_no primary key(tag_no)
 ,constraint FK_tbl_tag_FK_mail_address foreign key(FK_mail_address) references tbl_EMPLOYEE(CPEMAIL)
+,constraint FK_tbl_tag_fk_MAIL_NO foreign key(fk_MAIL_NO) references TBL_MAIL(MAIL_NO)
 );
 
-insert into tbl_tag (FK_mail_address,tag_color,tag_name ,mail_no )
-values('kjsaj0525@groovy.com','f9320c','빨강','102');
+create sequence seq_tag_no
+start with 1                 
+increment by 1              
+nomaxvalue                   
+nominvalue                   
+nocycle                      
+nocache;
+DROP SEQUENCE seq_tag_no;
+commit;
+select * from tbl_tag order by fk_MAIL_NO asc, tag_color asc;
+select *
+		from tbl_tag
+        where FK_mail_address = 'kjsaj0525@groovy.com'
+        and fk_MAIL_NO = 45;
+        order by tag_color asc;
+insert into tbl_tag (tag_no,FK_mail_address,tag_color,tag_name ,fk_MAIL_NO )
+values(seq_tag_no.nextval,'kjsaj0525@groovy.com','f9320c','빨강',45);
 
-insert into tbl_tag (FK_mail_address,tag_color,tag_name ,mail_no )
-values('kjsaj0525@groovy.com','00b9f1','파랑','102');
+insert into tbl_tag (tag_no,FK_mail_address,tag_color,tag_name ,fk_MAIL_NO)
+values(seq_tag_no.nextval,'kjsaj0525@groovy.com','00b9f1','파랑',45);
 
-insert into tbl_tag (FK_mail_address,tag_color,tag_name ,mail_no )
-values('kjsaj0525@groovy.com','f9c00c','노랑','102,103');
-
+insert into tbl_tag (tag_no,FK_mail_address,tag_color,tag_name ,fk_MAIL_NO )
+values(seq_tag_no.nextval,'kjsaj0525@groovy.com','f9c00c','노랑',45);
+-- 메일 변경
+update tbl_mail set send_time = send_time-1;
+commit;
 -- 태그 변경
-update tbl_tag set mail_no = '100,101,106'
+update tbl_tag set fk_MAIL_Recipient_NO = '100,101,106'
 where FK_mail_address = 'kjsaj0525@groovy.com' and tag_color = 'f9320c';
 commit;
 
@@ -259,4 +278,60 @@ create table TBL_MAIL_Recipient
 ,constraint CK_tbl_MAIL_Recipient_Recipient_IMPORTANT check( Recipient_IMPORTANT in (0,1) )
 );
 
+select *  from tbl_mail;
+select * from TBL_MAIL_Recipient;
+
+update TBL_MAIL_Recipient set read_check =  1
+   		where fk_MAIL_NO = 45
+   		and FK_RECIPIENT_ADDRESS_INDIVIDUAL = 'kjsaj0525@groovy.com';
+
+rollback;
+
+insert into TBL_MAIL_Recipient(MAIL_Recipient_NO,FK_MAIL_NO, FK_Recipient_address)
+values(seq_mail_recipient_no.nextval,35,'kjskjskjs@groovy.com');
+
+
+ 
+       and  (FK_Recipient_address_individual = 'kjsaj0525@groovy.com')
+			    			  or (FK_REFERENCED_ADDRESS_individual = 'kjsaj0525@groovy.com');
+       and FK_RECIPIENT_ADDRESS_individual = 'kjsaj0525@groovy.com';
+       and  FK_Sender_address = 'kjsaj0525@groovy.com';
+	
+		        <![CDATA[]]>;
+	
+		        	<if test='listType == "FK_Recipient_address" or listType == "FK_Sender_address"'>    	
+			    		and  FK_Recipient_address like '%'||#{mail_address}||'%'
+			    	</if>
+	
+			    		and ((FK_Recipient_address = #{mail_address} and Recipient_IMPORTANT = 1)
+			    			  or (FK_Sender_address = #{mail_address} and SENDER_IMPORTANT = 1))
+
+	
+			    	and lower(${searchType}) like '%'||lower(#{searchWord})||'%'
+
+
+		        order by SEND_TIME desc
 commit;
+
+select * from TBL_MAIL_Recipient;
+
+MERGE 
+ INTO TBL_MAIL_Recipient 
+USING dual
+   ON (READ_CHECK = 1)
+ WHEN MATCHED THEN
+      UPDATE
+         SET RECIPIENT_IMPORTANT = 1
+      where MAIL_RECIPIENT_NO =  3 
+ WHEN NOT MATCHED THEN
+      UPDATE
+         SET RECIPIENT_IMPORTANT = 0
+      where MAIL_RECIPIENT_NO =  3;
+      -- merge 문은 on 절에 쓴 컬럼은 변경 불가
+      
+     
+select RECIPIENT_IMPORTANT
+from TBL_MAIL_Recipient
+where MAIL_RECIPIENT_NO=3;
+
+

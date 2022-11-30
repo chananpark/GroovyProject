@@ -1,5 +1,7 @@
 package com.spring.groovy.mail.model;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -31,12 +33,35 @@ public class MailDAO implements InterMailDAO {
 		List<TagVO> tagList = sqlsession.selectList("jinseok.getTagList", mail_address);
 		return tagList;
 	}
-
+	
+	// =================== 메일 추가 ========================= //
+	@Override
+	public int getSeqMailNo() {
+		int n = sqlsession.selectOne("jinseok.getSeqMailNo");
+		return n;
+	}
 	@Override
 	public int addMail(Map<String, Object> paraMap) {
 		int n = sqlsession.insert("jinseok.addMail",paraMap);
 		return n;
 	}
+	@Override
+	public int addMailRecipient(Map<String, Object> paraMap) {
+		List<String> resultList = new ArrayList<String>();
+		int n = 0;
+		String FK_Recipient_address= (String)paraMap.get("FK_Recipient_address");
+		if(!FK_Recipient_address.trim().isEmpty()) {
+			resultList = new ArrayList<String>(Arrays.asList(FK_Recipient_address.split(","))); 
+		}
+		for(String address: resultList) {
+			paraMap.put("addressType", "FK_Recipient_address_individual");
+			paraMap.put("address", address);
+			n = sqlsession.insert("jinseok.addMailRecipient",paraMap);
+		}
+		
+		return n;
+	}
+	// =================== 메일 추가끝 ========================= //
 
 	@Override
 	public MailVO getOneMail(String mailNo) {
@@ -63,5 +88,28 @@ public class MailDAO implements InterMailDAO {
 		sqlsession.update("jinseok.readMail",paraMap);
 		
 	}
+
+	@Override
+	public List<TagVO> getTagListSide(String mail_address) {
+		List<TagVO> tagList = sqlsession.selectList("jinseok.getTagListSide",mail_address);
+		return tagList;
+	}
+
+	/** 중요 체크 or 해제 전 확인 */
+	@Override
+	public int importantCheck(String mail_recipient_no) {
+		int n = sqlsession.selectOne("jinseok.importantCheck",mail_recipient_no);
+		return n;
+	}
+	/** 중요 체크 or 해제 전 확인 */
+	@Override
+	public int importantUpdate(Map<String, String> paraMap) {
+		int n = sqlsession.update("jinseok.importantUpdate",paraMap);
+		return n;
+	}
+
+	
+
+	
 
 }

@@ -15,7 +15,9 @@ public interface InterMailDAO {
 	List<TagVO> getTagList(String mail_address);
 
 	/** 메일 추가하기 */
+	int getSeqMailNo();
 	int addMail(Map<String, Object> paraMap);
+	int addMailRecipient(Map<String, Object> paraMap);
 
 	/** 메일 하나 불러오기 */
 	MailVO getOneMail(String mailNo);
@@ -28,5 +30,18 @@ public interface InterMailDAO {
 
 	/** 읽음 처리 */
 	void readMail(Map<String, String> paraMap);
+
+	/** 사이드 전용 태그리스트 가져오기 */
+	List<TagVO> getTagListSide(String mail_address);
+
+	
+	/** 중요 체크 or 해제 전 상태 확인 */
+	int importantCheck(String mail_recipient_no);
+	/** 중요 체크 업데이트 */
+	int importantUpdate(Map<String, String> paraMap);
+
+	
+
+	
 
 }

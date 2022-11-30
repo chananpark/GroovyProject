@@ -8,14 +8,13 @@ import java.util.Date;
 import java.util.List;
 
 public class TagVO {
-	
+	private String tag_no;
 	private String fK_mail_address;    // 태그 지정자 이메일
 	private String tag_color;         // 태그 색
 	private String tag_name;      // 참조메일주소
-	private String mail_no;      // 메일제목 
+	private String fk_mail_no;      // 메일제목 
 
-	private List<String> mail_no_list; // 비교용 날짜
-	
+
 	
 
 	public String getfK_mail_address() {
@@ -42,24 +41,35 @@ public class TagVO {
 		this.tag_name = tag_name;
 	}
 
-	public String getMail_no() {
-		return mail_no;
+
+
+
+	
+
+	
+	public String getTag_no() {
+		return tag_no;
 	}
 
-	public void setMail_no(String mail_no) {
-		this.mail_no = mail_no;
+	public void setTag_no(String tag_no) {
+		this.tag_no = tag_no;
 	}
 
+	public String getFk_mail_no() {
+		return fk_mail_no;
+	}
+
+	public void setFk_mail_no(String fk_mail_no) {
+		this.fk_mail_no = fk_mail_no;
+	}
+	
 	public List<String> getMail_no_list() {
-		List<String> resultList = commaArray(mail_no);
+		List<String> resultList = commaArray(fk_mail_no);
 	
 		return resultList;
 
 	}
 
-	
-
-	
 	public List<String> commaArray(String str){
 		List<String> resultList = new ArrayList<String>();
 		

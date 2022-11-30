@@ -1,5 +1,7 @@
 package com.spring.groovy.mail.controller;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -10,6 +12,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.collections4.map.HashedMap;
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -21,7 +24,9 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
-
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.spring.groovy.common.Pagination;
 import com.spring.groovy.mail.model.MailVO;
 import com.spring.groovy.mail.model.TagVO;
@@ -95,21 +100,19 @@ public class MailController {
 	@RequestMapping(value = "/mail/viewMail.on")
 	public String viewMail(HttpServletRequest request) {
 		String mailNo = request.getParameter("mailNo");
-		
-		MailVO mailVO = service.getOneMail(mailNo);
-		
-
 		HttpSession session = request.getSession();
 
 		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
+		
 		Map<String, String> paraMap = new HashedMap<>();
 		paraMap.put("mailNo", mailNo);
 		paraMap.put("FK_MAIL_ADDRESS", loginuser.getCpemail());
 		
-		int userIndex = mailVO.getUserindex(loginuser.getCpemail());
+		MailVO mailVO = service.getOneMail(paraMap);
 		
-		String read_check = mailVO.changeArr(mailVO.getRead_check_array(), userIndex, "1");
-		paraMap.put("read_check", read_check);
+
+		
+		
 		
 		List<TagVO> tagList = null;
 		tagList = service.getTagListByMailNo(paraMap);
@@ -117,11 +120,37 @@ public class MailController {
 		
 		
 		request.setAttribute("mailVO", mailVO);
+		request.setAttribute("tagList", tagList);
 		
 		return "mail/mailbox/view_mail.tiles";
 		// ==> views/tiles/mail/content/mailBox/receieve_mailbox.jsp
 	}
 	
+	@ResponseBody
+	@RequestMapping(value = "/mail/getTagListSide.on", method= {RequestMethod.POST},produces="text/plain;charset=UTF-8")
+	public String getTagListSide(HttpServletRequest request, HttpServletResponse response) {
+		HttpSession session = request.getSession();
+
+		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
+		String mail_address =  loginuser.getCpemail();
+		
+		List<TagVO> tagList = null;
+		tagList = service.getTagListSide(mail_address);
+		
+		JsonArray jsonArr = new JsonArray();  // []
+		
+		if(tagList != null) {
+			for(TagVO tvo : tagList) {
+				JsonObject jsonObj = new JsonObject(); // {}
+				jsonObj.addProperty("tag_color", tvo.getTag_color()); 
+				jsonObj.addProperty("tag_name", tvo.getTag_name()); 
+				jsonArr.add(jsonObj);
+			}// end of for---------------------------
+		}
+				
+		return jsonArr.toString();
+		
+	}
 
 	@RequestMapping(value="/mail/download.on")
 	public void requiredLogin_download(HttpServletRequest request, HttpServletResponse response) {
@@ -148,7 +177,7 @@ public class MailController {
 				
 		try {
 		     Integer.parseInt(mailNo);
-		     MailVO mailvo = service.getOneMail(mailNo);
+		     MailVO mailvo = service.getOneMail(paraMap);
 		
 		     if(mailvo == null || (mailvo != null && mailvo.getFilename() == null ) ) {
 		    	 out = response.getWriter();
@@ -307,13 +336,41 @@ public class MailController {
 			n=-1;
 			
 		}
-		
+
 		jsonObj.put("n", n);
 
 		return jsonObj.toString(); 
 		
 
 	}
+	
+	
+	@ResponseBody
+	@RequestMapping(value = "/mail/importantCheck.on", method= {RequestMethod.POST},produces="text/plain;charset=UTF-8")
+	public String importantCheck(HttpServletRequest request) {
+		JSONObject jsonObj = new JSONObject();
+		String mail_recipient_no = request.getParameter("mail_recipient_no");
+		
+		int n = service.importantCheck(mail_recipient_no);
+		
+		jsonObj.put("n", n);
+
+		return jsonObj.toString(); 
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	// 채팅
 	@RequestMapping(value = "/chat.on")
@@ -331,6 +388,15 @@ public class MailController {
 		// ==> views/tiles/chat/content/chatMain.jsp
 	}
 	
+	
+	
+	
+	
+	
+	
+	
+	
+	/////////////////////////////
 	// 1. `**Controller**`에 아래와 같이 에러 처리 메소드를 생성한다.
 	// 만약 사용자가 **`pageSize`**나 **`currentPage`**에 문자 or 정수형 범위 이상을 입력했다면 에러페이지를 띄우는 것임
 	
@@ -338,6 +404,14 @@ public class MailController {
 	public String error(Exception e) {
 	    return "error";
 	}
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	///////////////////////////////////////////
 	public ModelAndView mailpaginglist(ModelAndView mav,Pagination pagination, String listType, HttpServletRequest request) {
@@ -361,7 +435,7 @@ public class MailController {
 		 
 		 for(TagVO tag :tagList ) {
 		 	System.out.println("getTag_color:"+tag.getTag_color());
-			System.out.println("getMail_no_list:"+tag.getMail_no_list());
+			System.out.println("getFk_mail_no:"+tag.getFk_mail_no());
 	
 		 }
 		 
@@ -444,6 +518,9 @@ public class MailController {
 			str = str.replaceAll("<script", "&lt;script");
 			return str;
 	}
+	
+	
+	
 	
 
 

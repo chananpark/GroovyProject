@@ -103,16 +103,7 @@ i.fa-flag{
 			$("select#searchType").val("${requestScope.paraMap.searchType}");
 			$("input#searchWord").val("${requestScope.paraMap.searchWord}");
 		}
-		
-		// 사이드바에 태그 추가해주기
-		var sidebarTag = ``;
-		<c:forEach var="tagVO" items="${requestScope.tagList}" varStatus="status">   		
-			
-			sidebarTag += `<li><a id="tag" class="nav-link" href="<%=ctxPath%>/approval/personal/sent.on"><i class="fas fa-tag" style="color:#${tagVO.tag_color};"></i>${tagVO.tag_name}</a></li>`;
-			
 
-		</c:forEach>
-		$("#sidebarTag").html(sidebarTag);
 		
 	});
 	
@@ -126,6 +117,25 @@ i.fa-flag{
 	function goMail(mailno){
 		
 		location.href="<%=ctxPath%>/mail/viewMail.on?mailNo="+ mailno ;
+	}
+	
+	function importantCheck(mail_recipient_no){
+		$.ajax({
+			url:"<%= ctxPath%>/mail/importantCheck.on",
+			data:{"mail_recipient_no":mail_recipient_no},
+			type:"post",
+			dataType:"json",
+	        success:function(json){
+	        	if(json.n==1){
+	        		alert("성공!");
+	        	}
+	       		
+	        	
+	        },
+	        error: function(request, status, error){
+				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			}
+		});
 	}
 </script>
 
@@ -208,10 +218,10 @@ i.fa-flag{
 			  	  <td class="mail_list_option">
 			      	<input type="checkbox" id="mailLCheck" value="off" style="vertical-align:middle">
 			      	<c:if test="${mailVO.sender_important == 0 }">
-			      		<i class="fas fa-flag" style="color:darkgray;"></i>
+			      		<i class="fas fa-flag" style="color:darkgray;" onclick="importantCheck(${mailVO.mail_recipient_no})"></i>
 			      	</c:if>
 			      	<c:if test="${mailVO.sender_important == 1 }">
-			      		<i class="fas fa-flag"></i>
+			      		<i class="fas fa-flag" onclick="importantCheck(${mailVO.mail_recipient_no})"></i>
 			      	</c:if>
 
 			      </td>
@@ -230,13 +240,9 @@ i.fa-flag{
 			
 			      <td class = "mail_list_subject">
 			      	<c:forEach var="tagVO" items="${requestScope.tagList}" varStatus="status">   		
-	
-			      		<c:forEach var="tag_mail_no" items="${tagVO.mail_no_list}" varStatus="status">
-			      			<c:if test="${mailVO.mail_no == tag_mail_no}">
-			      				<a href="#"><i class="fas fa-tag" style="color:#${tagVO.tag_color};"></i> &nbsp</a>
-			      			</c:if>
-			      	
-			      		</c:forEach>
+		      			<c:if test="${mailVO.mail_no == tagVO.fk_mail_no}">
+		      				<a href="#"><i class="fas fa-tag" style="color:#${tagVO.tag_color};"></i> &nbsp</a>
+		      			</c:if>
 			      	</c:forEach>
 			   
 				      	<!-- 태그 개수에 따라 제목옆에 보여줄 예정 -->

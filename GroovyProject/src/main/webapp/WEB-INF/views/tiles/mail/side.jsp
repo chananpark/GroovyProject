@@ -13,9 +13,36 @@
 <script src="${ctxPath}/resources/colorPicker/src/colorPick.js"></script> --%>
 <script type="text/javascript">
 	$(document).ready(function(){
-	
+		sideTag();
 	});// ------------------- end of $(document).ready(function(){})
 
+	function sideTag(){
+		$.ajax({
+            url : '<%= ctxPath%>/mail/getTagListSide.on',
+            type:'POST',
+            processData:false,
+            contentType:"application/json;charset=UTF-8",
+            dataType:'json',
+            cache:false,
+            success:function(json){
+            	console.log(json);
+            	var html="";
+            	$.each(json, function(index, item){
+            		console.log(item);
+					html += '<li><a id="tag" class="nav-link" href="<%=ctxPath%>/approval/personal/sent.on"><i class="fas fa-tag" style="color:#';
+					html += item.tag_color;
+					html +=	'";"></i>&nbsp';
+					html += item.tag_name
+					html +='</a></li>';
+				});	
+            	$("#sidebarTag").html(html);
+
+            	
+            },error: function(request, status, error){
+                alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+            } 
+        });
+	}
 </script>
 
 <!-- A vertical navbar -->

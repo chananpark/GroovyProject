@@ -3,8 +3,12 @@ package com.spring.groovy.mail.service;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.collections4.map.HashedMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.spring.groovy.mail.model.InterMailDAO;
 import com.spring.groovy.mail.model.MailVO;
@@ -37,14 +41,24 @@ public class MailService implements InterMailService {
 	}
 
 	@Override
+	@Transactional(propagation=Propagation.REQUIRED, isolation=Isolation.READ_COMMITTED, rollbackFor= {Throwable.class})
 	public int addMail(Map<String, Object> paraMap) {
+		int mail_no = dao.getSeqMailNo();
+		paraMap.put("mail_no", mail_no);
+		
 		int n = dao.addMail(paraMap);
-		return n;
+		int m=0;
+		if(n == 1) {
+			 m = dao.addMailRecipient(paraMap);
+		}
+		return m;
 	}
 
 	@Override
-	public MailVO getOneMail(String mail_no) {
+	public MailVO getOneMail(Map<String, String> paraMap) {
+		String mail_no = paraMap.get("mailNo");
 		MailVO mail = dao.getOneMail(mail_no);
+
 		return mail;
 	}
 
@@ -63,6 +77,24 @@ public class MailService implements InterMailService {
 		}
 		
 		return tagList;
+	}
+
+	@Override
+	public List<TagVO> getTagListSide(String mail_address) {
+		List<TagVO> tagList = dao.getTagListSide(mail_address);
+		return tagList;
+	}
+
+	@Override
+	public int importantCheck(String mail_recipient_no) {
+		
+		int readcheck =  dao.importantCheck(mail_recipient_no);
+		Map<String, String> paraMap = new HashedMap<String, String>();
+		paraMap.put("mail_recipient_no", mail_recipient_no);
+		paraMap.put("readcheck", String.valueOf(readcheck));
+		
+		int n = dao.importantUpdate(paraMap);
+		return n;
 	}
 
 }

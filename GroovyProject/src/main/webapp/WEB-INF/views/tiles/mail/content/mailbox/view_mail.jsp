@@ -1,7 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %> 
-
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <%
 	String ctxPath = request.getContextPath();
@@ -123,11 +123,18 @@ th{
 			<tr>
 				<th style="width: 15%;">제목</th>
 				<td>
-					<i class="fas fa-flag"></i>
+					<c:if test="${mailVO.sender_important == 0 }">
+			      		<i class="fas fa-flag" style="color:darkgray;"></i>
+			      	</c:if>
+			      	<c:if test="${mailVO.sender_important == 1 }">
+			      		<i class="fas fa-flag"></i>
+			      	</c:if>
 				         ${mailVO.subject}
-			     <a href="#"><i class="fas fa-tag" style="color:#6691e5"></i></a>
-		    	 <a href="#"><i class="fas fa-tag" style="color:#fbe983"></i></a>
-		    	 <a href="#"><i class="fas fa-tag" style="color:#fa573c"></i></a>
+				         
+				    <c:forEach var="tag" items="${requestScope.tagList}" varStatus="status">
+								<a href="#"><i class="fas fa-tag" style="color:#${tag.tag_color}"></i></a>
+					</c:forEach>     
+
 				</td>
 			</tr>
 			
