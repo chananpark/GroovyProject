@@ -127,8 +127,9 @@
 				<tr>
 					<th>사원번호</th>
 					<th>성명</th>
-					<th>직책</th>
+					<th>부문</th>
 					<th>부서</th>
+					<th>직책</th>
 					<th>회사이메일</th>
 					<th>핸드폰번호</th>
 					<th>입사일자</th>
@@ -140,8 +141,9 @@
 					<tr>
 						<td>${employee.empno}</td> 
 						<td>${employee.name}</td>
-						<td>${employee.position}</td>
+						<td>${employee.bumun}</td>
 						<td>${employee.department}</td>
+						<td>${employee.position}</td>
 						<td>${employee.cpemail}</td>
 						<td>${employee.mobile}</td>
 						<td>${employee.joindate}</td>
@@ -156,4 +158,4 @@
 </div>
 </form>
 
-<div>${pagebar }</div>
+<div>${pagebar}</div>

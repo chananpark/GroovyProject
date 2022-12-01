@@ -155,14 +155,12 @@
 		</tbody>
 	</table>
 	</div>
-	
-	<%-- 정보수정 페이지바 --%>
-	<div align="right" style="margin: 3% 0;">${pagebar}</div>
-	
 </div>
 </form>
 
-
+	
+<%-- 정보수정 페이지바 --%>
+<div align="right" style="margin: 3% 0;">${pagebar}</div>
 
 
 <%-- 경조비지급목록 상세보기 모달창 --%>

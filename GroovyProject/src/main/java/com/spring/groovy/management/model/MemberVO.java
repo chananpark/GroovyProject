@@ -32,7 +32,7 @@ public class MemberVO {
 	private String fk_bumun_no;		   // -- 부문번호(외래키)  1 이사실 2 경영지원본부 3 IT사업부문 4 마케팅영업부문
 	private String fk_department_no;   // -- 부서번호(기본키)  1 이사실 2 인사총무팀 3개발팀 4 5 6 마케팅
 
-	
+	private String pay; // 조인(연봉(기본급))
 
 	public String getEmpno() {
 		return empno;
@@ -197,6 +197,12 @@ public class MemberVO {
 		this.fk_department_no = fk_department_no;
 	}
 	
+	public String getPay() {
+		return pay;
+	}
+	public void setPay(String pay) {
+		this.pay = pay;
+	}
 	
 	
 	
