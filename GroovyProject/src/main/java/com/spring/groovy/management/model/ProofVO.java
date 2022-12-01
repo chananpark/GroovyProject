@@ -1,5 +1,7 @@
 package com.spring.groovy.management.model;
 
+import java.util.List;
+
 public class ProofVO {
 
 	private String proofno;             // 증명서번호
@@ -33,7 +35,10 @@ public class ProofVO {
 	public void setIssueuse(String issueuse) {
 		this.issueuse = issueuse;
 	}
-
+	
+	
+	
+	
 	
 	
 }

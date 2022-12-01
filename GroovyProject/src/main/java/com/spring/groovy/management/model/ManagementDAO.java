@@ -174,9 +174,33 @@ public class ManagementDAO implements InterManagementDAO {
 	
 	//관리자 사원관리 - 경조비지급목록
 	@Override
-	public List<Map<String, Object>> receiptcelebrateList(Map<String, Object> paramap) {
-		List<Map<String,Object>> celebList = sqlsession.selectList("minsu.receiptcelebrateList", paramap);
+	public List<CelebrateVO> receiptcelebrateList() {
+		List<CelebrateVO> celebList = sqlsession.selectList("minsu.receiptcelebrateList");
 		return celebList;
+	}
+
+	
+	// 경조비지급목록 한 페이지에 표시할 재직증명서 전체 글 개수 구하기(페이징)
+	@Override
+	public int getcountClList(Pagination pagination) {
+		int n = sqlsession.selectOne("minsu.getcountClList", pagination);
+		return n;
+	}
+
+	
+	// 경조비지급목록 - 한 페이지에 표시할 글 목록  (페이징 페이지수를 알아온다음에 10개씩보여줌) (페이징)
+	@Override
+	public List<CelebrateVO> getOnePageClCnt(Map<String, Object> paraMap) {
+		List<CelebrateVO> celebList = sqlsession.selectList("minsu.getOnePageClCnt", paraMap);
+		return celebList;
+	}
+
+	
+	//관리자 사원관리 - 경조비신청현황
+	@Override
+	public List<CelebrateVO>  receiptCelebrateStatus() {
+		List<CelebrateVO> celbStatusList =sqlsession.selectList("minsu.receiptCelebrateStatus");
+		return celbStatusList;
 	}
 
 	

@@ -118,7 +118,7 @@ public class ManagementController {
 
 	//공용 경조비관리 - 경조비신청목록
 	@RequestMapping(value="/manage/celebrate/celebrateList.on")
-	public ModelAndView receiptCelebrateList(ModelAndView mav, HttpServletRequest request, CelebrateVO cvo, Pagination pagination) {
+	public ModelAndView celebrateList(ModelAndView mav, HttpServletRequest request, CelebrateVO cvo, Pagination pagination) {
 		
 		HttpSession session = request.getSession();
 		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
@@ -209,7 +209,6 @@ public class ManagementController {
 		
 		// 재직증명서 신청내역을 가져오기
 		List<ProofVO> proofList = service.getProofList(empno);
-		
 		
 		// 재직증명서 한 페이지에 표시할 재직증명서 전체 글 개수 구하기(페이징)
 		int listCnt = service.getcountPfList(pagination);
@@ -365,22 +364,34 @@ public class ManagementController {
 
 	//관리자 사원관리 - 경조비신청현황
 	@RequestMapping(value="/manage/admin/receiptCelebrateStatus.on")
-	public String receiptCelebrateStatus(HttpServletRequest request) {
+	public ModelAndView receiptCelebrateStatus(HttpServletRequest request, CelebrateVO cvo, ModelAndView mav) {
 		
-		return "manage/admin/celebrate/receiptCelebrateStatus.tiles";
+		List<CelebrateVO> celbStatusList = service.receiptCelebrateStatus();
+		
+		mav.addObject("celbStatusList", celbStatusList);
+		mav.setViewName("manage/admin/celebrate/receiptCelebrateStatus.tiles");
+		return mav;
 	}
 
 	//관리자 사원관리 - 경조비지급목록
 	@RequestMapping(value="/manage/admin/receiptcelebrateList.on")
-	public ModelAndView receiptcelebrateList(ModelAndView mav, HttpServletRequest request, CelebrateVO cvo, MemberVO mvo) {
+	public ModelAndView receiptcelebrateList(ModelAndView mav, HttpServletRequest request, CelebrateVO cvo, Pagination pagination) {
 
+		List<CelebrateVO> celebList = service.receiptcelebrateList();
 		
-		Map<String,Object> paramap = new HashMap<>();
-		paramap.put("cvo", cvo);
-		paramap.put("mvo", mvo);
+		// 경조비지급목록 한 페이지에 표시할 재직증명서 전체 글 개수 구하기(페이징)
+		int listCnt = service.getcountClList(pagination);
+		  
+		 // 페이지수 알아오기 (페이징)
+		Map<String, Object> paraMap = pagination.getPageRange(listCnt);// startRno, endRno ==> 첫페이지에 ~번부터 ~까지하 보여줄지 
+		 
+		// 경조비지급목록 - 한 페이지에 표시할 글 목록  (페이징 페이지수를 알아온다음에 10개씩보여줌) (페이징)
+		mav.addObject("celebList", service.getOnePageClCnt(paraMap)); // startRno, endRno을 가지고 select문에 1번
 		
-		List<Map<String,Object>> celebList = service.receiptcelebrateList(paramap);
-		
+		 // 페이지바
+		mav.addObject("pagebar",pagination.getPagebar(request.getContextPath()+"/manage/proof/proofList.on"));
+		mav.addObject("paraMap", paraMap);
+
 		mav.addObject("celebList", celebList);
 		mav.setViewName("manage/admin/celebrate/receiptcelebrateList.tiles");
 		return mav;

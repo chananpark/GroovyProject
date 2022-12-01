@@ -45,31 +45,10 @@
 	
     .modal-dialog.modals-fullsize_viewDetailProof {
 	    min-width:1200px;
-	    min-height: 50px;
+	    min-height: 1000px;
 	    border: solid 1px red;
     }
-    
-/*     .modals-fullsize {
-    	width:800px;
-    	height: 800px;
-    }
-    
-    
-    .modal-content.modals-fullsize {
-	    height: auto;
-	    min-height:50%;
-	    border-radius: 0;
-    }
-    
-    #viewDetailProof{
-	    position: fixed;
-	    left: -10%;
-		top: 7%;
- 	}
- 
-	.font > tr> th {
-		font-weight: normal;
-	} */
+
  	
 	.modal-content {
 		width:700px;

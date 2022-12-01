@@ -90,7 +90,16 @@ public interface InterManagementService {
 	List<PayVO> paySearch(Map<String, Object> paramap);
 
 	//관리자 사원관리 - 경조비지급목록
-	List<Map<String, Object>> receiptcelebrateList(Map<String, Object> paramap);
+	List<CelebrateVO> receiptcelebrateList();
+
+	// 경조비지급목록 한 페이지에 표시할 재직증명서 전체 글 개수 구하기(페이징)
+	int getcountClList(Pagination pagination);
+
+	// 경조비지급목록 - 한 페이지에 표시할 글 목록  (페이징 페이지수를 알아온다음에 10개씩보여줌) (페이징)
+	List<CelebrateVO> getOnePageClCnt(Map<String, Object> paraMap);
+
+	//관리자 사원관리 - 경조비신청현황
+	List<CelebrateVO> receiptCelebrateStatus();
 
 
 

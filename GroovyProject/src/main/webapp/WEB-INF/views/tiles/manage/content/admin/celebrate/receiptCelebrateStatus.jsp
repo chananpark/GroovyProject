@@ -2,7 +2,8 @@
     pageEncoding="UTF-8"%>
 
 <% String ctxPath = request.getContextPath(); %>   
-
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
     
 <!-- Font Awesome 5 Icons !!이걸써줘야 아이콘웹에서 아이콘 쓸 수 있다!!-->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
@@ -100,21 +101,29 @@
 			</tr>
 		</thead>
 		<tbody >
+			<c:forEach var="celbStatusList" items="${requestScope.celbStatusList}" varStatus="status" > 
 			<tr class="text-center border">
-				<td>1</td>
-				<td>223</td>
-				<td>p234234</td>
-				<td>김민수</td>
-				<td>생일상여금</td>
-				<td>200,000</td>
+				<td>${status}</td>
+				<td>${celbStatusList.clbno}</td>
+				<td>${celbStatusList.fk_empno}</td>
+				<td>${celbStatusList.name}</td>
 				<td>
+					<c:choose>
+						<c:when test="${celebList.clbtype eq '1'}">명절상여금</c:when>
+						<c:when test="${celebList.clbtype eq '2'}">생일상여금</c:when>
+						<c:otherwise>휴가비</c:otherwise>
+					</c:choose> 
+				</td>
+				<td ><fmt:formatNumber value="${celebList.clbpay}" pattern="#,###"/></td>
+				<td >
 					<select style="width: 95%;" class="text-center border">
 						<option>미승인</option>
 						<option>승인(완료)</option>
 					</select>
 				</td>
-				<td>2022-11-12</td>
+				<td >${celebList.clbdate}</td>
 			</tr>
+			</c:forEach>
 		</tbody>
 	</table>
 	</div>

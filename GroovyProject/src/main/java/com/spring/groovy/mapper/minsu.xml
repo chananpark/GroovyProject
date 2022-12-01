@@ -16,7 +16,7 @@
 	<select id="login2" parameterType="HashMap" resultType="com.spring.groovy.management.model.MemberVO">
 		select empno, cpemail, name, pwd, position, jubun, postcode, address, detailaddress
 		     , extraaddress,empimg,birthday, bumun,department,pvemail,mobile,depttel,joindate
-		     ,empstauts,bank, account,annualcnt, empimg, fk_position_no, fk_bumun_no, fk_department_no
+		     ,empstauts,bank, account,annualcnt, empimg, fk_position_no, fk_bumun_no, fk_department_no,signimg
 		from tbl_employee
 		where cpemail = #{cpemail} and pwd = #{pwd}
 	</select>
@@ -199,19 +199,59 @@
 
 	
 	<!-- 관리자 사원관리 - 경조비지급목록 -->
-	<select id="receiptcelebrateList" resultType="com.spring.groovy.management.model.CelebrateVO" parameterType="com.spring.groovy.management.model.CelebrateVO">
-		select name, payno, fk_empno, pay, annualpay, overtimepay, paymentdate
-		from tbl_pay P join tbl_employee e
-		on p.fk_empno = e.empno
+	<!-- <resultMap type="com.spring.groovy.management.model.CelebrateVO" id="celebList" autoMapping="true">
+		<id column="CLBNO" property="clbno" jdbcType="NUMBER"/>
+		<result column="FK_EMPNO" property="fk_empno" jdbcType="NUMBER"/>
+		<result column="CLBDATE" property="clbdate" jdbcType="DATE"/>
+		<result column="CLBPAY" property="clbpay" jdbcType="NUMBER"/>
+		<result column="CLBTYPE" property="clbtype" jdbcType="VARCHAR"/>
+		<result column="CLBSTATUS" property="clbstatus" jdbcType="VARCHAR"/>
+		
+		tbl_employee 테이블의 name을 조인시키기 위함
+		<collection property="employeeList" ofType="com.spring.groovy.management.model.MemberVO"  >
+			<id column="EMPNO" property="empno" jdbcType="NUMBER"/>
+			<result column="NAME" property="name" jdbcType="VARCHAR"/>
+		</collection>
+	</resultMap> -->
+	<select id="receiptcelebrateList" resultType="com.spring.groovy.management.model.CelebrateVO">
+		select name, clbno, fk_empno, to_char(clbdate, 'yyyy-mm-dd') AS clbdate, clbpay, clbtype, clbstatus
+		from tbl_celebrate C join tbl_employee E
+		on C.fk_empno = E.empno
+		order by clbno desc
 	</select>
 	
 	
+	<!-- 경조비지급목록 한 페이지에 표시할 재직증명서 전체 글 개수 구하기(페이징) -->
+	<select id="getcountClList" parameterType="com.spring.groovy.common.Pagination" resultType="int">
+		select count(*) from tbl_celebrate
+		<if test='searchType != "" and searchWord != "" '>
+		WHERE LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
+		</if>
+	</select>
 	
 	
+	<!-- 경조비지급목록 - 한 페이지에 표시할 글 목록  (페이징 페이지수를 알아온다음에 10개씩보여줌) (페이징) -->
+	<select id="getOnePageClCnt" parameterType="HashMap" resultType="com.spring.groovy.management.model.CelebrateVO">
+		select *
+		from (SELECT ROWNUM AS RNO, v.*
+			from( 
+			    select *
+			    from tbl_celebrate
+			     <if test='searchType != "" and searchWord != "" '>
+		            WHERE LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
+	            </if>
+	            ORDER BY clbno desc
+			)V)
+		WHERE RNO BETWEEN #{startRno} AND #{endRno}
+	</select>
 	
-	
-	
-	
+	<!-- 관리자 사원관리 - 경조비신청현황 -->
+	<select id="receiptCelebrateStatus" resultType="com.spring.groovy.management.model.CelebrateVO">
+		select name, clbno, fk_empno, to_char(clbdate, 'yyyy-mm-dd') AS clbdate, clbpay, clbtype, clbstatus
+		from tbl_celebrate C join tbl_employee E
+		on C.fk_empno = E.empno
+		order by clbno desc
+	</select>
 	
 	
 	

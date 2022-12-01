@@ -1,5 +1,6 @@
 package com.spring.groovy.management.model;
 
+import java.util.List;
 
 public class CelebrateVO {
 
@@ -10,6 +11,10 @@ public class CelebrateVO {
 	private String clbpay;          // 신청금액  (1- 50, 2-20, 3-30 )
 	private String clbtype;         // 경조구분 (1명절상여금, 2생일상여금, 3휴가상여금)
 	private String clbstatus; 		// 승인여부 (0 미승인, 1 승인)
+	
+	private String name;  // 조인
+	
+	
 	
 	public String getClbno() {
 		return clbno;
@@ -47,7 +52,14 @@ public class CelebrateVO {
 	public void setClbstatus(String clbstatus) {
 		this.clbstatus = clbstatus;
 	}
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
 	
 	
+
 	
 }

@@ -1,5 +1,7 @@
 package com.spring.groovy.management.model;
 
+import java.util.List;
+
 public class PayVO {
 
 	private String payno;           // 급여번호
@@ -11,8 +13,7 @@ public class PayVO {
 	private String postcode;        // 우편번호
 	
 	
-	
-	
+
 	public String getPayno() {
 		return payno;
 	}
@@ -56,4 +57,5 @@ public class PayVO {
 		this.postcode = postcode;
 	}
 	
+
 }

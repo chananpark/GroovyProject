@@ -298,16 +298,21 @@ select payno, fk_empno, pay, annualpay, overtimepay, paymentdate
 from tbl_pay 
 
 
--- 경조비 테이블 목록 조회
+-- 급여 테이블 목록 조회
 select name, payno, fk_empno, pay, annualpay, overtimepay, paymentdate
 from tbl_pay P join tbl_employee e
 on p.fk_empno = e.empno
 
-commit
-create table tbl_pay
-(payno               number        not null   -- 급여번호
-,fk_empno            number        not null   -- 사원번호
-,pay                 number(30)    not null   -- 기본급
-,annualpay           number(30)               -- 연차수당
-,overtimepay         number(30)               -- 초과근무수당
-,paymentdate         date  default sysdate    -- 지급일자(특정일자)
+
+select name, clbno, fk_empno, to_char(clbdate, 'yyyy-mm-dd') AS clbdate, clbpay, clbtype, clbstatus
+from tbl_celebrate C join tbl_employee E
+on C.fk_empno = E.empno
+order by clbno
+
+
+
+
+
+
+
+

@@ -3,6 +3,7 @@
 
 <% String ctxPath = request.getContextPath(); %>   
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
     
 <!-- Font Awesome 5 Icons !!이걸써줘야 아이콘웹에서 아이콘 쓸 수 있다!!-->
@@ -35,32 +36,23 @@
 
 	 /* === 모달 CSS === */
 	
-    .modal-dialog.modals-fullsize_detailCelebrate {
-	    width: 800px;
-	    height: 50%;
+   .modal-dialog.modals-fullsize_detailCelebrate {
+	    min-width:1200px;
+	    min-height: 500px;
+	    border: solid 1px red;
     }
     
-    .modals-fullsize {
-    	width:800px;
-    	height: 1000px;
-    }
-    
-    
-    .modal-content.modals-fullsize {
-	    height: auto;
-	    min-height:50%;
-	    border-radius: 0;
-    }
-    
-    #detailCelebrate{
-	    position: fixed;
-		left: -8%;
-		top: 5%;
- 	}
- 	
- 	.font > tr> th {
+   
+
+	.modal-content {
+		width:700px;
+		border: solid 1px orange;
+	}
+	
+	.font > tr> th {
 		font-weight: normal;
 	}
+	
 
 </style>
 
@@ -70,6 +62,9 @@
 		
 		$('.subadmenu').show();
 		$('.eachmenu4').show();
+		
+		
+		
 		
 	}); // end of $(document).ready(function(){
 		
@@ -96,6 +91,7 @@
 	<div style='margin: 1% 0 3% 1%'>
 		<h4>경조비관리</h4>
 	</div>
+	
 	
 	<div class='mx-4'  style="background-color:#e3f2fd; width: 100%; height: 45px;">
 		<div style="margin-left: 73%;" class="pt-1">
@@ -126,27 +122,40 @@
 				<th>경조금액</th>
 				<th>결재상태</th>
 				<th>신청일</th>
+				<th>상세보기</th>
 			</tr>
 		</thead>
-		<tbody onclick="go_detailCelebrate" data-toggle="modal" data-target="#detailCelebrate">
-		<c:forEach var="allemp" items="${requestScope.celebList}" varStatus="status">
+		<tbody>
+		<c:if test="${not empty requestScope.celebList}">
+		<c:forEach var="celebList" items="${requestScope.celebList}" varStatus="status">
 			<tr class="text-center border">
-				<td>${allemp.clbno}</td>
-				<td>${allemp.fk_empno}</td>
-				<td></td>
-				<td>${allemp.clbtype}</td>
-				<td>${allemp.clbpay}</td>
-				<td><c:choose><c:when test=" ${allemp.clbstatus eq '1'}">승인(완료)</c:when><c:otherwise>미승인</c:otherwise></c:choose></td>
-				<td>${allemp.clbno}</td>
-				<td>${allemp.clbdate}</td>
+				<td >${celebList.clbno}</td>
+				<td >${celebList.fk_empno}</td>
+				<td >${celebList.name}</td>
+				<td>
+					<c:choose>
+						<c:when test="${celebList.clbtype eq '1'}">명절상여금</c:when>
+						<c:when test="${celebList.clbtype eq '2'}">생일상여금</c:when>
+						<c:otherwise>휴가비</c:otherwise>
+					</c:choose> 
+				</td>
+				<td ><fmt:formatNumber value="${celebList.clbpay}" pattern="#,###"/></td>
+				<td >
+					<c:choose>
+						<c:when test="${celebList.clbstatus eq '1'}">승인(완료)</c:when>
+						<c:otherwise>미승인</c:otherwise>
+					</c:choose>
+				<td >${celebList.clbdate}</td>
+				<td><button data-toggle="modal" data-target="#go_detailCelebrate" id="btn_viewCeleb">상세보기</button></td> 
 			</tr>
 			</c:forEach>
+			</c:if>
 		</tbody>
 	</table>
 	</div>
 	
 	<%-- 정보수정 페이지바 --%>
-	<div align="right" style="margin: 3% 0;"></div>
+	<div align="right" style="margin: 3% 0;">${pagebar}</div>
 	
 </div>
 </form>
@@ -155,30 +164,36 @@
 
 
 <%-- 경조비지급목록 상세보기 모달창 --%>
-<div class="modal" id="detailCelebrate" >
-   <div class="modal-dialog" >
-      <div class="modal-content modals-fullsize">
-      
-         <div class='modal-body px-3'>
- 		<button class="btn btn-sm float-right" style="background-color:#086BDE; color:white;" onclick="javascript:self.close();">닫기</button>        
-          <div align="center" style="padding: 2%; margin: 8% auto;">
+ <div class="modal" id="detailCelebrate" >
+   <div class="modal-dialog" role="document">
+      	
+        <div class="modal-content">
+        
+        <div class="modal-header">
+         <!-- 모달창의 header 부분에 해당한다.  -->
+          <h4 class="modal-title"></h4>
+          <input type="button" onclick="window.print()" value="인쇄" style="background-color:#086BDE; color:white; border:none; width: 50px;"/>
+          <button type="button" class="close mr-3" data-dismiss="modal">×</button>
+        </div>
+        
+		<div class='modal-body px-3'>
+          <div align="center" style="padding: 2%;">
                   
          <h4 class="float-center mb-5">경조비 지급내역</h4>
-         
          
          <table class="table table-bordered table-sm">
 	         <tbody class="font">
 	         <tr>
 	         	<th>신청번호</th>
-	         	<td><input type="text" style="border: none;"/></td>
+	         	<td><input type="text" style="border: none;" /></td>
 	         	<th>사원번호</th>
-	         	<td><input type="text" style="border: none;"/></td>
+	         	<td><input type="text" style="border: none;" /></td>
 	         </tr>
 	         <tr>
 	         	<th>부서명</th>
 	         	<td><input type="text" style="border: none;"/></td>
 	         	<th>사원명</th>
-	         	<td><input type="text" style="border: none;"/></td>
+	         	<td><input type="text" style="border: none;" /></td>
 	         </tr>
 	         </tbody>
          </table>
@@ -193,13 +208,13 @@
 	         </tr>
 	         <tr>
 	         	<th>예금주</th>
-	         	<td><input type="text" style="border: none;"/></td>
+	         	<td><input type="text" style="border: none;" /></td>
 	         	<th>계좌번호</th>
 	         	<td><input type="text" style="border: none;"/></td>
 	         </tr>
 	          <tr>
 	         	<th>경조구분</th>
-	         	<td><input type="text" style="border: none;"/></td>
+	         	<td><input type="text" style="border: none;" /></td>
 	         	<th>금액</th>
 	         	<td><input type="text" style="border: none;"/></td>
 	         </tr>
