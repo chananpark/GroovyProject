@@ -6,7 +6,10 @@
 	<!-- 팀 문서함 게시글 수 조회 -->
 	<select id="getTeamDraftCnt" resultType="int" parameterType="HashMap" >
 		SELECT COUNT(*) FROM VIEW_TEAM_DRAFT
-		WHERE DRAFT_DEPARTMENT = #{department}
+		WHERE 1=1
+		<if test='fk_department_no != "1" '>
+		AND fk_department_no = #{fk_department_no}
+		</if>
 		<if test='searchType != "" and searchWord != "" '>
 		AND LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
 		</if>
@@ -19,7 +22,10 @@
 		    FROM ( SELECT *
 		            FROM
 		            VIEW_TEAM_DRAFT
-		            WHERE DRAFT_DEPARTMENT = #{department}
+            		WHERE 1=1
+					<if test='fk_department_no != "1" '>
+					AND fk_department_no = #{fk_department_no}
+					</if>
 		            <if test='searchType != "" and searchWord != "" '>
 		            AND LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
 		            </if>
@@ -122,13 +128,11 @@
 	<!-- 홈 - 진행중 문서 조회 -->
 	<select id="getMyDraftProcessing" resultType="com.spring.groovy.approval.model.DraftVO" parameterType="String" >
 		SELECT *
-	    FROM ( SELECT *
-	            FROM
-	            VIEW_DRAFT_SENT
-	            WHERE DRAFT_STATUS = 0
-	            AND FK_DRAFT_EMPNO = #{empno}
-	            ORDER BY APPROVAL_DATE DESC
-	            )
+        FROM
+        VIEW_DRAFT_SENT
+        WHERE DRAFT_STATUS = 0
+        AND FK_DRAFT_EMPNO = #{empno}
+        ORDER BY DRAFT_DATE DESC
 	</select>
 	
 	<!-- 내가 결재해야 할 문서의 문서번호-->

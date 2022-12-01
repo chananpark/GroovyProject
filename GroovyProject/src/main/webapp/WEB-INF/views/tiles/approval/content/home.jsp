@@ -125,7 +125,7 @@ $(()=>{
                             <td class='col col-1'>${processing.draft_type}</td>
                             <td class='col col-2'>${processing.draft_no}</td>
                             <td class='col'>
-                            <a href='<%=ctxPath%>/approval/draftDetail.on?draft_no=${processing.draft_no}&fk_draft_type_no=${processed.fk_draft_type_no}'>
+                            <a href='<%=ctxPath%>/approval/draftDetail.on?draft_no=${processing.draft_no}&fk_draft_type_no=${processing.fk_draft_type_no}'>
                             <c:if test="${processing.urgent_status == '1'}"><span style='font-size:x-small;' class="badge badge-pill badge-danger">긴급</span></c:if>
                             ${processing.draft_subject}</a></td>
                         </tr>
@@ -172,10 +172,10 @@ $(()=>{
                             ${processed.draft_subject}</a></td>
 							<td class='col col-1'>${fn:substring(processed.draft_date, 0, 10)}</td>
                             <td class='col col-1'>
-                            	<c:if test="${draft.draft_status == '완료'}">
+                            	<c:if test="${processed.draft_status == '완료'}">
 	                            	<span class="badge badge-secondary">${processed.draft_status}</span>
                             	</c:if>
-                            	<c:if test="${draft.draft_status == '반려'}">
+                            	<c:if test="${processed.draft_status == '반려'}">
                             		<span class="badge badge-danger">${processed.draft_status}</span>
                             	</c:if>
                             </td>

@@ -152,6 +152,10 @@ const excelDownLoad = () => {
 				<th class='col'>종류</th>
 				<th class='col'>문서번호</th>
 				<th class='col col-4'>제목</th>
+				<!-- 대표이사의 경우 기안부서 컬럼 추가 -->
+				<c:if test="${loginuser.fk_bumun_no == '1'}">
+					<th class='col'>기안부서</th>
+				</c:if>
 				<th class='col'>기안자</th>
 				<th class='col col-1'>결재상태</th>
 			</tr>
@@ -171,7 +175,11 @@ const excelDownLoad = () => {
 							<span class="badge badge-pill badge-danger">긴급</span>
                             </c:if>
                             ${draft.draft_subject}</a></td>
-                            <td class='col'>${draft.draft_emp_name}</td>
+							<!-- 대표이사의 경우 기안부서 컬럼 추가 -->
+							<c:if test="${loginuser.fk_bumun_no == '1'}">
+								<td class='col'>${draft.draft_department}</td>
+							</c:if>
+							<td class='col'>${draft.draft_emp_name}</td>
                             <td class='col col-1'>
                             	<c:if test="${draft.draft_status == '완료'}">
 	                            	<span class="badge badge-secondary">${draft.draft_status}</span>

@@ -274,7 +274,7 @@ create or replace view view_team_draft
 as
 select case when DRAFT_status = 0 then null else APPROVAL_DATE end as APPROVAL_DATE, 
 DRAFT_DATE, FK_DRAFT_TYPE_NO, draft_type, draft_no, FK_DRAFT_EMPNO, urgent_status,
-name as DRAFT_EMP_NAME, DRAFT_SUBJECT, DRAFT_status, department as draft_DEPARTMENT
+name as DRAFT_EMP_NAME, DRAFT_SUBJECT, DRAFT_status, department as draft_DEPARTMENT, fk_department_no
 FROM
 (select DRAFT_DATE, FK_DRAFT_TYPE_NO, draft_type, draft_no, FK_DRAFT_EMPNO, DRAFT_SUBJECT, DRAFT_status, APPROVAL_DATE, urgent_status
 from tbl_draft join 

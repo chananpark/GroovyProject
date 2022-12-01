@@ -333,7 +333,7 @@ public class ApprovalController {
 		MemberVO loginuser = getLoginUser(request);
 
 		Map<String, Object> paraMap = BeanUtils.describe(pagination); // pagination을 Map으로
-		paraMap.put("department", loginuser.getDepartment());
+		paraMap.put("fk_department_no", loginuser.getFk_department_no());
 
 		// 전체 글 개수 구하기
 		int listCnt = service.getTeamDraftCnt(paraMap);
@@ -365,7 +365,6 @@ public class ApprovalController {
 
 		Map<String, Object> paraMap = BeanUtils.describe(pagination); // pagination을 Map으로
 		paraMap.put("empno", loginuser.getEmpno());
-		paraMap.put("department", loginuser.getDepartment());
 
 		// 결재 대기 문서의 문서번호들 조회
 		List<String> draftNoList = service.getRequestedDraftNo(paraMap);

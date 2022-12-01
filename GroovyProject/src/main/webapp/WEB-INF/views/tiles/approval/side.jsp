@@ -93,12 +93,7 @@ const goWriteForm = () => {
      	</ul>
     </li>
     <li class="nav-item">
-		<c:if test="${loginuser.fk_bumun_no != 1}">
 		<a id="teamList" class="nav-link" href="<%=ctxPath%>/approval/team.on">팀 문서함</a>
-		</c:if>
-		<c:if test="${loginuser.fk_bumun_no == 1}">
-		<a id="allList" class="nav-link" href="<%=ctxPath%>/approval/all.on">전사 문서함</a>
-		</c:if>
     </li>
     <li class="nav-item topMenu">환경설정
       	<ul class='subMenus configMenu'>

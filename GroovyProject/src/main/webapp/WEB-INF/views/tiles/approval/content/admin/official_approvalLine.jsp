@@ -16,6 +16,14 @@
 	transition: 0.4s;
 }
 
+#editBtn {
+	background-color: #E3F2FD;
+}
+
+#editBtn:hover {
+	background-color: #cfe9fc;
+}
+
 .active, .accordion:hover {
 	background-color: #F9F9F9;
 }
@@ -63,6 +71,8 @@ $(()=>{
 	$('a#officialApprovalLine').css('color','#086BDE');
 	$('.adminMenu').show();
 	
+	$('.save').hide(); // 저장버튼 감추기
+	
 	var acc = document.getElementsByClassName("accordion");
 	var i;
 
@@ -83,6 +93,8 @@ $(()=>{
 
 /* 결재라인 수정하기(결재자 새로 선택하기) */
 const selectApprovalLine = (official_aprv_line_no) => {
+	
+	$('.save'+official_aprv_line_no).show(); // 저장버튼 표시
 	
 	// 세션스토리지에 해당 결재라인 번호 저장
 	sessionStorage.setItem("official_aprv_line_no", official_aprv_line_no);
@@ -188,8 +200,8 @@ const getAprvLine = (official_aprv_line_no) => {
 			<div class='approvalLine mb-4'>
 				<div class='my-4'>
 					<button type="button" class="btn btn-sm" id='editBtn' onclick='selectApprovalLine(${item.official_aprv_line_no})'>수정</button>
-					<span class='ml-2'>결재라인 수정 후 반드시 저장버튼을 클릭해주세요.</span>
-					<button type="button" class="btn btn-sm" id='saveBtn' onclick='saveAprvLine(${item.official_aprv_line_no})'>저장</button>
+					<span class='save save${item.official_aprv_line_no} ml-2'>결재라인 수정 후 반드시 저장버튼을 클릭해주세요.</span>
+					<button type="button" class="save save${item.official_aprv_line_no} btn btn-sm" id='saveBtn' onclick='saveAprvLine(${item.official_aprv_line_no})'>저장</button>
 				</div>
 	
 			</div>
