@@ -399,11 +399,11 @@ const updateApproval = approval_status => {
 					<c:if test="${not empty draftMap.dvo.draft_comment}">
 						<tr>
 							<td class='profile' rowspan='2'><img style='border-radius: 50%; display: inline-block' src='<%=ctxPath%>/resources/images/profile/${draftMap.dvo.empimg}' width="100" /></td>
-							<td style='text-align:left'><h6>${draftMap.dvo.draft_emp_name}&nbsp;${draftMap.dvo.position}</h6></td>
+							<td><h6>${draftMap.dvo.draft_emp_name}&nbsp;${draftMap.dvo.position}</h6></td>
 							<td id='date'><span style='color: #b3b3b3'>${draftMap.dvo.draft_date}</span></td>
 						</tr>
 						<tr>
-							<td style='text-align:left'>${draftMap.dvo.draft_comment}</td>
+							<td style='width: 700px'>${draftMap.dvo.draft_comment}</td>
 						</tr>
 					</c:if>
 					<c:if test="${empty draftMap.dvo.draft_comment}">
@@ -420,6 +420,7 @@ const updateApproval = approval_status => {
 				<div class='card-body'>
 					<table class='commentTable'>
 					<c:forEach items="${draftMap.avoList}" var="avo">
+					<c:set var="length" value="${fn:length(draftMap.avoList)}"></c:set>
 						<c:if test="${not empty avo.approval_comment}">
 							<tr>
 								<td class='profile' rowspan='2'><img style='border-radius: 50%; display: inline-block' src='<%=ctxPath%>/resources/images/profile/${avo.empimg}' width="100" /></td>
@@ -427,8 +428,14 @@ const updateApproval = approval_status => {
 								<td id='date'><span style='color: #b3b3b3'>${avo.approval_date}</span></td>
 							</tr>
 							<tr>
-								<td>${avo.approval_comment}</td>
+								<td style='width: 700px'>${avo.approval_comment}</td>
 							</tr>
+						</c:if>
+						<c:if test="${empty avo.approval_comment}">
+							<c:set var="emptyCnt" value="${emptyCnt + 1}"></c:set>
+							<c:if test="${emptyCnt eq length}">
+								<span style='text-align:left'>결재 의견이 없습니다.</span>
+							</c:if>
 						</c:if>
 					</c:forEach>
 					</table>
