@@ -48,6 +48,7 @@ import com.spring.groovy.approval.model.BiztripReportVO;
 import com.spring.groovy.approval.model.DraftFileVO;
 import com.spring.groovy.approval.model.DraftVO;
 import com.spring.groovy.approval.model.ExpenseListVO;
+import com.spring.groovy.approval.model.OfficialAprvLineVO;
 import com.spring.groovy.approval.model.SavedAprvLineVO;
 import com.spring.groovy.approval.service.InterApprovalService;
 import com.spring.groovy.common.FileManager;
@@ -539,7 +540,45 @@ public class ApprovalController {
 
 		// 첨부파일이 있을 시
 		if (mtfRequest.getFiles("fileList").size() > 0) {
-			upLoadFiles(mtfRequest, fileList); // 첨부파일 업로드
+			
+			// 파일 업로드 경로 지정
+			String path = setFilePath(mtfRequest, "files");
+			
+			// view에서 넘어온 파일들
+			List<MultipartFile> multiFileList = mtfRequest.getFiles("fileList");
+			
+			// 파일 업로드하기
+			for (MultipartFile attach : multiFileList) {
+				
+				String filename = ""; // 저장될 파일명
+				String originalFilename = ""; // 원본 파일명
+				byte[] bytes = null; // 파일 내용물
+				long filesize = 0; // 파일 크기
+				
+				try {
+					// 첨부파일의 내용물을 읽어온다.
+					bytes = attach.getBytes();
+					
+					// originalFilename을 읽어온다.
+					originalFilename = attach.getOriginalFilename();
+					
+					// 새로운 파일명으로 디스크에 저장한다.
+					filename = fileManager.doFileUpload(bytes, originalFilename, path);
+					
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				
+				DraftFileVO dfvo = new DraftFileVO();
+				
+				// dfvo set
+				dfvo.setFilename(filename);
+				dfvo.setOriginalFilename(originalFilename);
+				filesize = attach.getSize(); // 첨부파일의 크기 (단위: byte)
+				dfvo.setFilesize(String.valueOf(filesize));
+				
+				fileList.add(dfvo);
+			}
 		}
 		paraMap.put("fileList", fileList);
 		
@@ -556,6 +595,15 @@ public class ApprovalController {
 		jsonObj.put("result", result);
 
 		return jsonObj.toString();
+	}
+
+	// 파일 업로드 경로 지정
+	private String setFilePath(MultipartHttpServletRequest mtfRequest, String directory) {
+		HttpSession session = mtfRequest.getSession();
+		String root = session.getServletContext().getRealPath("/");
+		String path = root + "resources" + File.separator + directory;
+		
+		return path;
 	}
 	
 	// 기안 임시저장하기
@@ -591,48 +639,6 @@ public class ApprovalController {
 		return jsonObj.toString();
 	}
 	
-	// 파일 업로드하기
-	private void upLoadFiles(MultipartHttpServletRequest mtfRequest, List<DraftFileVO> fileList) {
-		// 파일 업로드 경로 지정
-		HttpSession session = mtfRequest.getSession();
-		String root = session.getServletContext().getRealPath("/");
-		String path = root + "resources" + File.separator + "files";
-		
-		// view에서 넘어온 파일들
-		List<MultipartFile> multiFileList = mtfRequest.getFiles("fileList");
-		
-		// 파일 업로드하기
-		for (MultipartFile attach : multiFileList) {
-			
-			DraftFileVO dfvo = new DraftFileVO();
-			
-			String filename = ""; // 저장될 파일명
-			byte[] bytes = null; // 파일 내용물
-			long filesize = 0; // 파일 크기
-			
-			try {
-				// 첨부파일의 내용물을 읽어온다.
-				bytes = attach.getBytes();
-				
-				// originalFilename을 읽어온다.
-				String originalFilename = attach.getOriginalFilename();
-				
-				// 새로운 파일명으로 디스크에 저장한다.
-				filename = fileManager.doFileUpload(bytes, originalFilename, path);
-				
-				// dfvo set
-				dfvo.setFilename(filename);
-				dfvo.setOriginalFilename(originalFilename);
-				filesize = attach.getSize(); // 첨부파일의 크기 (단위: byte)
-				dfvo.setFilesize(String.valueOf(filesize));
-				
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			
-			fileList.add(dfvo);
-		}
-	}
 
 	// 결재라인 선택 팝업창 요청
 	@RequestMapping(value = "/selectApprovalLine.on")
@@ -814,6 +820,46 @@ public class ApprovalController {
 
 		return mav;
 	}
+	
+	// 환경설정-결재라인 수정
+	@PostMapping(value = "/config/approvalLine/edit.on")
+	public ModelAndView editApprovalLine(ModelAndView mav, HttpServletRequest request, SavedAprvLineVO sapVO) {
+		
+		// update
+		int n = service.editApprovalLine(sapVO);
+		
+		if (n == 0) {
+			mav.addObject("message", "결재라인 저장에 실패하였습니다.");
+			mav.addObject("loc", "javascript:history.back()");
+		} else {
+			mav.addObject("message", "결재라인이 저장되었습니다.");
+			mav.addObject("loc", request.getContextPath() + "/approval/config/approvalLine.on");
+		}
+		
+		mav.setViewName("msg");
+		
+		return mav;
+	}
+	
+	// 환경설정-결재라인 삭제
+	@PostMapping(value = "/config/approvalLine/del.on")
+	public ModelAndView delApprovalLine(ModelAndView mav, HttpServletRequest request, SavedAprvLineVO sapVO) {
+		
+		// delete
+		int n = service.delApprovalLine(sapVO);
+		
+		if (n == 0) {
+			mav.addObject("message", "결재라인 삭제에 실패하였습니다.");
+			mav.addObject("loc", "javascript:history.back()");
+		} else {
+			mav.addObject("message", "결재라인이 삭제되었습니다.");
+			mav.addObject("loc", request.getContextPath() + "/approval/config/approvalLine.on");
+		}
+		
+		mav.setViewName("msg");
+		
+		return mav;
+	}
 
 	// 환경설정-서명관리 페이지요청
 	@RequestMapping(value = "/config/signature.on")
@@ -821,13 +867,60 @@ public class ApprovalController {
 
 		return "approval/config/signature.tiles";
 	}
+	
+	// 환경설정-서명이미지 수정
+	@RequestMapping(value = "/config/signature/update.on")
+	public ModelAndView updateSignature(ModelAndView mav, MultipartHttpServletRequest mtfRequest) {
+		
+		// 파일 업로드 경로 지정
+		String path = setFilePath(mtfRequest, "images" + File.separator + "sign");
+		
+		// view에서 넘어온 파일들
+		MultipartFile attach = mtfRequest.getFile("attach");
+		
+		// 파일 업로드하기
+		String filename = "";
+		String originalFilename = ""; // 원본 파일명
+		byte[] bytes = null; // 파일 내용물
+		
+		try {
+			// 첨부파일의 내용물을 읽어온다.
+			bytes = attach.getBytes();
+			
+			// originalFilename을 읽어온다.
+			originalFilename = attach.getOriginalFilename();
+			
+			// 새로운 파일명으로 디스크에 저장한다.
+			filename = fileManager.doFileUpload(bytes, originalFilename, path);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		MemberVO loginuser = getLoginUser(mtfRequest);
+						
+		Map<String, String> paraMap = new HashMap<String, String>();
+		paraMap.put("filename", filename);
+		paraMap.put("empno", loginuser.getEmpno());
+		
+		// update
+		int n = service.updateSignature(paraMap);
 
-	@ExceptionHandler(Exception.class)
-	private String error(Exception e) {
-		e.printStackTrace();
-		return "error";
+		if (n == 0) {
+			mav.addObject("message", "서명 이미지 수정에 실패하였습니다.");
+			mav.addObject("loc", "javascript:history.back()");
+		} else {
+			// loginuser signimg필드 바꿔주기
+			loginuser.setSignimg(filename);
+			
+			mav.addObject("message", "서명 이미지가 수정되었습니다.");
+			mav.addObject("loc", mtfRequest.getContextPath() + "/approval/config/signature.on");
+		}
+
+		mav.setViewName("msg");
+		
+		return mav;
 	}
-
 	
 	// 관리자메뉴-공통결재라인 설정 페이지요청
 	@RequestMapping(value = "/admin/officialApprovalLine.on")
@@ -861,6 +954,26 @@ public class ApprovalController {
 		
 	}
 	
+	// 관리자메뉴-공통결재라인 수정
+	@PostMapping(value = "/admin/approvalLine/save.on")
+	public ModelAndView saveOfficialApprovalLine(ModelAndView mav, HttpServletRequest request, OfficialAprvLineVO oapVO) {
+
+		// update
+		int n = service.saveOfficialApprovalLine(oapVO);
+
+		if (n == 0) {
+			mav.addObject("message", "결재라인 저장에 실패하였습니다.");
+			mav.addObject("loc", "javascript:history.back()");
+		} else {
+			mav.addObject("message", "결재라인이 저장되었습니다.");
+			mav.addObject("loc", request.getContextPath() + "/approval/admin/officialApprovalLine.on");
+		}
+
+		mav.setViewName("msg");
+
+		return mav;
+	}
+	
 	// 로그인 사용자 정보 가져오기
 	private MemberVO getLoginUser(HttpServletRequest request) {
 		HttpSession session = request.getSession();
@@ -880,4 +993,12 @@ public class ApprovalController {
 		sortOrder = sortOrder == null ? "desc" : sortOrder;
 		paraMap.put("sortOrder", sortOrder);
 	}
+
+	@ExceptionHandler(Exception.class)
+	private String error(Exception e) {
+		e.printStackTrace();
+		return "error";
+	}
+
 }
+

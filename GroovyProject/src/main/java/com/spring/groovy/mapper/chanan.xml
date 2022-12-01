@@ -176,11 +176,12 @@
 	<select id="getEmpList" resultMap="empMap" parameterType="HashMap">
 		SELECT EMPNO, DEPARTMENT, NAME, E.POSITION AS POSITION, POSITION_NO
 		FROM TBL_EMPLOYEE E JOIN TBL_POSITION P 
-		ON E.POSITION = P.POSITION
+		ON E.FK_POSITION_NO = P.POSITION_NO
 		<if test='type == "personal"'>
 		WHERE EMPNO != #{loginuser.empno}
 		AND POSITION_NO > #{loginuser.fk_position_no}
 		</if>
+		ORDER BY POSITION_NO DESC
 	</select>
 
 	<!-- 부문 목록 조회 -->
@@ -221,6 +222,20 @@
 		INSERT INTO TBL_SAVED_APRV_LINE
 		VALUES (SEQ_APRV_LINE_NO.nextval, #{aprv_line_name}, #{fk_empno}, #{fk_approval_empno1}, #{fk_approval_empno2, jdbcType=INTEGER}, #{fk_approval_empno3, jdbcType=INTEGER}, #{fk_approval_empno4, jdbcType=INTEGER})
 	</insert>
+		
+	<!-- 결재라인 수정하기 -->
+	<update id="editApprovalLine" parameterType="com.spring.groovy.approval.model.SavedAprvLineVO">
+		UPDATE TBL_SAVED_APRV_LINE
+		SET FK_APPROVAL_EMPNO1 = #{fk_approval_empno1}, FK_APPROVAL_EMPNO2 = #{fk_approval_empno2, jdbcType=INTEGER}, 
+			FK_APPROVAL_EMPNO3 = #{fk_approval_empno3, jdbcType=INTEGER}, FK_APPROVAL_EMPNO4 = #{fk_approval_empno4, jdbcType=INTEGER}
+		WHERE APRV_LINE_NO = #{aprv_line_no}
+	</update>
+		
+	<!-- 결재라인 삭제하기 -->
+	<update id="delApprovalLine" parameterType="com.spring.groovy.approval.model.SavedAprvLineVO">
+		DELETE FROM TBL_SAVED_APRV_LINE
+		WHERE APRV_LINE_NO = #{aprv_line_no}
+	</update>
 	
 	<!-- 저장된 결재라인 불러오기 -->
 	<select id="getSavedAprvLine" resultType="com.spring.groovy.approval.model.SavedAprvLineVO" parameterType="HashMap">
@@ -456,4 +471,19 @@
 					OR EMPNO = FK_APPROVAL_EMPNO4))
 		ORDER BY FK_POSITION_NO
 	</select>
+		
+	<!-- 공통결재라인 저장하기 -->
+	<update id="saveOfficialApprovalLine" parameterType="com.spring.groovy.approval.model.OfficialAprvLineVO">
+		UPDATE TBL_OFFICIAL_APRV_LINE
+		SET FK_APPROVAL_EMPNO1 = #{fk_approval_empno1}, FK_APPROVAL_EMPNO2 = #{fk_approval_empno2, jdbcType=INTEGER}, 
+				FK_APPROVAL_EMPNO3 = #{fk_approval_empno3, jdbcType=INTEGER}, FK_APPROVAL_EMPNO4 = #{fk_approval_empno4, jdbcType=INTEGER}
+		WHERE OFFICIAL_APRV_LINE_NO = #{official_aprv_line_no}
+	</update>
+	
+	<!-- 서명이미지 수정하기 -->
+	<update id="updateSignature" parameterType="HashMap">
+		UPDATE TBL_EMPLOYEE
+		SET SIGNIMG = #{filename}
+		WHERE EMPNO = #{empno}
+	</update>
 </mapper>

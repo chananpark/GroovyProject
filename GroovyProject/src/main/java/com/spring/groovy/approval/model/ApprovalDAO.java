@@ -101,12 +101,6 @@ public class ApprovalDAO implements InterApprovalDAO {
 		return sqlsession.selectList("chanan.getDeptList", paraMap);
 	}
 
-	// 환경설정 - 결재라인 저장
-	@Override
-	public int saveApprovalLine(SavedAprvLineVO sapVO) {
-		return sqlsession.insert("chanan.saveApprovalLine", sapVO);
-	}
-	
 	// 기안문서 번호 얻어오기
 	@Override
 	public int getDraftNo() {
@@ -153,6 +147,30 @@ public class ApprovalDAO implements InterApprovalDAO {
 	@Override
 	public List<MemberVO> getSavedAprvEmpInfo(List<String> empnoList) {
 		return sqlsession.selectList("chanan.getSavedAprvEmpInfo", empnoList);
+	}
+
+	// 환경설정-저장된 결재라인 한개 불러오기
+	@Override
+	public List<MemberVO> getOneAprvLine(String aprv_line_no) {
+		return sqlsession.selectList("chanan.getOneAprvLine", aprv_line_no);
+	}
+
+	// 환경설정-결재라인 저장
+	@Override
+	public int saveApprovalLine(SavedAprvLineVO sapVO) {
+		return sqlsession.insert("chanan.saveApprovalLine", sapVO);
+	}
+	
+	// 환경설정-결재라인 수정
+	@Override
+	public int editApprovalLine(SavedAprvLineVO sapVO) {
+		return sqlsession.insert("chanan.editApprovalLine", sapVO);
+	}
+	
+	// 환경설정-결재라인 삭제
+	@Override
+	public int delApprovalLine(SavedAprvLineVO sapVO) {
+		return sqlsession.insert("chanan.delApprovalLine", sapVO);
 	}
 
 	// 임시저장 시퀀스 얻어오기
@@ -244,12 +262,17 @@ public class ApprovalDAO implements InterApprovalDAO {
 		return sqlsession.selectOne("chanan.getAttachedFile", draft_file_no);
 	}
 
-	// 환경설정-저장된 결재라인 한개 불러오기
+	// 관리자메뉴-공통결재라인 저장
 	@Override
-	public List<MemberVO> getOneAprvLine(String aprv_line_no) {
-		return sqlsession.selectList("chanan.getOneAprvLine", aprv_line_no);
+	public int saveOfficialApprovalLine(OfficialAprvLineVO oapVO) {
+		return sqlsession.update("chanan.saveOfficialApprovalLine", oapVO);
 	}
 
+	// 환경설정-서명이미지 수정
+	@Override
+	public int updateSignature(Map<String, String> paraMap) {
+		return sqlsession.update("chanan.updateSignature", paraMap);
+	}
 
 
 }

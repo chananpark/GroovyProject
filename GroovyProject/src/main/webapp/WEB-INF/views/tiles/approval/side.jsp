@@ -99,14 +99,14 @@ const goWriteForm = () => {
     </li>
     <li class="nav-item topMenu">환경설정
       	<ul class='subMenus configMenu'>
-      		<li><a id="approvalLine" class="nav-link" href="<%=ctxPath%>/approval/config/approvalLine.on">결재라인</a></li>
+      		<li style="margin-top: 7px;" ><a id="approvalLine" class="nav-link" href="<%=ctxPath%>/approval/config/approvalLine.on">결재라인</a></li>
       		<li><a id="signature" class="nav-link" href="<%=ctxPath%>/approval/config/signature.on">서명 관리</a></li>
       	</ul>
     </li>
 	<c:if test="${loginuser != null && loginuser.fk_department_no ==  2}">
-    <li class="nav-item topMenu">관리자메뉴
+    <li style="margin-top: 7px;" class="nav-item topMenu">관리자메뉴
       	<ul class='subMenus adminMenu'>
-      		<li><a id="approvalLine" class="nav-link" href="<%=ctxPath%>/approval/admin/officialApprovalLine.on">공통 결재라인 설정</a></li>
+      		<li style="margin-top: 7px;"><a id="officialApprovalLine" class="nav-link" href="<%=ctxPath%>/approval/admin/officialApprovalLine.on">공통 결재라인 설정</a></li>
       	</ul>
     </li>
 	</c:if>

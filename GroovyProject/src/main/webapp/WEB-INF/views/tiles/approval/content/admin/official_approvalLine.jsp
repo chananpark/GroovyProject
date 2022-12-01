@@ -60,8 +60,8 @@ input {
 </style>
 <script>
 $(()=>{
-	$('a#approvalLine').css('color','#086BDE');
-	$('.configMenu').show();
+	$('a#officialApprovalLine').css('color','#086BDE');
+	$('.adminMenu').show();
 	
 	var acc = document.getElementsByClassName("accordion");
 	var i;
@@ -76,12 +76,17 @@ $(()=>{
 	      panel.style.display = "block";
 	    }
 	    getAprvLine(this.id);
+	    
 	  });
 	}
 });
 
-/* 결재라인 선택하기 */
-const selectApprovalLine = empno => {
+/* 결재라인 수정하기(결재자 새로 선택하기) */
+const selectApprovalLine = (official_aprv_line_no) => {
+	
+	// 세션스토리지에 해당 결재라인 번호 저장
+	sessionStorage.setItem("official_aprv_line_no", official_aprv_line_no);
+	
 	const popupWidth = 800;
 	const popupHeight = 500;
 
@@ -96,8 +101,11 @@ const receiveMessage = async (e) =>
 {
    	const jsonArr = e.data;
    	
-	const body = $('#tblBody');
+    const no = sessionStorage.getItem("official_aprv_line_no")
+	const body = $('#body'+no);
 
+    body.empty();
+    
 	// 선택된 사원을 테이블에 표시함
 	jsonArr.forEach((emp, index) => {
 
@@ -117,10 +125,20 @@ const receiveMessage = async (e) =>
 window.addEventListener("message", receiveMessage, false);
 
 /* 결재라인 저장하기 */
-const saveAprvLine = () => {
-	const frm = document.aprvLineFrm;
+const saveAprvLine = (official_aprv_line_no) => {
+	
+	// 선택한 결재자가 있는지 검사
+	const body = $('#body'+ official_aprv_line_no);
+	
+	const length = body.find('tr').length;
+	if (length == 0){
+		swal("결재자가 선택되자 않았습니다.");
+		return;
+	}
+	
+	const frm = $("#aprvLineFrm"+official_aprv_line_no)[0];
 	frm.method = "post";
-	frm.action = "<%=ctxPath%>/approval/admin/approvalLine/.on";
+	frm.action = "<%=ctxPath%>/approval/admin/approvalLine/save.on";
 	frm.submit();
 }
 
@@ -143,7 +161,7 @@ const getAprvLine = (official_aprv_line_no) => {
 			 			+ "<td class='levelno'>" + (index+1) + "</td>"
 						+ "<td class='department'>" + emp.department + "</td>"
 						+ "<td class='position'>" + emp.position + "</td>"
-						+ "<input type='hidden' name='fk_approval_empno' value='" + emp.empno + "'></td>"
+						+ "<input type='hidden' name='fk_approval_empno" + (index+1) + "' value='" + emp.empno + "'></td>"
 						+ "<td class='name'>" + emp.name + "</td></tr>";
 					
 				aprvTblBody.append(html);
@@ -169,24 +187,27 @@ const getAprvLine = (official_aprv_line_no) => {
 		<div class='panel'>
 			<div class='approvalLine mb-4'>
 				<div class='my-4'>
-					<button type="button" class="btn btn-sm" id='editBtn'>수정</button>
+					<button type="button" class="btn btn-sm" id='editBtn' onclick='selectApprovalLine(${item.official_aprv_line_no})'>수정</button>
 					<span class='ml-2'>결재라인 수정 후 반드시 저장버튼을 클릭해주세요.</span>
-					<button type="button" class="btn btn-sm" id='saveBtn'>저장</button>
+					<button type="button" class="btn btn-sm" id='saveBtn' onclick='saveAprvLine(${item.official_aprv_line_no})'>저장</button>
 				</div>
 	
 			</div>
-			<table class="table">
-				<thead>
-					<tr>
-						<th>순서</th>
-						<th>소속</th>
-						<th>직급</th>
-						<th>성명</th>
-					</tr>
-				</thead>
-				<tbody id='body${item.official_aprv_line_no}'>
-				</tbody>
-			</table>
+			<form id="aprvLineFrm${item.official_aprv_line_no}">
+				<input type='hidden' name='official_aprv_line_no' value='${item.official_aprv_line_no}'>
+				<table class="table">
+					<thead>
+						<tr>
+							<th>순서</th>
+							<th>소속</th>
+							<th>직급</th>
+							<th>성명</th>
+						</tr>
+					</thead>
+					<tbody id='body${item.official_aprv_line_no}'>
+					</tbody>
+				</table>
+			</form>
 		</div>
 	</c:forEach>
 </div>

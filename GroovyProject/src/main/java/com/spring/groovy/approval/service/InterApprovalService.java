@@ -8,6 +8,7 @@ import org.json.JSONArray;
 import com.spring.groovy.approval.model.ApprovalVO;
 import com.spring.groovy.approval.model.DraftFileVO;
 import com.spring.groovy.approval.model.DraftVO;
+import com.spring.groovy.approval.model.OfficialAprvLineVO;
 import com.spring.groovy.approval.model.SavedAprvLineVO;
 import com.spring.groovy.management.model.MemberVO;
 
@@ -72,12 +73,9 @@ public interface InterApprovalService {
 
 	// 저장된 결재라인 결재자 정보 가져오기
 	List<MemberVO> getSavedAprvEmpInfo(List<String> empnoList);
-
-	// 공통결재라인 목록 불러오기
-	List<Map<String, String>> getOfficialAprvList();
 	
-	// 환경설정-공통결재라인 한개 불러오기
-	List<MemberVO> getOneOfficialAprvLine(String official_aprv_line_no);
+	// 환경설정-저장된 결재라인 한개 불러오기
+	List<MemberVO> getOneAprvLine(String aprv_line_no);
 
 	// 업무기안 임시저장하기
 	boolean saveWorkDraft(Map<String, Object> paraMap);
@@ -94,11 +92,26 @@ public interface InterApprovalService {
 	// 결재 처리하기
 	boolean updateApproval(ApprovalVO avo);
 
-	// 공통 결재라인 가져오기
+	// 공통결재라인(수신처) 가져오기
 	List<MemberVO> getRecipientList(String type_no);
 
-	// 환경설정-저장된 결재라인 한개 불러오기
-	List<MemberVO> getOneAprvLine(String aprv_line_no);
+	// 관리자메뉴-공통결재라인 목록 불러오기
+	List<Map<String, String>> getOfficialAprvList();
+	
+	// 관리자메뉴-공통결재라인 한개 불러오기
+	List<MemberVO> getOneOfficialAprvLine(String official_aprv_line_no);
+	
+	// 관리자메뉴-공통결재라인 저장
+	int saveOfficialApprovalLine(OfficialAprvLineVO oapVO);
+
+	// 환경설정-결재라인 수정
+	int editApprovalLine(SavedAprvLineVO sapVO);
+	
+	// 환경설정-결재라인 삭제
+	int delApprovalLine(SavedAprvLineVO sapVO);
+
+	// 환경설정-서명이미지 수정
+	int updateSignature(Map<String, String> paraMap);
 
 
 }

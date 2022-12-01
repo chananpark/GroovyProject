@@ -113,7 +113,7 @@ if (myApprovalInfo != null) {
 }
 
 $(()=>{
-	
+	// 버튼 및 결재의견 작성칸 감추기
 	$("#myComment").hide();
 	$(".myApprovalBtn").hide();
 	$(".proxyApprovalBtn").hide();
@@ -295,7 +295,7 @@ const updateApproval = approval_status => {
 					
 					let approval_status = "";
 					if (el.approval_status == 1)
-						approval_status = "<img src='<%=ctxPath%>/resources/images/"+el.signimg+"' width='100'/>";
+						approval_status = "<img src='<%=ctxPath%>/resources/images/sign/"+el.signimg+"' width='100'/>";
 					else if (el.approval_status == 2) 
 						approval_status = "<h3 class='text-danger'>반려</h3>";
 

@@ -309,7 +309,7 @@ const checkDuplication = (positionArr) => {
 		</table>
 	</div>
 	<div>
-		<button type='button' class='btn btn-secondary'>취소</button>
+		<button type='button' class='btn btn-secondary' onclick='self.close()'>취소</button>
 		<button type='button' class='btn btn-primary' onclick='submitAprvLine()'>확인</button>
 	</div>
 </div>

@@ -20,6 +20,7 @@ import com.spring.groovy.approval.model.DraftFileVO;
 import com.spring.groovy.approval.model.DraftVO;
 import com.spring.groovy.approval.model.ExpenseListVO;
 import com.spring.groovy.approval.model.InterApprovalDAO;
+import com.spring.groovy.approval.model.OfficialAprvLineVO;
 import com.spring.groovy.approval.model.SavedAprvLineVO;
 import com.spring.groovy.management.model.MemberVO;
 
@@ -122,6 +123,18 @@ public class ApprovalService implements InterApprovalService {
 		return dao.saveApprovalLine(sapVO);
 	}
 
+	// 환경설정-결재라인 수정
+	@Override
+	public int editApprovalLine(SavedAprvLineVO sapVO) {
+		return dao.editApprovalLine(sapVO);
+	}
+	
+	// 환경설정-결재라인 삭제
+	@Override
+	public int delApprovalLine(SavedAprvLineVO sapVO) {
+		return dao.delApprovalLine(sapVO);
+	}
+
 	// 저장된 결재라인 불러오기
 	@Override
 	public List<SavedAprvLineVO> getSavedAprvLine(Map<String, String> paraMap) {
@@ -134,16 +147,10 @@ public class ApprovalService implements InterApprovalService {
 		return dao.getSavedAprvEmpInfo(empnoList);
 	}
 
-	// 공통결재라인 목록 불러오기
+	// 저장된 결재라인 한개 불러오기
 	@Override
-	public List<Map<String, String>> getOfficialAprvList() {
-		return dao.getOfficialAprvList();
-	}
-
-	// 환경설정-공통결재라인 한개 불러오기
-	@Override
-	public List<MemberVO> getOneOfficialAprvLine(String official_aprv_line_no) {
-		return dao.getOneOfficialAprvLine(official_aprv_line_no);
+	public List<MemberVO> getOneAprvLine(String aprv_line_no) {
+		return dao.getOneAprvLine(aprv_line_no);
 	}
 
 	// 업무기안 작성하기(트랜잭션)
@@ -351,10 +358,16 @@ public class ApprovalService implements InterApprovalService {
 		return n > 0? true: false; 
 	}
 
-	// 공통 결재라인 가져오기
+	// 기안종류번호로 공통결재라인(수신처) 가져오기
 	@Override
 	public List<MemberVO> getRecipientList(String type_no) {
 		return dao.getRecipientList(type_no);
+	}
+	
+	// 관리자메뉴-공통결재라인 번호로 결재라인 조회하기
+	@Override
+	public List<MemberVO> getOneOfficialAprvLine(String official_aprv_line_no) {
+		return dao.getOneOfficialAprvLine(official_aprv_line_no);
 	}
 
 	// 첨부파일 1개 조회
@@ -363,12 +376,23 @@ public class ApprovalService implements InterApprovalService {
 		return dao.getAttachedFile(draft_file_no);
 	}
 
-	// 환경설정-저장된 결재라인 한개 불러오기
+	// 공통결재라인 목록 불러오기
 	@Override
-	public List<MemberVO> getOneAprvLine(String aprv_line_no) {
-		return dao.getOneAprvLine(aprv_line_no);
+	public List<Map<String, String>> getOfficialAprvList() {
+		return dao.getOfficialAprvList();
 	}
 
+	// 관리자메뉴-공통결재라인 저장
+	@Override
+	public int saveOfficialApprovalLine(OfficialAprvLineVO oapVO) {
+		return dao.saveOfficialApprovalLine(oapVO);
+	}
+	
+	// 환경설정-서명이미지 수정
+	@Override
+	public int updateSignature(Map<String, String> paraMap) {
+		return dao.updateSignature(paraMap);
+	}
 
 }
 	

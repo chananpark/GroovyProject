@@ -15,8 +15,8 @@
 	transition: 0.4s;
 }
 
-.active, .accordion:hover {
-	background-color: #F9F9F9;
+.clicked, .accordion:hover {
+	background-color: rgb(226, 230, 234);
 }
 
 .panel {
@@ -102,6 +102,20 @@ window.addEventListener("message", receiveMessage, false);
 
 /* 결재라인 저장하기 */
 const saveAprvLine = () => {
+	
+	// 선택한 결재자가 있는지 검사
+	const length = $("#tblBody").find('tr').length;
+	if (length == 0){
+		swal("결재자가 선택되자 않았습니다.");
+		return;
+	}
+	
+	// 이름이 있는지 검사
+	if ($("#aprv_line_name").val() == ''){
+		swal("결재라인 이름을 입력하세요.");
+		return;
+	}
+		
 	const frm = document.aprvLineFrm;
 	frm.method = "post";
 	frm.action = "<%=ctxPath%>/approval/config/approvalLine/save.on";
@@ -119,13 +133,13 @@ const saveAprvLine = () => {
 
 	<div class="btn-group my-4">
 	  <button type="button" class="btn btn-light" onclick="location.href='<%=ctxPath%>/approval/config/approvalLine.on'">저장된 결재라인</button>
-	  <button type="button" class="btn btn-light activd" onclick="location.href='<%=ctxPath%>/approval/config/approvalLine/add.on'">결재라인 추가</button>
+	  <button type="button" class="btn btn-light clicked" onclick="location.href='<%=ctxPath%>/approval/config/approvalLine/add.on'">결재라인 추가</button>
 	</div>
 	
 	<form name="aprvLineFrm">
 		<div class='mt-4' id='buttons'>
 			<div style='float:left; margin-bottom: 10px'>
-				<input type="text" name="aprv_line_name" placeholder="결재라인 이름을 입력하세요" maxlength=50 required/>
+				<input type="text" id="aprv_line_name" name="aprv_line_name" placeholder="결재라인 이름을 입력하세요" maxlength=50 required/>
 			</div>
 			<div style='float:right; margin-bottom: 10px'>
 				<button type="button" class="btn btn-sm btn-light" id='selectBtn' onclick="selectApprovalLine(${loginuser.empno})">결재자 선택하기</button>

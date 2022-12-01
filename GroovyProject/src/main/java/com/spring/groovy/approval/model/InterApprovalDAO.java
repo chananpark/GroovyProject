@@ -55,9 +55,6 @@ public interface InterApprovalDAO {
 	// 부서 목록 가져오기
 	List<Map<String, String>> getDeptList(Map<String, Object> paraMap);
 
-	// 환경설정 - 결재라인 저장
-	int saveApprovalLine(SavedAprvLineVO sapVO);
-
 	// 기안문서 번호 얻어오기
 	int getDraftNo();
 
@@ -85,8 +82,20 @@ public interface InterApprovalDAO {
 	// 공통결재라인 목록 불러오기
 	List<Map<String, String>> getOfficialAprvList();
 
+	// 환경설정 - 결재라인 저장
+	int saveApprovalLine(SavedAprvLineVO sapVO);
+	
+	// 환경설정-결재라인 수정
+	int editApprovalLine(SavedAprvLineVO sapVO);
+	
+	// 환경설정-결재라인 삭제
+	int delApprovalLine(SavedAprvLineVO sapVO);
+
 	// 환경설정-공통결재라인 한개 불러오기
 	List<MemberVO> getOneOfficialAprvLine(String official_aprv_line_no);
+	
+	// 환경설정-저장된 결재라인 한개 불러오기
+	List<MemberVO> getOneAprvLine(String aprv_line_no);
 
 	// 임시저장 번호 얻어오기
 	int getTempDraftNo();
@@ -121,10 +130,13 @@ public interface InterApprovalDAO {
 	// 결재 처리하기
 	int updateApproval(ApprovalVO avo);
 
-	// 공통 결재라인 가져오기
+	// 기안종류번호로 공통결재라인 가져오기
 	List<MemberVO> getRecipientList(String type_no);
-	
-	// 환경설정-저장된 결재라인 한개 불러오기
-	List<MemberVO> getOneAprvLine(String aprv_line_no);
+
+	// 관리자메뉴-공통결재라인 저장
+	int saveOfficialApprovalLine(OfficialAprvLineVO oapVO);
+
+	// 환경설정-서명이미지 수정
+	int updateSignature(Map<String, String> paraMap);
 
 }

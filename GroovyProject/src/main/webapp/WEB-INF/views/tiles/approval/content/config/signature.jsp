@@ -36,11 +36,35 @@ $(()=>{
 	$('a#signature').css('color','#086BDE');
 	$('.configMenu').show();
 	
-	/* 이미지 미리보기 */
-	$(document).on("change", "input#attach", function(e){
-		
+	// 저장버튼 감추기
+	$(".submit").hide();
+	
+	document.getElementById("attach").addEventListener('change', function(){
+		$(".submit").show(); // 저장버튼 표시하기
 	});
 });
+
+// 서명 업데이트하기
+const updateSign = () => {
+	
+	const frm = document.signatureFrm;
+	frm.method = "post";
+	frm.action = "<%=ctxPath%>/approval/config/signature/update.on";
+	frm.submit();
+}
+
+// 이미지 미리보기
+function readURL(input) {
+  if (input.files && input.files[0]) {
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      document.getElementById('preview').src = e.target.result;
+    };
+    reader.readAsDataURL(input.files[0]);
+  } else {
+    document.getElementById('preview').src = "";
+  }
+}
 </script>
 
 <div style='margin: 1% 0 5% 1%'>
@@ -55,20 +79,17 @@ $(()=>{
 	
 	<form name="signatureFrm" enctype="multipart/form-data">
 		<div class="card text-center mx-auto" style="width: 400px; height: 200px;">
-			<img class='mt-4' src='<%=ctxPath%>/resources/images/signature_pororo.png' width="100"/>
+			<img id="preview" style='border-radius: 50%; display: inline-block' src='<%=ctxPath%>/resources/images/sign/${loginuser.signimg}' width="100" />
 			<div class="card-body">
 				<div class="filebox">
 					<label id='updateBtn' for="attach" class="btn">서명 변경하기</label>
-					<input type="file" name="attach" id='attach' accept="image/*" />
-					
+					<input type="file" name="attach" id='attach' accept="image/*" onchange="readURL(this);"/>
 				</div>
-
 			</div>
 		</div>
 	
-		<div class='text-center m-4'>
-			<button type="button" class="btn btn-sm btn-dark mr-2 px-4" id='cancelBtn'>취소</button>
-			<button type="button" class="btn btn-sm px-4" id='submitBtn'>저장</button>
+		<div class='text-center m-4 submit'>
+			<button type="button" class="btn btn-sm px-4" id='submitBtn' onclick='updateSign()'>저장</button>
 		</div>
 	
 	</form>

@@ -111,8 +111,11 @@ if (myApprovalInfo != null) {
 }
 
 $(()=>{
+	// 합계금액 표시
+	sum = sum.toLocaleString('en');
 	$("#sum").text(sum);
 	
+	// 버튼 및 결재의견 작성칸 감추기
 	$("#myComment").hide();
 	$(".myApprovalBtn").hide();
 	$(".proxyApprovalBtn").hide();
@@ -289,7 +292,7 @@ const updateApproval = approval_status => {
 					
 					let approval_status = "";
 					if (el.approval_status == 1)
-						approval_status = "<img src='<%=ctxPath%>/resources/images/"+el.signimg+"' width='100'/>";
+						approval_status = "<img src='<%=ctxPath%>/resources/images/sign/"+el.signimg+"' width='100'/>";
 					else if (el.approval_status == 2) 
 						approval_status = "<h3 class='text-danger'>반려</h3>";
 
@@ -387,8 +390,7 @@ const updateApproval = approval_status => {
 						<td>${evo.expense_remark}</td>
 					</tr>
 					<script>
-						sum += ${evo.expense_amount};
-						sum = sum.toLocaleString('en');
+						sum += Number(${evo.expense_amount});
 					</script>
 					</c:forEach>
 					
