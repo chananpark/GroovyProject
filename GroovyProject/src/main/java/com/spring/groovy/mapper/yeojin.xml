@@ -174,11 +174,11 @@
 		select scheduleno, startdate, enddate, subject, color, place, joinuser, content, fk_smcatgono, fk_lgcatgono, fk_empno, department
 		from tbl_calendar_schedule C join tbl_employee E
 		on C.fk_empno = E.empno
-		where fk_empno = #{empno} OR
+		where C.fk_empno = #{empno} OR
 		fk_lgcatgono = 1 OR
 		(fk_lgcatgono = 2 AND department = (select department from tbl_employee where empno = #{empno}) ) OR
-		fk_lgcatgono = 3 OR 
-		lower(joinuser) like '%'|| lower(#{cpemail}) ||'%'
+		(fk_lgcatgono = 3 and lower(joinuser) like '%'|| lower(#{cpemail}) ||'%') OR
+        (fk_lgcatgono = 3 and C.fk_empno = #{empno} )
 		order by scheduleno asc
 	</select>
 		
@@ -243,14 +243,386 @@
 		where scheduleno = #{scheduleno}
 	</delete>
 		
+	
+	<!-- 일정 검색 전체 글 개수 구하기 -->
+	<select id="getScheSearchCnt" parameterType="HashMap" resultType="int">
+		
+		select count(*) 
+		from tbl_calendar_schedule SD join tbl_employee E
+		on SD.fk_empno = E.empno
+		where (( to_char(startdate,'YYYY-MM-DD') between #{startdate} and #{enddate} ) 
+		or    ( to_char(enddate,'YYYY-MM-DD') between #{startdate} and #{enddate} )) <!-- 시작날짜와 종료날짜가 저 사이에 들어있는 동시에 아래 조건 -->
+		
+		<!-- 일정분류가 없고 검색어도 없는 경우 -->
+		<if test='fk_lgcatgono == "" and pagination.searchWord == "" and pagination.searchType == "" '>
+			and ((SD.fk_lgcatgono = 1 OR (SD.fk_lgcatgono = 2 AND E.department = (select department from tbl_employee where empno = #{empno})) OR SD.fk_empno = #{empno})
+			OR ( SD.fk_empno != #{empno} and lower(joinuser) like '%'||lower(#{cpemail})||'%' ))
+		</if>
+		
+		<!-- 검색분류가 있고 검색어가 없는 경우 -->
+		<if test='fk_lgcatgono == "" and pagination.searchWord == "" and pagination.searchType != "" '>
+			and (SD.fk_lgcatgono = 1 OR (SD.fk_lgcatgono = 2 AND E.department = (select department from tbl_employee where empno = #{empno})) OR SD.fk_empno = #{empno})
+			OR ( SD.fk_empno != #{empno} and lower(joinuser) like '%'||lower(#{cpemail})||'%' )
+		</if>
+		
+		<!-- 검색 분류가 없고 검색어가 있는 경우 -->
+		<if test='pagination.searchWord != "" and pagination.searchType == "" '>
+			and ((lower(SD.subject) like '%'||lower(#{pagination.searchWord})||'%') or (lower(SD.content) like '%'||lower(#{pagination.searchWord})||'%') or (lower(SD.joinuser) like '%'||lower(#{pagination.searchWord})||'%'))
+			
+			<choose>
+				<!-- 일정분류 선택 안할 때 -->
+				<when test='fk_lgcatgono == "" '></when>
+				
+	        	<!-- 전사일정 -->
+	            <when test='fk_lgcatgono == "1"'>
+	               and SD.fk_lgcatgono = 1
+	            </when>
+	            <!-- 팀별일정 -->
+	            <when test='fk_lgcatgono == "2"'>
+	               and SD.fk_lgcatgono = 2 AND E.department = (select department from tbl_employee where empno = #{empno})
+	            </when>
+	            <!-- 개인일정 -->
+	            <when test='fk_lgcatgono == "3"'>
+	               and SD.fk_lgcatgono = 3 and SD.fk_empno = #{empno}
+	            </when>
+			</choose>
+		</if>
+		
+		<!-- 전사일정이고 검색어가 없는 경우 -->
+		<if test='fk_lgcatgono == "1" and pagination.searchWord == "" and pagination.searchType == "" '>
+			and SD.fk_lgcatgono = 1
+		</if>
+		
+		<!-- 팀별일정이고 검색어가 없는 경우 -->
+		<if test='fk_lgcatgono == "2" and pagination.searchWord == "" and pagination.searchType == "" '>
+			and SD.fk_lgcatgono = 2 AND E.department = (select department from tbl_employee where empno = #{empno})
+		</if>
+		
+		<!-- 개인일정이고 검색어가 없는 경우 -->
+		<if test='fk_lgcatgono == "3" and pagination.searchWord == "" and pagination.searchType == "" '>
+			and SD.fk_lgcatgono = 3 AND SD.fk_empno = #{empno}
+		</if>
+		
+		<!-- 참석자로 검색할 경우 -->
+      	<if test='pagination.searchWord != "" and pagination.searchType eq "joinuser" '>
+        	and SD.fk_lgcatgono != 1                        
+          	and SD.fk_empno = #{empno}                   
+          	and lower(SD.joinuser) like '%'||lower(#{pagination.searchWord})||'%'
+      	</if>
+      	
+	    <!-- 참석자 외로 검색할 경우 -->
+	    <if test='pagination.searchWord != "" and pagination.searchType neq "joinuser" and pagination.searchType != "" '>
+	    	and lower(#{pagination.searchType}) like '%'||lower(#{pagination.searchWord})||'%'
+	        <choose>
+	        	<!-- 전사일정 -->
+	            <when test='fk_lgcatgono == "1"'>
+	               and SD.fk_lgcatgono = 1
+	            </when>
+	            <!-- 팀별일정 -->
+	            <when test='fk_lgcatgono == "2"'>
+	               and SD.fk_lgcatgono = 2 AND E.department = (select department from tbl_employee where empno = #{empno})
+	            </when>
+	            <!-- 개인일정 -->
+	            <when test='fk_lgcatgono == "3"'>
+	               and SD.fk_lgcatgono = 3 and SD.fk_empno = #{empno}
+	            </when>
+			</choose>
+		</if>
+		
+	</select>
+		
+	
+	<!-- 한 페이지에 표시할 글 목록 -->
+	<resultMap type="HashMap" id="getScheduleListMap">
+		<result property="SCHEDULENO" 	column="scheduleno" 	javaType="String" />
+		<result property="STARTDATE" 	column="startdate" 		javaType="String" />
+		<result property="ENDDATE" 		column="enddate" 		javaType="String" />
+		<result property="SUBJECT" 		column="subject" 		javaType="String" />
+		<result property="COLOR" 		column="color" 			javaType="String" />
+		<result property="PLACE" 		column="place" 			javaType="String" />
+		<result property="JOINUSER" 	column="joinuser" 		javaType="String" />
+		<result property="CONTENT" 		column="content" 		javaType="String" />
+		<result property="FK_SMCATGONO" column="fk_smcatgono" 	javaType="String" />
+		<result property="FK_LGCATGONO" column="fk_lgcatgono" 	javaType="String" />
+		<result property="SMCATGONAME" 	column="smcatgoname" 	javaType="String" />
+		<result property="FK_EMPNO" 	column="fk_empno" 		javaType="String" />
+		<result property="NAME" 		column="name" 			javaType="String" />
+		<result property="DEPARTMENT" 	column="department" 	javaType="String" />
+		<result property="POSITION" 	column="position" 		javaType="String" />
+		<result property="CPEMAIL" 		column="cpemail" 		javaType="String" />
+	</resultMap>
+	<select id="getScheduleList" parameterType="HashMap" resultMap="getScheduleListMap">
+		select scheduleno, 
+			   startdate, enddate, subject, color, place, joinuser, content, 
+			   fk_smcatgono, fk_lgcatgono, smcatgoname, 
+			   fk_empno, name, department, position, cpemail
+		from 
+		(
+			select  row_number() over(order by SD.scheduleno desc) as rno 
+			     , SD.scheduleno
+			     , to_char(SD.startdate,'yyyy-mm-dd hh24:mi') as startdate
+			     , to_char(SD.enddate,'yyyy-mm-dd hh24:mi') as enddate  
+			     , SD.subject
+			     , SD.color
+			     , nvl(SD.place,'-') as place
+			     , nvl(SD.joinuser,'공유자가 없습니다.') as joinuser
+			     , nvl(SD.content,'') as content
+			     , SD.fk_smcatgono
+			     , SD.fk_lgcatgono
+			     , SD.fk_empno
+			     , E.name
+			     , SC.smcatgoname
+			     , E.department
+			     , E.position
+			     , E.cpemail
+			from tbl_calendar_schedule SD 
+			JOIN tbl_employee E
+			ON SD.fk_empno = E.empno
+			JOIN tbl_calendar_small_category SC
+			ON SD.fk_smcatgono = SC.smcatgono
+			
+			where (( to_char(startdate,'YYYY-MM-DD') between #{startdate} and #{enddate} ) 
+			or    ( to_char(enddate,'YYYY-MM-DD') between #{startdate} and #{enddate} ))
+			
+			<!-- 일정분류가 없고 검색어도 없는 경우 -->
+			<if test='fk_lgcatgono == "" and pagination.searchWord == "" and pagination.searchType == "" '>
+				and ((SD.fk_lgcatgono = 1 OR (SD.fk_lgcatgono = 2 AND E.department = (select department from tbl_employee where empno = #{empno})) OR SD.fk_empno = #{empno})
+				OR ( SD.fk_empno != #{empno} and lower(joinuser) like '%'||lower(#{cpemail})||'%' ))
+			</if>
+			
+			<!-- 검색분류가 있고 검색어가 없는 경우 -->
+			<if test='fk_lgcatgono == "" and pagination.searchWord == "" and pagination.searchType != "" '>
+				and (SD.fk_lgcatgono = 1 OR (SD.fk_lgcatgono = 2 AND E.department = (select department from tbl_employee where empno = #{empno})) OR SD.fk_empno = #{empno})
+				OR ( SD.fk_empno != #{empno} and lower(joinuser) like '%'||lower(#{cpemail})||'%' )
+			</if>
+			
+			<!-- 검색 분류가 없고 검색어가 있는 경우 -->
+			<if test='pagination.searchWord != "" and pagination.searchType == "" '>
+				and ((lower(SD.subject) like '%'||lower(#{pagination.searchWord})||'%') or (lower(SD.content) like '%'||lower(#{pagination.searchWord})||'%') or (lower(SD.joinuser) like '%'||lower(#{pagination.searchWord})||'%'))
+				
+				<choose>
+					<!-- 일정분류 선택 안할 때 -->
+					<when test='fk_lgcatgono == "" '></when>
+					
+		        	<!-- 전사일정 -->
+		            <when test='fk_lgcatgono == "1" '>
+		               and SD.fk_lgcatgono = 1
+		            </when>
+		            <!-- 팀별일정 -->
+		            <when test='fk_lgcatgono == "2" '>
+		               and SD.fk_lgcatgono = 2 AND E.department = (select department from tbl_employee where empno = #{empno})
+		            </when>
+		            <!-- 개인일정 -->
+		            <when test='fk_lgcatgono == "3" '>
+		               and SD.fk_lgcatgono = 3 and SD.fk_empno = #{empno}
+		            </when>
+				</choose>
+			</if>
+			
+			<!-- 전사일정이고 검색어가 없는 경우 -->
+			<if test='fk_lgcatgono == "1" and pagination.searchWord == "" and pagination.searchType == "" '>
+				and SD.fk_lgcatgono = 1
+			</if>
+			
+			<!-- 팀별일정이고 검색어가 없는 경우 -->
+			<if test='fk_lgcatgono == "2" and pagination.searchWord == "" and pagination.searchType == "" '>
+				and SD.fk_lgcatgono = 2 AND E.department = (select department from tbl_employee where empno = #{empno})
+			</if>
+			
+			<!-- 개인일정이고 검색어가 없는 경우 -->
+			<if test='fk_lgcatgono == "3" and pagination.searchWord == "" and pagination.searchType == "" '>
+				and SD.fk_lgcatgono = 3 AND SD.fk_empno = #{empno}
+			</if>
+			
+			<!-- 참석자로 검색할 경우 -->
+	      	<if test='pagination.searchWord != "" and pagination.searchType eq "joinuser" '>
+	        	and SD.fk_lgcatgono != 1                        
+	          	and SD.fk_empno = #{empno}                   
+	          	and lower(SD.joinuser) like '%'||lower(#{pagination.searchWord})||'%'
+	      	</if>
+	      	
+			<!-- 참석자 외로 검색할 경우 -->
+		    <if test='pagination.searchWord != "" and pagination.searchType neq "joinuser" and pagination.searchType != "" '>
+		    	and lower(#{pagination.searchType}) like '%'||lower(#{pagination.searchWord})||'%'
+		        <choose>
+		        	<!-- 전사일정 -->
+		            <when test='fk_lgcatgono == "1"'>
+		               and SD.fk_lgcatgono = 1
+		            </when>
+		            <!-- 팀별일정 -->
+		            <when test='fk_lgcatgono == "2"'>
+		               and SD.fk_lgcatgono = 2 AND E.department = (select department from tbl_employee where empno = #{empno})
+		            </when>
+		            <!-- 개인일정 -->
+		            <when test='fk_lgcatgono == "3"'>
+		               and SD.fk_lgcatgono = 3 and SD.fk_empno = #{empno}
+		            </when>
+				</choose>
+			</if>
+		
+		) V 
+		where V.rno between #{pagination.startRno} and #{pagination.endRno}
+	
+	</select>	
+	
+		
+	<!-- 검색한 일정 다운로드 받기 -->
+	<resultMap type="HashMap" id="scheDownListMap">
+		<result property="SCHEDULENO" 	column="scheduleno" 	javaType="String" />
+		<result property="STARTDATE" 	column="startdate" 		javaType="String" />
+		<result property="ENDDATE" 		column="enddate" 		javaType="String" />
+		<result property="SUBJECT" 		column="subject" 		javaType="String" />
+		<result property="COLOR" 		column="color" 			javaType="String" />
+		<result property="PLACE" 		column="place" 			javaType="String" />
+		<result property="JOINUSER" 	column="joinuser" 		javaType="String" />
+		<result property="CONTENT" 		column="content" 		javaType="String" />
+		<result property="FK_SMCATGONO" column="fk_smcatgono" 	javaType="String" />
+		<result property="FK_LGCATGONO" column="fk_lgcatgono" 	javaType="String" />
+		<result property="SMCATGONAME" 	column="smcatgoname" 	javaType="String" />
+		<result property="FK_EMPNO" 	column="fk_empno" 		javaType="String" />
+		<result property="NAME" 		column="name" 			javaType="String" />
+		<result property="DEPARTMENT" 	column="department" 	javaType="String" />
+		<result property="POSITION" 	column="position" 		javaType="String" />
+		<result property="CPEMAIL" 		column="cpemail" 		javaType="String" />
+	</resultMap>
+	<select id="scheDownList" parameterType="HashMap" resultMap="scheDownListMap">
+		select scheduleno, 
+			   startdate, enddate, subject, color, place, joinuser, content, 
+			   fk_smcatgono, fk_lgcatgono, smcatgoname, 
+			   fk_empno, name, department, position, cpemail
+		from 
+		(
+			select  row_number() over(order by SD.scheduleno desc) as rno 
+			     , SD.scheduleno
+			     , to_char(SD.startdate,'yyyy-mm-dd hh24:mi') as startdate
+			     , to_char(SD.enddate,'yyyy-mm-dd hh24:mi') as enddate  
+			     , SD.subject
+			     , SD.color
+			     , nvl(SD.place,'-') as place
+			     , nvl(SD.joinuser,'공유자가 없습니다.') as joinuser
+			     , nvl(SD.content,'') as content
+			     , SD.fk_smcatgono
+			     , SD.fk_lgcatgono
+			     , SD.fk_empno
+			     , E.name
+			     , SC.smcatgoname
+			     , E.department
+			     , E.position
+			     , E.cpemail
+			from tbl_calendar_schedule SD 
+			JOIN tbl_employee E
+			ON SD.fk_empno = E.empno
+			JOIN tbl_calendar_small_category SC
+			ON SD.fk_smcatgono = SC.smcatgono
+			
+			where (( to_char(startdate,'YYYY-MM-DD') between #{startdate} and #{enddate} ) 
+			or    ( to_char(enddate,'YYYY-MM-DD') between #{startdate} and #{enddate} ))
+			
+			<!-- 일정분류가 없고 검색어도 없는 경우 -->
+			<if test='fk_lgcatgono == "" and searchWord == "" and searchType == "" '>
+				and ((SD.fk_lgcatgono = 1 OR (SD.fk_lgcatgono = 2 AND E.department = (select department from tbl_employee where empno = #{empno})) OR SD.fk_empno = #{empno})
+				OR ( SD.fk_empno != #{empno} and lower(joinuser) like '%'||lower(#{cpemail})||'%' ))
+			</if>
+			
+			<!-- 검색분류가 있고 검색어가 없는 경우 -->
+			<if test='fk_lgcatgono == "" and searchWord == "" and searchType != "" '>
+				and (SD.fk_lgcatgono = 1 OR (SD.fk_lgcatgono = 2 AND E.department = (select department from tbl_employee where empno = #{empno})) OR SD.fk_empno = #{empno})
+				OR ( SD.fk_empno != #{empno} and lower(joinuser) like '%'||lower(#{cpemail})||'%' )
+			</if>
+			
+			<!-- 검색 분류가 없고 검색어가 있는 경우 -->
+			<if test='searchWord != "" and searchType == "" '>
+				and ((lower(SD.subject) like '%'||lower(#{searchWord})||'%') or (lower(SD.content) like '%'||lower(#{searchWord})||'%') or (lower(SD.joinuser) like '%'||lower(#{searchWord})||'%'))
+				
+				<choose>
+					<!-- 일정분류 선택 안할 때 -->
+					<when test='fk_lgcatgono == "" '></when>
+					
+		        	<!-- 전사일정 -->
+		            <when test='fk_lgcatgono == "1" '>
+		               and SD.fk_lgcatgono = 1
+		            </when>
+		            <!-- 팀별일정 -->
+		            <when test='fk_lgcatgono == "2" '>
+		               and SD.fk_lgcatgono = 2 AND E.department = (select department from tbl_employee where empno = #{empno})
+		            </when>
+		            <!-- 개인일정 -->
+		            <when test='fk_lgcatgono == "3" '>
+		               and SD.fk_lgcatgono = 3 and SD.fk_empno = #{empno}
+		            </when>
+				</choose>
+			</if>
+			
+			<!-- 전사일정이고 검색어가 없는 경우 -->
+			<if test='fk_lgcatgono == "1" and searchWord == "" and searchType == "" '>
+				and SD.fk_lgcatgono = 1
+			</if>
+			
+			<!-- 팀별일정이고 검색어가 없는 경우 -->
+			<if test='fk_lgcatgono == "2" and searchWord == "" and searchType == "" '>
+				and SD.fk_lgcatgono = 2 AND E.department = (select department from tbl_employee where empno = #{empno})
+			</if>
+			
+			<!-- 개인일정이고 검색어가 없는 경우 -->
+			<if test='fk_lgcatgono == "3" and searchWord == "" and searchType == "" '>
+				and SD.fk_lgcatgono = 3 AND SD.fk_empno = #{empno}
+			</if>
+			
+			<!-- 참석자로 검색할 경우 -->
+	      	<if test='searchWord != "" and searchType eq "joinuser" '>
+	        	and SD.fk_lgcatgono != 1                        
+	          	and SD.fk_empno = #{empno}                   
+	          	and lower(SD.joinuser) like '%'||lower(#{pagination.searchWord})||'%'
+	      	</if>
+	      	
+			<!-- 참석자 외로 검색할 경우 -->
+		    <if test='searchWord != "" and searchType neq "joinuser" and searchType != "" '>
+		    	and lower(#{searchType}) like '%'||lower(#{searchWord})||'%'
+		        <choose>
+		        	<!-- 전사일정 -->
+		            <when test='fk_lgcatgono == "1"'>
+		               and SD.fk_lgcatgono = 1
+		            </when>
+		            <!-- 팀별일정 -->
+		            <when test='fk_lgcatgono == "2"'>
+		               and SD.fk_lgcatgono = 2 AND E.department = (select department from tbl_employee where empno = #{empno})
+		            </when>
+		            <!-- 개인일정 -->
+		            <when test='fk_lgcatgono == "3"'>
+		               and SD.fk_lgcatgono = 3 and SD.fk_empno = #{empno}
+		            </when>
+				</choose>
+			</if>
+		
+		) V 
+	</select>	
 		
 		
+	<!-- 해당 사원이 생성한 개인일정 카테고리가 있는지 여부 -->
+	<select id="smallCategCheck" parameterType="String" resultType="int">
+		select count(*)
+		from tbl_calendar_small_category 
+		where fk_empno = #{empno} and fk_lgcatgono = 3
+	</select>
 		
+	
+	<!-- 해당 부서에 생성한 카테고리가 있는지 여부 -->
+	<select id="teamSmallCategCheck" parameterType="String" resultType="int">
+		select count(*)
+		from tbl_calendar_small_category SC
+		JOIN tbl_employee E
+		ON SC.fk_empno = E.empno
+		where SC.fk_lgcatgono = 2 AND E.department = (select department from tbl_employee where empno = #{empno})       
+	</select>	
 		
-		
-		
-		
-		
+	
+	<!-- 전사 일정에 생성한 카테고리가 있는지 여부 -->
+	<select id="comSmallCategCheck" resultType="int">
+		select count(*)
+		from tbl_calendar_small_category         
+		where fk_lgcatgono = 1   
+	</select>	
+			
 		
 		
 		

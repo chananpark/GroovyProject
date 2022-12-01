@@ -111,6 +111,11 @@
 	  resize: vertical; /* Allow the user to vertically resize the textarea (not horizontally) */
 	  vertical-align: middle;
 	}
+	
+	.search_title {
+		font-weight: bold; 
+		font-size: 12pt;
+	}
 	/* 검색 끝 */
 
 	
@@ -150,10 +155,146 @@
 	    // To의 초기값을 오늘 날짜로 설정
 		 $('input#toDate').datepicker('setDate', 'today'); //(-1D:하루전, -1M:한달전, -1Y:일년전), (+1D:하루후, +1M:한달후, +1Y:일년후)	
 		
-	    // To의 초기값을 한달후 날짜로 설정
-//	    $('input#toDate').datepicker('setDate', '+1M'); //(-1D:하루전, -1M:한달전, -1Y:일년전), (+1D:하루후, +1M:한달후, +1Y:일년후)	
+		 
+		////////////////////////////////////////////////////////////////////////////////////////////////
+		// === 전사일정 체크박스 전체 선택/전체 해제 === //
+		$("input:checkbox[id=allComCal]").click(function(){
+			var bool = $(this).prop("checked");
+			$("input:checkbox[name=com_smcategChk]").prop("checked", bool);
+		});// end of $("input:checkbox[id=allComCal]").click(function(){})-------
+		
+		// === 전사일정 에 속한 특정 체크박스를 클릭할 경우 === 
+		$(document).on("click","input:checkbox[name=com_smcategChk]",function(){	
+			var bool = $(this).prop("checked");
+			
+			if(bool){ // 체크박스에 클릭한 것이 체크된 것이라면 
+				
+				var flag=false;
+				
+				$("input:checkbox[name=com_smcategChk]").each(function(index, item){
+					var bChecked = $(item).prop("checked");
+					
+					if(!bChecked){     // 체크되지 않았다면 
+						flag=true;     // flag 를 true 로 변경
+						return false;  // 반복을 빠져 나옴.
+					}
+				}); // end of $("input:checkbox[name=com_smcategChk]").each(function(index, item){})---------
+
+				if(!flag){ // 사내캘린더 에 속한 서브캘린더의 체크박스가 모두 체크가 되어진 경우라면 			
+	                $("input#allComCal").prop("checked",true); // 사내캘린더 체크박스에 체크를 한다.
+				}
+				
+				var com_smcatgonoArr = document.querySelectorAll("input.com_smcategChk");
+			    
+				com_smcatgonoArr.forEach(function(item) {
+			         item.addEventListener("change", function() {  // "change" 대신에 "click" 을 해도 무방함.
+			         //	 console.log(item);
+			        	 calendar.refetchEvents();  // 모든 소스의 이벤트를 다시 가져와 화면에 다시 표시합니다.
+			         });
+			    });// end of com_smcatgonoArr.forEach(function(item) {})---------------------
+
+			}
+			
+			else {
+				   $("input#allComCal").prop("checked",false);
+			}
+			
+		});// end of $(document).on("click","input:checkbox[name=com_smcategChk]",function(){})--------
 		
 		
+		// === 팀별일정 체크박스 전체 선택/전체 해제 === //
+		$("input:checkbox[id=allTeamCal]").click(function(){		
+			var bool = $(this).prop("checked");
+			$("input:checkbox[name=team_smcategChk]").prop("checked", bool);
+		});// end of $("input:checkbox[id=allTeamCal]").click(function(){})-------
+		
+		
+		// === 팀별일정 에 속한 특정 체크박스를 클릭할 경우 === 
+		$(document).on("click","input:checkbox[name=team_smcategChk]",function(){	
+			var bool = $(this).prop("checked");
+			
+			if(bool){ // 체크박스에 클릭한 것이 체크된 것이라면 
+				
+				var flag=false;
+				
+				$("input:checkbox[name=team_smcategChk]").each(function(index, item){
+					var bChecked = $(item).prop("checked");
+					
+					if(!bChecked){     // 체크되지 않았다면 
+						flag=true;     // flag 를 true 로 변경
+						return false;  // 반복을 빠져 나옴.
+					}
+				}); // end of $("input:checkbox[name=com_smcategChk]").each(function(index, item){})---------
+
+				if(!flag){ // 사내캘린더 에 속한 서브캘린더의 체크박스가 모두 체크가 되어진 경우라면 			
+	                $("input#allTeamCal").prop("checked",true); // 사내캘린더 체크박스에 체크를 한다.
+				}
+				
+				var com_smcatgonoArr = document.querySelectorAll("input.team_smcategChk");
+			    
+				com_smcatgonoArr.forEach(function(item) {
+			         item.addEventListener("change", function() {  // "change" 대신에 "click" 을 해도 무방함.
+			         //	 console.log(item);
+			        	 calendar.refetchEvents();  // 모든 소스의 이벤트를 다시 가져와 화면에 다시 표시합니다.
+			         });
+			    });// end of com_smcatgonoArr.forEach(function(item) {})---------------------
+
+			}
+			
+			else {
+				   $("input#allTeamCal").prop("checked",false);
+			}
+			
+		});// end of $(document).on("click","input:checkbox[name=team_smcategChk]",function(){})--------
+		
+		
+		// === 개인일정 체크박스 전체 선택/전체 해제 === //
+		$("input:checkbox[id=allMyCal]").click(function(){		
+			var bool = $(this).prop("checked");
+			$("input:checkbox[name=my_smcategChk]").prop("checked", bool);
+		});// end of $("input:checkbox[id=allMyCal]").click(function(){})-------
+		
+		
+		// === 개인일정 에 속한 특정 체크박스를 클릭할 경우 === 
+		$(document).on("click","input:checkbox[name=my_smcategChk]",function(){	
+			var bool = $(this).prop("checked");
+			
+			if(bool){ // 체크박스에 클릭한 것이 체크된 것이라면 
+				
+				var flag=false;
+				
+				$("input:checkbox[name=my_smcategChk]").each(function(index, item){
+					var bChecked = $(item).prop("checked");
+					
+					if(!bChecked){     // 체크되지 않았다면 
+						flag=true;     // flag 를 true 로 변경
+						return false;  // 반복을 빠져 나옴.
+					}
+				}); // end of $("input:checkbox[name=com_smcategChk]").each(function(index, item){})---------
+
+				if(!flag){ // 사내캘린더 에 속한 서브캘린더의 체크박스가 모두 체크가 되어진 경우라면 			
+	                $("input#allMyCal").prop("checked",true); // 사내캘린더 체크박스에 체크를 한다.
+				}
+				
+				var com_smcatgonoArr = document.querySelectorAll("input.my_smcategChk");
+			    
+				com_smcatgonoArr.forEach(function(item) {
+			         item.addEventListener("change", function() {  // "change" 대신에 "click" 을 해도 무방함.
+			         //	 console.log(item);
+			        	 calendar.refetchEvents();  // 모든 소스의 이벤트를 다시 가져와 화면에 다시 표시합니다.
+			         });
+			    });// end of com_smcatgonoArr.forEach(function(item) {})---------------------
+
+			}
+			
+			else {
+				   $("input#allMyCal").prop("checked",false);
+			}
+			
+		});// end of $(document).on("click","input:checkbox[name=my_smcategChk]",function(){})--------
+		////////////////////////////////////////////////////////////////////////////////////////////////
+		 
+		 
 		// ==== 풀캘린더와 관련된 소스코드 시작(화면이 로드되면 캘린더 전체 화면 보이게 해줌) ==== //
 		var calendarEl = document.getElementById('calendar');
 		
@@ -247,7 +388,7 @@
 	                                   
 									for(var i=0; i<$("input:checkbox[name=my_smcategChk]:checked").length; i++){
 	                                
-										if($("input:checkbox[name=my_smcategChk]:checked").eq(i).val() == item.fk_smcatgono && item.empno == ${sessionScope.loginuser.empno} ){
+										if($("input:checkbox[name=my_smcategChk]:checked").eq(i).val() == item.fk_smcatgono && item.empno == "${sessionScope.loginuser.empno}" ){
 	   			                        	//  alert("캘린더 소분류 번호 : " + $("input:checkbox[name=my_smcatgono]:checked").eq(i).val());
 	                                		events.push({
 			                                	id: item.scheduleno,
@@ -320,8 +461,8 @@
 			    		// === 전사일정, 팀별일정, 개인일정, 공유일정의 체크박스중 체크박스에 체크를 한 경우 라면
 			                
 			        	if (arg.event.extendedProps.cid === item.value) { // item.value 가 체크박스의 value 값이다.
-			              	// console.log("일정을 보여주는 cid : "  + arg.event.extendedProps.cid);
-			              	// console.log("일정을 보여주는 체크박스의 value값(item.value) : " + item.value);
+			              	 console.log("일정을 보여주는 cid : "  + arg.event.extendedProps.cid);
+			              	 console.log("일정을 보여주는 체크박스의 value값(item.value) : " + item.value);
 			                    
 			              	arg.el.style.display = "block"; // 풀캘린더에서 일정을 보여준다.
 			            }
@@ -329,8 +470,8 @@
 						// === 전사일정, 팀별일정, 개인일정, 공유일정의 체크박스중 체크박스에 체크를 해제한 경우 라면
 			                
 						if (arg.event.extendedProps.cid === item.value) {
-	            		// console.log("일정을 숨기는 cid : "  + arg.event.extendedProps.cid);
-	                	// console.log("일정을 숨기는 체크박스의 value값(item.value) : " + item.value);
+	            		 console.log("일정을 숨기는 cid : "  + arg.event.extendedProps.cid);
+	                	 console.log("일정을 숨기는 체크박스의 value값(item.value) : " + item.value);
 			                	
 	            			arg.el.style.display = "none"; // 풀캘린더에서 일정을  숨긴다.
 			            }
@@ -354,12 +495,6 @@
 		//==== 풀캘린더와 관련된 소스코드 끝(화면이 로드되면 캘린더 전체 화면 보이게 해줌) ==== //
 
 		
-		
-		
-		
-		
-		
-		
 		// 검색버튼 클릭 이벤트 클릭하면 나타나기
 		// menu 클래스 바로 하위에 있는 a 태그를 클릭했을때
 		$("#search_btn").click(function(){
@@ -374,13 +509,12 @@
 		});
 		
 
-	
-		
-	
-	
-	
-	
-	
+		// 검색 할 때 엔터를 친 경우
+		$("input#searchWord").keyup(function(event){
+			if(event.keyCode == 13){ 
+				goSearch();
+			}
+		});
 	
 	
 	}); // end of ready
@@ -389,11 +523,19 @@
 	// ===== function declaration =====
 		
 	// 일정 검색하는 메소드
-	function search_schedule( ){
+	function goSearch( ){
 		
-		location.href="<%=ctxPath %>/schedule/searchSchedule.on";
+		if( $("#fromDate").val() > $("#toDate").val() ) {
+			swal("검색 종료 날짜를 검색 시작 날짜 이후로 설정해주세요.");
+			return;
+		}
+	    
+	   	var frm = document.searchScheduleFrm;
+	    frm.method="get";
+	    frm.action="<%= ctxPath%>/schedule/searchSchedule.on";
+	    frm.submit();
 		
-	} // end of function search_schedule
+	} // end of function goSearch
 	
 	
 </script>
@@ -412,45 +554,57 @@
 	
 	<div class="hide" id="detail_search" style="width:90%; margin-left: 5%;">
 
-		<table style="width:100%;">
-			<tr style="vertical-align: middle;">
-				<th><label class="mr-5" for="select_search" style="font-weight: bold; font-size: 12pt;">검색분류</label></th>
-				<td>
-					<select name="select_search">
-						<option>일정명 및 일정내용</option>
-						<option>일정명</option>
-						<option>일정내용</option>
-						<option>공유자</option>
-					</select>
-				</td>
-			</tr>
-			<tr style="vertical-align: middle;">
-				<th><label class="mr-5" for="search_word" style="font-weight: bold; font-size: 12pt;">검색어</label></th>
-				<td>
-					<input type="text" id="search_word" name="search_word" placeholder="검색어를 입력하세요." style="width: 90%;">
-					<button class="btn bg-light mt-1" style="width: 9%; height: 44px;" onclick="search_schedule();">검색</button>
-				</td>
-			</tr>
-			<tr style="vertical-align: middle;">
-				<th><label class="mr-5" for="search_date" style="font-weight: bold; font-size: 12pt;">검색기간</label></th>
-				<td>
-					<input type="text" id="fromDate" name="startdate" style="width:48.1%;" readonly="readonly">
-					&nbsp;&nbsp;-&nbsp;&nbsp;  
-		            <input type="text" id="toDate" name="enddate" style="width:48.1%;" readonly="readonly">
-				</td>
-			</tr>
-		</table>
+		<form name="searchScheduleFrm">
+			<table style="width:100%;">
+				<tr style="vertical-align: middle;">
+					<th><label class="mr-5 search_title" for="searchType" >검색분류</label></th>
+					<td>
+						<select id="searchType" name="searchType" >
+							<option value="">전체 검색</option>
+							<option value="subject">일정명</option>
+							<option value="content">일정내용</option>
+							<option value="joinuser">참석자</option>
+						</select>
+					</td>
+				</tr>
+				<tr style="vertical-align: middle;">
+					<th><label class="mr-5 search_title" for="fk_lgcatgono">일정분류</label></th>
+					<td>
+						<select id="fk_lgcatgono" name="fk_lgcatgono">
+							<option value="">모든 일정</option>
+							<option value="1">전사 일정</option>
+							<option value="2">팀별 일정</option>
+							<option value="3">개인 일정</option>
+						</select>
+					</td>
+				</tr>
+				<tr style="vertical-align: middle;">
+					<th><label class="mr-5 search_title" for="searchWord">검색어</label></th>
+					<td>
+						<input type="text" id="searchWord" name="searchWord" placeholder="검색어를 입력하세요." style="width: 90%;">
+						<button class="btn bg-light mt-1" style="width: 9%; height: 44px;" onclick="goSearch();">검색</button>
+					</td>
+				</tr>
+				<tr style="vertical-align: middle;">
+					<th>
+						<label class="mr-5 search_title" for="fromDate">검색기간</label>
+					</th>
+					<td>
+						<input type="text" id="fromDate" name="startdate" style="width:48.1%;" readonly="readonly">
+						&nbsp;&nbsp;-&nbsp;&nbsp;  
+			            <input type="text" id="toDate" name="enddate" style="width:48.1%;" readonly="readonly">
+					</td>
+				</tr>
+			</table>
+			<input type="hidden" id="empno" name="empno" value="${sessionScope.loginuser.empno}">
+			<input type="hidden" id="cpemail" name="cpemail" value="${sessionScope.loginuser.cpemail}">
+		</form>
 		
 	</div>
 	
-	<%-- hidden 태그 --%>
-	<input type="hidden" id="empno" name="empno" value="${sessionScope.loginuser.empno}">
-	<input type="hidden" id="cpemail" name="cpemail" value="${sessionScope.loginuser.cpemail}">
 	
 	<%-- 풀캘린더가 보여지는 엘리먼트  --%>
 	<div id="calendar" style="margin: 100px 20px 50px 0;" ></div>
-
-
 
 
 </div>    

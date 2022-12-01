@@ -2,7 +2,10 @@
     pageEncoding="UTF-8"%>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+
 <% String ctxPath = request.getContextPath(); %>
+<% pageContext.setAttribute("replaceChar", "\n"); %>
 
 <style type="text/css">
 		
@@ -173,7 +176,7 @@
 			</tr>
 			<tr>
 				<th class="col-2">내용</th>
-				<td class="col-10">${map.CONTENT}</td>
+				<td class="col-10">${fn:replace(map.CONTENT, replaceChar, "<br>")}</td>
 			</tr>
 			<tr>
 				<th class="col-2">작성자</th>

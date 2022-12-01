@@ -2,6 +2,7 @@
     pageEncoding="UTF-8"%>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
 <% String ctxPath = request.getContextPath(); %>
 
 <style type="text/css">
@@ -255,28 +256,36 @@
 			var empno = $("input[name=empno]").val();  		// 로그인 된 사용자아이디
 			
 			if(fk_lgcatgono != "") { // 선택하세요 가 아니라면
-				$.ajax({
-					url: "<%= ctxPath%>/schedule/selectSmallCateg.on",
-					data: {"fk_lgcatgono":fk_lgcatgono, 
-						   "empno":empno},
-					dataType: "json",
-					success:function(json){
-						var html ="";
-						if(json.length>0){
-							
-							$.each(json, function(index, item){
-								html+="<option value='"+item.smcatgono+"'>"+item.smcatgoname+"</option>"
-							});
-							$("select.small_category").show();
-							$("select.small_category").html(html);
+				if(fk_lgcatgono == "3" && ${requestScope.smcategCnt == 0}) {
+					// 개인일정 소분류 카테고리가 없는 상태에서 개인일정을 선택한 경우
+					swal("개인일정 소분류 카테고리 생성 후 개인일정 등록이 가능합니다.");
+					$("select.small_category").hide();
+					$("button#register").attr("disabled", true);
+					return false;
+				} else {
+					$("button#register").attr("disabled", false);
+					$.ajax({
+						url: "<%= ctxPath%>/schedule/selectSmallCateg.on",
+						data: {"fk_lgcatgono":fk_lgcatgono, 
+							   "empno":empno},
+						dataType: "json",
+						success:function(json){
+							var html ="";
+							if(json.length>0){
+								
+								$.each(json, function(index, item){
+									html+="<option value='"+item.smcatgono+"'>"+item.smcatgoname+"</option>"
+								});
+								$("select.small_category").show();
+								$("select.small_category").html(html);
+							}
+						},
+						error: function(request, status, error){
+				            alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
 						}
-					},
-					error: function(request, status, error){
-			            alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-					}
-				});
+					});
+				}
 			}
-			
 			else {
 				// 선택하세요 이라면
 				$("select.small_category").hide();
@@ -465,7 +474,18 @@
 
 		});// end of $("button#register").click(function(){})--------------------
 				
-				
+			
+		// 전사일정 참석자 지정 막기
+		$("#fk_lgcatgono").change(function(){
+			
+			if($("#fk_lgcatgono").val() == "1") {
+				$("#joinUserName").attr("disabled",true); 
+				$("#joinUserName").attr("placeholder","전사일정은 참석자 지정이 불가능합니다"); 
+			} else {
+				$("#joinUserName").attr("disabled",false); 
+				$("#joinUserName").attr("placeholder","일정을 공유할 회원명을 입력하세요"); 
+			}
+		});
 				
 			
 		
@@ -610,9 +630,7 @@
 				<tr style="vertical-align: middle; height: 230px;">
 					<th class="col-2"><label class="mr-5 insert_sche_title">내용</label></th>
 					<td class="col-10">
-						<textarea class="input_width" id="content" name="content" style="height:200px;">
-							${requestScope.map.CONTENT}
-						</textarea>
+						<textarea class="input_width" id="content" name="content" style="height:200px;">${map.content}</textarea>
 					</td>
 				</tr>
 	

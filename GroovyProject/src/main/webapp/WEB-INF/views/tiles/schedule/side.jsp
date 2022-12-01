@@ -32,151 +32,12 @@
 
 	$(document).ready(function(){
 		
-		
 		// 전사일정 소분류 보여주기
 		showCompanyCal();
 		// 팀별일정 소분류 보여주기
 		showTeamCal();
 		// 개인일정 소분류 보여주기
 		showMyCal();
-		
-		
-		// === 전사일정 체크박스 전체 선택/전체 해제 === //
-		$("input:checkbox[id=allComCal]").click(function(){
-			var bool = $(this).prop("checked");
-			$("input:checkbox[name=com_smcategChk]").prop("checked", bool);
-		});// end of $("input:checkbox[id=allComCal]").click(function(){})-------
-		
-		// === 전사일정 에 속한 특정 체크박스를 클릭할 경우 === 
-		$(document).on("click","input:checkbox[name=com_smcategChk]",function(){	
-			var bool = $(this).prop("checked");
-			
-			if(bool){ // 체크박스에 클릭한 것이 체크된 것이라면 
-				
-				var flag=false;
-				
-				$("input:checkbox[name=com_smcategChk]").each(function(index, item){
-					var bChecked = $(item).prop("checked");
-					
-					if(!bChecked){     // 체크되지 않았다면 
-						flag=true;     // flag 를 true 로 변경
-						return false;  // 반복을 빠져 나옴.
-					}
-				}); // end of $("input:checkbox[name=com_smcategChk]").each(function(index, item){})---------
-
-				if(!flag){ // 사내캘린더 에 속한 서브캘린더의 체크박스가 모두 체크가 되어진 경우라면 			
-	                $("input#allComCal").prop("checked",true); // 사내캘린더 체크박스에 체크를 한다.
-				}
-				
-				var com_smcatgonoArr = document.querySelectorAll("input.com_smcategChk");
-			    
-				com_smcatgonoArr.forEach(function(item) {
-			         item.addEventListener("change", function() {  // "change" 대신에 "click" 을 해도 무방함.
-			         //	 console.log(item);
-			        	 calendar.refetchEvents();  // 모든 소스의 이벤트를 다시 가져와 화면에 다시 표시합니다.
-			         });
-			    });// end of com_smcatgonoArr.forEach(function(item) {})---------------------
-
-			}
-			
-			else {
-				   $("input#allComCal").prop("checked",false);
-			}
-			
-		});// end of $(document).on("click","input:checkbox[name=com_smcategChk]",function(){})--------
-		
-		
-		// === 팀별일정 체크박스 전체 선택/전체 해제 === //
-		$("input:checkbox[id=allTeamCal]").click(function(){		
-			var bool = $(this).prop("checked");
-			$("input:checkbox[name=team_smcategChk]").prop("checked", bool);
-		});// end of $("input:checkbox[id=allTeamCal]").click(function(){})-------
-		
-		
-		// === 팀별일정 에 속한 특정 체크박스를 클릭할 경우 === 
-		$(document).on("click","input:checkbox[name=team_smcategChk]",function(){	
-			var bool = $(this).prop("checked");
-			
-			if(bool){ // 체크박스에 클릭한 것이 체크된 것이라면 
-				
-				var flag=false;
-				
-				$("input:checkbox[name=team_smcategChk]").each(function(index, item){
-					var bChecked = $(item).prop("checked");
-					
-					if(!bChecked){     // 체크되지 않았다면 
-						flag=true;     // flag 를 true 로 변경
-						return false;  // 반복을 빠져 나옴.
-					}
-				}); // end of $("input:checkbox[name=com_smcategChk]").each(function(index, item){})---------
-
-				if(!flag){ // 사내캘린더 에 속한 서브캘린더의 체크박스가 모두 체크가 되어진 경우라면 			
-	                $("input#allTeamCal").prop("checked",true); // 사내캘린더 체크박스에 체크를 한다.
-				}
-				
-				var com_smcatgonoArr = document.querySelectorAll("input.team_smcategChk");
-			    
-				com_smcatgonoArr.forEach(function(item) {
-			         item.addEventListener("change", function() {  // "change" 대신에 "click" 을 해도 무방함.
-			         //	 console.log(item);
-			        	 calendar.refetchEvents();  // 모든 소스의 이벤트를 다시 가져와 화면에 다시 표시합니다.
-			         });
-			    });// end of com_smcatgonoArr.forEach(function(item) {})---------------------
-
-			}
-			
-			else {
-				   $("input#allTeamCal").prop("checked",false);
-			}
-			
-		});// end of $(document).on("click","input:checkbox[name=team_smcategChk]",function(){})--------
-		
-		
-		// === 개인일정 체크박스 전체 선택/전체 해제 === //
-		$("input:checkbox[id=allMyCal]").click(function(){		
-			var bool = $(this).prop("checked");
-			$("input:checkbox[name=my_smcategChk]").prop("checked", bool);
-		});// end of $("input:checkbox[id=allMyCal]").click(function(){})-------
-		
-		
-		// === 개인일정 에 속한 특정 체크박스를 클릭할 경우 === 
-		$(document).on("click","input:checkbox[name=my_smcategChk]",function(){	
-			var bool = $(this).prop("checked");
-			
-			if(bool){ // 체크박스에 클릭한 것이 체크된 것이라면 
-				
-				var flag=false;
-				
-				$("input:checkbox[name=my_smcategChk]").each(function(index, item){
-					var bChecked = $(item).prop("checked");
-					
-					if(!bChecked){     // 체크되지 않았다면 
-						flag=true;     // flag 를 true 로 변경
-						return false;  // 반복을 빠져 나옴.
-					}
-				}); // end of $("input:checkbox[name=com_smcategChk]").each(function(index, item){})---------
-
-				if(!flag){ // 사내캘린더 에 속한 서브캘린더의 체크박스가 모두 체크가 되어진 경우라면 			
-	                $("input#allMyCal").prop("checked",true); // 사내캘린더 체크박스에 체크를 한다.
-				}
-				
-				var com_smcatgonoArr = document.querySelectorAll("input.my_smcategChk");
-			    
-				com_smcatgonoArr.forEach(function(item) {
-			         item.addEventListener("change", function() {  // "change" 대신에 "click" 을 해도 무방함.
-			         //	 console.log(item);
-			        	 calendar.refetchEvents();  // 모든 소스의 이벤트를 다시 가져와 화면에 다시 표시합니다.
-			         });
-			    });// end of com_smcatgonoArr.forEach(function(item) {})---------------------
-
-			}
-			
-			else {
-				   $("input#allMyCal").prop("checked",false);
-			}
-			
-		});// end of $(document).on("click","input:checkbox[name=my_smcategChk]",function(){})--------
-		
 		
 	}); // end of ready
 
@@ -568,8 +429,8 @@
 	function delCalCateg(smcatgono, smcatgoname){ // smcatgono => 캘린더 소분류 번호, smcatgoname => 캘린더 소분류 명
 	
 		swal({
-			title: "",
-			text: "일정 분류를 삭제하시겠습니까?",
+			title: "일정 분류를 삭제하시겠습니까?",
+			text: "※일정분류 삭제 시 해당 분류에 포함된 모든 일정이 삭제됩니다.",
 		  	icon: "warning",
 		  	buttons: true,
 		  	dangerMode: true,
@@ -607,6 +468,14 @@
 		
 	}// end of function delCalCateg(smcatgono, smcatgoname){}------------------------
 	
+	
+	// 모달 창에서 입력된 값 초기화 시키기 //
+	$("button.modal_close").on("click", function(){
+		var modal_frmArr = document.querySelectorAll("form[name=modal_frm]");
+		for(var i=0; i<modal_frmArr.length; i++) {
+	 		modal_frmArr[i].reset();
+	 	}
+	});
 	
 </script>
 
