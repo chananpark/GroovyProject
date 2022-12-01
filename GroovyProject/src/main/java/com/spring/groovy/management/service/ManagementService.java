@@ -245,6 +245,50 @@ public class ManagementService implements InterManagementService {
 		return celbStatusList;
 	}
 
+
+	// 경조비신청현황 한 페이지에 표시할 재직증명서 전체 글 개수 구하기(페이징)
+	@Override
+	public int getcountClSList(Pagination pagination) {
+		int n = dao.getcountClSList(pagination);
+		return 0;
+	}
+
+	// 경조비신청현황 - 한 페이지에 표시할 글 목록  (페이징 페이지수를 알아온다음에 10개씩보여줌) (페이징)
+	@Override
+	public List<CelebrateVO> getOnePageClSCnt(Map<String, Object> paraMap) {
+		List<CelebrateVO> celbStatusList= dao.getOnePageClSCnt(paraMap);
+		return celbStatusList;
+	}
+
+	// 관리자 사원관리 - 경조비신청현황(결제상태 변경 Ajax)
+	@Override
+	public int receiptCelebrateStatusEnd(Map<String, Object> paramap) {
+		int n = dao.receiptCelebrateStatusEnd(paramap);
+		return n;
+	}
+
+	// 관리자 - 재직증명서
+	@Override
+	public List<ProofVO> proofEmploymentSearch() {
+		List<ProofVO> proofList = dao.proofEmploymentSearch();
+		return proofList;
+	}
+
+	// 재직증명서 한 페이지에 표시할 재직증명서 전체 글 개수 구하기(페이징)
+	@Override
+	public int getcountProofList(Pagination pagination) {
+		int n = dao.getcountProofList(pagination);
+		return n;
+	}
+
+
+	// 재직증명서 - 한 페이지에 표시할 글 목록  (페이징 페이지수를 알아온다음에 10개씩보여줌) (페이징)
+	@Override
+	public List<ProofVO> getOnePageProofCnt(Map<String, Object> paraMap) {
+		List<ProofVO> proofList = dao.getOnePageProofCnt(paraMap);
+		return proofList;
+	}
+
 	
 	
 	

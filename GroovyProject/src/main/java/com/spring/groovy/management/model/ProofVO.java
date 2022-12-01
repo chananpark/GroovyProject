@@ -9,6 +9,7 @@ public class ProofVO {
 	private String issuedate;           // 발급일자(sysdate)
 	private String issueuse;              // 발급용도(1 은행제출용, 2 공공기관용)
 	
+	private String name; // join
 	
 	
 	public String getProofno() {
@@ -37,7 +38,12 @@ public class ProofVO {
 	}
 	
 	
-	
+	public String getName() {
+		return name;
+	}
+	public void setName(String name) {
+		this.name = name;
+	}
 	
 	
 	

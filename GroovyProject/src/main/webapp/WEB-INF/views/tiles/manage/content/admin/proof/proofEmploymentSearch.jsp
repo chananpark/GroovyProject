@@ -2,6 +2,8 @@
     pageEncoding="UTF-8"%>
     
 <% String ctxPath = request.getContextPath(); %>   
+
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
     
 <style>
 
@@ -69,16 +71,6 @@
 	
 	}); // end  of $(document).ready(function(){--------------------
 	
-	
-	// >>> Function Declartion<<<	
-	// >>> 해당 회원을 클릭하면<<< 
-	function go_detailproof(){
-		
-	
-	
-	} // end of function go_detailInfo(){
-		
-
 
 </script>
 
@@ -120,98 +112,24 @@
 				<th>신청일</th>
 			</tr>
 		</thead>
-		<tbody  onclick="go_viewDetailProof()" data-toggle="modal" data-target="#viewDetailProof">
+		<tbody  onclick="go_viewDetailProof()" data-toggle="modal" data-target="#viewDetailProof">	
+			<c:forEach var="proofList" items="${requestScope.proofList}" varStatus="status">
 			<tr class="text-center border">
-				<td>1</td>
-				<td>223</td>
-				<td>p30303</td>
-				<td>김민수</td>
-				<td>은행제출용</td>
-				<td>2022-11-12</td>
+				<td ><c:out value="${status.count}" /></td>
+				<td>${proofList.proofno}</td>
+				<td>${proofList.fk_empno}</td>
+				<td>${proofList.name}</td>
+				<td>
+					<c:choose>
+						<c:when test="${proofList.issueuse eq '1'}">은행제출용</c:when>
+						<c:otherwise>공공기관용</c:otherwise>
+					</c:choose></td>
+				<td>${proofList.issuedate}</td>
 			</tr>
+			</c:forEach>
 		</tbody>
 	</table>
 	</div>
 </div>
 </form>
-
-
-
-<%-- 재직증명서 상세보기 모달창 --%>
-<div class="modal" id="viewDetailProof" >
-   <div class="modal-dialog" >
-      <div class="modal-content modals-fullsize">
-      
-         <div class='modal-body px-3'>
- 		<button class="btn btn-sm float-right" style="background-color:#086BDE; color:white;">닫기</button>        
-          <div align="center" style="padding: 2%; margin: 8% auto;">
-                  
-         <h4 class="float-center mb-5">재직증명서</h4>
-         
-         <table class="table table-bordered table-sm">
-         	<thead>
-         		<tr><th colspan='4'>인적사항</th></tr>
-         	</thead>
-	         <tbody class="font">
-	         <tr>
-	         	<th>성명</th>
-	         	<td><input type="text" style="border: none;" name=""/></td>
-	         	<th>주민번호</th>
-	         	<td><input type="text" style="border: none; name="" /></td>
-	         </tr>
-	         <tr>
-	         	<th>연락처</th>
-	         	<td><input type="text" style="border: none; name="" /></td>
-	         	<th>주소 </th>
-	         	<td><input type="text" style="border: none; name="" /></td>
-	         </tr>
-	         </tbody>
-         </table>
-         
-         <table class="table table-bordered table-sm mt-5">
-         
-         	<thead>
-         		<tr><th colspan='4'>재직사항</th></tr>
-         	</thead>
-         	
-	         <tbody class="font">
-		         <tr>
-		         	<th>회사명</th>
-		         	<td><input type="text" style="border: none; name="" /></td>
-		         	<th>대표자 </th>
-		         	<td><input type="text" style="border: none; name="" /></td>
-		         </tr>
-		        <tr>
-		         	<th>근무부서</th>
-		         	<td><input type="text" style="border: none; name="" /></td>
-		         	<th>입사일 </th>
-		         	<td><input type="text" style="border: none; name="" /></td>
-		         </tr>
-		          <tr>
-		         	<th>직급</th>
-		         	<td><input type="text" style="border: none;"/></td>
-		         	<th>재직기간</th>
-		         	<td><input type="text" style="border: none;"/></td>
-		         </tr>
-		         <tr>
-		         	<th>사용용도</th>
-		         	<td><input type="text" style="border: none;"/></td>
-		         	<th></th>
-		         	<td><input type="text" style="border: none;"/></td>
-		         </tr>
-	         </tbody>
-         </table>
-         
-         <div class="float-center mt-5" style="font-size: 16px;">
-        	 <div> 2022년 11월 15일 </div> <%-- 현재날짜 넣기 --%>
-        	 <div>(주) Groovy</div>
-         </div>
-         
-         </div>
-         </div>
-       </div>
-    </div>
- </div>
-
-	
 
