@@ -364,14 +364,47 @@ public class ManagementController {
 
 	//관리자 사원관리 - 경조비신청현황
 	@RequestMapping(value="/manage/admin/receiptCelebrateStatus.on")
-	public ModelAndView receiptCelebrateStatus(HttpServletRequest request, CelebrateVO cvo, ModelAndView mav) {
+	public ModelAndView receiptCelebrateStatus(HttpServletRequest request, CelebrateVO cvo, ModelAndView mav, Pagination pagination) {
 		
 		List<CelebrateVO> celbStatusList = service.receiptCelebrateStatus();
 		
+		// 경조비신청현황 한 페이지에 표시할 재직증명서 전체 글 개수 구하기(페이징)
+		int listCnt = service.getcountClSList(pagination);
+		  
+		 // 페이지수 알아오기 (페이징)
+		Map<String, Object> paraMap = pagination.getPageRange(listCnt);// startRno, endRno ==> 첫페이지에 ~번부터 ~까지하 보여줄지 
+		 
+		// 경조비신청현황 - 한 페이지에 표시할 글 목록  (페이징 페이지수를 알아온다음에 10개씩보여줌) (페이징)
+		mav.addObject("celebList", service.getOnePageClSCnt(paraMap)); // startRno, endRno을 가지고 select문에 1번
+		
+		 // 페이지바
+		mav.addObject("pagebar",pagination.getPagebar(request.getContextPath()+"/manage/admin/receiptCelebrateStatus.on"));
+		mav.addObject("paraMap", paraMap);
+
 		mav.addObject("celbStatusList", celbStatusList);
 		mav.setViewName("manage/admin/celebrate/receiptCelebrateStatus.tiles");
 		return mav;
 	}
+	
+	
+	// 관리자 사원관리 - 경조비신청현황(결제상태 변경 Ajax)
+	@ResponseBody
+	@RequestMapping(value="/manage/admin/receiptCelebrateStatusEnd.on", method= {RequestMethod.POST}, produces="text/plain;charset=UTF-8")
+	public String receiptCelebrateStatusEnd(HttpServletRequest request, CelebrateVO cvo) {
+
+		Map<String, Object> paramap = new HashMap<>();
+		paramap.put("cvo", cvo);
+		
+		int n = service.receiptCelebrateStatusEnd(paramap);
+		
+		JSONObject json = new JSONObject();
+		
+		json.put("n",n);
+	
+		return json.toString();
+	}
+
+	
 
 	//관리자 사원관리 - 경조비지급목록
 	@RequestMapping(value="/manage/admin/receiptcelebrateList.on")
@@ -389,21 +422,46 @@ public class ManagementController {
 		mav.addObject("celebList", service.getOnePageClCnt(paraMap)); // startRno, endRno을 가지고 select문에 1번
 		
 		 // 페이지바
-		mav.addObject("pagebar",pagination.getPagebar(request.getContextPath()+"/manage/proof/proofList.on"));
+		mav.addObject("pagebar",pagination.getPagebar(request.getContextPath()+"/manage/admin/receiptcelebrateList.on"));
 		mav.addObject("paraMap", paraMap);
 
 		mav.addObject("celebList", celebList);
 		mav.setViewName("manage/admin/celebrate/receiptcelebrateList.tiles");
 		return mav;
 	}
+	
 
 
 	// 관리자 - 재직증명서
 	@RequestMapping(value="/manage/proof/proofEmploymentSearch.on")
-	public String proofEmploymentSearch(HttpServletRequest request) {
+	public ModelAndView proofEmploymentSearch(HttpServletRequest request, ModelAndView mav, ProofVO pvo, Pagination pagination) {
 		
-		return "manage/admin/proof/proofEmploymentSearch.tiles";
+		
+		List<ProofVO> proofList = service.proofEmploymentSearch();
+		
+		// 재직증명서 한 페이지에 표시할 재직증명서 전체 글 개수 구하기(페이징)
+		int listCnt = service.getcountProofList(pagination);
+		  
+		 // 페이지수 알아오기 (페이징)
+		Map<String, Object> paraMap = pagination.getPageRange(listCnt);// startRno, endRno ==> 첫페이지에 ~번부터 ~까지하 보여줄지 
+		 
+		// 재직증명서 - 한 페이지에 표시할 글 목록  (페이징 페이지수를 알아온다음에 10개씩보여줌) (페이징)
+		mav.addObject("celebList", service.getOnePageProofCnt(paraMap)); // startRno, endRno을 가지고 select문에 1번
+		
+		 // 페이지바
+		mav.addObject("pagebar",pagination.getPagebar(request.getContextPath()+"/manage/proof/proofEmploymentSearch.on"));
+		mav.addObject("paraMap", paraMap);
+
+		
+		mav.addObject("proofList", proofList);
+		mav.setViewName( "manage/admin/proof/proofEmploymentSearch.tiles");
+		return mav;
 	}
+	
+	
+	
+	
+	
 
 	// 관리자 - 급여관리(급여조회)
 	@RequestMapping(value="/manage/pay/paySearchAdmin.on")

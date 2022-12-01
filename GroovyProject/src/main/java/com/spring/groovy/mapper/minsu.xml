@@ -197,6 +197,50 @@
 
 
 
+	<!-- 관리자 사원관리 - 경조비신청현황 -->
+	<select id="receiptCelebrateStatus" resultType="com.spring.groovy.management.model.CelebrateVO">
+		select name, clbno, fk_empno, to_char(clbdate, 'yyyy-mm-dd') AS clbdate, clbpay, clbtype, clbstatus
+		from tbl_celebrate C join tbl_employee E
+		on C.fk_empno = E.empno
+		where clbstatus = '0'
+		order by clbno desc
+	</select>
+	
+	
+	
+	<!-- 경조비신청현황 한 페이지에 표시할 재직증명서 전체 글 개수 구하기(페이징) -->
+	<select id="getcountClSList" resultType="int" parameterType="com.spring.groovy.common.Pagination" >
+		select count(*) from tbl_celebrate
+		<if test='searchType != "" and searchWord != "" '>
+		WHERE LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
+		</if>
+	</select>
+	
+	
+	<!-- 경조비신청현황 - 한 페이지에 표시할 글 목록  (페이징 페이지수를 알아온다음에 10개씩보여줌) (페이징) -->
+	<select id="getOnePageClSCnt" resultType="com.spring.groovy.management.model.CelebrateVO" parameterType="HashMap">
+		select *
+		from (SELECT ROWNUM AS RNO, v.*
+			from( 
+			    select *
+			    from tbl_celebrate
+			     <if test='searchType != "" and searchWord != "" '>
+		            WHERE LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
+	            </if>
+	            ORDER BY clbno desc
+			)V)
+		WHERE RNO BETWEEN #{startRno} AND #{endRno}
+	</select>
+	
+	
+	<!-- 관리자 사원관리 - 경조비신청현황(결제상태 변경 Ajax) -->
+	<update id="receiptCelebrateStatusEnd" parameterType="HashMap">
+		update tbl_celebrate set clbstatus = '1'
+	</update>
+	
+	
+	
+	
 	
 	<!-- 관리자 사원관리 - 경조비지급목록 -->
 	<!-- <resultMap type="com.spring.groovy.management.model.CelebrateVO" id="celebList" autoMapping="true">
@@ -217,6 +261,7 @@
 		select name, clbno, fk_empno, to_char(clbdate, 'yyyy-mm-dd') AS clbdate, clbpay, clbtype, clbstatus
 		from tbl_celebrate C join tbl_employee E
 		on C.fk_empno = E.empno
+		where clbstatus = '1'
 		order by clbno desc
 	</select>
 	
@@ -245,13 +290,49 @@
 		WHERE RNO BETWEEN #{startRno} AND #{endRno}
 	</select>
 	
-	<!-- 관리자 사원관리 - 경조비신청현황 -->
-	<select id="receiptCelebrateStatus" resultType="com.spring.groovy.management.model.CelebrateVO">
-		select name, clbno, fk_empno, to_char(clbdate, 'yyyy-mm-dd') AS clbdate, clbpay, clbtype, clbstatus
-		from tbl_celebrate C join tbl_employee E
+	
+	
+	
+	<!-- 관리자 - 재직증명서 -->
+	<select id="proofEmploymentSearch" resultType="com.spring.groovy.management.model.ProofVO" >
+		select name, proofno, fk_empno, to_char(issuedate, 'yyyy-mm-dd') AS issuedate, issueuse
+		from tbl_certificate C join tbl_employee E
 		on C.fk_empno = E.empno
-		order by clbno desc
+		order by proofno desc
 	</select>
+	
+	
+	
+	
+	
+	<!-- 재직증명서 한 페이지에 표시할 재직증명서 전체 글 개수 구하기(페이징) -->
+	<select id="getcountProofList" resultType="int" parameterType="com.spring.groovy.common.Pagination">
+		SELECT COUNT(*) FROM TBL_CERTIFICATE
+		<if test='searchType != "" and searchWord != "" '>
+		WHERE LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
+		</if>
+	</select>
+	
+	
+	<!-- 재직증명서 - 한 페이지에 표시할 글 목록  (페이징 페이지수를 알아온다음에 10개씩보여줌) (페이징) -->
+	<select id="getOnePageProofCnt" parameterType="HashMap" resultType="com.spring.groovy.management.model.ProofVO">
+		select *
+		from (SELECT ROWNUM AS RNO, v.*
+			from( 
+			    select *
+			    from TBL_CERTIFICATE
+			     <if test='searchType != "" and searchWord != "" '>
+		            WHERE LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
+	            </if>
+	            ORDER BY proofno desc
+			)V)
+		WHERE RNO BETWEEN #{startRno} AND #{endRno}
+	</select>
+	
+	
+	
+	
+	
 	
 	
 	

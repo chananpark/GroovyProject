@@ -99,6 +99,24 @@ public interface InterManagementDAO {
 	//관리자 사원관리 - 경조비신청현황
 	List<CelebrateVO> receiptCelebrateStatus();
 
+	// 경조비신청현황 한 페이지에 표시할 재직증명서 전체 글 개수 구하기(페이징)
+	int getcountClSList(Pagination pagination);
+
+	// 경조비신청현황 - 한 페이지에 표시할 글 목록  (페이징 페이지수를 알아온다음에 10개씩보여줌) (페이징)
+	List<CelebrateVO> getOnePageClSCnt(Map<String, Object> paraMap);
+
+	// 관리자 사원관리 - 경조비신청현황(결제상태 변경 Ajax)
+	int receiptCelebrateStatusEnd(Map<String, Object> paramap);
+
+	// 관리자 - 재직증명서
+	List<ProofVO> proofEmploymentSearch();
+
+	// 재직증명서 한 페이지에 표시할 재직증명서 전체 글 개수 구하기(페이징)
+	int getcountProofList(Pagination pagination);
+
+	// 재직증명서 - 한 페이지에 표시할 글 목록  (페이징 페이지수를 알아온다음에 10개씩보여줌) (페이징)
+	List<ProofVO> getOnePageProofCnt(Map<String, Object> paraMap);
+
 	
 
 

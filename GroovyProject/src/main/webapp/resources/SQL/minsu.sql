@@ -307,12 +307,45 @@ on p.fk_empno = e.empno
 select name, clbno, fk_empno, to_char(clbdate, 'yyyy-mm-dd') AS clbdate, clbpay, clbtype, clbstatus
 from tbl_celebrate C join tbl_employee E
 on C.fk_empno = E.empno
-order by clbno
+order by clbno desc
 
 
+select 
+from tbl_celebrate
+
+select name, clbno, fk_empno, to_char(clbdate, 'yyyy-mm-dd') AS clbdate, clbpay, clbtype, clbstatus
+from tbl_celebrate C join tbl_employee E
+on C.fk_empno = E.empno
+where clbstatus = '0'
+order by clbno desc
+
+update tbl_celebrate set clbstatus = '1'
+where fk_empno = 13
+
+select *
+from tbl_celebrate
+
+insert into tbl_celebrate values(seq_tbl_celebrate.nextval, 14,sysdate, 200000, 3,0)
+commit
 
 
-
-
-
-
+-- 재직증명서 모두 조회
+select name, proofno, fk_empno, to_char(issuedate, 'yyyy-mm-dd') AS issuedate, issueuse
+		from tbl_certificate C join tbl_employee E
+		on C.fk_empno = E.empno
+		order by proofno desc
+        
+        
+        
+      create table tbl_certificate
+(proofno              number             not null   -- 증명서번호
+,fk_empno             number             not null   -- 사원번호
+,issuedate            date default sysdate          -- 발급일자(sysdate)
+,issueuse   
+        
+        
+        
+        
+        
+        
+        
