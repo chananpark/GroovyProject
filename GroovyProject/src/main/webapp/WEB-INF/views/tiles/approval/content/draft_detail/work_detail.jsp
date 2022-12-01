@@ -269,9 +269,9 @@ const updateApproval = approval_status => {
 			</div>
 
 			<!-- 결재라인 -->
-			<div class='approvalLineInfo' style='margin-right: 5%'>
+			<div class='approvalLineInfo' style='width:40%'>
 				<h5 class='text-left my-4'>결재정보</h5>
-				<table class='mr-4 table table-sm table-bordered text-left'>
+				<table class='mr-4 table table-sm table-bordered text-left' style="width:auto">
 					<tr>
 						<th rowspan='5' style='font-size: medium; vertical-align: middle; width: 30px'>결<br>재<br>선</th>
 					</tr>
@@ -314,8 +314,8 @@ const updateApproval = approval_status => {
 			</script>
 			<!-- 수신처 -->
 			<c:if test="${externalList != '[]'}">
-			<div class='approvalLineInfo' style='clear:both; margin-right: 5%'>
-				<table class='mr-4 table table-sm table-bordered text-left'>
+			<div class='approvalLineInfo' style='clear:both; width:40%'>
+				<table class='mr-4 table table-sm table-bordered text-left' style="width:auto">
 					<tr>
 						<th rowspan='5' style='font-size: medium; vertical-align: middle; width: 30px'>수<br>신</th>
 					</tr>

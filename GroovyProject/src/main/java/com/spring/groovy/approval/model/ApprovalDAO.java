@@ -63,6 +63,13 @@ public class ApprovalDAO implements InterApprovalDAO {
 		return sqlsession.delete("chanan.deleteDraftList", deleteArr);
 	}
 
+	// 진행중 문서 5개 가져오기
+	@Override
+	public List<DraftVO> getMyDraftProcessing(String empno) {
+		return sqlsession.selectList("chanan.getMyDraftProcessing", empno);
+	}
+
+	// 결재완료 문서 5개 가져오기
 	@Override
 	public List<DraftVO> getMyDraftProcessed(String empno) {
 		return sqlsession.selectList("chanan.getMyDraftProcessed", empno);
@@ -70,7 +77,7 @@ public class ApprovalDAO implements InterApprovalDAO {
 
 	// 결재 대기 문서의 문서번호들 조회
 	@Override
-	public List<Object> getRequestedDraftNo(Map<String, Object> paraMap) {
+	public List<String> getRequestedDraftNo(Map<String, Object> paraMap) {
 		return sqlsession.selectList("chanan.getRequestedDraftNo", paraMap);
 	}
 	

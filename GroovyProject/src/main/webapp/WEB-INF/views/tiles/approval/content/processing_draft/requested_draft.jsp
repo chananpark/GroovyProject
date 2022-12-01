@@ -12,6 +12,10 @@ a {
 	color: black;
 }
 
+a:hover {
+	text-decoration: none;
+}
+
 #pageList a{
 	font-size: small;
 	color: black;

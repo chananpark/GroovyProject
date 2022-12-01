@@ -79,6 +79,13 @@ public class ApprovalService implements InterApprovalService {
 		return dao.deleteDraftList(deleteArr);
 	}
 
+	// 진행중 문서 5개 가져오기
+	@Override
+	public List<DraftVO> getMyDraftProcessing(String empno) {
+		return dao.getMyDraftProcessing(empno);
+	}
+	
+	// 결재완료 문서 5개 가져오기
 	@Override
 	public List<DraftVO> getMyDraftProcessed(String empno) {
 		return dao.getMyDraftProcessed(empno);
@@ -86,7 +93,7 @@ public class ApprovalService implements InterApprovalService {
 
 	// 결재 대기 문서의 문서번호들 조회
 	@Override
-	public List<Object> getRequestedDraftNo(Map<String, Object> paraMap) {
+	public List<String> getRequestedDraftNo(Map<String, Object> paraMap) {
 		return dao.getRequestedDraftNo(paraMap);
 	}
 	
