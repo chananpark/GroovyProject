@@ -164,6 +164,50 @@
 		WHERE RNO BETWEEN #{startRno} AND #{endRno}
 	</select>
 		
+	<!-- 결재 예정 문서의 문서번호-->
+	<select id="getUpcomingDraftNo" resultType="String" parameterType="HashMap" >
+	SELECT FK_DRAFT_NO
+	FROM TBL_APPROVAL A
+	WHERE FK_APPROVAL_EMPNO = #{empno} AND APPROVAL_STATUS = 0
+	AND FK_DRAFT_NO IN (SELECT FK_DRAFT_NO
+	                    FROM TBL_APPROVAL
+  	                    WHERE (LEVELNO = (A.LEVELNO - 1) AND APPROVAL_STATUS = 0)
+                        OR A.LEVELNO = 1)
+	</select>
+				
+	<!-- 결재 예정 문서 게시글 수 조회 -->
+	<select id="getUpcomingDraftCnt" resultType="int" parameterType="HashMap" >
+		SELECT COUNT(*)
+		FROM VIEW_DRAFT_APPROVAL
+		WHERE DRAFT_NO IN
+		<foreach collection="draftNoList" item="list" open="(" close=")" separator=",">
+			#{list}
+		</foreach>
+		AND FK_APPROVAL_EMPNO = #{empno}
+		<if test='searchType != "" and searchWord != "" '>
+		AND LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
+		</if>
+	</select>
+			
+	<!-- 결재예정문서 목록 조회 -->
+	<select id="getUpcomingDraftList" resultType="com.spring.groovy.approval.model.DraftVO" parameterType="HashMap" >
+		SELECT * 
+		FROM ( SELECT A.*, ROWNUM AS RNO
+		    FROM ( SELECT *
+		            FROM VIEW_DRAFT_APPROVAL
+					WHERE DRAFT_NO IN
+					<foreach collection="draftNoList" item="list" open="(" close=")" separator=",">
+						#{list}
+					</foreach>
+					AND FK_APPROVAL_EMPNO = #{empno}
+		            <if test='searchType != "" and searchWord != "" '>
+		            AND LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
+		            </if>
+		            ORDER BY URGENT_STATUS DESC, ${sortType} ${sortOrder}
+		            )A )
+		WHERE RNO BETWEEN #{startRno} AND #{endRno}
+	</select>
+	
 	<!-- 사원 목록 조회 -->
 	<resultMap type="HashMap" id="empMap">
 		<result property="empno" column="empno" javaType="String"/>

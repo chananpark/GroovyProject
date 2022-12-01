@@ -347,7 +347,7 @@ public class ApprovalController {
 
 		// 만약 대기문서가 없다면 return
 		if (draftNoList.size() == 0) {
-			mav.setViewName("approval/requested_draft.tiles");
+			mav.setViewName("approval/processing_draft/requested_draft.tiles");
 			return mav;
 		}
 
@@ -368,7 +368,49 @@ public class ApprovalController {
 		mav.addObject("pagebar", pagination.getPagebar(url));
 		mav.addObject("paraMap", paraMap);
 
-		mav.setViewName("approval/requested_draft.tiles");
+		mav.setViewName("approval/processing_draft/requested_draft.tiles");
+		return mav;
+	}
+	
+	// 결재하기-결재예정문서 페이지요청
+	@SuppressWarnings("unchecked")
+	@RequestMapping(value = "/upcoming.on")
+	public ModelAndView upcomingDraftList(ModelAndView mav, Pagination pagination, HttpServletRequest request)
+			throws Exception {
+		MemberVO loginuser = getLoginUser(request);
+		
+		Map<String, Object> paraMap = BeanUtils.describe(pagination); // pagination을 Map으로
+		paraMap.put("empno", loginuser.getEmpno());
+		paraMap.put("department", loginuser.getDepartment());
+		
+		// 결재 대기 문서의 문서번호들 조회
+		List<Object> draftNoList = service.getUpcomingDraftNo(paraMap);
+		paraMap.put("draftNoList", draftNoList);
+		
+		// 만약 대기문서가 없다면 return
+		if (draftNoList.size() == 0) {
+			mav.setViewName("approval/processing_draft/upcoming_draft.tiles");
+			return mav;
+		}
+		
+		// 전체 글 개수 구하기
+		int listCnt = service.getUpcomingDraftCnt(paraMap);
+		pagination.setPageInfo(listCnt); // 총 페이지, 시작행, 마지막행 설정
+		paraMap.putAll(BeanUtils.describe(pagination)); // pagination을 Map으로
+		
+		// 정렬 설정
+		setSorting(request, paraMap);
+		
+		// 한 페이지에 표시할 글 목록
+		mav.addObject("draftList", service.getUpcomingDraftList(paraMap));
+		
+		// 페이지바
+		String url = request.getContextPath() + "/approval/upcoming.on";
+		pagination.setQueryString("&sortType="+paraMap.get("sortType")+"&sortOrder="+paraMap.get("sortOrder"));
+		mav.addObject("pagebar", pagination.getPagebar(url));
+		mav.addObject("paraMap", paraMap);
+		
+		mav.setViewName("approval/processing_draft/upcoming_draft.tiles");
 		return mav;
 	}
 

@@ -121,17 +121,18 @@ $(()=>{
 	// 내가 결재라인에 있을때
 	if (myApprovalInfo != null) {
 		
-		// 내 결재상태가 0이며, 나보다 앞 결재자의 결재상태가 1이거나 내가 첫번째 결재자일 때만 결재의견 작성란, 승인|반려 버튼 표시
-		if ( (myApprovalInfo.approval_status == 0 && myApprovalInfo.levelno == 1) || 
-				(priorApprovalInfo !== undefined && priorApprovalInfo.approval_status == 1)) {
-			$("#myComment").show();
-			$(".myApprovalBtn").show();
+		// 내 결재상태가 0이며, 내가 첫번째 결재자일 때 혹은 나보다 앞 결재자의 결재상태가 1일때만 결재의견 작성란, 승인|반려 버튼 표시
+		if (myApprovalInfo.approval_status == 0) {
+			if (myApprovalInfo.levelno == 1 || (priorApprovalInfo !== undefined && priorApprovalInfo.approval_status == 1)) {
+				$("#myComment").show();
+				$(".myApprovalBtn").show();
+			}
 		}
 		// 내 결재상태가1이며, 나보다 다음 결재자의 결재상태가 0일 때만 대결 버튼 표시
 		if (myApprovalInfo.approval_status == 1 && nextApprovalInfo !== undefined && nextApprovalInfo.approval_status == 0) {
 			$(".proxyApprovalBtn").show();
 		}
-	}	
+	}		
 	
 	// 상신 취소 버튼 감추기
 	$("#cancelDraftBtn").hide();
@@ -268,11 +269,11 @@ const updateApproval = approval_status => {
 			</div>
 
 			<!-- 결재라인 -->
-			<div class='approvalLineInfo' style='width: 40%'>
-				<h5 class='text-left my-4'>결재라인</h5>
+			<div class='approvalLineInfo' style='margin-right: 5%'>
+				<h5 class='text-left my-4'>결재정보</h5>
 				<table class='mr-4 table table-sm table-bordered text-left'>
 					<tr>
-						<th rowspan='5' style='font-size: medium; vertical-align: middle;'>결<br>재<br>선</th>
+						<th rowspan='5' style='font-size: medium; vertical-align: middle; width: 30px'>결<br>재<br>선</th>
 					</tr>
 					<tr class='in position'>
 					</tr>
@@ -305,7 +306,7 @@ const updateApproval = approval_status => {
 					html = "<td>" + el.name + "</td>";
 					$("tr.in.name").append(html);
 					
-					let approval_date = el.approval_date || "";
+					let approval_date = el.approval_date || "미결재";
 					html = "<td>" + approval_date.substring(0,10) + "</td>";
 					$("tr.in.approval_date").append(html);
 				});
@@ -313,10 +314,10 @@ const updateApproval = approval_status => {
 			</script>
 			<!-- 수신처 -->
 			<c:if test="${externalList != '[]'}">
-			<div class='approvalLineInfo' style='width: 40%; clear:both'>
+			<div class='approvalLineInfo' style='clear:both; margin-right: 5%'>
 				<table class='mr-4 table table-sm table-bordered text-left'>
 					<tr>
-						<th rowspan='5' style='font-size: medium; vertical-align: middle;'>수<br>신</th>
+						<th rowspan='5' style='font-size: medium; vertical-align: middle; width: 30px'>수<br>신</th>
 					</tr>
 					<tr class='position ex'>
 					</tr>
@@ -347,7 +348,7 @@ const updateApproval = approval_status => {
 					html = "<td>" + el.name + "</td>";
 					$("tr.ex.name").append(html);
 					
-					let approval_date = el.approval_date || "";
+					let approval_date = el.approval_date || "미결재";
 					html = "<td>" + approval_date.substring(0,10) + "</td>";
 					$("tr.ex.approval_date").append(html);
 				});
