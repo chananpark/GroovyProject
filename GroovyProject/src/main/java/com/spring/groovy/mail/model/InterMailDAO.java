@@ -40,6 +40,23 @@ public interface InterMailDAO {
 	/** 중요 체크 업데이트 */
 	int importantUpdate(Map<String, String> paraMap);
 
+	/** 중요 체크 or 해제 전 상태 확인 by mail_no*/
+	int importantCheckM(String mail_no);
+	/** 중요 체크 업데이트 by mail_no*/
+	int importantUpdateM(Map<String, String> paraMap);
+
+	/** 삭제 by mail_recipient_no*/
+	int deleteUpdate(String mail_recipient_no);
+	/** 삭제 by mail_no*/
+	int deleteUpdateM(String mail_no);
+
+	/** 태그 by mail_no*/
+	int tagCheckM(Map<String, String> paraMap);
+
+	
+
+	
+
 	
 
 	

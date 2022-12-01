@@ -73,8 +73,7 @@
     <li class="nav-item">
       <a class="nav-link" href="#">태그 메일함</a>
       	<ul id="sidebarTag">
-      		<li><a id="tag" class="nav-link" href="<%=ctxPath%>/mail/viewMail.on">(임시) 메일 보기</a></li>
-	      	
+      		 	
       	</ul>
     </li>
     <!-- 

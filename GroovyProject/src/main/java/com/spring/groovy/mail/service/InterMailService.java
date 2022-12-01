@@ -33,5 +33,17 @@ public interface InterMailService {
 
 	/** 중요 체크 or 해제 */
 	int importantCheck(String mail_recipient_no);
+	int importantCheckM(String mail_no);
+
+	/** 메일 삭제  */
+	int deleteCheck(String mail_recipient_no);
+	int deleteCheckM(String mail_no);
+
+	/** 태그 추가 or 해제 */
+
+	int tagCheckM(Map<String, String> paraMap);
+
+	
+	
 
 }

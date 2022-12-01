@@ -291,12 +291,27 @@ insert into TBL_MAIL_Recipient(MAIL_Recipient_NO,FK_MAIL_NO, FK_Recipient_addres
 values(seq_mail_recipient_no.nextval,35,'kjskjskjs@groovy.com');
 
 
+select * from TBL_MAIL_Recipient;
+
+select M.MAIL_NO,M.FK_SENDER_ADDRESS,M.FK_RECIPIENT_ADDRESS
+		        ,M.SUBJECT,M.contents,M.send_Time,M.SENDER_DELETE,M.SENDER_IMPORTANT
+		        ,M.FILENAME, M.ORGFILENAME, M.FILESIZE,M.MAIL_PWD
+		        
+		        	,R.mail_recipient_no,R.FK_RECIPIENT_ADDRESS_individual,R.FK_REFERENCED_ADDRESS_individual
+                    ,R.READ_CHECK,R.RECIPIENT_DELETE,R.RECIPIENT_IMPORTANT
+				
+			
+			   from tbl_mail M  
+		
+				   right JOIN TBL_MAIL_Recipient R  
+				   ON R.fk_mail_no = M.mail_no
+
  
-       and  (FK_Recipient_address_individual = 'kjsaj0525@groovy.com')
-			    			  or (FK_REFERENCED_ADDRESS_individual = 'kjsaj0525@groovy.com');
-       and FK_RECIPIENT_ADDRESS_individual = 'kjsaj0525@groovy.com';
-       and  FK_Sender_address = 'kjsaj0525@groovy.com';
-	
+       where SEND_TIME <= sysdate
+     
+and  ((FK_Recipient_address_individual = 'kjsaj0525@groovy.com')
+			    			  or (FK_REFERENCED_ADDRESS_individual = 'kjsaj0525@groovy.com'))
+                              and lower(subject) like '%'||'메일'||'%';
 		        <![CDATA[]]>;
 	
 		        	<if test='listType == "FK_Recipient_address" or listType == "FK_Sender_address"'>    	
@@ -334,4 +349,61 @@ select RECIPIENT_IMPORTANT
 from TBL_MAIL_Recipient
 where MAIL_RECIPIENT_NO=3;
 
+
+ select rownum AS rno, V.*
+ from        
+ (           select M.MAIL_NO,M.FK_SENDER_ADDRESS,M.FK_RECIPIENT_ADDRESS
+ ,M.SUBJECT,M.contents,M.send_Time,M.SENDER_DELETE,M.SENDER_IMPORTANT 
+ ,M.FILENAME, M.ORGFILENAME, M.FILESIZE,M.MAIL_PWD
+ ,R.mail_recipient_no,R.FK_RECIPIENT_ADDRESS_individual
+ ,R.FK_REFERENCED_ADDRESS_individual,R.READ_CHECK 
+ ,R.RECIPIENT_DELETE,R.RECIPIENT_IMPORTANT 
+ 
+ from tbl_mail M                                 
+ where SEND_TIME <= sysdate      
+ and ((FK_Recipient_address_individual = ? and Recipient_IMPORTANT = 1)             
+        or (FK_Sender_address = ? and SENDER_IMPORTANT = 1))  ; 
+        and lower(subject) like '%'||lower('메일')||'%';
+        order by SEND_TIME desc       ) V   ) T    where rno between ? and ?
+        
+        
+        
+
+
+select * 
+from tbl_mail M
+right join ;
+
+
+rollback;
+
+
+
+		    select rownum AS rno, V.*
+		    from 
+		    (
+		        select M.MAIL_NO,M.FK_SENDER_ADDRESS,M.FK_RECIPIENT_ADDRESS
+		        ,M.SUBJECT,M.contents,M.send_Time,M.SENDER_DELETE,M.SENDER_IMPORTANT
+		        ,M.FILENAME, M.ORGFILENAME, M.FILESIZE,M.MAIL_PWD
+		      
+	
+		        	,R.mail_recipient_no,R.FK_RECIPIENT_ADDRESS_individual
+		        	,R.FK_REFERENCED_ADDRESS_individual,R.READ_CHECK
+		        	,R.RECIPIENT_DELETE,RECIPIENT_IMPORTANT
+		
+			
+			   from tbl_mail M  
+
+				   right JOIN TBL_MAIL_Recipient R  
+				   ON R.fk_mail_no = M.mail_no
+	
+		      where SEND_TIME <= sysdate
+	
+
+		        		and RECIPIENT_IMPORTANT =0    	
+			    		and  ((FK_Recipient_address_individual ='kjsaj0525@groovy.com')
+			    			  or (FK_REFERENCED_ADDRESS_individual = 'kjsaj0525@groovy.com'))
+	
+		        order by SEND_TIME desc
+		    ) V;
 

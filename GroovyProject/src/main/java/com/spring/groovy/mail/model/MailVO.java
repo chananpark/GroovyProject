@@ -171,10 +171,10 @@ public class MailVO {
 		// 포맷터
         SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date send_time_date;
-        System.out.println("send_time"+send_time);
+        //System.out.println("send_time"+send_time);
         
         send_time_date = formatter.parse(send_time);
-        System.out.println("send_time_date"+send_time_date);
+        //System.out.println("send_time_date"+send_time_date);
         // 문자열 -> Date
         this.send_time_date = send_time_date;
         return send_time_date;
@@ -243,6 +243,8 @@ public class MailVO {
 	}
 	
 	
+	// 원래는 중간에 값 바꿔서 배출하는 용돈데 테이블 변경으로 폐기
+	/*
 	public String changeArr(List<String> arr, int index, String val){
 		StringBuilder sb =new StringBuilder();
 		for(int i=0 ; i<arr.size(); i++ ) {
@@ -260,7 +262,7 @@ public class MailVO {
         }
 		return result;
 	}
-	
+	*/
 	
 	
 	

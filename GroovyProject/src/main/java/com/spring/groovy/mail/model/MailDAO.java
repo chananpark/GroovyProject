@@ -108,6 +108,43 @@ public class MailDAO implements InterMailDAO {
 		return n;
 	}
 
+	/** 중요 체크 or 해제 전 확인 */
+	@Override
+	public int importantCheckM(String mail_no) {
+		int n = sqlsession.selectOne("jinseok.importantCheckM",mail_no);
+		return n;
+	}
+	/** 중요 체크 or 해제 전 확인 */
+	@Override
+	public int importantUpdateM(Map<String, String> paraMap) {
+		int n = sqlsession.update("jinseok.importantUpdateM",paraMap);
+		return n;
+	}
+
+	@Override
+	public int deleteUpdate(String mail_recipient_no) {
+		int n = sqlsession.update("jinseok.deleteUpdate",mail_recipient_no);
+		return n;
+	}
+	
+	@Override
+	public int deleteUpdateM(String mail_no) {
+		int n = sqlsession.update("jinseok.deleteUpdateM",mail_no);
+		return n;
+	}
+
+	
+
+	@Override
+	public int tagCheckM(Map<String, String> paraMap) {
+		int n = sqlsession.update("jinseok.tagCheckM",paraMap);
+		return n;
+	}
+	
+	
+
+	
+
 	
 
 	
