@@ -332,11 +332,10 @@ public class ManagementController {
 		
 //		 List<MemberVO> manageList = service.manageList();
 //		 mav.addObject("manageList", manageList);
-		 
+	
 		mav.setViewName("manage/admin/info/registerInfo.tiles");
 		return mav; 
 	}
-	
 	
 	//관리자 사원관리 - 사원등록
 	@ResponseBody
@@ -386,8 +385,8 @@ public class ManagementController {
 		// 오류 null
 		System.out.println(position);
 		System.out.println(empstauts);
-		System.out.println(joindate);
 		System.out.println(bank);
+		System.out.println(joindate);
 		
 		
 		
@@ -396,8 +395,6 @@ public class ManagementController {
 		paraMap.put("mobile", mobile);
 		paraMap.put("birthday", birthday);
 		
-		// 위에 잇는 정보를 paramap에 담아야하는데 membervo애 어떻게 넣지?
-
 		// 사원등록
 		int n = service.getRegisterInfo(paraMap);
 		
@@ -406,7 +403,6 @@ public class ManagementController {
 		
 		return json.toString(); // "{"n":1,"name":"서영학"}" 또는 "{"n":0,"name":"서영학"}"
 	}
-	
 	
 	
 	

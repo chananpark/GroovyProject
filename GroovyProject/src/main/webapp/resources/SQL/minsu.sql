@@ -18,7 +18,7 @@ create table tbl_employee
 ,pvemail            varchar2(200)  not null  -- 개인이메일 (AES-256 암호화/복호화 대상)
 ,mobile             varchar2(200)  not null  -- 연락처 (AES-256 암호화/복호화 대상)
 ,depttel            varchar2(30)   not null  -- 내선번호
-,joindate           varchar2(10)   not null  -- 입사일자
+,joindate           date   default sysdate   -- 입사일자
 ,empstauts          varchar2(1)    not null  -- 재직구분 (3개월이후 정직원 1정규직, 2비정규직)
 ,bank               Nvarchar2(20)  not null  -- 은행
 ,account            number(20)     not null  -- 계좌번호
@@ -166,7 +166,13 @@ desc TBL_EMPLOYEE
 alter table tbl_employee add gender varchar2(2);
 
 -- 칼럼 변경
-alter table tbl_employee modify joindate varchar2(10)  not null;
+alter table tbl_employee modify joindate date  not null;
+
+-- pvemail 칼럼변경
+alter table tbl_employee modify pvemail varchar2(200) null;
+
+select joindate
+from tbl_employee
 
 rollback
 alter table tbl_employee MODIFY annualcnt varchar2(5);
@@ -367,3 +373,30 @@ update tbl_employee set pay = 30000000
 where empno = 13
 
 commit
+
+
+
+
+	
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

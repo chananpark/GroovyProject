@@ -474,8 +474,6 @@ let b_flag_emailDuplicate_click = false;
 			type:"POST",
 		  	dataType:"JSON",
 		  	success:function(json){
-		  		 
-		  		alert(json.n);
 		  		
 		  		if(json.n == 1) {
 		  			alert("사원정보 등록성공");
@@ -596,7 +594,7 @@ let b_flag_emailDuplicate_click = false;
 				
 			</td>
 			<th>외부이메일</th>
-			<td><input type="email" id="pvemail" name="pvemail" /></td>
+			<td><input type="email" id="pvemail" readonly name="pvemail"/></td>
 
 		</tr>
 	</table>
@@ -640,21 +638,20 @@ let b_flag_emailDuplicate_click = false;
 			</td>
 		</tr>
 		<tr>
-			<th>연봉</th>
-			<td>
-				<input type="text" id="pay" class="required" name="pay" />
-			</td>
-			<th><span class="alert_required" style="color: red;">*</span>입사일자</th>
-			<td><%-- <input type="date" style="width: 165px;" required value="${requestScope.joindate}"/> --%>
-				<input type="text"  style="width: 165px;" required  id="datepicker"/></td>
-		</tr>
-		<tr>
 			<th><span class="alert_required" style="color: red;">*</span>은행</th>
 			<td>
 				<input type="text" class="bank" name="bank" required />
 			</td>
 			<th><span class="alert_required" style="color: red;">*</span>계좌</th>
 			<td><input type="text" name="account" required style="width: 165px;" /></td>
+		</tr>
+		<tr>
+			<th><span class="alert_required" style="color: red;">*</span>연봉</th>
+			<td>
+				<input type="text" id="pay" class="required" name="pay"/>
+			</td>
+			<th>입사일자</th>
+			<td><input type="text" id="joindate" class="required" name="joindate" readonly placeholder="자동입력 됩니다."/></td>
 		</tr>
 	</table>
 	
@@ -665,6 +662,5 @@ let b_flag_emailDuplicate_click = false;
 	</div>
 </div>
 </form>
-
 
 
