@@ -125,12 +125,13 @@ public class ManagementDAO implements InterManagementDAO {
 	}
 
 	// 사원등록 - 내선번호를 갖고오기위해 필요함
+/*
 	@Override
 	public List<MemberVO> manageList() {
 		List<MemberVO> manageList = sqlsession.selectList("minsu.manageList");
 		return manageList;
 	}
-
+*/
 	
 	
 	// ================================================================================= //

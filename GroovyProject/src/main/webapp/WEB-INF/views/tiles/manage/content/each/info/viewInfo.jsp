@@ -3,6 +3,7 @@
 
 <% String ctxPath = request.getContextPath(); %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 
 <style>
 
@@ -320,7 +321,7 @@
 
 
 
-<form id="frm_manageInfo">
+<form id="frm_manageInfo" enctype="multipart/form-data">
 <div id="info_manageInfo">
 
 <div style='margin: 1% 0 5% 1%'>
@@ -445,15 +446,8 @@
 			</td>
 		</tr>
 		<tr>
-			<th>임금적용률</th>
-			<td>
-			<c:choose>
-				<c:when test="${loginuser.empstauts eq '1'}">
-					<input type="text" id="empstauts" name="empstauts" value="100%" readonly />
-				</c:when>
-				<c:otherwise><input type="text" id="empstauts" name="empstauts" value="80%" readonly /></c:otherwise>
-			</c:choose>
-			</td>
+			<th>연봉</th>
+			<td><div style="background-color: "><fmt:formatNumber value="${loginuser.pay}" pattern="#,###"/></div></td>
 			<th><span class="alert_required" style="color: red;">*</span>입사일자</th>
 			<td><input type="text" style="width: 165px;" readonly  value="${loginuser.joindate}"/></td>
 		</tr>

@@ -65,7 +65,6 @@
 		color: red;
 	}
 	
-
 	
 	 /* === 모달 CSS === */
 	
@@ -106,12 +105,12 @@ let b_flag_emailDuplicate_click = false;
 
 	$(document).ready(function(){
 	
+
 		$('.subadmenu').show();
 		 $('.eachmenu3').show();
 		 $("div.msg_error").hide();
 		 $("div#msg_probation").hide();
 		 
-
 		
 		 // === 주민등록번호=== // 
 		 $("input#jubun").blur(function(e){
@@ -273,6 +272,7 @@ let b_flag_emailDuplicate_click = false;
 					
 				}
 				
+				
 			}); // end of $("input#hp3").blur() ----------------- // 아이디가 hp3 인 것은 포커스를 잃어버렸을 경우(blur) 이벤트를 처리해주는 것이다.
 
 			
@@ -295,31 +295,30 @@ let b_flag_emailDuplicate_click = false;
 		});// $("button#checkCpEmail").click(function(){ ---------------------
 			
 		*/ 
+	
+			
+		// === 텍스트넣는법  === // 
+	/* 	$( "select[name=empstatus]").change(function(){
+			var value = $("option:selected").val();
+			var inputText = $("input#emppay");
+			
+			if (value == '계약직') {
+				inputText.text('80%');
+			}
+			
+		}); */
+			
+			
 		
-		// === 수습시간 체크박스 버튼을 누르면 === // 
-		$("input#che_probation").click(function(){
 			
-			$("div#msg_probation").show();
+		// === 저장버튼을 누르면 === //
+		$("button#btn_submit").click(function(){
+			 btn_register();
+		});
 		
-		}); // end of $("input#che_probation").click(function(){
-			
-			
-			$( "select[name=empstatus]").change(function(){
-				var value = $("option:selected").val();
-				var inputText = $("input#emppay");
-				
-				if (value == '계약직') {
-					inputText.text('80%');
-				}
-				
-				
-			});
-			
-			
+		
+		
 	}); // end of $(document).ready(function(){}-----------------------------------------
-
-
-
 
 
 
@@ -387,7 +386,7 @@ let b_flag_emailDuplicate_click = false;
 	// >>> 부문선택값에 따라 하위 셀렉트 팀옵션 다르게 하기 <<< // 
 	function bumunchange(value){
 		
-		var dept_1 = ["인사총무팀,재경팀"]; 
+		var dept_1 = ["인사총무팀","재경팀"]; 
 		var dept_2 = ["개발팀","기획팀"]; 
 		var dept_3 = ["영업팀","마케팅팀"]; 
 		var target = document.getElementById("department");
@@ -458,7 +457,7 @@ let b_flag_emailDuplicate_click = false;
 		}
 	} // end of function btn_register() { -----------------------------
 	
-	
+
 	// >>> 등록버튼을 누르면 <<<
 	function btn_register() {
 		<%--  
@@ -468,6 +467,7 @@ let b_flag_emailDuplicate_click = false;
 		  const queryString = $("form[name='addWriteFrm']").serialize();
 		--%>
 		const queryString = $("form[name='frm_manageInfo']").serialize();
+		console.log(queryString); 
 		$.ajax({
 			url:"<%= request.getContextPath()%>/manage/admin/registerEnd.on",
 			data:queryString, 
@@ -475,14 +475,14 @@ let b_flag_emailDuplicate_click = false;
 		  	dataType:"JSON",
 		  	success:function(json){
 		  		 
-		  		alert(json.n)
+		  		alert(json.n);
 		  		
-		  		/* if(json.n == 1) {
-		  			alert("사원정보 등록성공")
+		  		if(json.n == 1) {
+		  			alert("사원정보 등록성공");
 		  		}
 		  		else {
-		  			alert("사원정보 등록실패")
-		  		}  */
+		  			alert("사원정보 등록실패");
+		  		} 
 		  	},
 		  	 error: function(request, status, error){
 				  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
@@ -494,6 +494,13 @@ let b_flag_emailDuplicate_click = false;
 	
 	
 	
+	// >>> 삭제버튼을 누르면<<<
+	function func_delete() {
+		
+		$("input").val("");
+		$("select").val("");
+	
+	}
 	
 	
 	
@@ -502,7 +509,7 @@ let b_flag_emailDuplicate_click = false;
 
 
 
-<form id="frm_manageInfo">
+<form name="frm_manageInfo">
 <div id="info_manageInfo">
 
 <div style='margin: 1% 0 5% 1%'>
@@ -513,7 +520,7 @@ let b_flag_emailDuplicate_click = false;
 	
 	<table class="m-4 mb-3 table table-bordered table-sm" id="first_table">
 		<tr>
-			<td rowspan='4' style="width:10%;"><i class="fas fa-user-plus"></i></td>
+			<td rowspan='4' style="width: 2%;"><i class="fas fa-user-tie fa-10x mt-2 ml-2" ></i></td>
 			<th class="t1"><span class="alert_required" style="color: red;">*</span>사원번호</th>
 			<td>	
 				<input type="text" id="empno" name="empno" required placeholder="자동입력됩니다." readonly/>
@@ -616,7 +623,7 @@ let b_flag_emailDuplicate_click = false;
 		<tr>
 			<th><span class="alert_required" style="color: red;">*</span>직급</th>
 			<td>
-				<select name="extension" class="select_3"  required >
+				<select name="position" class="select_3"  required >
 					<option value="">직급을 선택해주세요</option>
 					<option value="부문장">부문장</option>
 					<option value="팀장">팀장</option>
@@ -625,7 +632,7 @@ let b_flag_emailDuplicate_click = false;
 				</select>
 			</td>
 			<th><span class="alert_required" style="color: red;">*</span>급여계약기준</th>
-			<td><select name="empstatus" class="select_3" required onchange="empstatus(value)">
+			<td><select name="empstauts" class="select_3" required>
 					<option value="">계약기준을 선택해주세요</option>
 					<option value="1">정규직</option>
 					<option value="2">계약직</option>
@@ -638,12 +645,13 @@ let b_flag_emailDuplicate_click = false;
 				<input type="text" id="pay" class="required" name="pay" />
 			</td>
 			<th><span class="alert_required" style="color: red;">*</span>입사일자</th>
-			<td><input type="date" style="width: 165px;" required value="${requestScope.joindate}"/></td>
+			<td><%-- <input type="date" style="width: 165px;" required value="${requestScope.joindate}"/> --%>
+				<input type="text"  style="width: 165px;" required  id="datepicker"/></td>
 		</tr>
 		<tr>
 			<th><span class="alert_required" style="color: red;">*</span>은행</th>
 			<td>
-				<input type="text" class="emppay" name="emppay" required />
+				<input type="text" class="bank" name="bank" required />
 			</td>
 			<th><span class="alert_required" style="color: red;">*</span>계좌</th>
 			<td><input type="text" name="account" required style="width: 165px;" /></td>
@@ -652,8 +660,8 @@ let b_flag_emailDuplicate_click = false;
 	
 	<%-- 정보수정 페이지에서 보이는 버튼 --%>
 	<div align="right" style="margin: 3% 0;">
-		<button id="btn_update" style="background-color:#F9F9F9; border: none; width: 80px;">삭제</button>
-		<button id="btn_register" onclick ="btn_register()" style="color: white; background-color:#086BDE; border: none; width: 80px;">저장</button>
+		<button id="btn_update" style="background-color:#F9F9F9; border: none; width: 80px;" onclick="func_delete()">삭제</button>
+		<button style="color: white; background-color:#086BDE; border: none; width: 80px;" id="btn_submit">저장</button>
 	</div>
 </div>
 </form>
