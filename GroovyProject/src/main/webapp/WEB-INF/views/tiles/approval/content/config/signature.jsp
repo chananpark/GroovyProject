@@ -79,7 +79,7 @@ function readURL(input) {
 	
 	<form name="signatureFrm" enctype="multipart/form-data">
 		<div class="card text-center mx-auto" style="width: 400px; height: 200px;">
-			<img id="preview" style='border-radius: 50%; display: inline-block' src='<%=ctxPath%>/resources/images/sign/${loginuser.signimg}' width="100" />
+			<img id="preview" style='display: inline-block' src='<%=ctxPath%>/resources/images/sign/${loginuser.signimg}' width="100" />
 			<div class="card-body">
 				<div class="filebox">
 					<label id='updateBtn' for="attach" class="btn">서명 변경하기</label>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
-<mapper namespace="chanan">
+<mapper namespace="approval">
 
 	<!-- 팀 문서함 게시글 수 조회 -->
 	<select id="getTeamDraftCnt" resultType="int" parameterType="HashMap" >
@@ -29,7 +29,7 @@
 		            <if test='searchType != "" and searchWord != "" '>
 		            AND LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
 		            </if>
-					ORDER BY ${sortType} ${sortOrder}
+					ORDER BY ${sortType} ${sortOrder} NULLS LAST
 		            )A )
 		WHERE RNO BETWEEN #{startRno} AND #{endRno}
 	</select>
@@ -54,7 +54,7 @@
 		            <if test='searchType != "" and searchWord != "" '>
 		            AND LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
 		            </if>
-		            ORDER BY ${sortType} ${sortOrder}
+		            ORDER BY ${sortType} ${sortOrder} NULLS LAST
 		            )A )
 		WHERE RNO BETWEEN #{startRno} AND #{endRno}
 	</select>
@@ -79,7 +79,7 @@
 		            <if test='searchType != "" and searchWord != "" '>
 		            AND LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
 		            </if>
-		            ORDER BY ${sortType} ${sortOrder}
+		            ORDER BY ${sortType} ${sortOrder} NULLS LAST
 		            )A )
 		WHERE RNO BETWEEN #{startRno} AND #{endRno}
 	</select>
@@ -106,7 +106,7 @@
 					<if test='searchType != "" and searchWord != "" '>
 					AND LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
 					</if>
-					ORDER BY ${sortType} ${sortOrder}
+					ORDER BY ${sortType} ${sortOrder} NULLS LAST
 					)A )
 		WHERE RNO BETWEEN #{startRno} AND #{endRno}
 	</select>
@@ -120,7 +120,7 @@
 		            VIEW_DRAFT_SENT
 		            WHERE DRAFT_STATUS != 0
 		            AND FK_DRAFT_EMPNO = #{empno}
-		            ORDER BY APPROVAL_DATE DESC
+		            ORDER BY APPROVAL_DATE DESC NULLS LAST
 		            )A )
 		WHERE RNO BETWEEN 1 AND 5
 	</select>
@@ -132,7 +132,7 @@
         VIEW_DRAFT_SENT
         WHERE DRAFT_STATUS = 0
         AND FK_DRAFT_EMPNO = #{empno}
-        ORDER BY DRAFT_DATE DESC
+        ORDER BY DRAFT_DATE DESC NULLS LAST
 	</select>
 	
 	<!-- 내가 결재해야 할 문서의 문서번호-->
@@ -174,7 +174,7 @@
 		            <if test='searchType != "" and searchWord != "" '>
 		            AND LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
 		            </if>
-		            ORDER BY URGENT_STATUS DESC, ${sortType} ${sortOrder}
+		            ORDER BY URGENT_STATUS DESC, ${sortType} ${sortOrder} NULLS LAST
 		            )A )
 		WHERE RNO BETWEEN #{startRno} AND #{endRno}
 	</select>
@@ -218,7 +218,7 @@
 		            <if test='searchType != "" and searchWord != "" '>
 		            AND LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
 		            </if>
-		            ORDER BY URGENT_STATUS DESC, ${sortType} ${sortOrder}
+		            ORDER BY URGENT_STATUS DESC, ${sortType} ${sortOrder} NULLS LAST
 		            )A )
 		WHERE RNO BETWEEN #{startRno} AND #{endRno}
 	</select>
@@ -255,7 +255,7 @@
 		<if test='type == "personal"'>
 		WHERE BUMUN_NO = #{loginuser.fk_bumun_no} OR BUMUN_NO = 1
 		</if>
-		ORDER BY BUMUN_NO
+		ORDER BY BUMUN_NO 
 	</select>
 
 	<!-- 부서 목록 조회 -->

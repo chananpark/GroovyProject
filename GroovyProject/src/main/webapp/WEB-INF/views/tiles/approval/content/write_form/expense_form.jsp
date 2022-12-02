@@ -300,18 +300,18 @@ const getFiles = formData => {
 const addRow = () => {
 	
 	let row = "<tr class='tr1'>"
-			+ "<td><span><input name='evoList[" + rowCnt + "].expense_date' type='date' class='expense_date'></span></td>"
-			+ "<td><span>"
+			+ "<td><input name='evoList[" + rowCnt + "].expense_date' type='date' class='expense_date'></td>"
+			+ "<td>"
 				+ "<select name='evoList[" + rowCnt + "].expense_type' class='expense_type'>"
 					+ "<option value='물품구입비'>물품구입비</option>"
 					+ "<option value='식비'>식비</option>"
 					+ "<option value='교통비'>교통비</option>"
 					+ "<option value='기타'>기타</option>"
 				+ "</select>"
-			+ "</span></td>"
-			+ "<td><span><input name='evoList[" + rowCnt + "].expense_detail' type='text' class='expense_detail'/></span></td>"
-			+ "<td><span><input name='evoList[" + rowCnt + "].expense_amount' type='number' onchange='sum()' value='0' min='0' class='expense_amount'/></span></td>"
-			+ "<td><span><input name='evoList[" + rowCnt + "].expense_remark' type='text'/></span></td>"
+			+ "</td>"
+			+ "<td><input name='evoList[" + rowCnt + "].expense_detail' type='text' class='expense_detail'/></td>"
+			+ "<td><input name='evoList[" + rowCnt + "].expense_amount' type='number' onchange='sum()' value='0' min='0' class='expense_amount'/></td>"
+			+ "<td><input name='evoList[" + rowCnt + "].expense_remark' type='text'/></td>"
 		+ "</tr>";
 	
 	// 행 복사

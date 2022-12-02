@@ -42,10 +42,22 @@ public class CommunityController {
 	
 	// 커뮤니티 글 작성 페이지요청
 	@RequestMapping(value = "/write.on")
-	public ModelAndView addCommunityPost(ModelAndView mav, HttpServletRequest request) {
+	public ModelAndView getWriteForm(ModelAndView mav, HttpServletRequest request) {
 		
 		mav.setViewName("community/post_form.tiles2");
 		return mav;
 		
 	}
+	
+	// 커뮤니티 글 작성하기
+	@RequestMapping(value = "/addPost.on")
+	public ModelAndView addPost(ModelAndView mav, HttpServletRequest request) {
+		
+		
+		
+		mav.setViewName("community/post_form.tiles2");
+		return mav;
+		
+	}
+	
 }

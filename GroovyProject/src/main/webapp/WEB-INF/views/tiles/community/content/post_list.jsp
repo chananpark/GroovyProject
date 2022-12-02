@@ -91,7 +91,7 @@ const addPost = () =>{
 			<thead>
 				<tr class='row'>
 					<th class='col text-center'>번호</th>
-					<th class='col col-6 text-center'>제목</th>
+					<th class='col col-6 text-center'>제목&nbsp;<i class="far fa-comment mx-2"></i>1</th>
 					<th class='col text-center'>작성자</th>
 					<th class='col text-center'>작성일자</th>
 					<th class='col text-center'>조회수</th>
