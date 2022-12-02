@@ -148,7 +148,7 @@ $(()=>{
    		</div>
     </li>
     <li class="nav-item">
-      	<div id='' class="nav-link text-dark  header_hover header_width" onClick='location.href="#"'>
+      	<div id='survey' class="nav-link text-dark  header_hover header_width" onClick='location.href="<%=ctxPath%>/survey/surveyList.on"'>
     		<div class="text-center"><i class="fas fa-chart-pie fa-lg"></i></div>
     		<div style="text-align: center;">설문조사</div>
    		</div>
