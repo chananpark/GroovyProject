@@ -137,8 +137,11 @@ $(() => {
 		// 글제목 유효성 검사
 		const draft_subject = $("input#draft_subject").val().trim();
 		if(draft_subject == "") {
-			swal("글제목을 입력하세요!");
-    		return;
+			swal("글제목을 입력하세요!")
+			.then(function (result) {
+				document.getElementById("draft_subject").focus(); //포커싱
+		      })
+			return;
 		}
 		
 		// 글내용 유효성검사
@@ -148,7 +151,7 @@ $(() => {
 			obj.getById["draft_content"].exec("FOCUS"); //포커싱
 			swal("글내용을 입력하세요!")
 			.then(function (result) {
-				obj.getById["post_content"].exec("FOCUS"); //포커싱
+				obj.getById["draft_content"].exec("FOCUS"); //포커싱
 		      })
 			return;
 	         

@@ -109,34 +109,33 @@ let fileList = [];
 
 $(() => {
 	
-/* 	// 데이트피커
-	$( ".datepicker" ).datepicker(); */
-	
 	/* 확인 버튼 클릭 시 */
 	$("button#writeBtn").click(function(){
 		
 		// 글제목 유효성 검사
 		const draft_subject = $("input#draft_subject").val().trim();
 		if(draft_subject == "") {
-			swal("글제목을 입력하세요!");
- 		return;
+			swal("글제목을 입력하세요!")
+			.then(function (result) {
+				document.getElementById("draft_subject").focus(); //포커싱
+		      })
+			return;
 		}
-		
+	    
+	    // 출장정보 유효성검사
+	    if ($("#trip_purpose").val() == "" || $("#trip_start_date").val() == "" || $("#trip_end_date").val() == "" ||$("#trip_location").val() == "") {
+	    	swal("출장정보를 모두 입력하세요!");
+			return;
+	    }
+	    
 		// 글내용 유효성검사
 	    var draft_content = $("#draft_content").val();
 
 	    if( draft_content == ""  || draft_content == null || draft_content == '&nbsp;' || draft_content == '<p>&nbsp;</p>')  {
-			swal("글내용을 입력하세요!");
+			swal("출장결과를 입력하세요!")
 			.then(function (result) {
-				obj.getById["post_content"].exec("FOCUS"); //포커싱
+				document.getElementById("draft_content").focus(); //포커싱
 		      })
-			return;
-	         
-	    }
-	    
-	    // 출장정보 유효성검사
-	    if ($("#trip_purpose").val() == "" || $("#trip_start_date").val() == "" || $("#trip_end_date").val() == "" ||$("#trip_location").val() == "") {
-	    	swal("출장정보를 입력하세요!");
 			return;
 	    }
 	    
