@@ -16,7 +16,7 @@
 	<select id="login2" parameterType="HashMap" resultType="com.spring.groovy.management.model.MemberVO">
 		select empno, cpemail, name, pwd, position, jubun, postcode, address, detailaddress
 		     , extraaddress,empimg,birthday, bumun,department,pvemail,mobile,depttel,joindate
-		     ,empstauts,bank, account,annualcnt, empimg, fk_position_no, fk_bumun_no, fk_department_no,signimg
+		     ,empstauts,bank, account,annualcnt, empimg, fk_position_no, fk_bumun_no, fk_department_no,signimg,pay
 		from tbl_employee
 		where cpemail = #{cpemail} and pwd = #{pwd}
 	</select>
@@ -29,7 +29,7 @@
 	</update>
 	
 	
-	<!-- 관리자 사원관리 - 사원등록(이메일중복확인 Ajax)-->
+	<!-- 공용 사원관리 - 정보수정(이메일중복확인 Ajax)-->
 	<select id="checkPvEmail" parameterType="String" resultType="int">
 		select count(*)
 		from tbl_employee
@@ -171,20 +171,22 @@
 	
 	
 	<!-- 사원등록 - 내선번호를 갖고오기위해 필요함 -->
+<!--
 	<select id="manageList" resultType="com.spring.groovy.management.model.MemberVO">
 		select bumun, department, depttel
 		from tbl_employee
 	</select>
-	
+ -->
+ 	
 	<!-- 관리자 사원관리 - 사원등록 -->
 	<insert id="getRegisterInfo" parameterType="HashMap" >
 		insert into tbl_employee 
 			(empno, pwd,cpemail,name,position,jubun,postcode,address,detailaddress, extraaddress
-			,empimg,birthday, bumun,department,pvemail
-			,mobile,depttel,joindate,empstauts,bank,account,annualcnt,gender,pay)
-		values( seq_tbl_employee.nextval, default, ${cpemail}, ${name}, ${position}, ${jubun}, ${postcode}, ${address}, ${detailaddress}, ${extraaddress}
-				,${empimg}, ${birthday}, ${bumun}, ${department}, ${pvemail}, ${mobile}, ${depttel}, ${joindate}, ${empstauts}
-				, ${bank}, ${account}, ${annualcnt}, ${gender}, ${pay)
+			,empimg,birthday, bumun,department,pvemail,mobile,depttel,joindate,empstauts
+			,bank,account,gender,pay)
+		values(SEQ_TBL_EMPLOYEE.NEXTVAL, default, #{cpemail}, #{name}, #{position}, #{jubun}, #{postcode}, #{address}, #{detailaddress}, #{extraaddress}
+				,#{empimg}, #{birthday}, #{bumun}, #{department}, #{pvemail}, #{mobile}, #{depttel}, #{joindate}, #{empstauts}
+				, #{bank}, #{account}, #{gender}, #{pay})
 	</insert>
 	
 	

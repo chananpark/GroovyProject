@@ -63,7 +63,7 @@ public interface InterManagementService {
 	int getRegisterInfo(Map<String, Object> paraMap);
 
 	// 사원등록 - 내선번호를 갖고오기위해 필요함
-	List<MemberVO> manageList();
+	//List<MemberVO> manageList();
 
 
 

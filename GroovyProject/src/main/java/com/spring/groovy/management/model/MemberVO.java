@@ -1,6 +1,8 @@
 package com.spring.groovy.management.model;
 
-import java.util.List;
+import org.springframework.web.multipart.MultipartFile;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 public class MemberVO {
 	
@@ -23,6 +25,8 @@ public class MemberVO {
 	private String pvemail;           // 개인이메일 (AES-256 암호화/복호화 대상)
 	private String mobile;            // 연락처 (AES-256 암호화/복호화 대상)
 	private String depttel;           // 내선번호
+	
+	@JsonFormat(pattern = "yyyy.MM.dd") //데이터 포맷 변환
 	private String joindate;          // 입사일자
 	private String empstauts;         // 재직구분 (3개월이후 정직원)
 	private String bank;              // 은행
@@ -33,10 +37,23 @@ public class MemberVO {
 	private String fk_department_no;   // -- 부서번호(기본키)  1 이사실 2 인사총무팀 3개발팀 4 5 6 마케팅
 
 	private String pay; // 조인(연봉(기본급))
+	
+	// 첨부파일에 필요한 필드
+	private MultipartFile attach;
+	/* form 태그에서 type="file" 인 파일을 받아서 저장되는 필드이다. 
+	      진짜파일 ==> WAS(톰캣) 디스크에 저장됨.
+              조심할것은 MultipartFile attach 는 오라클 데이터베이스 tbl_board 테이블의 컬럼이 아니다.   
+	   /Board/src/main/webapp/WEB-INF/views/tiles1/board/add.jsp 파일에서 input type="file" 인 name 의 이름(attach)과   
+	     동일해야만 파일첨부가 가능해진다.!!!!
+    */
+	
+	
+	
 
 	public String getEmpno() {
 		return empno;
 	}
+
 	public void setEmpno(String empno) {
 		this.empno = empno;
 	}
@@ -204,6 +221,15 @@ public class MemberVO {
 		this.pay = pay;
 	}
 	
+	
+	
+	
+	public MultipartFile getAttach() {
+		return attach;
+	}
+	public void setAttach(MultipartFile attach) {
+		this.attach = attach;
+	}
 	
 	
 }

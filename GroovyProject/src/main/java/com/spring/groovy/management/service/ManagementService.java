@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.spring.groovy.common.AES256;
+import com.spring.groovy.common.FileManager;
 import com.spring.groovy.common.Pagination;
 import com.spring.groovy.management.model.CelebrateVO;
 import com.spring.groovy.management.model.InterManagementDAO;
@@ -26,6 +27,8 @@ public class ManagementService implements InterManagementService {
 	@Autowired
 	private AES256 aes;
 
+	@Autowired   // Type 에 따라 알아서 Bean 을 주입해준다.
+	private FileManager fileManager;
 	
 	// 로그인- 이메일 입력
 	@Override
@@ -159,12 +162,13 @@ public class ManagementService implements InterManagementService {
 	}
 
 	// 사원등록 - 내선번호를 갖고오기위해 필요함
+/*
 	@Override
 	public List<MemberVO> manageList() {
 		List<MemberVO> manageList = dao.manageList();
 		return manageList;
 	}
-
+*/
 	
 	
 	

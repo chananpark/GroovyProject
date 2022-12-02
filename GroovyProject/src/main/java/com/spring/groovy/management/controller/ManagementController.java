@@ -1,13 +1,18 @@
 package com.spring.groovy.management.controller;
 
 
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
+
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.io.FilenameUtils;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -15,6 +20,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.spring.groovy.common.FileManager;
@@ -33,10 +40,9 @@ public class ManagementController {
 	private InterManagementService service;
 	
 //	파일업로드 및 다운로드를 해주는 FileManager 클래스 의존객체 주입하기(DI : Dependency Injection)
-	@Autowired   // Type 에 따라 알아서 Bean 을 주입해준다.
+	@Autowired  // Type 에 따라 알아서 Bean 을 주입해준다.
 	private FileManager fileManager;
-	
-	
+
 	// 사원정보 보기
 	@RequestMapping(value="/manage/info/viewInfo.on")
 	public ModelAndView viewInfo(ModelAndView mav, HttpServletRequest request, MemberVO mvo) {
@@ -51,10 +57,18 @@ public class ManagementController {
 
 	
 	
-	// 사원정보 수정
+	// 사원정보 수정 (첨부파일)
 	@RequestMapping(value="/manage/info/viewInfoEnd.on")
-	public String viewInfoEnd(HttpServletRequest request, MemberVO mvo) {
+	public String viewInfoEnd(MemberVO mvo, MultipartHttpServletRequest mrequest) {
 		
+		
+	/*
+	      웹페이지에 요청 form이 enctype="multipart/form-data" 으로 되어있어서 Multipart 요청(파일처리 요청)이 들어올때 
+	      컨트롤러에서는 HttpServletRequest 대신 MultipartHttpServletRequest 인터페이스를 사용해야 한다.
+	   MultipartHttpServletRequest 인터페이스는 HttpServletRequest 인터페이스와  MultipartRequest 인터페이스를 상속받고있다.
+           즉, 웹 요청 정보를 얻기 위한 getParameter()와 같은 메소드와 Multipart(파일처리) 관련 메소드를 모두 사용가능하다.  	
+*/	
+	
 		int n = service.viewInfoEnd(mvo);
 		
 		JSONObject json = new JSONObject();
@@ -316,8 +330,8 @@ public class ManagementController {
 		
 		// 사원등록 - 내선번호를 갖고오기위해 필요함
 		
-		 List<MemberVO> manageList = service.manageList();
-		 mav.addObject("manageList", manageList);
+//		 List<MemberVO> manageList = service.manageList();
+//		 mav.addObject("manageList", manageList);
 		 
 		mav.setViewName("manage/admin/info/registerInfo.tiles");
 		return mav; 
@@ -338,6 +352,43 @@ public class ManagementController {
 	     
 		String mobile = hp1 + "-"+ hp2 +"-"+ hp3;
 		String birthday = birthyyyy+"-"+birthmm+"-"+birthdd; 
+		
+		// ======================================================================== //
+		String name = request.getParameter("name");
+		String cpemail = request.getParameter("cpemail");
+		String gender = request.getParameter("gender");
+		String depttel = request.getParameter("depttel");
+		String bumun = request.getParameter("bumun");
+		String department = request.getParameter("department");
+		String pay = request.getParameter("pay");
+		String position = request.getParameter("position");
+		String empstauts = request.getParameter("empstauts");
+		String joindate = request.getParameter("joindate");
+		String bank = request.getParameter("bank");
+		String account = request.getParameter("account");
+		
+		System.out.println(name);
+		System.out.println(cpemail);
+		System.out.println(gender);
+		System.out.println(depttel);
+		System.out.println(bumun);
+		System.out.println(department);
+		System.out.println(pay);
+		System.out.println(account);
+		System.out.println(hp1);
+		System.out.println(hp2);
+		System.out.println(hp3);
+		System.out.println(birthyyyy);
+		System.out.println(birthmm);
+		System.out.println(birthdd);
+		
+		
+		// 오류 null
+		System.out.println(position);
+		System.out.println(empstauts);
+		System.out.println(joindate);
+		System.out.println(bank);
+		
 		
 		
 		Map<String,Object> paraMap = new HashMap<>();

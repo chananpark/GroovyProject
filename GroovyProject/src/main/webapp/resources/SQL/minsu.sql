@@ -23,10 +23,12 @@ create table tbl_employee
 ,bank               Nvarchar2(20)  not null  -- 은행
 ,account            number(20)     not null  -- 계좌번호
 ,annualcnt          number(10)     not null  -- 연차갯수
+,pay                number(30)     not null  -- 연봉
 ,constraint PK_tbl_employee_empno primary key(empno)
 ,constraint CK_tbl_employee_empstauts check( empstauts in('1','2') )
 ,constraint UK_tbl_employee_cpemail unique(cpemail)
 ,constraint UK_tbl_employee_pvemail unique(pvemail)
+,constraint UK_tbl_employee_pay  unique(pay)
 );
 -- Table TBL_EMPLOYEE이(가) 생성되었습니다.
 
@@ -133,13 +135,18 @@ create table tbl_proof_history
 ,constraint  FK_tbl_login_history_fk_userid   foreign key(fk_userid) references tbl_member(userid)
 );
 
-
+select joindate
+from tbl_employee
+commit
 -- 이미지 칼럼 추가
 alter table tbl_employee
-   add pay  number(30)    not null; 
+   add joindate  VARCHAR2(15)    not null; 
+   
+   update tbl_employee set joindate = '2022-12-02'
+insert into tbl_employee (joindate) values ('2022-12-02')
    
 -- 컬럼삭제
-alter table tbl_employee drop column pay
+alter table tbl_employee drop column joindate
 
 ALTER TABLE tbl_employee
 ADD [CONSTRAINT UK_tbl_employee_pay]
@@ -148,6 +155,10 @@ unique(pay);
 ALTER TABLE tbl_employee add constraint  UK_tbl_employee_pay  unique(pay);
 alter table tbl_employee constraint UK_tbl_employee_pay unique(pay) ;
 
+select joindate
+from tbl_employee
+
+commit
 
 desc TBL_EMPLOYEE
 
@@ -155,7 +166,7 @@ desc TBL_EMPLOYEE
 alter table tbl_employee add gender varchar2(2);
 
 -- 칼럼 변경
-alter table tbl_employee modify pay number(30)  not null;
+alter table tbl_employee modify joindate varchar2(10)  not null;
 
 rollback
 alter table tbl_employee MODIFY annualcnt varchar2(5);
@@ -347,3 +358,12 @@ select *
 from tbl_pay P right join tbl_employee e
 on p.fk_empno = e.empno
 
+
+select *
+from tbl_employee
+where name = '아이유'
+
+update tbl_employee set pay = 30000000
+where empno = 13
+
+commit
