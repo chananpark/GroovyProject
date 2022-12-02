@@ -81,8 +81,8 @@ $(()=>{
 <nav class="navbar navbar-expand-sm">
 
   <ul class="navbar-nav headerNavbar">
-  	<li class="nav-item mt-1 ">
-      	<div style="padding: 0; margin-right: 100px; cursor:pointer;" class="nav-link" onClick='location.href="<%=ctxPath%>/index.on"'>
+  	<li class="nav-item mt-1">
+      	<div style="padding: 0 0 0 10%; margin-right: 100px; cursor:pointer;" class="nav-link" onClick='location.href="<%=ctxPath%>/index.on"'>
       		<img src='<%=ctxPath%>/resources/images/logo/groovy_loco_edit.png' width="150"/>
     	</div>
     </li>
@@ -161,7 +161,7 @@ $(()=>{
     </li>
     
     <%-- 프로필 이미지 --%>
-    <li class="nav-item" style="margin-left: 13%;">
+    <li class="nav-item" style="margin-left: 12%;">
       	<div class="nav-link dropdown" onClick='location.href="#"'>
     		<div class="dropbtn">
     			
