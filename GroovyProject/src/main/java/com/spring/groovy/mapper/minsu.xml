@@ -181,10 +181,10 @@
 		insert into tbl_employee 
 			(empno, pwd,cpemail,name,position,jubun,postcode,address,detailaddress, extraaddress
 			,empimg,birthday, bumun,department,pvemail
-			,mobile,depttel,joindate,empstauts,bank,account,annualcnt,gender)
+			,mobile,depttel,joindate,empstauts,bank,account,annualcnt,gender,pay)
 		values( seq_tbl_employee.nextval, default, ${cpemail}, ${name}, ${position}, ${jubun}, ${postcode}, ${address}, ${detailaddress}, ${extraaddress}
 				,${empimg}, ${birthday}, ${bumun}, ${department}, ${pvemail}, ${mobile}, ${depttel}, ${joindate}, ${empstauts}
-				, ${bank}, ${account}, ${annualcnt}, ${gender})
+				, ${bank}, ${account}, ${annualcnt}, ${gender}, ${pay)
 	</insert>
 	
 	

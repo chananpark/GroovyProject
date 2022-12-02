@@ -285,8 +285,8 @@ public class ManagementService implements InterManagementService {
 	// 재직증명서 - 한 페이지에 표시할 글 목록  (페이징 페이지수를 알아온다음에 10개씩보여줌) (페이징)
 	@Override
 	public List<ProofVO> getOnePageProofCnt(Map<String, Object> paraMap) {
-		List<ProofVO> proofList = dao.getOnePageProofCnt(paraMap);
-		return proofList;
+		List<ProofVO> proofListPG = dao.getOnePageProofCnt(paraMap);
+		return proofListPG;
 	}
 
 	

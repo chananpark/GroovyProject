@@ -130,7 +130,7 @@ $(()=>{
    		</div>
     </li>
     <li class="nav-item">
-      	<div id='' class="nav-link text-dark  header_hover header_width" onClick='location.href="#"'>
+      	<div id='reservation' class="nav-link text-dark  header_hover header_width" onClick='location.href="<%=ctxPath%>/reservation/meetingRoom.on"'>
     		<div class="text-center"><i class="fas fa-bookmark fa-lg"></i></div>
     		<div style="text-align: center;">자원예약</div>
    		</div>
@@ -142,13 +142,13 @@ $(()=>{
    		</div>
     </li>
     <li class="nav-item">
-      	<div id='' class="nav-link text-dark  header_hover header_width" onClick='location.href="#"'>
+      	<div id='community' class="nav-link text-dark  header_hover header_width" onClick='location.href="<%=ctxPath%>/community/list.on"'>
     		<div class="text-center"><i class="fas fa-chalkboard-teacher fa-lg"></i></div>
     		<div style="text-align: center;">커뮤니티</div>
    		</div>
     </li>
     <li class="nav-item">
-      	<div id='' class="nav-link text-dark  header_hover header_width" onClick='location.href="#"'>
+      	<div id='survey' class="nav-link text-dark  header_hover header_width" onClick='location.href="<%=ctxPath%>/survey/surveyList.on"'>
     		<div class="text-center"><i class="fas fa-chart-pie fa-lg"></i></div>
     		<div style="text-align: center;">설문조사</div>
    		</div>

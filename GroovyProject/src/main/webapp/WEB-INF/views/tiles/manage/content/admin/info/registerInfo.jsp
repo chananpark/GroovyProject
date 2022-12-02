@@ -387,7 +387,7 @@ let b_flag_emailDuplicate_click = false;
 	// >>> 부문선택값에 따라 하위 셀렉트 팀옵션 다르게 하기 <<< // 
 	function bumunchange(value){
 		
-		var dept_1 = ["인사총무팀"]; 
+		var dept_1 = ["인사총무팀,재경팀"]; 
 		var dept_2 = ["개발팀","기획팀"]; 
 		var dept_3 = ["영업팀","마케팅팀"]; 
 		var target = document.getElementById("department");
@@ -633,9 +633,9 @@ let b_flag_emailDuplicate_click = false;
 			</td>
 		</tr>
 		<tr>
-			<th>임금적용률</th>
+			<th>연봉</th>
 			<td>
-				<input type="text" id="emppay" class="required" name="emppay" readonly style="background-color: #d9d9d9;" />
+				<input type="text" id="pay" class="required" name="pay" />
 			</td>
 			<th><span class="alert_required" style="color: red;">*</span>입사일자</th>
 			<td><input type="date" style="width: 165px;" required value="${requestScope.joindate}"/></td>
@@ -660,50 +660,3 @@ let b_flag_emailDuplicate_click = false;
 
 
 
-
-
-<%-- 
-
-급여상세 모달창
-<div class="modal" id="go_searchTel" style="font-size: 12px;">
-   <div class="modal-dialog" >
-      <div class="modal-content modals-fullsize">
-      
-         <div class='modal-body px-3'>
- 		<button class="btn btn-sm float-right" style="background-color:#086BDE; color:white;" onclick="javascript:self.close();">닫기</button>        
-          <div align="center" style="padding: 2%; margin: 8% auto;">
-                  
-         <h6 class="float-left mb-5"> ▶ 내선전화</h6>
-
-         
-         <table class="table table-bordered table-sm mt-5" >
-         	<thead>
-         		<tr>
-         			<th></th>
-         			<th>부문</th>
-         			<th>부서</th>
-         			<th>전화번호</th>
-         		</tr>
-         	</thead>
-	         <tbody>
-	         <tr class="text-center">
-		         <c:forEach  var="manageList" items="${requestScope.manageList}" varStatus="status">
-					<tr>
-			         	<td style="width: 5px;"><input type="checkbox" /></td>
-						<td>${manageList.bumun}</td>
-						<td>${manageList.department}</td>
-						<td>${manageList.depttel}</td>
-					</tr>
-				</c:forEach>
-	         </tr>
-	         </tbody>
-         </table>
-  
-         </div>
-         </div>
-       </div>
-    </div>
- </div>
-
-
- --%>
