@@ -59,22 +59,22 @@ label:hover {
 	float: left;
 }
 
-#fileRemoveBtn, #resetLineBtn {
+#resetLineBtn {
 	border: 1px solid gray;
 	color: gray;
 }
 
-#fileRemoveBtn:hover, #resetLineBtn:hover {
+#resetLineBtn:hover {
 	background-color: gray;
 	color: white;
 }
 
-#fileAttachBtn, #getLineBtn {
+#getLineBtn {
 	border: 1px solid #086BDE;
 	color: #086BDE;
 }
 
-#fileAttachBtn:hover, #getLineBtn:hover {
+#getLineBtn:hover {
 	background-color: #086BDE;
 	color: white
 }
@@ -146,7 +146,10 @@ $(() => {
 
 	    if( draft_content == ""  || draft_content == null || draft_content == '&nbsp;' || draft_content == '<p>&nbsp;</p>')  {
 			obj.getById["draft_content"].exec("FOCUS"); //포커싱
-			swal("글내용을 입력하세요!");
+			swal("글내용을 입력하세요!")
+			.then(function (result) {
+				obj.getById["post_content"].exec("FOCUS"); //포커싱
+		      })
 			return;
 	         
 	    }

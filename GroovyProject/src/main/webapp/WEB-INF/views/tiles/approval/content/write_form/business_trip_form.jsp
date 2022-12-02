@@ -127,6 +127,9 @@ $(() => {
 
 	    if( draft_content == ""  || draft_content == null || draft_content == '&nbsp;' || draft_content == '<p>&nbsp;</p>')  {
 			swal("글내용을 입력하세요!");
+			.then(function (result) {
+				obj.getById["post_content"].exec("FOCUS"); //포커싱
+		      })
 			return;
 	         
 	    }

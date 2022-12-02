@@ -62,10 +62,6 @@
 	background-color: #E3F2FD;
 }
 
-#fileName {
-	
-}
-
 .commentTable {
 	width: 100%;
 	margin: 0 auto;
