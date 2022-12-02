@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.nhncorp.lucy.security.xss.XssPreventer;
 import com.spring.groovy.approval.model.ApprovalVO;
 import com.spring.groovy.approval.model.BiztripReportVO;
 import com.spring.groovy.approval.model.DraftFileVO;
@@ -338,6 +339,10 @@ public class ApprovalService implements InterApprovalService {
 		
 		// draft에서 select
 		dvo = dao.getDraftInfo(dvo);
+		
+		// 에디터에 표시되는 내용은 태그를 되돌린다.
+		String unescapedContent = XssPreventer.unescape(dvo.getDraft_content());
+		dvo.setDraft_content(unescapedContent);
 		draftMap.put("dvo", dvo);
 		
 		// approval에서 select

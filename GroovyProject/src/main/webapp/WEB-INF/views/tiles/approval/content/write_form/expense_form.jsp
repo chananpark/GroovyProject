@@ -104,6 +104,9 @@ label:hover {
 // 수신처 배열
 const recipientArr = JSON.parse('${recipientArr}');
 
+//네이버 스마트 에디터용 전역변수
+var obj = [];
+
 // 파일 정보를 담아 둘 배열
 let fileList = [];
 
@@ -111,6 +114,21 @@ let fileList = [];
 let rowCnt = 0;
 
 $(() => {
+
+	/* 네이버 스마트 에디터  프레임생성 */
+	nhn.husky.EZCreator.createInIFrame({
+		oAppRef: obj,
+		elPlaceHolder: "draft_content",
+		sSkinURI: "<%=ctxPath%>/resources/smarteditor/SmartEditor2Skin.html",
+		htParams: {
+			// 툴바 사용 여부 (true:사용/ false:사용하지 않음)
+			bUseToolbar: true,
+			// 입력창 크기 조절바 사용 여부 (true:사용/ false:사용하지 않음)
+			bUseVerticalResizer: true,
+			// 모드 탭(Editor | HTML | TEXT) 사용 여부 (true:사용/ false:사용하지 않음)
+			bUseModeChanger: true,
+		}
+	});
 	
 	// 행삭제버튼 숨기기
 	$("#delBtn").hide();
@@ -120,6 +138,8 @@ $(() => {
 	
 	/* 확인 버튼 클릭 시 */
 	$("button#writeBtn").click(function(){
+		// 에디터에서 textarea에 대입
+		obj.getById["draft_content"].exec("UPDATE_CONTENTS_FIELD", []);
 		
 		// 글제목 유효성 검사
 		const draft_subject = $("input#draft_subject").val().trim();
@@ -135,12 +155,11 @@ $(() => {
 	    var draft_content = $("#draft_content").val();
 
 	    if( draft_content == ""  || draft_content == null || draft_content == '&nbsp;' || draft_content == '<p>&nbsp;</p>')  {
-			swal("지출사유를 입력하세요!")			
+			swal("지출사유를 입력하세요!")
 			.then(function (result) {
-				document.getElementById("draft_content").focus(); //포커싱
+				obj.getById["draft_content"].exec("FOCUS"); //포커싱
 		      })
 			return;
-	         
 	    }
 	    
 	    // 지출내역 유효성검사
