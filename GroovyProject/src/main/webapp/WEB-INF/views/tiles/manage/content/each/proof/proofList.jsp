@@ -144,11 +144,11 @@
 			<c:if test="${requestScope.proofList != null }">
 			<c:forEach var="emp"  items="${requestScope.proofList}"  varStatus="status">
 			<tr class="text-center border">
-				<td name="proofno">${emp.proofno}</td>
+				<td>${emp.proofno}</td>
 				<td>재직증명서</td>
-				<td name="fk_empno">${emp.fk_empno}</td>
-				<td name="issueuse"><c:choose><c:when test="${emp.issueuse eq '1'}">은행제출용</c:when><c:otherwise>공공기관제출용</c:otherwise></c:choose></td>
-				<td name="issuedate">${emp.issuedate}</td>
+				<td >${emp.fk_empno}</td>
+				<td ><c:choose><c:when test="${emp.issueuse eq '1'}">은행제출용</c:when><c:otherwise>공공기관제출용</c:otherwise></c:choose></td>
+				<td>${emp.issuedate}</td>
 				<td>
 					<!-- <button class="btn btn-sm" id="detail" data-toggle="modal" data-target="#viewDetailProof" > -->
 						<a href="#" id="detail" data-toggle="modal" data-target="#viewDetailProof"  data-backdrop="static">출력</a> 

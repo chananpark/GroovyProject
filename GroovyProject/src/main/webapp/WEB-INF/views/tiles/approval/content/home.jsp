@@ -3,6 +3,15 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <% String ctxPath=request.getContextPath(); %>
 <style>
+a {
+	color: black;
+}
+
+a:hover {
+	text-decoration: none;
+}
+
+
 .listContainer {
 	font-size: small;
 	margin-bottom: 5%;
@@ -61,12 +70,7 @@ $(()=>{
         $(this).removeClass('floating');
         $(this).find('.approveThis').removeClass('activeBtn');
     });
-	
-	// 결재대기문서 클릭시
-	$('div.card').click(function() {
-		// 해당 문서 결재하기 화면으로	
-		location.href='<%=ctxPath%>/approval/detail.on';
-	});
+
 });
 </script>
 	
@@ -78,57 +82,31 @@ $(()=>{
 
 	<div class='listContainer'>
 		<h5 class='mb-3'>결재 대기 문서</h5>
-		<h6 class='mb-3'>결재해야 할 문서가 <span style='color:#086BDE'>7</span>건 있습니다.</h6>
+		<h6 class='mb-3'>결재해야 할 문서가 <span style='color:#086BDE'>${requestedDraftCnt}</span>건 있습니다.</h6>
 		
 		<div class='card-deck'>
-			<div class="card p-0 mr-3">
-			  <div class="card-body">
-			  	<h5 class="title m-0">지출결의서&nbsp;&nbsp;<span style='font-size:x-small;' class="badge badge-pill badge-danger">긴급</span></h5><br>
-			  	문서번호: <span class='docNo'>221109-01</span><br>
-			  	기안자: <span class='writer'>김동식</span><br>
-			  	기안일: <span class='inDate'>2022.11.09</span><br>
-			  	종류: <span class='inDate'>지출결의</span>
-			  </div>
-			  <div class="card-footer approveThis">결재하기</div>
-			</div>
-			<div class="card p-0 mr-3">
-			  <div class="card-body">
-			  	<h5 class="title">지출결의서</h5><br>
-			  	문서번호: <span class='docNo'>221109-01</span><br>
-			  	기안자: <span class='writer'>김동식</span><br>
-			  	기안일: <span class='inDate'>2022.11.09</span><br>
-			  	종류: <span class='inDate'>지출결의</span>
-			  </div>
-			  <div class="card-footer approveThis">결재하기</div>
-			</div>
-			<div class="card p-0 mr-3">
-			  <div class="card-body">
-			  	<h5 class="title">지출결의서</h5><br>
-			  	문서번호: <span class='docNo'>221109-01</span><br>
-			  	기안자: <span class='writer'>김동식</span><br>
-			  	기안일: <span class='inDate'>2022.11.09</span><br>
-			  	종류: <span class='inDate'>지출결의</span>
-			  </div>
-			  <div class="card-footer approveThis">결재하기</div>
-			</div>
-			<div class="card p-0 mr-3">
-			  <div class="card-body">
-			  	<h5 class="title">지출결의서</h5><br>
-			  	문서번호: <span class='docNo'>221109-01</span><br>
-			  	기안자: <span class='writer'>김동식</span><br>
-			  	기안일: <span class='inDate'>2022.11.09</span><br>
-			  	종류: <span class='inDate'>지출결의</span>
-			  </div>
-			  <div class="card-footer approveThis">결재하기</div>
-			</div>
+			<c:if test="${not empty requestedDraftList}">
+				<c:forEach items="${requestedDraftList}" var="rdraft">
+					<div class="card p-0 mr-3" onclick="location.href='<%=ctxPath%>/approval/draftDetail.on?draft_no=${rdraft.draft_no}&fk_draft_type_no=${rdraft.fk_draft_type_no}'">
+					  <div class="card-body">
+					  	<h5 class="title m-0">${rdraft.draft_subject}&nbsp;&nbsp;
+					  	<c:if test="${rdraft.urgent_status == '1'}"><span style='font-size:x-small;' class="badge badge-pill badge-danger">긴급</span></c:if>
+					  	</h5><br>
+					  	문서번호: <span class='draft_no'>${rdraft.draft_no}</span><br>
+					  	기안자: <span class='draft_emp_name'>${rdraft.draft_emp_name}</span><br>
+					  	기안일: <span class='draft_date'>${rdraft.draft_date}</span><br>
+					  	종류: <span class='draft_type'>${rdraft.draft_type}</span>
+					  </div>
+					  <div class="card-footer approveThis">결재하기</div>
+					</div>
+				</c:forEach>
+			</c:if>
 		</div>
-		<div class='text-right mr-2 mt-4'>
-			<i class="fas fa-angle-double-right"></i> 더보기
-		</div>
+
 	</div>
 	<div class='listContainer'>
 		<h5 class='mb-3'>기안 진행 문서</h5>
-		<h6 class='mb-3'>진행 중인 문서가 <span style='color:#086BDE'>${processingCnt}</span>건 있습니다.</h6>
+		<h6 class='mb-3'>진행 중인 문서가 <span style='color:#086BDE'>${fn:length(processingDraftList)}</span>건 있습니다.</h6>
 		<table class="table">
 			<thead>
 				<tr class='row'>
@@ -136,21 +114,20 @@ $(()=>{
 					<th class='col col-1'>종류</th>
 					<th class='col col-2'>문서번호</th>
 					<th class='col'>제목</th>
-					<th class='col col-1'>현재 결재자</th>
-					<th class='col col-1'>최종 결재자</th>
 				</tr>
 			</thead>
 			<tbody>
 				<c:choose>
-               		<c:when test="${not empty processingDraftMap}">
-                    <c:forEach items="${processingDraftMap}" var="processing" >
+               		<c:when test="${not empty processingDraftList}">
+                    <c:forEach items="${processingDraftList}" var="processing" end="4">
                         <tr class='row'>
 							<td class='col col-1'>${fn:substring(processing.draft_date, 0, 10)}</td>
                             <td class='col col-1'>${processing.draft_type}</td>
                             <td class='col col-2'>${processing.draft_no}</td>
-                            <td class='col'>${processing.draft_subject}</td>
-                            <td class='col col-1'>${processing.recent_approval_emp}</td>
-                            <td class='col col-1'>${processing.last_approval_emp}</td>
+                            <td class='col'>
+                            <a href='<%=ctxPath%>/approval/draftDetail.on?draft_no=${processing.draft_no}&fk_draft_type_no=${processed.fk_draft_type_no}'>
+                            <c:if test="${processing.urgent_status == '1'}"><span style='font-size:x-small;' class="badge badge-pill badge-danger">긴급</span></c:if>
+                            ${processing.draft_subject}</a></td>
                         </tr>
                     </c:forEach>
                 	</c:when>
@@ -162,9 +139,10 @@ $(()=>{
             </c:choose>
 			</tbody>
 		</table>
-		<div class='text-right mr-2'>
-			<i class="fas fa-angle-double-right"></i> 더보기
+		<div class='text-right mr-2 mt-4 more'>
+			<a href='<%=ctxPath%>/approval/personal/sent'><i class="fas fa-angle-double-right"></i> 더보기</a>
 		</div>
+
 	</div>
 	<div class='listContainer'>
 		<h5 class='mb-3'>결재 완료 문서</h5>
@@ -189,7 +167,8 @@ $(()=>{
                             <td class='col col-1'>${processed.draft_type}</td>
                             <td class='col col-2'>${processed.draft_no}</td>
                             <td class='col'>
-                            <a href='<%=ctxPath%>/approval/draftDetail.on?draft_no=${draft.draft_no}&fk_draft_type_no=${draft.fk_draft_type_no}'>
+                            <a href='<%=ctxPath%>/approval/draftDetail.on?draft_no=${processed.draft_no}&fk_draft_type_no=${processed.fk_draft_type_no}'>
+                            <c:if test="${processed.urgent_status == '1'}"><span style='font-size:x-small;' class="badge badge-pill badge-danger">긴급</span></c:if>
                             ${processed.draft_subject}</a></td>
 							<td class='col col-1'>${fn:substring(processed.draft_date, 0, 10)}</td>
                             <td class='col col-1'>
@@ -211,8 +190,8 @@ $(()=>{
             </c:choose>
 			</tbody>
 		</table>
-		<div class='text-right mr-2'>
-			<i class="fas fa-angle-double-right"></i> 더보기
+		<div class='text-right mr-2 mt-4 more'>
+			<a href='<%=ctxPath%>/approval/personal/sent'><i class="fas fa-angle-double-right"></i> 더보기</a>
 		</div>
 	</div>
   

@@ -204,6 +204,51 @@ public class ManagementDAO implements InterManagementDAO {
 	}
 
 	
+	// 경조비신청현황 한 페이지에 표시할 재직증명서 전체 글 개수 구하기(페이징)
+	@Override
+	public int getcountClSList(Pagination pagination) {
+		int n = sqlsession.selectOne("minsu.getcountClSList",pagination);
+		return n;
+	}
+
+	// 경조비신청현황 - 한 페이지에 표시할 글 목록  (페이징 페이지수를 알아온다음에 10개씩보여줌) (페이징)
+	@Override
+	public List<CelebrateVO> getOnePageClSCnt(Map<String, Object> paraMap) {
+		List<CelebrateVO> celbStatusList= sqlsession.selectList("minsu.getOnePageClSCnt", paraMap);
+		return celbStatusList;
+	}
+
+	
+	// 관리자 사원관리 - 경조비신청현황(결제상태 변경 Ajax)
+	@Override
+	public int receiptCelebrateStatusEnd(Map<String, Object> paramap) {
+		int n = sqlsession.update("minsu.receiptCelebrateStatusEnd", paramap);
+		return n;
+	}
+
+	// 관리자 - 재직증명서
+	@Override
+	public List<ProofVO> proofEmploymentSearch() {
+		List<ProofVO> proofList = sqlsession.selectList("minsu.proofEmploymentSearch");
+		return proofList;
+	}
+
+	
+	// 재직증명서 한 페이지에 표시할 재직증명서 전체 글 개수 구하기(페이징)
+	@Override
+	public int getcountProofList(Pagination pagination) {
+		int n = sqlsession.selectOne("minsu.getcountProofList", pagination);
+		return n;
+	}
+
+	// 재직증명서 - 한 페이지에 표시할 글 목록  (페이징 페이지수를 알아온다음에 10개씩보여줌) (페이징)
+	@Override
+	public List<ProofVO> getOnePageProofCnt(Map<String, Object> paraMap) {
+		List<ProofVO> proofListPG = sqlsession.selectList("minsu.getOnePageProofCnt", paraMap);
+		return proofListPG;
+	}
+
+	
 	
 
 

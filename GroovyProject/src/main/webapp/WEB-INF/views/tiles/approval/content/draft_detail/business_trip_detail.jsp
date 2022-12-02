@@ -117,17 +117,18 @@ $(()=>{
 	// 내가 결재라인에 있을때
 	if (myApprovalInfo != null) {
 		
-		// 내 결재상태가 0이며, 나보다 앞 결재자의 결재상태가 1이거나 내가 첫번째 결재자일 때만 결재의견 작성란, 승인|반려 버튼 표시
-		if ( (myApprovalInfo.approval_status == 0 && myApprovalInfo.levelno == 1) || 
-				(priorApprovalInfo !== undefined && priorApprovalInfo.approval_status == 1)) {
-			$("#myComment").show();
-			$(".myApprovalBtn").show();
+		// 내 결재상태가 0이며, 내가 첫번째 결재자일 때 혹은 나보다 앞 결재자의 결재상태가 1일때만 결재의견 작성란, 승인|반려 버튼 표시
+		if (myApprovalInfo.approval_status == 0) {
+			if (myApprovalInfo.levelno == 1 || (priorApprovalInfo !== undefined && priorApprovalInfo.approval_status == 1)) {
+				$("#myComment").show();
+				$(".myApprovalBtn").show();
+			}
 		}
 		// 내 결재상태가1이며, 나보다 다음 결재자의 결재상태가 0일 때만 대결 버튼 표시
 		if (myApprovalInfo.approval_status == 1 && nextApprovalInfo !== undefined && nextApprovalInfo.approval_status == 0) {
 			$(".proxyApprovalBtn").show();
 		}
-	}	
+	}		
 	
 	// 상신 취소 버튼 감추기
 	$("#cancelDraftBtn").hide();
@@ -259,11 +260,11 @@ const updateApproval = approval_status => {
 			</div>
 			
 			<!-- 결재라인 -->
-			<div class='approvalLineInfo' style='width: 40%'>
-				<h5 class='text-left my-4'>결재라인</h5>
-				<table class='mr-4 table table-sm table-bordered text-left'>
+			<div class='approvalLineInfo' style='width:40%'>
+				<h5 class='text-left my-4'>결재정보</h5>
+				<table class='mr-4 table table-sm table-bordered text-left' style="width:auto">
 					<tr>
-						<th rowspan='5' style='font-size: medium; vertical-align: middle;'>결<br>재<br>선</th>
+						<th rowspan='5' style='font-size: medium; vertical-align: middle; width: 30px'>결<br>재<br>선</th>
 					</tr>
 					<tr class='in position'>
 					</tr>
@@ -296,7 +297,7 @@ const updateApproval = approval_status => {
 					html = "<td>" + el.name + "</td>";
 					$("tr.in.name").append(html);
 					
-					let approval_date = el.approval_date || "";
+					let approval_date = el.approval_date || "미결재";
 					html = "<td>" + approval_date.substring(0,10) + "</td>";
 					$("tr.in.approval_date").append(html);
 				});
@@ -304,10 +305,10 @@ const updateApproval = approval_status => {
 			</script>
 			<!-- 수신처 -->
 			<c:if test="${externalList != '[]'}">
-			<div class='approvalLineInfo' style='width: 40%; clear:both'>
-				<table class='mr-4 table table-sm table-bordered text-left'>
+			<div class='approvalLineInfo' style='clear:both; width:40%'>
+				<table class='mr-4 table table-sm table-bordered text-left' style="width:auto">
 					<tr>
-						<th rowspan='5' style='font-size: medium; vertical-align: middle;'>수<br>신</th>
+						<th rowspan='5' style='font-size: medium; vertical-align: middle; width: 30px'>수<br>신</th>
 					</tr>
 					<tr class='position ex'>
 					</tr>
@@ -338,7 +339,7 @@ const updateApproval = approval_status => {
 					html = "<td>" + el.name + "</td>";
 					$("tr.ex.name").append(html);
 					
-					let approval_date = el.approval_date || "";
+					let approval_date = el.approval_date || "미결재";
 					html = "<td>" + approval_date.substring(0,10) + "</td>";
 					$("tr.ex.approval_date").append(html);
 				});
@@ -411,11 +412,11 @@ const updateApproval = approval_status => {
 							<td id='date'><span style='color: #b3b3b3'>${draftMap.dvo.draft_date}</span></td>
 						</tr>
 						<tr>
-							<td style='text-align:left'>${draftMap.dvo.draft_comment}</td>
+							<td style='width: 700px'>${draftMap.dvo.draft_comment}</td>
 						</tr>
 					</c:if>
 					<c:if test="${empty draftMap.dvo.draft_comment}">
-					<span style='text-align:left'>기안 의견이 없습니다.</span>
+						<span style='text-align:left'>기안 의견이 없습니다.</span>
 					</c:if>
 					</table>
 				</div>
@@ -428,6 +429,7 @@ const updateApproval = approval_status => {
 				<div class='card-body'>
 					<table class='commentTable'>
 					<c:forEach items="${draftMap.avoList}" var="avo">
+					<c:set var="length" value="${fn:length(draftMap.avoList)}"></c:set>
 						<c:if test="${not empty avo.approval_comment}">
 							<tr>
 								<td class='profile' rowspan='2'><img style='border-radius: 50%; display: inline-block' src='<%=ctxPath%>/resources/images/profile/${avo.empimg}' width="100" /></td>
@@ -435,11 +437,18 @@ const updateApproval = approval_status => {
 								<td id='date'><span style='color: #b3b3b3'>${avo.approval_date}</span></td>
 							</tr>
 							<tr>
-								<td>${avo.approval_comment}</td>
+								<td style='width: 700px'>${avo.approval_comment}</td>
 							</tr>
+						</c:if>
+						<c:if test="${empty avo.approval_comment}">
+							<c:set var="emptyCnt" value="${emptyCnt + 1}"></c:set>
+							<c:if test="${emptyCnt eq length}">
+								<span style='text-align:left'>결재 의견이 없습니다.</span>
+							</c:if>
 						</c:if>
 					</c:forEach>
 					</table>
+					
 					<form id="approvalFrm">
 						<table class='commentTable mt-4' id='myComment'>
 							<tr>

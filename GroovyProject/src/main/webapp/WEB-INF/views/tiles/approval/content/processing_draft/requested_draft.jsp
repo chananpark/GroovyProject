@@ -12,6 +12,10 @@ a {
 	color: black;
 }
 
+a:hover {
+	text-decoration: none;
+}
+
 #pageList a{
 	font-size: small;
 	color: black;
@@ -35,6 +39,7 @@ a {
 <script>
 $(()=>{
 	
+	$('.processingMenu').show();
 	$('a#requestedList').css('color','#086BDE');
 	
 	// 검색창에서 엔터시 검색하기 함수 실행

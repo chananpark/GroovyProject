@@ -79,24 +79,52 @@ public class ApprovalService implements InterApprovalService {
 		return dao.deleteDraftList(deleteArr);
 	}
 
+	// 진행중 문서 5개 가져오기
+	@Override
+	public List<DraftVO> getMyDraftProcessing(String empno) {
+		return dao.getMyDraftProcessing(empno);
+	}
+	
+	// 결재완료 문서 5개 가져오기
 	@Override
 	public List<DraftVO> getMyDraftProcessed(String empno) {
 		return dao.getMyDraftProcessed(empno);
 	}
 
+	// 결재 대기 문서의 문서번호들 조회
 	@Override
-	public List<Object> getRequestedDraftNo(Map<String, Object> paraMap) {
+	public List<String> getRequestedDraftNo(Map<String, Object> paraMap) {
 		return dao.getRequestedDraftNo(paraMap);
 	}
 	
+	// 결재대기문서 전체 글 개수 조회
 	@Override
 	public int getRequestedDraftCnt(Map<String, Object> paraMap) {
 		return dao.getRequestedDraftCnt(paraMap);
 	}
 
+	// 결재대기문서 페이징처리한 리스트 조회
 	@Override
 	public List<DraftVO> getRequestedDraftList(Map<String, Object> paraMap) {
 		return dao.getRequestedDraftList(paraMap);
+	}
+	
+	// 결재 예정 문서의 문서번호들 조회
+	@Override
+	public List<Object> getUpcomingDraftNo(Map<String, Object> paraMap) {
+		return dao.getUpcomingDraftNo(paraMap);
+	}
+	
+	// 결재 예정 문서 전체 글 개수 조회
+	@Override
+	public int getUpcomingDraftCnt(Map<String, Object> paraMap) {
+		return dao.getUpcomingDraftCnt(paraMap);
+	}
+
+	// 결재 예정 문서 페이징처리한 리스트 조회
+	@Override
+	public List<DraftVO> getUpcomingDraftList(Map<String, Object> paraMap) {
+		return dao.getUpcomingDraftList(paraMap);
 	}
 
 	// 사원 목록 가져오기

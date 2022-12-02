@@ -79,10 +79,13 @@ const goWriteForm = () => {
     <li class="nav-item">
 		<a id="home" class="nav-link" href="<%=ctxPath%>/approval/home.on">홈</a>
     </li>
-    <li class="nav-item">
-		<a id="requestedList" class="nav-link" href="<%=ctxPath%>/approval/requested.on">결재하기</a>
+    <li class="nav-item topMenu">결재하기
+    	<ul class='subMenus processingMenu'>
+     		<li><a id="requestedList" class="nav-link" href="<%=ctxPath%>/approval/requested.on">결재 대기 문서</a></li>
+     		<li><a id="upcomingList" class="nav-link" href="<%=ctxPath%>/approval/upcoming.on">결재 예정 문서</a></li>     	
+  		</ul>
     </li>
-    <li class="nav-item topMenu">개인 문서함
+    <li style="margin-top: 7px;" class="nav-item topMenu">개인 문서함
 		<ul class='subMenus personalMenu'>
      		<li><a id="sentList" class="nav-link" href="<%=ctxPath%>/approval/personal/sent.on">상신함</a></li>
      		<li><a id="processedList" class="nav-link" href="<%=ctxPath%>/approval/personal/processed.on">결재함</a></li>
@@ -99,7 +102,7 @@ const goWriteForm = () => {
     </li>
     <li class="nav-item topMenu">환경설정
       	<ul class='subMenus configMenu'>
-      		<li style="margin-top: 7px;" ><a id="approvalLine" class="nav-link" href="<%=ctxPath%>/approval/config/approvalLine.on">결재라인</a></li>
+      		<li style="margin-top: 7px;"><a id="approvalLine" class="nav-link" href="<%=ctxPath%>/approval/config/approvalLine.on">결재라인</a></li>
       		<li><a id="signature" class="nav-link" href="<%=ctxPath%>/approval/config/signature.on">서명 관리</a></li>
       	</ul>
     </li>

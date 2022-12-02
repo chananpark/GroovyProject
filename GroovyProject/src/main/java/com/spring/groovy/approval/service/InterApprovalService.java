@@ -41,11 +41,14 @@ public interface InterApprovalService {
 	// 개인문서함 - 임시저장함 글삭제
 	int deleteDraftList(String[] deleteArr);
 
+	// 진행 중 문서  5개 가져오기
+	List<DraftVO> getMyDraftProcessing(String empno);
+	
 	// 결재완료된 문서 5개 가져오기
 	List<DraftVO> getMyDraftProcessed(String empno);
 
 	// 결재 대기 문서의 문서번호들 조회
-	List<Object> getRequestedDraftNo(Map<String, Object> paraMap);
+	List<String> getRequestedDraftNo(Map<String, Object> paraMap);
 	
 	// 결재대기문서 전체 글 개수 조회
 	int getRequestedDraftCnt(Map<String, Object> paraMap);
@@ -53,6 +56,15 @@ public interface InterApprovalService {
 	// 결재대기문서 페이징처리한 리스트 조회
 	List<DraftVO> getRequestedDraftList(Map<String, Object> paraMap);
 
+	// 결재 예정 문서의 문서번호들 조회
+	List<Object> getUpcomingDraftNo(Map<String, Object> paraMap);
+
+	// 결재 예정 문서 전체 글 개수 조회
+	int getUpcomingDraftCnt(Map<String, Object> paraMap);
+
+	// 결재예정문서 페이징처리한 리스트 조회
+	List<DraftVO> getUpcomingDraftList(Map<String, Object> paraMap);
+	
 	// 사원 목록 가져오기
 	List<Map<String, String>> getEmpList(Map<String, Object> paraMap);
 

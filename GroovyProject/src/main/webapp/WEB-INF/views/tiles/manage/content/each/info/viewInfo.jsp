@@ -329,7 +329,6 @@
 
 	<h5 class='m-4'>내 정보</h5>
 	
-<%--  <c:if test="${not empty requesrScope.emp}" var="loginuser"> --%>
 	<table class="m-4 mb-3 table table-bordered table-sm" id="first_table">
 		<tr>
 			<td rowspan='4' style="width:2%;"><input type="file" name="empimg" multiple="multiple" style="height:150px; width: 100px;" /></td>  
@@ -467,7 +466,6 @@
 			<td><input type="text" name="account"  class="readonly" value="${loginuser.account}"  readonly style="width: 165px; background-color: white;" /></td>
 		</tr>
 	</table>
-<%-- 	</c:if> --%>
 	
 	<div align="right" style="margin: 3% 0;">
 		<button id="btn_update" style="color: white; background-color:#086BDE; border: none; width: 80px;">수정</button>
@@ -475,11 +473,9 @@
 	
 	
 	<%-- 정보수정 페이지에서 보이는 버튼 --%>
-<%--  	<c:if test="${not empty requestScope.emp}">  --%>
-		<div align="right" style="margin: 3% 0;">
-			<button id="btn_updateEnd" style="color: white; background-color:#086BDE; border: none; width: 80px;">저장</button>
-		</div>
-	<%--  </c:if> --%>
-	
+	<div align="right" style="margin: 3% 0;">
+		<button id="btn_updateEnd" style="color: white; background-color:#086BDE; border: none; width: 80px;">저장</button>
+	</div>
+
 </div>
 </form>

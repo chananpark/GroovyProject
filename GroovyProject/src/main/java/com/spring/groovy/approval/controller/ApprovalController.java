@@ -73,19 +73,45 @@ public class ApprovalController {
 	public ModelAndView approvalHome(ModelAndView mav, HttpServletRequest request) {
 
 		MemberVO loginuser = getLoginUser(request);
+		Map<String, Object> paraMap = new HashMap<>();
+		paraMap.put("empno", loginuser.getEmpno());
 
-		// 결재 대기 문서 개수 알아오기
+		// 결재 대기 문서의 문서번호들 조회
+		List<String> draftNoList = service.getRequestedDraftNo(paraMap);
+		paraMap.put("draftNoList", draftNoList);
 
-		// 결재 대기 문서 4개 가져오기
+		int requestedDraftCnt = 0;
+		
+		List<DraftVO> requestedDraftList = new ArrayList<>();
+		
+		if (draftNoList.size() > 0) {
+			// 파라미터 설정
+			paraMap.put("searchType", "");
+			paraMap.put("searchWord", "");
+	
+			// 전체 글 개수 구하기
+			requestedDraftCnt = service.getRequestedDraftCnt(paraMap);
+			mav.addObject("requestedDraftCnt", requestedDraftCnt);
+				
+			// 파라미터 설정
+			setSorting(request, paraMap);
+			paraMap.put("startRno", 1);
+			paraMap.put("endRno", 4);
+			
+			// 한 페이지에 표시할 글 목록
+			requestedDraftList = service.getRequestedDraftList(paraMap);
+		}
+		mav.addObject("requestedDraftCnt", requestedDraftCnt);
+		mav.addObject("requestedDraftList", requestedDraftList);
 
-		// 진행 중 문서 개수 알아오기
-
-		// 진행 중 문서 5개 가져오기
-
+		// 진행 중 문서 가져오기
+		List<DraftVO> processingDraftList = service.getMyDraftProcessing(loginuser.getEmpno());
+		mav.addObject("processingDraftList", processingDraftList);
+		
 		// 결재완료된 문서 5개 가져오기
 		List<DraftVO> processedDraftList = service.getMyDraftProcessed(loginuser.getEmpno());
-
 		mav.addObject("processedDraftList", processedDraftList);
+		
 		mav.setViewName("approval/home.tiles");
 
 		return mav;
@@ -342,12 +368,12 @@ public class ApprovalController {
 		paraMap.put("department", loginuser.getDepartment());
 
 		// 결재 대기 문서의 문서번호들 조회
-		List<Object> draftNoList = service.getRequestedDraftNo(paraMap);
+		List<String> draftNoList = service.getRequestedDraftNo(paraMap);
 		paraMap.put("draftNoList", draftNoList);
 
 		// 만약 대기문서가 없다면 return
 		if (draftNoList.size() == 0) {
-			mav.setViewName("approval/requested_draft.tiles");
+			mav.setViewName("approval/processing_draft/requested_draft.tiles");
 			return mav;
 		}
 
@@ -368,7 +394,48 @@ public class ApprovalController {
 		mav.addObject("pagebar", pagination.getPagebar(url));
 		mav.addObject("paraMap", paraMap);
 
-		mav.setViewName("approval/requested_draft.tiles");
+		mav.setViewName("approval/processing_draft/requested_draft.tiles");
+		return mav;
+	}
+	
+	// 결재하기-결재예정문서 페이지요청
+	@SuppressWarnings("unchecked")
+	@RequestMapping(value = "/upcoming.on")
+	public ModelAndView upcomingDraftList(ModelAndView mav, Pagination pagination, HttpServletRequest request) throws Exception {
+		MemberVO loginuser = getLoginUser(request);
+		
+		Map<String, Object> paraMap = BeanUtils.describe(pagination); // pagination을 Map으로
+		paraMap.put("empno", loginuser.getEmpno());
+		paraMap.put("department", loginuser.getDepartment());
+		
+		// 결재 예정 문서의 문서번호들 조회
+		List<Object> draftNoList = service.getUpcomingDraftNo(paraMap);
+		paraMap.put("draftNoList", draftNoList);
+		
+		// 만약 예정문서가 없다면 return
+		if (draftNoList.size() == 0) {
+			mav.setViewName("approval/processing_draft/upcoming_draft.tiles");
+			return mav;
+		}
+		
+		// 전체 글 개수 구하기
+		int listCnt = service.getUpcomingDraftCnt(paraMap);
+		pagination.setPageInfo(listCnt); // 총 페이지, 시작행, 마지막행 설정
+		paraMap.putAll(BeanUtils.describe(pagination)); // pagination을 Map으로
+		
+		// 정렬 설정
+		setSorting(request, paraMap);
+		
+		// 한 페이지에 표시할 글 목록
+		mav.addObject("draftList", service.getUpcomingDraftList(paraMap));
+		
+		// 페이지바
+		String url = request.getContextPath() + "/approval/upcoming.on";
+		pagination.setQueryString("&sortType="+paraMap.get("sortType")+"&sortOrder="+paraMap.get("sortOrder"));
+		mav.addObject("pagebar", pagination.getPagebar(url));
+		mav.addObject("paraMap", paraMap);
+		
+		mav.setViewName("approval/processing_draft/upcoming_draft.tiles");
 		return mav;
 	}
 

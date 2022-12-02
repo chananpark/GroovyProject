@@ -115,6 +115,7 @@
 	<table class="table table-bordered table-sm mx-4 ">
 		<thead>
 			<tr>
+				<th>NO</th>
 				<th>신청번호</th>
 				<th>사원번호</th>
 				<th>사원명</th>
@@ -129,6 +130,7 @@
 		<c:if test="${not empty requestScope.celebList}">
 		<c:forEach var="celebList" items="${requestScope.celebList}" varStatus="status">
 			<tr class="text-center border">
+				<td ><c:out value="${status.count}" /></td>
 				<td >${celebList.clbno}</td>
 				<td >${celebList.fk_empno}</td>
 				<td >${celebList.name}</td>
@@ -139,10 +141,10 @@
 						<c:otherwise>휴가비</c:otherwise>
 					</c:choose> 
 				</td>
-				<td ><fmt:formatNumber value="${celebList.clbpay}" pattern="#,###"/></td>
-				<td >
+				<td><fmt:formatNumber value="${celebList.clbpay}" pattern="#,###"/></td>
+				<td>
 					<c:choose>
-						<c:when test="${celebList.clbstatus eq '1'}">승인(완료)</c:when>
+						<c:when test="${celebList.clbstatus eq '1'}">완료(승인)</c:when>
 						<c:otherwise>미승인</c:otherwise>
 					</c:choose>
 				<td >${celebList.clbdate}</td>
@@ -153,14 +155,12 @@
 		</tbody>
 	</table>
 	</div>
-	
-	<%-- 정보수정 페이지바 --%>
-	<div align="right" style="margin: 3% 0;">${pagebar}</div>
-	
 </div>
 </form>
 
-
+	
+<%-- 정보수정 페이지바 --%>
+<div align="right" style="margin: 3% 0;">${pagebar}</div>
 
 
 <%-- 경조비지급목록 상세보기 모달창 --%>

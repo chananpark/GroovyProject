@@ -30,7 +30,6 @@ create table tbl_employee
 );
 -- Table TBL_EMPLOYEE이(가) 생성되었습니다.
 
-ALTER TABLE tbl_employee add constraint  CK_tbl_employee_empstauts varchar2(1)  DEFAULT 1;
 -- 사원테이블 시퀀스
 create sequence seq_tbl_employee
 start with 1
@@ -40,20 +39,21 @@ nominvalue
 nocycle
 nocache;
 -- Sequence SEQ_TBL_EMPLOYEE이(가) 생성되었습니다.
-
+commit
 -- 급여테이블
 create table tbl_pay
 (payno               number        not null   -- 급여번호
 ,fk_empno            number        not null   -- 사원번호
-,pay                 number(30)    not null   -- 기본급
+,fk_pay              number(30)    not null   -- 연봉
 ,annualpay           number(30)               -- 연차수당
 ,overtimepay         number(30)               -- 초과근무수당
 ,paymentdate         date  default sysdate    -- 지급일자(특정일자)
 ,constraint PK_tbl_pay_payno primary key(payno)
 ,constraint FK_tbl_pay_fk_empno foreign key(fk_empno) references tbl_employee(empno)
+,constraint FK_tbl_pay_fk_pay foreign key(fk_pay) references tbl_employee(pay)
 );
 -- Table TBL_PAY이(가) 생성되었습니다.
-
+commit
 drop table tbl_pay
 
 -- 급여테이블 시퀀스
@@ -136,7 +136,18 @@ create table tbl_proof_history
 
 -- 이미지 칼럼 추가
 alter table tbl_employee
-   add signimg varchar2(200); 
+   add pay  number(30)    not null; 
+   
+-- 컬럼삭제
+alter table tbl_employee drop column pay
+
+ALTER TABLE tbl_employee
+ADD [CONSTRAINT UK_tbl_employee_pay]
+unique(pay);
+
+ALTER TABLE tbl_employee add constraint  UK_tbl_employee_pay  unique(pay);
+alter table tbl_employee constraint UK_tbl_employee_pay unique(pay) ;
+
 
 desc TBL_EMPLOYEE
 
@@ -144,15 +155,15 @@ desc TBL_EMPLOYEE
 alter table tbl_employee add gender varchar2(2);
 
 -- 칼럼 변경
-alter table tbl_employee modify postcode  varchar2(5) null;
+alter table tbl_employee modify pay number(30)  not null;
 
-
+rollback
 alter table tbl_employee MODIFY annualcnt varchar2(5);
 
-update tbl_employee set account = '123456789'
+update tbl_employee set pay = '1'
 where account 
 
-update tbl_employee set annualcnt = 'n'
+update tbl_employee set pay = 'n'
 where annualcnt is null 
 
 select *
@@ -229,18 +240,6 @@ select position, bumun,department,
 		    fk_position_no, fk_bumun_no, fk_department_no
 		from tbl_employee
 
-5 대표이사
-4 부문장
-3 팀장
-2 책임
-1 선임
-
-
-1 이사실
-2 경영지원본부
-3 IT사업부문
-4 마케팅영업부문
-
 
 
 
@@ -307,12 +306,44 @@ on p.fk_empno = e.empno
 select name, clbno, fk_empno, to_char(clbdate, 'yyyy-mm-dd') AS clbdate, clbpay, clbtype, clbstatus
 from tbl_celebrate C join tbl_employee E
 on C.fk_empno = E.empno
-order by clbno
+order by clbno desc
 
 
+select 
+from tbl_celebrate
+
+select name, clbno, fk_empno, to_char(clbdate, 'yyyy-mm-dd') AS clbdate, clbpay, clbtype, clbstatus
+from tbl_celebrate C join tbl_employee E
+on C.fk_empno = E.empno
+where clbstatus = '0'
+order by clbno desc
+
+update tbl_celebrate set clbstatus = '1'
+where fk_empno = 13
+
+select *
+from tbl_celebrate
+
+insert into tbl_celebrate values(seq_tbl_celebrate.nextval, 14,sysdate, 200000, 3,0)
+commit
 
 
+-- 재직증명서 모두 조회
+select name, proofno, fk_empno, to_char(issuedate, 'yyyy-mm-dd') AS issuedate, issueuse
+		from tbl_certificate C join tbl_employee E
+		on C.fk_empno = E.empno
+		order by proofno desc
+        
+        
+        
+      create table tbl_certificate
+(proofno              number             not null   -- 증명서번호
+,fk_empno             number             not null   -- 사원번호
+,issuedate            date default sysdate          -- 발급일자(sysdate)
+,issueuse   
 
-
-
+insert into tbl_employee 
+select *
+from tbl_pay P right join tbl_employee e
+on p.fk_empno = e.empno
 

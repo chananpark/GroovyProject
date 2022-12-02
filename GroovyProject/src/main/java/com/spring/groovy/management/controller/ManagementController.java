@@ -400,11 +400,30 @@ public class ManagementController {
 
 	// 관리자 - 재직증명서
 	@RequestMapping(value="/manage/proof/proofEmploymentSearch.on")
-	public String proofEmploymentSearch(HttpServletRequest request) {
+	public ModelAndView proofEmploymentSearch(HttpServletRequest request, ModelAndView mav, ProofVO pvo, Pagination pagination) {
 		
-		return "manage/admin/proof/proofEmploymentSearch.tiles";
-	}
+		
+		List<ProofVO> proofList = service.proofEmploymentSearch();
+		
+		// 재직증명서 한 페이지에 표시할 재직증명서 전체 글 개수 구하기(페이징)
+		int listCnt = service.getcountProofList(pagination);
+		  
+		 // 페이지수 알아오기 (페이징)
+		Map<String, Object> paraMap = pagination.getPageRange(listCnt);// startRno, endRno ==> 첫페이지에 ~번부터 ~까지하 보여줄지 
+		 
+		// 재직증명서 - 한 페이지에 표시할 글 목록  (페이징 페이지수를 알아온다음에 10개씩보여줌) (페이징)
+		mav.addObject("celebList", service.getOnePageProofCnt(paraMap)); // startRno, endRno을 가지고 select문에 1번
+		
+		 // 페이지바
+		mav.addObject("pagebar",pagination.getPagebar(request.getContextPath()+"/manage/proof/proofEmploymentSearch.on"));
+		mav.addObject("paraMap", paraMap);
 
+		
+		mav.addObject("proofList", proofList);
+		mav.setViewName( "manage/admin/proof/proofEmploymentSearch.tiles");
+		return mav;
+	}
+		
 	// 관리자 - 급여관리(급여조회)
 	@RequestMapping(value="/manage/pay/paySearchAdmin.on")
 	public String paySearchAdmin(HttpServletRequest request) {
