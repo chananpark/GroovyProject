@@ -23,12 +23,11 @@ create table tbl_employee
 ,bank               Nvarchar2(20)  not null  -- 은행
 ,account            number(20)     not null  -- 계좌번호
 ,annualcnt          varchar2(5) default 15 not null;  -- 연차갯수
-,pay                number(30)     not null  -- 연봉
+,salary             NUMBER(30)    not null;   -- 연봉
 ,constraint PK_tbl_employee_empno primary key(empno)
 ,constraint CK_tbl_employee_empstauts check( empstauts in('1','2') )
 ,constraint UK_tbl_employee_cpemail unique(cpemail)
 ,constraint UK_tbl_employee_pvemail unique(pvemail)
-,constraint UK_tbl_employee_pay  unique(pay)
 );
 -- Table TBL_EMPLOYEE이(가) 생성되었습니다.
 
@@ -46,13 +45,12 @@ commit
 create table tbl_pay
 (payno               number        not null   -- 급여번호
 ,fk_empno            number        not null   -- 사원번호
-,fk_pay              number(30)    not null   -- 연봉
+,pay                 number(30)    not null   -- 기본급
 ,annualpay           number(30)               -- 연차수당
 ,overtimepay         number(30)               -- 초과근무수당
 ,paymentdate         date  default sysdate    -- 지급일자(특정일자)
 ,constraint PK_tbl_pay_payno primary key(payno)
 ,constraint FK_tbl_pay_fk_empno foreign key(fk_empno) references tbl_employee(empno)
-,constraint FK_tbl_pay_fk_pay foreign key(fk_pay) references tbl_employee(pay)
 );
 -- Table TBL_PAY이(가) 생성되었습니다.
 commit
@@ -142,11 +140,19 @@ commit
 alter table tbl_employee
    add joindate  VARCHAR2(15)    not null; 
    
+-- 연봉컬럼추가
+alter table tbl_employee
+   add salary  NUMBER(30)    not null; 
+   
+update tbl_employee set salary = 50000000
+
+commit
+   
    update tbl_employee set joindate = '2022-12-02'
 insert into tbl_employee (joindate) values ('2022-12-02')
    
 -- 컬럼삭제
-alter table tbl_employee drop column annualcnt
+alter table tbl_employee drop column pay
 
 ALTER TABLE tbl_employee
 ADD [CONSTRAINT UK_tbl_employee_pay]
@@ -170,7 +176,8 @@ alter table tbl_employee add ANNUALCNT varchar2(5) default 15 not null;
 
 
 -- 칼럼 변경
-alter table tbl_employee modify joindate date  not null;
+alter table tbl_employee modify salary NUMBER(30)    not null;
+
 
 -- pvemail 칼럼변경
 alter table tbl_employee modify pvemail varchar2(200) null;
@@ -383,24 +390,11 @@ commit
 
 	
 
+select pay
+from tbl_employee
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+drop table tbl_pay
+commit
 
 
 

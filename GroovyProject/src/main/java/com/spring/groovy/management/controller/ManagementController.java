@@ -1,7 +1,6 @@
 package com.spring.groovy.management.controller;
 
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
 
 import java.util.HashMap;
 import java.util.List;
@@ -335,7 +334,7 @@ public class ManagementController {
 	
 	//관리자 사원관리 - 사원등록
 	@ResponseBody
-	@RequestMapping(value="/manage/admin/registerEnd.on", method= {RequestMethod.POST}, produces="text/plain;charset=UTF-8")
+	@RequestMapping(value="/manage/admin/registerEnd.on", method={RequestMethod.POST}, produces="text/plain;charset=UTF-8")
 	public String registerInfoEnd(HttpServletRequest request, MemberVO mvo) {
 
 		String hp1 = request.getParameter("hp1");
@@ -347,69 +346,7 @@ public class ManagementController {
 	    
 		String mobile = hp1 + "-"+ hp2 +"-"+ hp3;
 		String birthday = birthyyyy+"-"+birthmm+"-"+birthdd; 
-		
-		
-		// ======================================================================== //
-	/*
-		String empno = request.getParameter("empno");
-		String name = request.getParameter("name");
-		String postcode = request.getParameter("postcode");
-		String address = request.getParameter("address");
-		String detailaddress = request.getParameter("detailaddress");
-		String extraaddress = request.getParameter("extraaddress");
-		String pwd = request.getParameter("pwd");
-		
-		String cpemail = request.getParameter("cpemail");
-		String gender = request.getParameter("gender");
-		String depttel = request.getParameter("depttel");
-		String bumun = request.getParameter("bumun");
-		String department = request.getParameter("department");
-		String pay = request.getParameter("pay");
-		String position = request.getParameter("position");
-		String empstauts = request.getParameter("empstauts");
-		String joindate = request.getParameter("joindate");
-		String bank = request.getParameter("bank");
-		
-		String empimg = request.getParameter("empimg");
-		String jubun = request.getParameter("jubun");
-		String account = request.getParameter("account");
-		String pvemail = request.getParameter("pvemail");
-		
-		System.out.println(name);
-		System.out.println(cpemail);
-		System.out.println(gender);
-		System.out.println(depttel);
-		System.out.println(bumun);
-		System.out.println(department);
-		System.out.println(pay);
-		System.out.println(account);
-		System.out.println(hp1);
-		System.out.println(hp2);
-		System.out.println(hp3);
-		System.out.println(birthyyyy);
-		System.out.println(birthmm);
-		System.out.println(birthdd);
-		
-		System.out.println(mobile);
-		System.out.println(birthday);
-		System.out.println(empimg);
-		System.out.println(jubun);
-		System.out.println(account);
-		
-		System.out.println(postcode);
-		System.out.println(address);
-		System.out.println(detailaddress);
-		System.out.println(extraaddress);
-		
-		// 오류 null
-		System.out.println(position);
-		System.out.println(empstauts);
-		System.out.println(bank);
-		System.out.println(joindate);
-		
-		System.out.println(annualcnt);
-*/		
-		
+
 		
 		Map<String,Object> paraMap = new HashMap<>();
 		paraMap.put("mvo", mvo);
@@ -421,7 +358,7 @@ public class ManagementController {
 		
 		JSONObject json = new JSONObject();
 		json.put("n", n);
-		
+	
 		return json.toString();
 	}
 	

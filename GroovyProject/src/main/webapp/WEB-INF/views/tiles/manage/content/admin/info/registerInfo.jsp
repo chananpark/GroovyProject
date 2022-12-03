@@ -4,6 +4,7 @@
 <% String ctxPath = request.getContextPath(); %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
+
 <style>
 
 	div#info_manageInfo {
@@ -463,40 +464,41 @@ let b_flag_emailDuplicate_click = false;
 		}
 	} // end of function btn_register() { -----------------------------
 	
+		
+	<%--  
+	  // 보내야할 데이터를 선정하는 또 다른 방법
+	  // jQuery에서 사용하는 것으로써,
+	  // form태그의 선택자.serialize(); 을 해주면 form 태그내의 모든 값들을 name값을 키값으로 만들어서 보내준다. 
+	  const queryString = $("form[name='addWriteFrm']").serialize();
+	--%>
 
 	// >>> 등록버튼을 누르면 <<<
 	function btn_register() {
-		<%--  
-		  // 보내야할 데이터를 선정하는 또 다른 방법
-		  // jQuery에서 사용하는 것으로써,
-		  // form태그의 선택자.serialize(); 을 해주면 form 태그내의 모든 값들을 name값을 키값으로 만들어서 보내준다. 
-		  const queryString = $("form[name='addWriteFrm']").serialize();
-		--%>
-		
+
 		const queryString = $("form[name='frm_manageInfo']").serialize();
-		console.log(queryString); 
 		
 		$.ajax({
-			url:"<%= ctxPath%>/manage/admin/registerEnd.on",
+			url:"<%=ctxPath%>/manage/admin/registerEnd.on",
 			data:queryString, 
 			type:"POST",
-		  	dataType:"JSON",
+			dataType:"text",
 		  	success:function(json){
 		  		
 		  		if(json.n == 1) {
 		  			alert("사원정보 등록성공");
+		  			location.href="redirect:/manage/admin/registerInfo.on";
 		  		}
-		  		else {
+		  		else{
 		  			alert("사원정보 등록실패");
+		  			location.href="javascript:history.back()";
+		  			console.log(json);
 		  		} 
 		  	},
-		  	 error: function(request, status, error){
+			 error: function(request, status, error){
 				  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
 			  }
-		
 		});
-		
-	}
+	} // end of function btn_register() { ---------------------------
 	
 	// >>> 삭제버튼을 누르면<<<
 	function func_delete() {
@@ -551,7 +553,7 @@ let b_flag_emailDuplicate_click = false;
 		<tr>
 			<th class="t1"><span class="alert_required" style="color: red;">*</span>생년월일</th>
 			<td>
-				<span id="birthday" name="birthday" class="required" required>
+				<span id="birthday" class="required" required>
 				    	<select name="birthyyyy" id="birthyyyy" title="년도" class=" requiredInfo" required ></select>
 						<select name="birthmm" id="birthmm" title="월" class=" requiredInfo"  required></select>
 						<select name="birthdd" id="birthdd" title="일" class=" requiredInfo" required></select>
@@ -583,7 +585,7 @@ let b_flag_emailDuplicate_click = false;
 				<!-- <button class="btn btn-sm ml-5 btn_check" onclick="go_search" data-toggle="modal" data-target="#go_searchTel"><i class="fas fa-search"></i>찾기</button> -->
 			</td>
 			<th><span class="alert_required" style="color: red;">*</span>핸드폰번호</th>
-	         <td style="text-align: left;" id="mobile" name="mobile">
+	         <td style="text-align: left;" id="mobile">
 	             <input type="text" id="hp1" name="hp1" size="6" maxlength="3" value="010" class="requiredInfo" required />&nbsp;-&nbsp;
 	             <input type="text" id="hp2" name="hp2" size="6" maxlength="4" class="requiredInfo" required/>&nbsp;-&nbsp;
 	             <input type="text" id="hp3" name="hp3" size="6" maxlength="4" class="requiredInfo" required/>
@@ -655,7 +657,7 @@ let b_flag_emailDuplicate_click = false;
 		<tr>
 			<th><span class="alert_required" style="color: red;">*</span>연봉</th>
 			<td>
-				<input type="text" id="pay" class="required" name="pay"/>
+				<input type="text" id="salary" class="required" name="salary"/>
 			</td>
 			<th>입사일자</th>
 			<td>

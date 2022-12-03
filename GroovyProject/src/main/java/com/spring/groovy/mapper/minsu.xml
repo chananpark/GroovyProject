@@ -16,7 +16,7 @@
 	<select id="login2" parameterType="HashMap" resultType="com.spring.groovy.management.model.MemberVO">
 		SELECT EMPNO, CPEMAIL, NAME, PWD, POSITION, JUBUN, POSTCODE, ADDRESS, DETAILADDRESS
 		     , EXTRAADDRESS,EMPIMG,BIRTHDAY, BUMUN,DEPARTMENT,PVEMAIL,MOBILE,DEPTTEL,JOINDATE
-		     ,EMPSTAUTS,BANK, ACCOUNT,ANNUALCNT, EMPIMG, FK_POSITION_NO, FK_BUMUN_NO, FK_DEPARTMENT_NO,SIGNIMG,PAY
+		     ,EMPSTAUTS,BANK, ACCOUNT,ANNUALCNT, EMPIMG, FK_POSITION_NO, FK_BUMUN_NO, FK_DEPARTMENT_NO,SIGNIMG,SALARY
 		FROM TBL_EMPLOYEE
 		WHERE CPEMAIL = #{cpemail} and PWD = #{pwd}
 	</select>
@@ -182,16 +182,11 @@
 	<insert id="getRegisterInfo" parameterType="HashMap" >
 		INSERT INTO TBL_EMPLOYEE 
 			(EMPNO,PWD,CPEMAIL,NAME,EMPIMG,POSITION,JUBUN,POSTCODE,ADDRESS,DETAILADDRESS, EXTRAADDRESS
-			,BIRTHDAY, BUMUN,DEPARTMENT,MOBILE,DEPTTEL,JOINDATE,EMPSTAUTS,BANK,ACCOUNT,GENDER,PAY, PVEMAIL,ANNUALCNT,FK_POSITION_NO,FK_BUMUN_NO,FK_DEPARTMENT_NO )
+			,BIRTHDAY, BUMUN,DEPARTMENT,MOBILE,DEPTTEL,JOINDATE,EMPSTAUTS,BANK,ACCOUNT,GENDER,SALARY, PVEMAIL,ANNUALCNT,FK_POSITION_NO,FK_BUMUN_NO,FK_DEPARTMENT_NO )
 			
 		VALUES(SEQ_TBL_EMPLOYEE.NEXTVAL,default,#{mvo.cpemail},#{mvo.name},#{mvo.empimg,jdbcType=VARCHAR},#{mvo.position}, #{mvo.jubun},#{mvo.postcode}
 			,#{mvo.address},#{mvo.detailaddress},#{mvo.extraaddress},#{birthday},#{mvo.bumun},#{mvo.department},#{mobile},#{mvo.depttel},SYSDATE,#{mvo.empstauts}
-			,#{mvo.bank},#{mvo.account},#{mvo.gender},#{mvo.pay},#{mvo.pvemail,jdbcType=VARCHAR},default,#{mvo.fk_position_no},#{mvo.fk_bumun_no},#{mvo.fk_department_no})
-
-	<!--  INSERT INTO TBL_EMPLOYEE 
-			(EMPNO,PWD,CPEMAIL,NAME,EMPIMG,POSITION,JUBUN,POSTCODE,ADDRESS,DETAILADDRESS, EXTRAADDRESS,BIRTHDAY, BUMUN,DEPARTMENT,MOBILE,DEPTTEL,JOINDATE,EMPSTAUTS,BANK,ACCOUNT,GENDER,PAY, PVEMAIL,ANNUALCNT)
-		VALUES(SEQ_TBL_EMPLOYEE.NEXTVAL,default,#{cpemail},#{name},#{empimg,jdbcType=VARCHAR},#{position}, #{jubun},#{postcode},#{address},#{detailaddress},#{extraaddress},#{birthday},#{bumun},#{department},#{mobile},#{depttel},SYSDATE,#{empstauts},#{bank},#{account},#{gender},#{pay},#{pvemail,jdbcType=VARCHAR},default)
-	 -->
+			,#{mvo.bank},#{mvo.account},#{mvo.gender},#{mvo.salary},#{mvo.pvemail,jdbcType=VARCHAR},default,#{mvo.fk_position_no},#{mvo.fk_bumun_no},#{mvo.fk_department_no})
 	</insert>
 	
 	

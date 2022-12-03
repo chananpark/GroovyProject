@@ -29,17 +29,14 @@ public class MemberVO {
 	private String empstauts;         // 재직구분 (3개월이후 정직원)
 	private String bank;              // 은행
 	private String account;           // 계좌번호
-	private String annualcnt;          // 연차갯수
-	private String pay;				   // 조인(연봉(기본급 => 연봉/12))
+	private String annualcnt;         // 연차갯수
+	private String salary;			  //연봉(기본급 => 연봉/12))
 	
-	private String fk_position_no;     // 직급번호(외래키)    
-	private String fk_position_type; 	// --> 직급 타입			 1 선임 2 책임  3 팀장   4 부문장  5 대표이사
+	private int fk_position_no;     // 직급번호(외래키)     1 선임 2 책임  3 팀장   4 부문장  5 대표이사
 	
-	private String fk_bumun_no;		   //  부문번호(외래키) 
-	private String fk_bumun_type;		// --> 부문 타입			 1 이사실 2 경영지원본부 3 IT사업부문 4 마케팅영업부문
+	private int fk_bumun_no;		   //  부문번호(외래키) 		1 이사실 2 경영지원본부 3 IT사업부문 4 마케팅영업부문
 	
-	private String fk_department_no;   // -- 부서번호(기본키) 
-	private String fk_department_type;	// --> 부서 타입  			 1 이사실 2 인사총무팀 3개발팀 4기획팀 5영업팀 6 마케팅 7재경팀
+	private int fk_department_no;   // -- 부서번호(기본키)  	1 이사실 2 인사총무팀 3개발팀 4기획팀 5영업팀 6 마케팅 7재경팀
 	
 	
 	// 첨부파일에 필요한 필드
@@ -88,12 +85,16 @@ public class MemberVO {
 	public void setPwd(String pwd) {
 		this.pwd = pwd;
 	}
+	
 	public String getPosition() {
 		return position;
 	}
+	// === fk_bumun에 값주기 === //
 	public void setPosition(String position) {
 		this.position = position;
+		setFk_position_no(position);
 	}
+	
 	public String getJubun() {
 		return jubun;
 	}
@@ -145,15 +146,25 @@ public class MemberVO {
 	public String getBumun() {
 		return bumun;
 	}
+	// === fk_bumun에 값주기 === //
 	public void setBumun(String bumun) {
 		this.bumun = bumun;
+		setFk_bumun_no(bumun);
 	}
+	
+	
+	
 	public String getDepartment() {
 		return department;
 	}
+	// === fk_bumun에 값주기 === //
 	public void setDepartment(String department) {
 		this.department = department;
+		
+		setFk_department_no(department);
 	}
+	
+	
 	public String getPvemail() {
 		return pvemail;
 	}
@@ -203,131 +214,112 @@ public class MemberVO {
 		this.annualcnt = annualcnt;
 	}
 
-	public String getPay() {
-		return pay;
+	
+	
+	public String getSalary() {
+		return salary;
 	}
-	public void setPay(String pay) {
-		this.pay = pay;
+
+	public void setSalary(String salary) {
+		this.salary = salary;
 	}
+
 	
 	
 	
-	
-	
-	public String getFk_position_no() {
+	public int getFk_position_no() {
 		return fk_position_no;
 	}
-	public void setFk_position_no(String fk_position_no) {
-		this.fk_position_no = fk_position_no;
-		
-		setFk_position_type(fk_position_no);
-	}
-	// 직급(position) - foreign 값주기 
-	public void setFk_position_type(String fk_position_no) {
-		switch (fk_position_no) {
-		case "1":
-			this.fk_position_type = "선임";
+	public void setFk_position_no(String position) {
+	
+		switch (position) {
+		case "선임":
+			this.fk_position_no = 1;
 			break;
 			
-		case "2":
-			this.fk_position_type = "책임";
+		case "책임":
+			this.fk_position_no = 2;
 			break;
 			
-		case "3":
-			this.fk_position_type = "팀장";
+		case "팀장":
+			this.fk_position_no = 3;
 			break;
 			
-		case "4":
-			this.fk_position_type = "부문장";
+		case "부문장":
+			this.fk_position_no = 4;
 			break;
 			
-		case "5":
-			this.fk_position_type = "대표이사";
+		case "대표이사":
+			this.fk_position_no = 5;
 			break;
-
 		}
-		
 	}
 	
 	
-	
+		
 	// 부문번호(bumun) - foreign 값주기 
-	public String getFk_bumun_no() {
+	public int getFk_bumun_no() {
 		return fk_bumun_no;
 	}
-	public void setFk_bumun_no(String fk_bumun_no) {
-		this.fk_bumun_no = fk_bumun_no;
-		
-		setFk_bumun_type(fk_bumun_no);
-	}
-	
-	public void setFk_bumun_type(String fk_bumun_no) {
-
-		switch (fk_bumun_no) {
-		case "1":
-			this.fk_bumun_type = "이사실";
+	public void setFk_bumun_no(String bumun) {
+		switch (bumun) {
+		case "이사실":
+			this.fk_bumun_no = 1;
 			break;
 			
-		case "2":
-			this.fk_bumun_type = "경영지원본부";
+		case "경영지원본부":
+			this.fk_bumun_no = 2;
 			break;
 
 			
-		case "3":
-			this.fk_bumun_type = "IT사업부문";
+		case "IT사업부문":
+			this.fk_bumun_no = 3;
 			break;
 
 			
-		case "4":
-			this.fk_bumun_type = "마케팅영업부문";
+		case "마케팅영업부문":
+			this.fk_bumun_no = 4;
 			break;
 		}
 	}
-	
 	
 	
 	
 	// 부서번호(department) - foreign 값주기 
-	public String getFk_department_no() {
+	public int getFk_department_no() {
 		return fk_department_no;
 	}
-	public void setFk_department_no(String fk_department_no) {
-		this.fk_department_no = fk_department_no;
-		
-		setFk_department_type(fk_department_no);
-	}
-	
-	public void setFk_department_type(String fk_department_no) {
-		
-		switch (fk_bumun_no) {
-		case "1":
-			this.fk_department_type = "이사실";
+	public void setFk_department_no(String department) {
+
+		switch (department) {
+		case "이사실":
+			this.fk_department_no = 1;
 			break;
 			
-		case "2":
-			this.fk_department_type = "인사총무팀";
+		case "인사총무팀":
+			this.fk_department_no = 2;
 			break;
 
 			
-		case "3":
-			this.fk_department_type = "개발팀";
+		case "개발팀":
+			this.fk_department_no = 3;
 			break;
 
 			
-		case "4":
-			this.fk_department_type = "기획팀";
+		case "기획팀":
+			this.fk_department_no = 4;
 			break;
 			
-		case "5":
-			this.fk_department_type = "영업팀";
+		case "영업팀":
+			this.fk_department_no = 5;
 			break;
 			
-		case "6":
-			this.fk_department_type = "마케팅팀";
+		case "마케팅팀":
+			this.fk_department_no = 6;
 			break;
 			
-		case "7":
-			this.fk_department_type = "재경팀";
+		case "재경팀":
+			this.fk_department_no = 7;
 			break;
 		}
 		
@@ -344,6 +336,20 @@ public class MemberVO {
 	
 	
 	
+	
+	
+	public void setFk_position_no(int fk_position_no) {
+		this.fk_position_no = fk_position_no;
+	}
+
+	public void setFk_bumun_no(int fk_bumun_no) {
+		this.fk_bumun_no = fk_bumun_no;
+	}
+
+	public void setFk_department_no(int fk_department_no) {
+		this.fk_department_no = fk_department_no;
+	}
+
 	public MultipartFile getAttach() {
 		return attach;
 	}
