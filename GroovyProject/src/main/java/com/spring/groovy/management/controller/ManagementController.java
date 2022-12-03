@@ -3,16 +3,13 @@ package com.spring.groovy.management.controller;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.io.FilenameUtils;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -20,7 +17,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -348,12 +344,21 @@ public class ManagementController {
 		String birthyyyy = request.getParameter("birthyyyy"); 
 	    String birthmm = request.getParameter("birthmm"); 
 	    String birthdd = request.getParameter("birthdd");
-	     
+	    
 		String mobile = hp1 + "-"+ hp2 +"-"+ hp3;
 		String birthday = birthyyyy+"-"+birthmm+"-"+birthdd; 
 		
+		
 		// ======================================================================== //
+	/*
+		String empno = request.getParameter("empno");
 		String name = request.getParameter("name");
+		String postcode = request.getParameter("postcode");
+		String address = request.getParameter("address");
+		String detailaddress = request.getParameter("detailaddress");
+		String extraaddress = request.getParameter("extraaddress");
+		String pwd = request.getParameter("pwd");
+		
 		String cpemail = request.getParameter("cpemail");
 		String gender = request.getParameter("gender");
 		String depttel = request.getParameter("depttel");
@@ -364,7 +369,11 @@ public class ManagementController {
 		String empstauts = request.getParameter("empstauts");
 		String joindate = request.getParameter("joindate");
 		String bank = request.getParameter("bank");
+		
+		String empimg = request.getParameter("empimg");
+		String jubun = request.getParameter("jubun");
 		String account = request.getParameter("account");
+		String pvemail = request.getParameter("pvemail");
 		
 		System.out.println(name);
 		System.out.println(cpemail);
@@ -381,6 +390,16 @@ public class ManagementController {
 		System.out.println(birthmm);
 		System.out.println(birthdd);
 		
+		System.out.println(mobile);
+		System.out.println(birthday);
+		System.out.println(empimg);
+		System.out.println(jubun);
+		System.out.println(account);
+		
+		System.out.println(postcode);
+		System.out.println(address);
+		System.out.println(detailaddress);
+		System.out.println(extraaddress);
 		
 		// 오류 null
 		System.out.println(position);
@@ -388,6 +407,8 @@ public class ManagementController {
 		System.out.println(bank);
 		System.out.println(joindate);
 		
+		System.out.println(annualcnt);
+*/		
 		
 		
 		Map<String,Object> paraMap = new HashMap<>();
@@ -401,7 +422,7 @@ public class ManagementController {
 		JSONObject json = new JSONObject();
 		json.put("n", n);
 		
-		return json.toString(); // "{"n":1,"name":"서영학"}" 또는 "{"n":0,"name":"서영학"}"
+		return json.toString();
 	}
 	
 	

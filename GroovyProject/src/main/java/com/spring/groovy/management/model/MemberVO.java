@@ -30,11 +30,17 @@ public class MemberVO {
 	private String bank;              // 은행
 	private String account;           // 계좌번호
 	private String annualcnt;          // 연차갯수
-	private String fk_position_no;     // 직급번호(외래키)     1 선임 2 책임  3 팀장   4 부문장  5 대표이사
-	private String fk_bumun_no;		   // -- 부문번호(외래키)  1 이사실 2 경영지원본부 3 IT사업부문 4 마케팅영업부문
-	private String fk_department_no;   // -- 부서번호(기본키)  1 이사실 2 인사총무팀 3개발팀 4 5 6 마케팅
-
-	private String pay; // 조인(연봉(기본급 => 연봉/12))
+	private String pay;				   // 조인(연봉(기본급 => 연봉/12))
+	
+	private String fk_position_no;     // 직급번호(외래키)    
+	private String fk_position_type; 	// --> 직급 타입			 1 선임 2 책임  3 팀장   4 부문장  5 대표이사
+	
+	private String fk_bumun_no;		   //  부문번호(외래키) 
+	private String fk_bumun_type;		// --> 부문 타입			 1 이사실 2 경영지원본부 3 IT사업부문 4 마케팅영업부문
+	
+	private String fk_department_no;   // -- 부서번호(기본키) 
+	private String fk_department_type;	// --> 부서 타입  			 1 이사실 2 인사총무팀 3개발팀 4기획팀 5영업팀 6 마케팅 7재경팀
+	
 	
 	// 첨부파일에 필요한 필드
 	private MultipartFile attach;
@@ -44,6 +50,9 @@ public class MemberVO {
 	   /Board/src/main/webapp/WEB-INF/views/tiles1/board/add.jsp 파일에서 input type="file" 인 name 의 이름(attach)과   
 	     동일해야만 파일첨부가 가능해진다.!!!!
     */
+	
+	
+	
 	
 	
 	
@@ -193,31 +202,144 @@ public class MemberVO {
 	public void setAnnualcnt(String annualcnt) {
 		this.annualcnt = annualcnt;
 	}
-	public String getFk_position_no() {
-		return fk_position_no;
-	}
-	public void setFk_position_no(String fk_position_no) {
-		this.fk_position_no = fk_position_no;
-	}
-	public String getFk_bumun_no() {
-		return fk_bumun_no;
-	}
-	public void setFk_bumun_no(String fk_bumun_no) {
-		this.fk_bumun_no = fk_bumun_no;
-	}
-	public String getFk_department_no() {
-		return fk_department_no;
-	}
-	public void setFk_department_no(String fk_department_no) {
-		this.fk_department_no = fk_department_no;
-	}
-	
+
 	public String getPay() {
 		return pay;
 	}
 	public void setPay(String pay) {
 		this.pay = pay;
 	}
+	
+	
+	
+	
+	
+	public String getFk_position_no() {
+		return fk_position_no;
+	}
+	public void setFk_position_no(String fk_position_no) {
+		this.fk_position_no = fk_position_no;
+		
+		setFk_position_type(fk_position_no);
+	}
+	// 직급(position) - foreign 값주기 
+	public void setFk_position_type(String fk_position_no) {
+		switch (fk_position_no) {
+		case "1":
+			this.fk_position_type = "선임";
+			break;
+			
+		case "2":
+			this.fk_position_type = "책임";
+			break;
+			
+		case "3":
+			this.fk_position_type = "팀장";
+			break;
+			
+		case "4":
+			this.fk_position_type = "부문장";
+			break;
+			
+		case "5":
+			this.fk_position_type = "대표이사";
+			break;
+
+		}
+		
+	}
+	
+	
+	
+	// 부문번호(bumun) - foreign 값주기 
+	public String getFk_bumun_no() {
+		return fk_bumun_no;
+	}
+	public void setFk_bumun_no(String fk_bumun_no) {
+		this.fk_bumun_no = fk_bumun_no;
+		
+		setFk_bumun_type(fk_bumun_no);
+	}
+	
+	public void setFk_bumun_type(String fk_bumun_no) {
+
+		switch (fk_bumun_no) {
+		case "1":
+			this.fk_bumun_type = "이사실";
+			break;
+			
+		case "2":
+			this.fk_bumun_type = "경영지원본부";
+			break;
+
+			
+		case "3":
+			this.fk_bumun_type = "IT사업부문";
+			break;
+
+			
+		case "4":
+			this.fk_bumun_type = "마케팅영업부문";
+			break;
+		}
+	}
+	
+	
+	
+	
+	// 부서번호(department) - foreign 값주기 
+	public String getFk_department_no() {
+		return fk_department_no;
+	}
+	public void setFk_department_no(String fk_department_no) {
+		this.fk_department_no = fk_department_no;
+		
+		setFk_department_type(fk_department_no);
+	}
+	
+	public void setFk_department_type(String fk_department_no) {
+		
+		switch (fk_bumun_no) {
+		case "1":
+			this.fk_department_type = "이사실";
+			break;
+			
+		case "2":
+			this.fk_department_type = "인사총무팀";
+			break;
+
+			
+		case "3":
+			this.fk_department_type = "개발팀";
+			break;
+
+			
+		case "4":
+			this.fk_department_type = "기획팀";
+			break;
+			
+		case "5":
+			this.fk_department_type = "영업팀";
+			break;
+			
+		case "6":
+			this.fk_department_type = "마케팅팀";
+			break;
+			
+		case "7":
+			this.fk_department_type = "재경팀";
+			break;
+		}
+		
+	}
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	

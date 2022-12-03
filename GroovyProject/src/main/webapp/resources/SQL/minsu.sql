@@ -22,7 +22,7 @@ create table tbl_employee
 ,empstauts          varchar2(1)    not null  -- 재직구분 (3개월이후 정직원 1정규직, 2비정규직)
 ,bank               Nvarchar2(20)  not null  -- 은행
 ,account            number(20)     not null  -- 계좌번호
-,annualcnt          number(10)     not null  -- 연차갯수
+,annualcnt          varchar2(5) default 15 not null;  -- 연차갯수
 ,pay                number(30)     not null  -- 연봉
 ,constraint PK_tbl_employee_empno primary key(empno)
 ,constraint CK_tbl_employee_empstauts check( empstauts in('1','2') )
@@ -146,7 +146,7 @@ alter table tbl_employee
 insert into tbl_employee (joindate) values ('2022-12-02')
    
 -- 컬럼삭제
-alter table tbl_employee drop column joindate
+alter table tbl_employee drop column annualcnt
 
 ALTER TABLE tbl_employee
 ADD [CONSTRAINT UK_tbl_employee_pay]
@@ -164,6 +164,10 @@ desc TBL_EMPLOYEE
 
 -- 성별칼럼추가
 alter table tbl_employee add gender varchar2(2);
+
+-- 연차칼럼추가
+alter table tbl_employee add ANNUALCNT varchar2(5) default 15 not null;
+
 
 -- 칼럼 변경
 alter table tbl_employee modify joindate date  not null;

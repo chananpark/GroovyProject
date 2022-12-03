@@ -25,7 +25,7 @@
 	<!-- 사원정보 수정-->
 	<update id="viewInfoEnd" parameterType="com.spring.groovy.management.model.MemberVO"> 
 		UPDATE TBL_EMPLOYEE SET POSTCODE = #{postcode} , ADDRESS= #{address}, DETAILADDRESS= #{detailaddress}, EXTRAADDRESS= #{extraaddress}
-							  , EMPIMG= #{empimg}, PVEMAIL= #{pvemail}, MOBILE= #{mobile}, X=#{bank}, ACCOUNT = #{account}
+							  , EMPIMG= #{empimg}, PVEMAIL= #{pvemail}, MOBILE= #{mobile}, BANK=#{bank}, ACCOUNT= #{account}
 	</update>
 	
 	
@@ -181,8 +181,17 @@
 	<!-- 관리자 사원관리 - 사원등록 -->
 	<insert id="getRegisterInfo" parameterType="HashMap" >
 		INSERT INTO TBL_EMPLOYEE 
-			(EMPNO,PWD,CPEMAIL,NAME,POSITION,JUBUN,POSTCODE,ADDRESS,DETAILADDRESS, EXTRAADDRESS,BIRTHDAY, BUMUN,DEPARTMENT,MOBILE,DEPTTEL,JOINDATE,EMPSTAUTS,BANK,ACCOUNT,GENDER,PAY, PVEMAIL)
-		VALUES(SEQ_TBL_EMPLOYEE.NEXTVAL,default,#{mvo.cpemail},#{mvo.name},#{mvo.position}, #{mvo.jubun},#{mvo.postcode},#{mvo.address},#{mvo.detailaddress},#{mvo.extraaddress},#{birthday},#{mvo.bumun},#{mvo.department},#{mobile},#{mvo.depttel},SYSDATE,#{mvo.empstauts},#{mvo.bank},#{mvo.account},#{mvo.gender},#{mvo.pay},#{mvo.pvemail,jdbcType=VARCHAR})
+			(EMPNO,PWD,CPEMAIL,NAME,EMPIMG,POSITION,JUBUN,POSTCODE,ADDRESS,DETAILADDRESS, EXTRAADDRESS
+			,BIRTHDAY, BUMUN,DEPARTMENT,MOBILE,DEPTTEL,JOINDATE,EMPSTAUTS,BANK,ACCOUNT,GENDER,PAY, PVEMAIL,ANNUALCNT,FK_POSITION_NO,FK_BUMUN_NO,FK_DEPARTMENT_NO )
+			
+		VALUES(SEQ_TBL_EMPLOYEE.NEXTVAL,default,#{mvo.cpemail},#{mvo.name},#{mvo.empimg,jdbcType=VARCHAR},#{mvo.position}, #{mvo.jubun},#{mvo.postcode}
+			,#{mvo.address},#{mvo.detailaddress},#{mvo.extraaddress},#{birthday},#{mvo.bumun},#{mvo.department},#{mobile},#{mvo.depttel},SYSDATE,#{mvo.empstauts}
+			,#{mvo.bank},#{mvo.account},#{mvo.gender},#{mvo.pay},#{mvo.pvemail,jdbcType=VARCHAR},default,#{mvo.fk_position_no},#{mvo.fk_bumun_no},#{mvo.fk_department_no})
+
+	<!--  INSERT INTO TBL_EMPLOYEE 
+			(EMPNO,PWD,CPEMAIL,NAME,EMPIMG,POSITION,JUBUN,POSTCODE,ADDRESS,DETAILADDRESS, EXTRAADDRESS,BIRTHDAY, BUMUN,DEPARTMENT,MOBILE,DEPTTEL,JOINDATE,EMPSTAUTS,BANK,ACCOUNT,GENDER,PAY, PVEMAIL,ANNUALCNT)
+		VALUES(SEQ_TBL_EMPLOYEE.NEXTVAL,default,#{cpemail},#{name},#{empimg,jdbcType=VARCHAR},#{position}, #{jubun},#{postcode},#{address},#{detailaddress},#{extraaddress},#{birthday},#{bumun},#{department},#{mobile},#{depttel},SYSDATE,#{empstauts},#{bank},#{account},#{gender},#{pay},#{pvemail,jdbcType=VARCHAR},default)
+	 -->
 	</insert>
 	
 	
