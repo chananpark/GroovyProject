@@ -1,18 +1,14 @@
 package com.spring.groovy.management.controller;
 
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
-import org.apache.commons.io.FilenameUtils;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -20,7 +16,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -332,15 +327,14 @@ public class ManagementController {
 		
 //		 List<MemberVO> manageList = service.manageList();
 //		 mav.addObject("manageList", manageList);
-		 
+	
 		mav.setViewName("manage/admin/info/registerInfo.tiles");
 		return mav; 
 	}
 	
-	
 	//관리자 사원관리 - 사원등록
 	@ResponseBody
-	@RequestMapping(value="/manage/admin/registerEnd.on", method= {RequestMethod.POST}, produces="text/plain;charset=UTF-8")
+	@RequestMapping(value="/manage/admin/registerEnd.on", method={RequestMethod.POST}, produces="text/plain;charset=UTF-8")
 	public String registerInfoEnd(HttpServletRequest request, MemberVO mvo) {
 
 		String hp1 = request.getParameter("hp1");
@@ -349,64 +343,24 @@ public class ManagementController {
 		String birthyyyy = request.getParameter("birthyyyy"); 
 	    String birthmm = request.getParameter("birthmm"); 
 	    String birthdd = request.getParameter("birthdd");
-	     
+	    
 		String mobile = hp1 + "-"+ hp2 +"-"+ hp3;
 		String birthday = birthyyyy+"-"+birthmm+"-"+birthdd; 
-		
-		// ======================================================================== //
-		String name = request.getParameter("name");
-		String cpemail = request.getParameter("cpemail");
-		String gender = request.getParameter("gender");
-		String depttel = request.getParameter("depttel");
-		String bumun = request.getParameter("bumun");
-		String department = request.getParameter("department");
-		String pay = request.getParameter("pay");
-		String position = request.getParameter("position");
-		String empstauts = request.getParameter("empstauts");
-		String joindate = request.getParameter("joindate");
-		String bank = request.getParameter("bank");
-		String account = request.getParameter("account");
-		
-		System.out.println(name);
-		System.out.println(cpemail);
-		System.out.println(gender);
-		System.out.println(depttel);
-		System.out.println(bumun);
-		System.out.println(department);
-		System.out.println(pay);
-		System.out.println(account);
-		System.out.println(hp1);
-		System.out.println(hp2);
-		System.out.println(hp3);
-		System.out.println(birthyyyy);
-		System.out.println(birthmm);
-		System.out.println(birthdd);
-		
-		
-		// 오류 null
-		System.out.println(position);
-		System.out.println(empstauts);
-		System.out.println(joindate);
-		System.out.println(bank);
-		
-		
+
 		
 		Map<String,Object> paraMap = new HashMap<>();
 		paraMap.put("mvo", mvo);
 		paraMap.put("mobile", mobile);
 		paraMap.put("birthday", birthday);
 		
-		// 위에 잇는 정보를 paramap에 담아야하는데 membervo애 어떻게 넣지?
-
 		// 사원등록
 		int n = service.getRegisterInfo(paraMap);
 		
 		JSONObject json = new JSONObject();
 		json.put("n", n);
-		
-		return json.toString(); // "{"n":1,"name":"서영학"}" 또는 "{"n":0,"name":"서영학"}"
-	}
 	
+		return json.toString();
+	}
 	
 	
 	

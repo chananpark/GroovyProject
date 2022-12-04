@@ -4,6 +4,7 @@
 <% String ctxPath = request.getContextPath(); %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
+
 <style>
 
 	div#info_manageInfo {
@@ -111,7 +112,6 @@ let b_flag_emailDuplicate_click = false;
 		 $("div.msg_error").hide();
 		 $("div#msg_probation").hide();
 		 
-		
 		 // === 주민등록번호=== // 
 		 $("input#jubun").blur(function(e){
 			 
@@ -142,8 +142,14 @@ let b_flag_emailDuplicate_click = false;
 			 }
 			
 		 }); //  end of $("input#jubunbirth").bulr((e) => {--------------------
-		 
-		
+	
+	
+	
+	
+	
+	
+	
+	
 		 
 		// === 생년월일 === //
 	        
@@ -313,10 +319,11 @@ let b_flag_emailDuplicate_click = false;
 			
 		// === 저장버튼을 누르면 === //
 		$("button#btn_submit").click(function(){
-			 btn_register();
+			 
+			btn_register();
 		});
 		
-		
+	
 		
 	}); // end of $(document).ready(function(){}-----------------------------------------
 
@@ -457,57 +464,49 @@ let b_flag_emailDuplicate_click = false;
 		}
 	} // end of function btn_register() { -----------------------------
 	
+		
+	<%--  
+	  // 보내야할 데이터를 선정하는 또 다른 방법
+	  // jQuery에서 사용하는 것으로써,
+	  // form태그의 선택자.serialize(); 을 해주면 form 태그내의 모든 값들을 name값을 키값으로 만들어서 보내준다. 
+	  const queryString = $("form[name='addWriteFrm']").serialize();
+	--%>
 
 	// >>> 등록버튼을 누르면 <<<
 	function btn_register() {
-		<%--  
-		  // 보내야할 데이터를 선정하는 또 다른 방법
-		  // jQuery에서 사용하는 것으로써,
-		  // form태그의 선택자.serialize(); 을 해주면 form 태그내의 모든 값들을 name값을 키값으로 만들어서 보내준다. 
-		  const queryString = $("form[name='addWriteFrm']").serialize();
-		--%>
+
 		const queryString = $("form[name='frm_manageInfo']").serialize();
-		console.log(queryString); 
+		
 		$.ajax({
-			url:"<%= request.getContextPath()%>/manage/admin/registerEnd.on",
+			url:"<%=ctxPath%>/manage/admin/registerEnd.on",
 			data:queryString, 
 			type:"POST",
-		  	dataType:"JSON",
+			dataType:"text",
 		  	success:function(json){
-		  		 
-		  		alert(json.n);
 		  		
 		  		if(json.n == 1) {
 		  			alert("사원정보 등록성공");
+		  			location.href="redirect:/manage/admin/registerInfo.on";
 		  		}
-		  		else {
+		  		else{
 		  			alert("사원정보 등록실패");
+		  			location.href="javascript:history.back()";
+		  			console.log(json);
 		  		} 
 		  	},
-		  	 error: function(request, status, error){
+			 error: function(request, status, error){
 				  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
 			  }
-		
 		});
-		
-	}
-	
-	
+	} // end of function btn_register() { ---------------------------
 	
 	// >>> 삭제버튼을 누르면<<<
 	function func_delete() {
-		
 		$("input").val("");
 		$("select").val("");
-	
 	}
 	
-	
-	
 </script>
-
-
-
 
 <form name="frm_manageInfo">
 <div id="info_manageInfo">
@@ -520,7 +519,7 @@ let b_flag_emailDuplicate_click = false;
 	
 	<table class="m-4 mb-3 table table-bordered table-sm" id="first_table">
 		<tr>
-			<td rowspan='4' style="width: 2%;"><i class="fas fa-user-tie fa-10x mt-2 ml-2" ></i></td>
+			<td rowspan='4' style="width: 2%;"><i class="fas fa-user-tie fa-10x mt-2 ml-2" ></i><input type="hidden" name="empimg"/></td>
 			<th class="t1"><span class="alert_required" style="color: red;">*</span>사원번호</th>
 			<td>	
 				<input type="text" id="empno" name="empno" required placeholder="자동입력됩니다." readonly/>
@@ -532,9 +531,17 @@ let b_flag_emailDuplicate_click = false;
 		<tr >
 			<th class="t1"><span class="alert_required" style="color: red;">*</span>주민등록번호</th>
 				<td>
+				
 					<span>
 						<input type="text" id="jubun" name="jubun"required style="display: inline;" />
 					</span>
+					
+					 <!-- 
+					 <span>
+						<input type="text" id="jubun1" name="jubun1"required style="display: inline;" /> - <input type="text" id="jubun2" name="jubun2"required style="display: inline;" /> 
+					</span>
+					  -->
+					 
 					<div class="msg_error">형식에 올바르지 않습니다.</div>
 				</td>
 			<th class="t1">성별</th>
@@ -546,7 +553,7 @@ let b_flag_emailDuplicate_click = false;
 		<tr>
 			<th class="t1"><span class="alert_required" style="color: red;">*</span>생년월일</th>
 			<td>
-				<span id="birthday" name="birthday" class="required" required>
+				<span id="birthday" class="required" required>
 				    	<select name="birthyyyy" id="birthyyyy" title="년도" class=" requiredInfo" required ></select>
 						<select name="birthmm" id="birthmm" title="월" class=" requiredInfo"  required></select>
 						<select name="birthdd" id="birthdd" title="일" class=" requiredInfo" required></select>
@@ -578,7 +585,7 @@ let b_flag_emailDuplicate_click = false;
 				<!-- <button class="btn btn-sm ml-5 btn_check" onclick="go_search" data-toggle="modal" data-target="#go_searchTel"><i class="fas fa-search"></i>찾기</button> -->
 			</td>
 			<th><span class="alert_required" style="color: red;">*</span>핸드폰번호</th>
-	         <td style="text-align: left;" id="mobile" name="mobile">
+	         <td style="text-align: left;" id="mobile">
 	             <input type="text" id="hp1" name="hp1" size="6" maxlength="3" value="010" class="requiredInfo" required />&nbsp;-&nbsp;
 	             <input type="text" id="hp2" name="hp2" size="6" maxlength="4" class="requiredInfo" required/>&nbsp;-&nbsp;
 	             <input type="text" id="hp3" name="hp3" size="6" maxlength="4" class="requiredInfo" required/>
@@ -596,7 +603,7 @@ let b_flag_emailDuplicate_click = false;
 				
 			</td>
 			<th>외부이메일</th>
-			<td><input type="email" id="pvemail" name="pvemail" /></td>
+			<td><input type="email" id="pvemail" readonly name="pvemail"/></td>
 
 		</tr>
 	</table>
@@ -640,15 +647,6 @@ let b_flag_emailDuplicate_click = false;
 			</td>
 		</tr>
 		<tr>
-			<th>연봉</th>
-			<td>
-				<input type="text" id="pay" class="required" name="pay" />
-			</td>
-			<th><span class="alert_required" style="color: red;">*</span>입사일자</th>
-			<td><%-- <input type="date" style="width: 165px;" required value="${requestScope.joindate}"/> --%>
-				<input type="text"  style="width: 165px;" required  id="datepicker"/></td>
-		</tr>
-		<tr>
 			<th><span class="alert_required" style="color: red;">*</span>은행</th>
 			<td>
 				<input type="text" class="bank" name="bank" required />
@@ -656,6 +654,22 @@ let b_flag_emailDuplicate_click = false;
 			<th><span class="alert_required" style="color: red;">*</span>계좌</th>
 			<td><input type="text" name="account" required style="width: 165px;" /></td>
 		</tr>
+		<tr>
+			<th><span class="alert_required" style="color: red;">*</span>연봉</th>
+			<td>
+				<input type="text" id="salary" class="required" name="salary"/>
+			</td>
+			<th>입사일자</th>
+			<td>
+				<input type="text" id="joindate" class="required" name="joindate" readonly placeholder="자동입력 됩니다."/>
+				
+				<input type="hidden" name="annualcnt" />
+				<input type="hidden" name="fk_position_no" />
+				<input type="hidden" name="fk_bumun_no" />
+				<input type="hidden" name="fk_department_no" />
+			</td>
+		</tr>
+			
 	</table>
 	
 	<%-- 정보수정 페이지에서 보이는 버튼 --%>
@@ -665,6 +679,5 @@ let b_flag_emailDuplicate_click = false;
 	</div>
 </div>
 </form>
-
 
 

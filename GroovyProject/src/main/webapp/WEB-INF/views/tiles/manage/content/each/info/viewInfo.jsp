@@ -447,7 +447,7 @@
 		</tr>
 		<tr>
 			<th>연봉</th>
-			<td><div style="background-color: "><fmt:formatNumber value="${loginuser.pay}" pattern="#,###"/></div></td>
+			<td><div style="background-color: "><fmt:formatNumber value="${loginuser.salary}" pattern="#,###"/></div></td>
 			<th><span class="alert_required" style="color: red;">*</span>입사일자</th>
 			<td><input type="text" style="width: 165px;" readonly  value="${loginuser.joindate}"/></td>
 		</tr>
