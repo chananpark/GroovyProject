@@ -123,7 +123,6 @@
 				<th>경조금액</th>
 				<th>결재상태</th>
 				<th>신청일</th>
-				<th>상세보기</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -148,7 +147,6 @@
 						<c:otherwise>미승인</c:otherwise>
 					</c:choose>
 				<td >${celebList.clbdate}</td>
-				<td><button data-toggle="modal" data-target="#go_detailCelebrate" id="btn_viewCeleb">상세보기</button></td> 
 			</tr>
 			</c:forEach>
 			</c:if>

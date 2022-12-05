@@ -464,17 +464,18 @@ let b_flag_emailDuplicate_click = false;
 		}
 	} // end of function btn_register() { -----------------------------
 	
-		
-	<%--  
-	  // 보내야할 데이터를 선정하는 또 다른 방법
-	  // jQuery에서 사용하는 것으로써,
-	  // form태그의 선택자.serialize(); 을 해주면 form 태그내의 모든 값들을 name값을 키값으로 만들어서 보내준다. 
-	  const queryString = $("form[name='addWriteFrm']").serialize();
-	--%>
+	
 
 	// >>> 등록버튼을 누르면 <<<
 	function btn_register() {
-
+		
+		<%--  
+		  // 보내야할 데이터를 선정하는 또 다른 방법
+		  // jQuery에서 사용하는 것으로써,
+		  // form태그의 선택자.serialize(); 을 해주면 form 태그내의 모든 값들을 name값을 키값으로 만들어서 보내준다. 
+		  const queryString = $("form[name='addWriteFrm']").serialize();
+		--%>
+		
 		const queryString = $("form[name='frm_manageInfo']").serialize();
 		
 		$.ajax({
@@ -553,7 +554,7 @@ let b_flag_emailDuplicate_click = false;
 		<tr>
 			<th class="t1"><span class="alert_required" style="color: red;">*</span>생년월일</th>
 			<td>
-				<span id="birthday" class="required" required>
+				<span id="birthday" class="required" >
 				    	<select name="birthyyyy" id="birthyyyy" title="년도" class=" requiredInfo" required ></select>
 						<select name="birthmm" id="birthmm" title="월" class=" requiredInfo"  required></select>
 						<select name="birthdd" id="birthdd" title="일" class=" requiredInfo" required></select>
@@ -664,9 +665,9 @@ let b_flag_emailDuplicate_click = false;
 				<input type="text" id="joindate" class="required" name="joindate" readonly placeholder="자동입력 됩니다."/>
 				
 				<input type="hidden" name="annualcnt" />
-				<input type="hidden" name="fk_position_no" />
+			<!-- 	<input type="hidden" name="fk_position_no" />
 				<input type="hidden" name="fk_bumun_no" />
-				<input type="hidden" name="fk_department_no" />
+				<input type="hidden" name="fk_department_no" /> -->
 			</td>
 		</tr>
 			

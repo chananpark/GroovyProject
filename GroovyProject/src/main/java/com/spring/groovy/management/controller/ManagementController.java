@@ -243,7 +243,7 @@ public class ManagementController {
 	
 	
 	// ====== 나중에 꼭 하기!! ===== //
-	//공용 증명서 - 급여관리(급여조회)
+	//공용 - 급여관리(급여조회)
 	@RequestMapping(value="/manage/pay/paySearch.on")
 	public ModelAndView paySearch(ModelAndView mav, HttpServletRequest request, PayVO pvo) {
 		
@@ -457,7 +457,8 @@ public class ManagementController {
 	
 	@ExceptionHandler(org.springframework.validation.BindException.class)
 	public String error(Exception e) {
-	    return "error";
+		e.printStackTrace();
+		return "error";
 	}
 
 }

@@ -146,16 +146,17 @@
 				</tr>
 			</thead>
 			<tbody  onclick="go_detailInfo">
+			<c:forEach var="employee" items="${requestScope.payList}" varStatus="status"></c:forEach>
 				<tr class="text-center border" id="list">
 					<td>${loginuser.empno}</td>
 					<td>${loginuser.name}</td>
 					<td>${loginuser.bumun}</td>
 					<td>${loginuser.department}</td>
 					<td>${loginuser.position}</td>
+					<td>${employee.paymentdate}</td>
 					<td></td>
 					<td></td>
-					<td></td>
-					<td></td>
+					<td>${employee.paymentdate}</td>
 				</tr>
 			</tbody>
 		</table>
