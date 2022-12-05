@@ -149,9 +149,17 @@
 		
 	}); // end of $(document).ready(function(){ ----------------------
 		
-		
 	// >>> Function Declartion <<<
-
+	function findPwd(cpemail){ // -------------------------
+		
+		const url = "<%=ctxPath%>/findPwd.on";
+		const name = "findPwd";
+		const option = "width=550, height=300, top=120, left=500";
+		
+		window.open(url, name, option);
+	} // end of function managePopup(){} ---------------
+	
+	
 	// >>> 다음으로 넘어가는 함수 생성하기 <<< 
 	function func_login() {
 		
@@ -186,12 +194,11 @@
 			<div></div>
 			
 			<div style="margin: 5% 0 0 20%;">
-				<button type="button" style="background-color: white; border: none;"><a href="#">비밀번호를 잊으셨나요?</a></button>
+				<a onclick="findPwd('cpemail')" name="findPwd">비밀번호를 잊으셨나요?</a>
 				<button type="button" id="btn_back" onclick="javascript:history.back()">뒤로</button>
 				<button type="button" id="btn_next">다음</button>
 			</div>
 		</div>
-		
 	</form>	
 	 </div>
 	</div>

@@ -87,6 +87,10 @@
 		width: 55px;
 	}
 	
+	input#empimg {
+		 height:150px; 
+		 width: 100px;
+	}
 	
 	
 </style>
@@ -164,7 +168,7 @@
 		 	$(this).val("");
 		 });
 		 
-		 // === 이미지 파일첨부 === //
+		/*  // === 이미지 파일첨부 === //
 		 $("input#empimg").change(function(){
 			 if(this.files && files[0]){
 				 var reader = new FileReader;
@@ -174,9 +178,11 @@
 				 }
 				 reader.readAsDataURL(this.files[0]);
 			 }
-		 
-		 
 		 }); // end of  $("input#empimg").change(function(){ --------------------------
+		  */
+		  
+		  
+		
 		 
 		 
 		 // === 수정버튼을 클릭하면 === // 
@@ -211,7 +217,15 @@
 			}
 		}); // end of $("input#btn_updateEnd").click(function(e){ ------------------
 			
-			
+	  window.onload = function() {
+	  fileDOM.addEventListener('change', () => {
+		  const reader = new FileReader();
+		  reader.onload = ({ target }) => {
+		    preview.src = target.result;
+		  };
+		  reader.readAsDataURL(fileDOM.files[0]);
+		});
+		}
 		 
 }); // end of $(document).ready(function(){}-----------------------------------------
 
@@ -282,9 +296,6 @@
 	
 	
 	
-	
-	
-	
 	// >>> 개인이메일 확인버튼 누르면 (ajax)<<<
 	function func_checkEmail(pvemail) {
 	 
@@ -336,6 +347,10 @@
 			data:queryString,
 			type:"POST",
 			dataType:"JSON",
+			// ajax를 이용한 요청인 경우 ajax 옵션에 processData: false, contentType: false 이 두가지 속성 값을 추가
+			enctype: 'multipart/form-data',
+			processData: false,
+			contentType: false,
 			success:function(json){
 				
 				if(json.n == 1) {
@@ -353,7 +368,16 @@
 		}); // $.ajax({ ---------------------
 	} // end of function go_update(){ -------------------------------
 	
+	function fileUpload(fis) {
+		var str = fis.value;
+		alert("파일네임: "+ fis.value.substring(str.lastIndexOf("\\")+1));
+		}
 	
+	const fileDOM = document.querySelector('#file');
+	const preview = document.querySelector('.image-box');
+
+	
+
 	
 </script>
 
@@ -371,7 +395,14 @@
 	
 	<table class="m-4 mb-3 table table-bordered table-sm" id="first_table">
 		<tr>
-			<td rowspan='4' style="width:2%;"><input type="file" name="empimg" multiple="multiple" style="height:150px; width: 100px;" readonly/><span class="select_img"></span></td>  
+			<td rowspan='4' style="width:2%;">
+				<c:if test="${loginuser.empimg != null}">
+					<img src="<%=ctxPath%>/resources/images/empphoto/${loginuser.empimg}" class="image-box" />
+				</c:if>
+			    <label for="file" class="upload-btn"><input id="file" type="file" accept="image/*" /></label>
+			</td>
+			<!-- <td rowspan='4' style="width:2%;"><input type="file" name="empimg" id="empimg" accept=".png, .jpeg" onchange="fileUpload(this)" class"readonly"/></td>   -->
+																					  <!-- accept는 입력받을 수 있는 파일의 유형을 지정하는 속성 -->
 			<th class="t1">사원번호</th>
 			<td>	
 				<input type="text" id="" name="empno" value="${loginuser.empno}" />

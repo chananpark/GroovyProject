@@ -69,6 +69,24 @@ public class ManagementService implements InterManagementService {
 		
 		return loginuser;
 	}
+	
+	// 로그인 - 비밀번호 찾기 값입력
+	@Override
+	public MemberVO findPwd(Map<String, String> paraMap) {
+		 MemberVO employee = dao.findPwd(paraMap);
+		return employee;
+	}
+
+		
+	// 로그인 - 비밀번호 변경하기
+	@Override
+	public int updatePwd(Map<String, Object> paraMap) {
+		int n = dao.updatePwd(paraMap);
+		return n;
+	}
+
+		
+		
 	// ================================================================================= //
 
 	// 사원정보 수정
@@ -293,6 +311,9 @@ public class ManagementService implements InterManagementService {
 		return proofListPG;
 	}
 
+
+
+	
 	
 	
 	

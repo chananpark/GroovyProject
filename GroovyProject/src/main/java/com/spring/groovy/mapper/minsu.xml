@@ -20,12 +20,27 @@
 		FROM TBL_EMPLOYEE
 		WHERE CPEMAIL = #{cpemail} and PWD = #{pwd}
 	</select>
+	
+	
+	<select id="findPwd" parameterType="HashMap" resultType="com.spring.groovy.management.model.MemberVO">
+		SELECT EMPNO, CPEMAIL, NAME, JUBUN
+		FROM TBL_EMPLOYEE
+		WHERE CPEMAIL = #{cpemail} and JUBUN = #{jubun}
+	</select>
+	
+	<!--  로그인 - 비밀번호 변경하기-->
+	<update id="updatePwd" parameterType="HashMap"> 
+		UPDATE TBL_EMPLOYEE SET PWD = #{pwd} 
+	</update>
+	
+	
+	
 	<!-- ================================================================================================= -->
 	
 	<!-- 사원정보 수정-->
 	<update id="viewInfoEnd" parameterType="HashMap"> 
 		UPDATE TBL_EMPLOYEE SET POSTCODE = #{mav.postcode} , ADDRESS= #{mav.address}, DETAILADDRESS= #{mav.detailaddress}, EXTRAADDRESS= #{mav.extraaddress}
-							  , EMPIMG= #{mav.empimg}, PVEMAIL= #{mav.pvemail}, MOBILE= #{mav.mobile}, BANK=#{mav.bank}, ACCOUNT= #{mav.account}
+							  , EMPIMG= #{empimg}, PVEMAIL= #{mav.pvemail}, MOBILE= #{mav.mobile}, BANK=#{mav.bank}, ACCOUNT= #{mav.account}
 	</update>
 	
 	

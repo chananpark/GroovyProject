@@ -33,6 +33,16 @@ public class ManagementDAO implements InterManagementDAO {
 		return loginuser;
 	}
 
+	// 로그인 - 비밀번호 찾기 값입력
+	@Override
+	public MemberVO findPwd(Map<String, String> paraMap) {
+		 MemberVO employee = sqlsession.selectOne("minsu.findPwd", paraMap);
+		return employee;
+	}
+
+	
+	
+	
 	
 	// ================================================================================= //
 	
@@ -248,6 +258,16 @@ public class ManagementDAO implements InterManagementDAO {
 		List<ProofVO> proofListPG = sqlsession.selectList("minsu.getOnePageProofCnt", paraMap);
 		return proofListPG;
 	}
+
+	
+	// 로그인 - 비밀번호 변경하기
+	@Override
+	public int updatePwd(Map<String, Object> paraMap) {
+		int n = sqlsession.update("minsu.updatePwd", paraMap);
+		return n;
+	}
+
+	
 
 	
 	

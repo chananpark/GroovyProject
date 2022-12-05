@@ -393,8 +393,8 @@ FROM TBL_PAY
 
 
 -- 급여정보 조회
-select E.empno, name, bumun, department, position,
-        PAYNO, FK_EMPNO, PAY, ANNUALPAY, OVERTIMEPAY, PAYMENTDATE
+select E.empno, name, bumun, department, position, ceil(salary/12) as salary,
+        PAYNO, FK_EMPNO, PAY, ANNUALPAY, OVERTIMEPAY, to_char(paymentdate, 'yyyy-mm-dd') AS paymentdate
 from tbl_employee E right join TBL_PAY P
 on E.empno = P.fk_empno
 where name = '김민수'
