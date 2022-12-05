@@ -146,6 +146,7 @@
 						<c:when test="${celebList.clbstatus eq '1'}">완료(승인)</c:when>
 						<c:otherwise>미승인</c:otherwise>
 					</c:choose>
+				</td>
 				<td >${celebList.clbdate}</td>
 			</tr>
 			</c:forEach>

@@ -22,7 +22,7 @@ public interface InterManagementService {
 	// ================================================================================= //
 	
 	// 사원정보 수정
-	int viewInfoEnd(MemberVO mvo);
+	int viewInfoEnd(Map<String, Object> paraMap);
 	
 
 	// 사원정보 수정 - 이메일 (이메일중복확인 Ajax)

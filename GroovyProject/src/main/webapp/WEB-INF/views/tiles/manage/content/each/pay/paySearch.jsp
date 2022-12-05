@@ -3,6 +3,9 @@
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
+
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+
 <% String ctxPath = request.getContextPath(); %>   
 
 
@@ -87,11 +90,13 @@
 		$("div#detailPay").hide();
 		
 		 $("tr#list> td").click(function(){
-			 
 			 $("div#detailPay").show();
-			 
-			 
 		 }); // end of  $("tbody.list > tr> td").click(function(){---------------------
+		
+			 
+			 
+
+		
 		
 		
 	}); // end of $(document).ready(function(){
@@ -146,18 +151,19 @@
 				</tr>
 			</thead>
 			<tbody  onclick="go_detailInfo">
-			<c:forEach var="employee" items="${requestScope.payList}" varStatus="status"></c:forEach>
-				<tr class="text-center border" id="list">
-					<td>${loginuser.empno}</td>
-					<td>${loginuser.name}</td>
-					<td>${loginuser.bumun}</td>
-					<td>${loginuser.department}</td>
-					<td>${loginuser.position}</td>
-					<td>${employee.paymentdate}</td>
-					<td></td>
-					<td></td>
-					<td>${employee.paymentdate}</td>
-				</tr>
+				<c:forEach  var="emp" items="${requestScope.payList}" varStatus="status">
+					<tr class="text-center border" id="list">
+						<td>${emp.fk_empno}</td>
+						<td>${emp.name}</td>
+						<td>${emp.bumun}</td>
+						<td>${emp.department}</td>
+						<td>${emp.position}</td>
+						<td><fmt:formatNumber value="${emp.salary}" pattern="#,###" /></td>
+						<td><fmt:formatNumber value="${emp.annualpay}" pattern="#,###" /></td>
+						<td><fmt:formatNumber value="${emp.overtimepay}" pattern="#,###" /></td>
+						<td>${emp.paymentdate}</td>
+					</tr>
+				</c:forEach>
 			</tbody>
 		</table>
 	</div>
@@ -174,28 +180,27 @@
 				</tr>
 			</thead>
 			<tbody>
-				<tr class="text-center border" >
-					<td>1</td>
-					<td>기본급</td>
-					<td><input type="text" name=""/></td>
-					<td>소득세</td>
-					<td><input type="text" name=""/></td>
-				</tr>
-				<tr class="text-center border" >
-					<td>2</td>
-					<td>초과근무수당</td>
-					<td><input type="text" name=""/></td>
-					<td>국민연금</td>
-					<td><input type="text" name=""/></td>
-				</tr>
-				<tr class="text-center border" >
-					<td>3</td>
-					<td>연차수당</td>
-					<td><input type="text" name=""/></td>
-					<td>고용보험</td>
-					<td><input type="text" name=""/></td>
-				</tr>
-				
+					<tr class="text-center border" >
+						<td>1</td>
+						<td>기본급</td>
+						<td><fmt:formatNumber value="${emp.salary}" pattern="#,###" id="salary"/></td>
+						<td>소득세</td>
+						<td><input type="text" name=""><fmt:formatNumber value="${emp.salary}" pattern="#,###" id="tax" /></input></td>
+					</tr>
+					<tr class="text-center border" >
+						<td>2</td>
+						<td>초과근무수당</td>
+						<td><input type="text" name=""/></td>
+						<td>국민연금</td>
+						<td><input type="text" name=""/></td>
+					</tr>
+					<tr class="text-center border" >
+						<td>3</td>
+						<td>연차수당</td>
+						<td><input type="text" name=""/></td>
+						<td>고용보험</td>
+						<td><input type="text" name=""/></td>
+					</tr>
 			</tbody>
 			<tfoot>
 				<tr>

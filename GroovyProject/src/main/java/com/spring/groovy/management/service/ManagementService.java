@@ -73,8 +73,8 @@ public class ManagementService implements InterManagementService {
 
 	// 사원정보 수정
 	@Override
-	public int viewInfoEnd(MemberVO mvo) {
-		int n = dao.viewInfoEnd(mvo);
+	public int viewInfoEnd(Map<String, Object> paraMap) {
+		int n = dao.viewInfoEnd(paraMap);
 		return n;
 	}
 

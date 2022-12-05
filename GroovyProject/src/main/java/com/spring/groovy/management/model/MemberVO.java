@@ -38,8 +38,7 @@ public class MemberVO {
 	
 	private int fk_department_no;   // -- 부서번호(기본키)  	1 이사실 2 인사총무팀 3개발팀 4기획팀 5영업팀 6 마케팅 7재경팀
 	
-	
-	// 첨부파일에 필요한 필드
+	// 파일이 저장되는 필드 => WAS(톰캣) 디스크에 저장됨.
 	private MultipartFile attach;
 	/* form 태그에서 type="file" 인 파일을 받아서 저장되는 필드이다. 
 	      진짜파일 ==> WAS(톰캣) 디스크에 저장됨.
@@ -47,10 +46,6 @@ public class MemberVO {
 	   /Board/src/main/webapp/WEB-INF/views/tiles1/board/add.jsp 파일에서 input type="file" 인 name 의 이름(attach)과   
 	     동일해야만 파일첨부가 가능해진다.!!!!
     */
-	
-	
-	
-	
 	
 	
 
@@ -324,19 +319,6 @@ public class MemberVO {
 		}
 		
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	
 	public void setFk_position_no(int fk_position_no) {
 		this.fk_position_no = fk_position_no;

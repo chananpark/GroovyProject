@@ -2,20 +2,27 @@ package com.spring.groovy.management.controller;
 
 
 
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
+
+import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.apache.ibatis.reflection.invoker.SetFieldInvoker;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -44,8 +51,43 @@ public class ManagementController {
 		
 		HttpSession session = request.getSession();
 		MemberVO loginuser = (MemberVO) session.getAttribute("loginuser");
-		
 		mav.addObject("loginuser", loginuser);
+		
+		
+		// == 핸드폰 번호 split == //
+		String str = loginuser.getMobile();
+		String[] telNum = str.split("-");
+		String tel1 = telNum[1];
+		String tel2 = telNum[2];
+		mav.addObject("tel1", tel1);
+		mav.addObject("tel2", tel2);
+
+		
+		// == 생년월일 split == //
+		String str2 = loginuser.getJubun();
+		String[] birthArr = str2.split("-");
+		
+		String gender = birthArr[1];
+		String sex = gender.substring(1,2);
+		
+		String birth = birthArr[0];
+		String str3 = birth.substring(0, 2);
+		String birthyyyy = null;
+			if("1".equals(sex) || "2".equals(sex)){
+				birthyyyy = "19"+str3;
+			}else {
+				birthyyyy = "20"+str3;
+			}
+			mav.addObject("birthyyyy", birthyyyy);
+		
+		String birthmm = birth.substring(2, 4);
+		String birthdd = birth.substring(4,6);
+		mav.addObject("birthmm", birthmm);
+		mav.addObject("birthdd", birthdd);
+		
+		
+		
+		// == 핸드폰 번호 split == //
 		mav.setViewName("manage/each/info/viewInfo.tiles");
 		return mav; 
 	}
@@ -54,8 +96,8 @@ public class ManagementController {
 	
 	// 사원정보 수정 (첨부파일)
 	@RequestMapping(value="/manage/info/viewInfoEnd.on")
-	public String viewInfoEnd(MemberVO mvo, MultipartHttpServletRequest mrequest) {
-		
+	public String viewInfoEnd(MemberVO mvo,MultipartHttpServletRequest mtfRequest) {
+	
 		
 	/*
 	      웹페이지에 요청 form이 enctype="multipart/form-data" 으로 되어있어서 Multipart 요청(파일처리 요청)이 들어올때 
@@ -63,8 +105,44 @@ public class ManagementController {
 	   MultipartHttpServletRequest 인터페이스는 HttpServletRequest 인터페이스와  MultipartRequest 인터페이스를 상속받고있다.
            즉, 웹 요청 정보를 얻기 위한 getParameter()와 같은 메소드와 Multipart(파일처리) 관련 메소드를 모두 사용가능하다.  	
 */	
-	
-		int n = service.viewInfoEnd(mvo);
+		// 파일 업로드 경로 지정
+		String path = setFilePath(mtfRequest, "images" + File.separator + "employeeimg");
+		
+		// view에서 넘어온 파일들
+		MultipartFile attach = mtfRequest.getFile("empimg");
+		
+		// 파일 업로드하기
+		String filename = "";
+		String originalFilename = ""; // 원본 파일명
+		byte[] bytes = null; // 파일 내용물
+		
+		try {
+			// 첨부파일의 내용물을 읽어온다.
+			bytes = attach.getBytes();
+			
+			// originalFilename을 읽어온다.
+			originalFilename = attach.getOriginalFilename();
+			
+			// 새로운 파일명으로 디스크에 저장한다.
+			filename = fileManager.doFileUpload(bytes, originalFilename, path);
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		String hp1 = mtfRequest.getParameter("hp1");
+		String hp2 = mtfRequest.getParameter("hp2");
+		String hp3 = mtfRequest.getParameter("hp3");
+		String mobile = hp1 + "-"+ hp2 +"-"+ hp3;
+		
+		Map<String, Object> paraMap = new HashMap<>();
+		paraMap.put("filename", filename);
+		paraMap.put("mobile", mobile);
+		paraMap.put("mvo", mvo);
+		
+		
+		//  업데이트
+		int n = service.viewInfoEnd(paraMap);
 		
 		JSONObject json = new JSONObject();
 		json.put("n", n);
@@ -72,7 +150,18 @@ public class ManagementController {
 		return json.toString();
 	}
 	
-	
+	// === 파일 경로를 지정하는 메소드 == //
+	private String setFilePath(MultipartHttpServletRequest mtfRequest, String directory) {
+		
+		HttpSession session = mtfRequest.getSession();
+		String root = session.getServletContext().getRealPath("/");
+		String path = root + "resources" + File.separator + directory; //  파일경로 설정
+		
+		return path;
+	}
+
+
+
 	// 사원정보 수정 - 이메일 (이메일중복확인 Ajax)
 	@ResponseBody
 	@RequestMapping(value="/manage/admin/checkPvEmail.on", produces="text/plain;charset=UTF-8")

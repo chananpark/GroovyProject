@@ -39,8 +39,8 @@ public class ManagementDAO implements InterManagementDAO {
 	
 	// 사원정보 수정
 	@Override
-	public int viewInfoEnd(MemberVO mvo) {
-		int n = sqlsession.update("minsu.viewInfoEnd", mvo);
+	public int viewInfoEnd(Map<String, Object> paraMap) {
+		int n = sqlsession.update("minsu.viewInfoEnd", paraMap);
 		return n;
 	}
 	

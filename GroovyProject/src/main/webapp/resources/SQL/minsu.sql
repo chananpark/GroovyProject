@@ -380,8 +380,31 @@ select *
 from tbl_employee
 where name = '아이유'
 
-update tbl_employee set pay = 30000000
-where empno = 13
+update tbl_employee set pwd = 'qwer1234$'
+where name = '아이유'
 
 commit
+
+insert into TBL_PAY(PAYNO, FK_EMPNO, PAY, ANNUALPAY, OVERTIMEPAY, PAYMENTDATE)
+values(seq_tbl_pay.nextval, 13,3000000, 100000, 200000,sysdate)
+
+SELECT PAYNO, FK_EMPNO, PAY, ANNUALPAY, OVERTIMEPAY, PAYMENTDATE
+FROM TBL_PAY
+
+
+-- 급여정보 조회
+select E.empno, name, bumun, department, position,
+        PAYNO, FK_EMPNO, PAY, ANNUALPAY, OVERTIMEPAY, PAYMENTDATE
+from tbl_employee E right join TBL_PAY P
+on E.empno = P.fk_empno
+where name = '김민수'
+
+
+
+
+
+
+
+
+
 

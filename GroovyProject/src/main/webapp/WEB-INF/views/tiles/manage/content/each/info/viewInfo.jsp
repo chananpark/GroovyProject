@@ -83,6 +83,10 @@
 		 width: 190px;
 	}
 	
+	span#birthday > input{
+		width: 55px;
+	}
+	
 	
 	
 </style>
@@ -95,7 +99,11 @@
 	
 		 $("div#msg_probation").hide();
 		 $("div.error").hide();
-		 $("button#btn_updateEnd").hide();
+		 $("input#btn_updateEnd").hide();
+		 $("button#btn_adrsearch").hide();
+		 $("button#checkPvEmail").hide();
+		 
+		 $("input").prop("readonly",true);
 		 
 		// === 생년월일 === //
 	        
@@ -156,28 +164,54 @@
 		 	$(this).val("");
 		 });
 		 
+		 // === 이미지 파일첨부 === //
+		 $("input#empimg").change(function(){
+			 if(this.files && files[0]){
+				 var reader = new FileReader;
+				 
+				 reader.onload = function(date){
+					 $(".select_img").attr("src", data.target.result);
+				 }
+				 reader.readAsDataURL(this.files[0]);
+			 }
+		 
+		 
+		 }); // end of  $("input#empimg").change(function(){ --------------------------
+		 
+		 
 		 // === 수정버튼을 클릭하면 === // 
-		$("button#btn_update").click(function(e){
+		$("input#btn_update").click(function(e){
 			let result = confirm("정보를 수정하시겠습니까?");
 			
 			if (result == true){
-				/*
-				var inputs = document.getElementsByClassName('readonly') = false;
+			/* 	
+				var inputs = document.getElementsByClassName('readonly');
 				
 				for(var i=0; i< inputs.length; i++) {
 					inputs[i].readOnly = false;
 				}
-				*/
-				
-				$(".readonly").attr('readonly',false); // 수정불가
-				$("button#btn_update").hide();
-				$("button#btn_updateEnd").show();
-				
+				 */
+				$("input.readonly").prop('readonly',false); // 수정가능
+				$("button#btn_adrsearch").show();
+				$("button#checkPvEmail").show();
+				$("input#btn_update").hide();
+				$("input#btn_updateEnd").show();
+				return;
 			}
 				
-		});
+		}); // end of $("button#btn_update").click(function(e){ -------------------
 		 
-	
+			
+		// === 저장버튼을 누르면 === //
+		$("input#btn_updateEnd").click(function(e){
+			let result = confirm("정보를 수정하시겠습니까?");
+			
+			if (result == true){
+				go_updateEnd();
+			}
+		}); // end of $("input#btn_updateEnd").click(function(e){ ------------------
+			
+			
 		 
 }); // end of $(document).ready(function(){}-----------------------------------------
 
@@ -247,6 +281,10 @@
 	
 	
 	
+	
+	
+	
+	
 	// >>> 개인이메일 확인버튼 누르면 (ajax)<<<
 	function func_checkEmail(pvemail) {
 	 
@@ -305,6 +343,7 @@
 				}
 				else {
 					alert("정보수정 실패하였습니다.");
+					console.log(json);
 				}
 			},
 		  	 error: function(request, status, error){
@@ -332,20 +371,20 @@
 	
 	<table class="m-4 mb-3 table table-bordered table-sm" id="first_table">
 		<tr>
-			<td rowspan='4' style="width:2%;"><input type="file" name="empimg" multiple="multiple" style="height:150px; width: 100px;" /></td>  
+			<td rowspan='4' style="width:2%;"><input type="file" name="empimg" multiple="multiple" style="height:150px; width: 100px;" readonly/><span class="select_img"></span></td>  
 			<th class="t1">사원번호</th>
 			<td>	
-				<input type="text" id="" name="empno" value="${loginuser.empno}" readonly />
+				<input type="text" id="" name="empno" value="${loginuser.empno}" />
 			</td>
 			
 			<th class="t1">성명</th>
-			<td><input type="text" id="name" name="name" value="${loginuser.name}" required readonly></input></td>
+			<td><input type="text" id="name" name="name" value="${loginuser.name}" required></input></td>
 		</tr>
 		<tr >
 			<th class="t1">주민등록번호</th>
 				<td>
 					<span>
-						<input type="text" id="jubun" name="jubun" value="${loginuser.jubun}" style="display: inline;" required readonly/>
+						<input type="text" id="jubun" name="jubun" value="${loginuser.jubun}" style="display: inline;" />
 					</span>
 				</td>
 			<th class="t1">성별</th>
@@ -359,10 +398,10 @@
 		<tr>
 			<th class="t1"><span class="alert_required" style="color: red;">*</span>생년월일</th>
 			<td>
-				<span id="birthday" name="birthday" value="${loginuser.birthday}">
-				    	<select name="year" id="birthyyyy" title="년도" class=" requiredInfo" required <%-- value="${loginuser.birthyyyy} --%> ></select>
-						<select name="month" id="birthmm" title="월" class=" requiredInfo" required <%-- value="${loginuser.birthmm} --%>  ></select>
-						<select name="day" id=birthdd title="일" class=" requiredInfo" required <%-- value="${loginuser.birthdd} --%> ></select>
+				<span id="birthday">
+				    	<input name="year" id="birthyyyy" class="requiredInfo" required value="${requestScope.birthyyyy}"/>
+						<input name="month" id="birthmm" title="월" class=" requiredInfo" required value="${requestScope.birthmm}"/> 
+						<input name="day" id=birthdd title="일" class=" requiredInfo" required  value="${requestScope.birthdd}"/> 
 				</span>
 			</td>
 			<th></th>
@@ -372,10 +411,10 @@
 			<th class="t1">자택주소</th>
 			<td colspan="3">
 			<span>
-				<input type="text" id="postcode" name="postcode" value="${loginuser.postcode}" class="readonly update" placeholder="우편번호" style="display: inline-block;" readonly/>
+				<input type="text" id="postcode" name="postcode" value="${loginuser.postcode}" class="update readonly" placeholder="우편번호" style="display: inline-block;" />
 				<input type="text" id="address" name="address" value="${loginuser.address}" class="input_style update readonly" readonly placeholder="예)00동, 00로" readonly/>
 				<input type="text" id="detailaddress" name="detailaddress" value="${loginuser.detailaddress}"  class="input_style update readonly" readonly placeholder="상세주소"/>
-				<input type="text" id="extraaddress" name="extraaddress" value="${loginuser.extraaddress}" placeholder="참고항목" readonly class="update readonly"/>
+				<input type="text" id="extraaddress" name="extraaddress" value="${loginuser.extraaddress}" placeholder="참고항목" class="update readonly"/>
 				<button type="button" id="btn_adrsearch" onclick="openDaumPOST();" class="btn btn-sm ml-2">변경</button>
 			</span>
 			</td>
@@ -386,20 +425,20 @@
 	<table  class="m-4 mb-3 table table-bordered" >
 		<tr>
 			<th>내선번호</th>
-			<td><input type="text" id="" name="" readonly value="${loginuser.depttel}" />
+			<td><input type="text" id="" name="" value="${loginuser.depttel}" />
 			</td>
 			<th>핸드폰번호</th>
-	         <td style="text-align: left;" id="telNum" name="mobile">
-	             <input type="text" id="hp1" name="hp1" <%-- value="${loginuser.hp1} --%>" size="6" maxlength="3" value="010" class="requiredInfo update readonly" readonly/>&nbsp;-&nbsp;
-	             <input type="text" id="hp2" name="hp2" <%-- value="${loginuser.hp2} --%>" size="6" maxlength="4" class="requiredInfo update readonly" readonly/>&nbsp;-&nbsp;
-	             <input type="text" id="hp3" name="hp3" <%-- value="${loginuser.hp3} --%>" size="6" maxlength="4" class="requiredInfo update readonly" readonly/>
+	         <td style="text-align: left;" id="telNum" >
+	             <input type="text" id="hp1" name="hp1" size="6" maxlength="3" value="010" class="requiredInfo update"/>&nbsp;-&nbsp;
+	             <input type="text" id="hp2" name="hp2" value="${requestScope.tel1}" size="6" maxlength="4" class="requiredInfo update readonly"/>&nbsp;-&nbsp;
+	             <input type="text" id="hp3" name="hp3" value="${requestScope.tel2}" size="6" maxlength="4" class="requiredInfo update readonly"/>
 	             <div class="error">휴대폰 형식이 아닙니다.</div>
 	         </td>
 
 		</tr>
 		<tr>
 			<th>회사이메일</th>
-			<td><input type="email" id="cpemail" name="cpemail" value="${loginuser.cpemail}" readonly/>
+			<td><input type="email" id="cpemail" name="cpemail" value="${loginuser.cpemail}"/>
 				
 			</td>
 			<th>외부이메일</th>
@@ -419,26 +458,26 @@
 	<tr>
 			<th><span class="alert_required" style="color: red;">*</span>부문</th>
 			<td>
-				<input type="text" id="bumun" name="bumun"  value="${loginuser.bumun}" readonly />
+				<input type="text" id="bumun" name="bumun"  value="${loginuser.bumun}" />
 			</td>
 			<th><span class="alert_required required" style="color: red;">*</span>부서</th>
 			<td>
-				<input type="text" id="department"   name="department" value="${loginuser.department}" readonly />
+				<input type="text" id="department"   name="department" value="${loginuser.department}" />
 			</td>
 			
 		</tr>
 		<tr>
 			<th><span class="alert_required" style="color: red;">*</span>직급</th>
 			<td>
-				<input type="text" id="position" name="position" value="${loginuser.position}" readonly />
+				<input type="text" id="position" name="position" value="${loginuser.position}" />
 			</td>
 			<th><span class="alert_required" style="color: red;">*</span>급여계약기준</th>
 			<td>
 			<c:choose>
 				<c:when test="${loginuser.empstauts eq '1'}">
-					<input type="text" id="empstauts" name="empstauts" value="정규직" readonly />
+					<input type="text" id="empstauts" name="empstauts" value="정규직" />
 				</c:when>
-				<c:otherwise><input type="text" id="empstauts" name="empstauts" value="비정규직" readonly /></c:otherwise>
+				<c:otherwise><input type="text" id="empstauts" name="empstauts" value="비정규직" /></c:otherwise>
 			</c:choose>
 			
 			
@@ -449,26 +488,26 @@
 			<th>연봉</th>
 			<td><div style="background-color: "><fmt:formatNumber value="${loginuser.salary}" pattern="#,###"/></div></td>
 			<th><span class="alert_required" style="color: red;">*</span>입사일자</th>
-			<td><input type="text" style="width: 165px;" readonly  value="${loginuser.joindate}"/></td>
+			<td><input type="text" style="width: 165px;"  value="${loginuser.joindate}"/></td>
 		</tr>
 		<tr>
 			<th><span class="alert_required" style="color: red;">*</span>은행</th>
 			<td>
-				<input type="text" class="emppay readonly" name="bank" value="${loginuser.bank}" readonly style="width: 165px; background-color: white;"/>
+				<input type="text" class="emppay readonly" name="bank" value="${loginuser.bank}" style="width: 165px; background-color: white;"/>
 			</td>
 			<th><span class="alert_required" style="color: red;">*</span>계좌</th>
-			<td><input type="text" name="account"  class="readonly" value="${loginuser.account}"  readonly style="width: 165px; background-color: white;" /></td>
+			<td><input type="text" name="account"  class="readonly" value="${loginuser.account}"  style="width: 165px; background-color: white;" /></td>
 		</tr>
 	</table>
 	
 	<div align="right" style="margin: 3% 0;">
-		<button id="btn_update" style="color: white; background-color:#086BDE; border: none; width: 80px;">수정</button>
+		<input type="button" id="btn_update" style="color: white; background-color:#086BDE; border: none; width: 80px;" value="수정"/>
 	</div>
 	
 	
 	<%-- 정보수정 페이지에서 보이는 버튼 --%>
 	<div align="right" style="margin: 3% 0;">
-		<button id="btn_updateEnd" style="color: white; background-color:#086BDE; border: none; width: 80px;">저장</button>
+		<input type="button"  id="btn_updateEnd" style="color: white; background-color:#086BDE; border: none; width: 80px;" value="저장"/>
 	</div>
 
 </div>
