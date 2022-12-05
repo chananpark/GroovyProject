@@ -43,6 +43,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.nhncorp.lucy.security.xss.XssPreventer;
 import com.spring.groovy.approval.model.ApprovalVO;
 import com.spring.groovy.approval.model.BiztripReportVO;
 import com.spring.groovy.approval.model.DraftFileVO;
@@ -669,9 +670,10 @@ public class ApprovalController {
 	@ResponseBody
 	@RequestMapping(value = "/getSavedAprvEmpInfo.on", produces = "text/plain;charset=UTF-8")
 	public String getSavedAprvEmpInfo(HttpServletRequest request) {
-
+		
 		String param = request.getParameter("selectedAprvLine");
-
+		param = XssPreventer.unescape(param);
+		
 		JSONArray jsonArray = new JSONArray(param);
 		JSONObject json = jsonArray.getJSONObject(0);
 
