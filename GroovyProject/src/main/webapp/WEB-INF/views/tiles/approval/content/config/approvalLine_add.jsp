@@ -81,6 +81,7 @@ const receiveMessage = async (e) =>
    	const jsonArr = e.data;
    	
 	const body = $('#tblBody');
+	body.empty();
 
 	// 선택된 사원을 테이블에 표시함
 	jsonArr.forEach((emp, index) => {
@@ -106,7 +107,7 @@ const saveAprvLine = () => {
 	// 선택한 결재자가 있는지 검사
 	const length = $("#tblBody").find('tr').length;
 	if (length == 0){
-		swal("결재자가 선택되자 않았습니다.");
+		swal("결재자가 선택되지 않았습니다.");
 		return;
 	}
 	

@@ -249,10 +249,11 @@ $(() => {
 		        fileSize = fileSize < 1 ? fileSize.toFixed(3) : fileSize.toFixed(1);
 		     	// 파일 정보 표시하기
 		        tag += 
-		                "<div class='fileList" + (length + i) + "'>" +
+		                "<div class='fileList'>" +
 		                    "<span class='fileName'>" + fileName + "</span>" +
 		                    "<span class='fileSize'>" + fileSize +" MB</span>" +
-		                    "<a href='#' onclick='deleteFile(" + (length + i) + "); return false;' class='btn small bg_02'>삭제</a>" +
+		                    "<span class='digitFileSize' style='display:none'>" + f.size + "</span>" +
+		                    "<span class='removeFile btn small' name='removeFile'>삭제</span>" +
 		                "</div>";
 		    }
 		    $(".dropBox span").hide();
@@ -279,18 +280,25 @@ $(() => {
 	  e.stopPropagation();
 	  $drop.classList.remove("active");
 	}
-
+	
+	// 파일 삭제 버튼 클릭시
+	$(document).on('click','[name=removeFile]', function(){
+   	 	const $this = $(this);
+   	 	delete_file_name = $this.parent().children('.fileName').text();
+   	 	delete_file_size = $this.parent().children('.digitFileSize').text();
+   	 	
+   	 	for(let i = 0; i < fileList.length; i++) {
+   	 		if(fileList[i].name = delete_file_name && delete_file_size == fileList[i].size )  {
+   	 			
+   	 			fileList.splice(i, 1);
+   	 		    i--;
+   	 		  }
+   	 	}
+   	 $(this).parent().remove();
+   	 
+	});
 });
 
-//업로드 파일 삭제
-function deleteFile(fIndex){
- 
- // 파일 배열에서 삭제
- delete fileList[fIndex];
-
- // 표시영역에서 제거
- $(".fileList"+fIndex).remove();
-}
 
 //긴급 여부 체크
 const checkUrgent = () => {
