@@ -385,16 +385,3 @@ where empno = 13
 
 commit
 
-
-
-
-	
-
-select pay
-from tbl_employee
-
-drop table tbl_pay
-commit
-
-
-
