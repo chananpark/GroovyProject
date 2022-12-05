@@ -279,14 +279,14 @@
 	<!-- 결재라인 저장하기 -->
 	<insert id="saveApprovalLine" parameterType="com.spring.groovy.approval.model.SavedAprvLineVO">
 		INSERT INTO TBL_SAVED_APRV_LINE
-		VALUES (SEQ_APRV_LINE_NO.nextval, #{aprv_line_name}, #{fk_empno}, #{fk_approval_empno1}, #{fk_approval_empno2, jdbcType=INTEGER}, #{fk_approval_empno3, jdbcType=INTEGER}, #{fk_approval_empno4, jdbcType=INTEGER})
+		VALUES (SEQ_APRV_LINE_NO.nextval, #{aprv_line_name}, #{fk_empno}, #{fk_approval_empno1}, #{fk_approval_empno2}, #{fk_approval_empno3}, #{fk_approval_empno4})
 	</insert>
 		
 	<!-- 결재라인 수정하기 -->
 	<update id="editApprovalLine" parameterType="com.spring.groovy.approval.model.SavedAprvLineVO">
 		UPDATE TBL_SAVED_APRV_LINE
-		SET FK_APPROVAL_EMPNO1 = #{fk_approval_empno1}, FK_APPROVAL_EMPNO2 = #{fk_approval_empno2, jdbcType=INTEGER}, 
-			FK_APPROVAL_EMPNO3 = #{fk_approval_empno3, jdbcType=INTEGER}, FK_APPROVAL_EMPNO4 = #{fk_approval_empno4, jdbcType=INTEGER}
+		SET FK_APPROVAL_EMPNO1 = #{fk_approval_empno1}, FK_APPROVAL_EMPNO2 = #{fk_approval_empno2}, 
+			FK_APPROVAL_EMPNO3 = #{fk_approval_empno3}, FK_APPROVAL_EMPNO4 = #{fk_approval_empno4}
 		WHERE APRV_LINE_NO = #{aprv_line_no}
 	</update>
 		
@@ -301,6 +301,7 @@
 		SELECT APRV_LINE_NO, APRV_LINE_NAME, FK_APPROVAL_EMPNO1, FK_APPROVAL_EMPNO2, FK_APPROVAL_EMPNO3, FK_APPROVAL_EMPNO4
 		FROM TBL_SAVED_APRV_LINE
 		WHERE FK_EMPNO = #{empno}
+		ORDER BY APRV_LINE_NO DESC
 	</select>
 	
 	<!-- 저장된 결재라인 결재자 정보 불러오기 -->
@@ -412,7 +413,7 @@
 		<foreach collection="list" item="evo" separator="union all">
 			SELECT #{evo.fk_draft_no} AS FK_DRAFT_NO, #{evo.expense_date} AS EXPENSE_DATE,
 			#{evo.expense_type} AS EXPENSE_TYPE, #{evo.expense_detail} AS EXPENSE_DETAIL,
-			#{evo.expense_amount} AS EXPENSE_AMOUNT, #{evo.expense_remark, jdbcType = VARCHAR} AS EXPENSE_REMARK FROM DUAL
+			#{evo.expense_amount} AS EXPENSE_AMOUNT, #{evo.expense_remark} AS EXPENSE_REMARK FROM DUAL
 		</foreach>) A
 	</update>
 		
@@ -432,8 +433,8 @@
 	<insert id="saveDraft" parameterType="com.spring.groovy.approval.model.DraftVO">
 		INSERT INTO TBL_TEMP_DRAFT
 		(TEMP_DRAFT_NO, FK_DRAFT_EMPNO, DRAFT_SUBJECT, DRAFT_CONTENT, DRAFT_TYPE, FK_DRAFT_TYPE_NO)
-		VALUES (#{draft_no}, #{fk_draft_empno}, #{draft_subject, jdbcType = VARCHAR}, #{draft_content, jdbcType = VARCHAR},
-		 #{draft_type, jdbcType = VARCHAR}, #{fk_draft_type_no, jdbcType = INTEGER})
+		VALUES (#{draft_no}, #{fk_draft_empno}, #{draft_subject}, #{draft_content},
+		 #{draft_type}, #{fk_draft_type_no})
 	</insert>
 	
 	<!-- 임시저장 결재정보 등록하기 -->
@@ -509,7 +510,7 @@
 	<!-- 결재 처리하기(프로시저) -->
 	<select id="updateApproval" statementType="CALLABLE" >
         { CALL pcd_tbl_approval_update(#{avo.fk_draft_no}, 
-           		#{avo.levelno}, #{avo.approval_status}, #{avo.approval_comment,jdbcType=VARCHAR}, 
+           		#{avo.levelno}, #{avo.approval_status}, #{avo.approval_comment}, 
            		#{o_updateCnt, mode=OUT, jdbcType=INTEGER, javaType=Integer})
        	}	
 	</select>
@@ -534,8 +535,8 @@
 	<!-- 공통결재라인 저장하기 -->
 	<update id="saveOfficialApprovalLine" parameterType="com.spring.groovy.approval.model.OfficialAprvLineVO">
 		UPDATE TBL_OFFICIAL_APRV_LINE
-		SET FK_APPROVAL_EMPNO1 = #{fk_approval_empno1}, FK_APPROVAL_EMPNO2 = #{fk_approval_empno2, jdbcType=INTEGER}, 
-				FK_APPROVAL_EMPNO3 = #{fk_approval_empno3, jdbcType=INTEGER}, FK_APPROVAL_EMPNO4 = #{fk_approval_empno4, jdbcType=INTEGER}
+		SET FK_APPROVAL_EMPNO1 = #{fk_approval_empno1}, FK_APPROVAL_EMPNO2 = #{fk_approval_empno2}, 
+				FK_APPROVAL_EMPNO3 = #{fk_approval_empno3}, FK_APPROVAL_EMPNO4 = #{fk_approval_empno4}
 		WHERE OFFICIAL_APRV_LINE_NO = #{official_aprv_line_no}
 	</update>
 	
