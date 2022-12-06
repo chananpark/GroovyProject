@@ -31,6 +31,7 @@
 	<!--  로그인 - 비밀번호 변경하기-->
 	<update id="updatePwd" parameterType="HashMap"> 
 		UPDATE TBL_EMPLOYEE SET PWD = #{pwd} 
+		WHERE CPEMAIL = #{cpemail}
 	</update>
 	
 	

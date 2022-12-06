@@ -154,7 +154,7 @@
 		
 		const url = "<%=ctxPath%>/findPwd.on";
 		const name = "findPwd";
-		const option = "width=550, height=300, top=120, left=500";
+		const option = "width=550, height=500, top=130, left=500";
 		
 		window.open(url, name, option);
 	} // end of function managePopup(){} ---------------

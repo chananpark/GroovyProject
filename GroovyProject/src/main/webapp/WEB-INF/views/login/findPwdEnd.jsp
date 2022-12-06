@@ -43,21 +43,27 @@
 	src="<%=ctxPath%>/resources/js/jquery.form.min.js"></script>
 	
 <style>
+
+
+	div#container {
 	
-	#myContainer {
-		padding-top: 5%;
 	}
 	
-	
-	input#cpemail {
+	input {
+		width:60%;
 		border: solid 1px #d9d9d9;
-		margin-bottom: 1%;
+		margin-left: 2%;
 	}
 	
-	input#jubun1,input#jubun2 {
-		width: 85px;
-		border: solid 1px #d9d9d9;
+	div.error_msg, div#pwdSame{
+		font-size: 10px;
+		margin: 1% 0 2% 0;
 	}
+	
+	div#section {
+		margin: 2% 0 3% 0;
+	}
+	
 	
 	#btn_next{
 		background-color:  #086BDE; 
@@ -68,9 +74,8 @@
 		border: none;
 	}
 	
-	th {
-		width: 80px;
-	}
+	
+	
 	
 </style>    
 </head>
@@ -81,66 +86,108 @@
 
 	$(document).ready(function(){
 		
+		$(".error_msg").hide();
+		$("#pwdSame").hide();
 		
- 	$("input#pwd").blur( function(e) {
-	   		
-			const $target = $(e.target);
-		
-			const regExp = new RegExp(/^.*(?=^.{8,15}$)(?=.*\d)(?=.*[a-z])(?=.*[^a-z0-9]).*$/g);
-			const bool = regExp.test( $target.val() );
+		let chk_bool = false;
+		let same_bool = false;
+	
+		$("input#pwd").on("propertychange change keyon paste input", function() {
 			
-			 if($target.val() == "") {
-		        	// 비밀번호 입력칸이 공백인 경우
-		        	 $target.parent().find("div#first_error").show();
-		    }
-			 else {
-				 
-					if(!bool) {
-						// 암호가 정규표현식에 위배된 경우
-						$("div#result_error").show();
-					}
-					else {
-						// 비밀번호 입력칸에 글자가 들어온경우
-				       	 $("div#result_error").hide();
-					}
-			 }
-		}); // end of $("input#pwd").blur() ----------------- // 아이디가 pwd 인 것은 포커스를 잃어버렸을 경우(blur) 이벤트를 처리해주는 것이다.
-		
-	$("input#pwdCheck").blur( function(e) {
-	   		
-		const pwdCheck = $(e.target).val();
+			const pwd = $(this).val();
+			$(".chk").css({"color":"red"});
+			
+			const num = /[0-9]/g;  
+			const lower = /[a-z]/g;
+			const spe = /[`~!@@#$%^&*|₩₩₩'₩";:₩/?]/gi;
+			
+			let size_bool = false;
+			let num_bool = false;
+			let lower_bool = false;
+			let spe_bool = false;
+			
+			
+			if(pwd.length > 7 && pwd.length < 16){
+				$("div#size").css({"color":"green"});
+				size_bool = true;
+			}
+			else {
+				size_bool = false;
+			}
+			
+			if( num.test(pwd) ){
+				$("div#num").css({"color":"green"});
+				num_bool = true;
+			}
+			else {
+				num_bool = false;
+			}
+			
+			if( lower.test(pwd) ){
+				$("div#lower").css({"color":"green"});
+				lower_bool = true;
+			}
+			else{
+				lower_bool = false;
+			}
+			
+			if( spe.test(pwd) ){
+				$("div#special").css({"color":"green"});
+				spe_bool = true;
+			}
+			else{
+				spe_bool = false;
+			}
+			
+			if(size_bool && num_bool && lower_bool && spe_bool){
+				chk_bool = true;
+			}
+			else{
+				chk_bool = false;
+			}
+			$(".error_msg").show();
+			
+		}); // end of $("#pwd1").on() ----------------------------------------
 	
-		const pwd = $("input#pwd").val();
 		
-		 if(pwdCheck != pwd) { // 비밀번호와 일치하지 않는경우
-                	 $("div#pwdCheck").show();
-	    }
-		 
-		 if(pwdCheck == "") {// 비밀번호 입력칸이 공백인 경우
-			 $("div#first_error").show();
-		 }
-			 
+		
+		$("#pwdCheck").blur(function(e){
+			const pwd = $("input#pwd").val();
+			const pwdCheck = $("input#pwdCheck").val();
+			
+			if(pwd != pwdCheck){ // 암호와 암호확인 값이 서로 다른 경우
+				$("#pwdSame").show();
+				same_bool = false;
+			}
+			else{
+				$("#pwdSame").hide();
+				same_bool = true;
+			}
+			
+			$("#pwdSame").css({"color": "", "font-weight": ""});
+			
 			func_update();
-	}); // end of $("input#pwd").blur() ----------------- // 아이디가 pwd 인 것은 포커스를 잃어버렸을 경우(blur) 이벤트를 처리해주는 것이다.
+			
+		}); // end of $("#pwd2").on() ----------------------------------------
 		
-		
-		
-		$("button#btn_next").click(function(){
-			func_next();
-		}); // end of $("button#btn_next").click(function(){ -------------------
-	
-		
-		
-	}); // end of $(document).ready(function(){ ------------------------------
 
+		// 엔터로 넘어가는 메소드 //
+		$("input#pwdCheck").keydown(function(e){
+			     
+			if(e.keyCode == 13) {
+				func_update();
+			}
+		}); // end of $("input[name='pwd2']").keyup(function(e)
+				
+	}); // end of 
 		
 	// >>> Function Declartion <<<
 
 	// >>> 다음으로 넘어가는 함수 생성하기 <<< 
 	function func_update() {
-		const frm = document.frm_findPwd;
-		frm.url = "<%=ctxPath%>/findPwdEndReal.on";
-		frm.action="POST";
+		const frm = document.frm_changePwd
+		frm.action = "<%=ctxPath%>/findPwdChange.on";
+		frm.method="POST";
 		frm.submit();
 	}
 
@@ -148,46 +195,37 @@
 
 </script>
 
-
 <div id="myContainer">
 <div id="body" align="center" class="flex-content join-content">
-<form name="frm_findPwd">
 
+<form name="frm_changePwd">
 	<div id="container"  class="card card-body" >
-		<h3 style="font-weight: bold;">비밀번호 찾기</h3>
-		<p style="color:#b3b3b3 ">변경할 비밀번호를 입력해주세요</p>
+		<h3 style="font-weight: bold;" >비밀번호 찾기</h3>
+		<p style="color:#b3b3b3">변경할 비밀번호를 입력해주세요</p>
 		
-		<table style="margin: 2% auto;">
-			<tbody>
-			<tr>
-				<th>비밀번호 : </th>
-				<td><input type="text" name="pwd" id="pwd" required/>
-					<div id="first_error" style="color:red; font-size: 12px;">비밀번호를 입력해주세요</div>
-					<div id="result_error">비밀번호 형식에 맞지 않습니다.</div>
-				</td>
-			</tr>
-			<tr>
-				<th>비밀번호 확인 :  </th>
-				<td><input type="text" id="pwdCheck"required/>
-					<div id="first_error" style="color:red; font-size: 12px;">비밀번호확인을 입력해주세요</div>
-					<div id="result_error">비밀번호 형식에 맞지 않습니다.</div>
-					<div id="pwdCheck">비밀번호가 일치하지 않습니다.</div>
-				</td>
-			</tr>
-			
-			</tbody>
-		</table>
+			<div id="section">
+				<input type="hidden" name="cpemail" value="${employee.cpemail}"/>
+				<span>비밀번호 </span><input type="password" name="pwd" id="pwd" required/>
+			</div>
+	       	<div class="error_msg">
+					<div id="notPassed">비밀번호는 해당 조건을 모두 충족해야 합니다.</div>
+		        	<span class="chk" id="size">✔</span>&nbsp;최소 8자 이상 15글자 이하<br>
+		        	<span class="chk" id="lower">✔</span>&nbsp;최소 1개의 소문자 사용<br>
+		        	<span class="chk" id="num">✔</span>&nbsp;최소 1개의 숫자 사용<br>
+		        	<span class="chk" id="special">✔</span>&nbsp;최소 1개의 특수문자 사용
+	       	</div>
+	       	
+	       	<div>
+				<span>비밀번호 확인 </span><input type="password" id="pwdCheck"required />
+			</div>
+			<div id="pwdSame" style="color: red;">비밀번호를 동일하게 입력해주세요.</div>
 		<div align="center" class="mt-3">
-			<button type="button" id="btn_next">다음</button>
+			<button type="button" id="btn_next" >다음</button>
 		</div>
 	</div>
-	
-	
-	
 </form>	
- </div>
 </div>
-
+</div>
 
 </body>
 </html>

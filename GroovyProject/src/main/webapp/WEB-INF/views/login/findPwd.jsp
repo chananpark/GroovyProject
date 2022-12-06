@@ -81,6 +81,16 @@
 
 	$(document).ready(function(){
 		
+		// 엔터로 넘어가는 메소드 //
+		$("input[name='jubun2']").keydown(function(e){
+			     
+			if(e.keyCode == 13) {
+				func_next();
+			}
+		}); // end of $("input[name='pwd2']").keyup(function(e)
+				
+				
+				
 		$("button#btn_next").click(function(){
 			func_next();
 		}); // end of $("button#btn_next").click(function(){ -------------------
@@ -95,8 +105,8 @@
 	// >>> 다음으로 넘어가는 함수 생성하기 <<< 
 	function func_next() {
 		const frm = document.frm_findPwd;
-		frm.url = "<%=ctxPath%>/findPwdEnd.on";
-		frm.action="POsT";
+		frm.action = "<%=ctxPath%>/findPwdEnd.on";
+		frm.method="POST";
 		frm.submit();
 	}
 

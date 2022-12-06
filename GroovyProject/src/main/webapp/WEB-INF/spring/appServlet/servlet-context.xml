@@ -81,6 +81,8 @@
 	    	<mvc:exclude-mapping path="/login.on"/>    <!-- 로그인체크 제외되는  url -->
 	    	<mvc:exclude-mapping path="/login2.on"/>   <!-- 로그인체크 제외되는  url -->
 	    	<mvc:exclude-mapping path="/findPwd.on"/>   <!-- 로그인체크 제외되는  url -->
+	    	<mvc:exclude-mapping path="/findPwdEnd.on"/>   <!-- 로그인체크 제외되는  url -->
+	    	<mvc:exclude-mapping path="/findPwdChange.on"/>   <!-- 로그인체크 제외되는  url -->
 	    	<mvc:exclude-mapping path="/logout.on"/>   <!-- 로그인체크 제외되는  url -->
 	    	<beans:ref bean="loginCheckInterceptor"/>  <!-- 로그인유무 검사(회원 사용자인지 검사) -->
 	 	</mvc:interceptor> 
