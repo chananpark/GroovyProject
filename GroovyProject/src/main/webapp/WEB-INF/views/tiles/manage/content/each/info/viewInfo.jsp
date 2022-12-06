@@ -91,7 +91,7 @@
 		 height:150px; 
 		 width: 100px;
 	}
-	
+
 	
 </style>
 
@@ -106,6 +106,7 @@
 		 $("input#btn_updateEnd").hide();
 		 $("button#btn_adrsearch").hide();
 		 $("button#checkPvEmail").hide();
+		 $("input#file").hide();
 		 
 		 $("input").prop("readonly",true);
 		 
@@ -202,6 +203,7 @@
 				$("button#checkPvEmail").show();
 				$("input#btn_update").hide();
 				$("input#btn_updateEnd").show();
+				$("input#file").show();
 				return;
 			}
 				
@@ -217,16 +219,7 @@
 			}
 		}); // end of $("input#btn_updateEnd").click(function(e){ ------------------
 			
-	  window.onload = function() {
-	  fileDOM.addEventListener('change', () => {
-		  const reader = new FileReader();
-		  reader.onload = ({ target }) => {
-		    preview.src = target.result;
-		  };
-		  reader.readAsDataURL(fileDOM.files[0]);
-		});
-		}
-		 
+	
 }); // end of $(document).ready(function(){}-----------------------------------------
 
 
@@ -237,6 +230,19 @@
 
 //>>> Function Declaration <<< //
 
+// 이미지 미리보기
+function readURL(input) {
+  if (input.files && input.files[0]) {
+    var reader = new FileReader();
+    reader.onload = function(e) {
+      document.getElementById('preview').src = e.target.result;
+    };
+    reader.readAsDataURL(input.files[0]);
+  } else {
+    document.getElementById('preview').src = "";
+  }
+}
+		
 	
  // >>> select box  생년월일 표시 <<<
 	  function setDateBox() {
@@ -340,12 +346,15 @@
 	// >> 정보수정완료 페이지로 이동 << 
 	function go_updateEnd(){
 		
-		const queryString = $("form[name='frm_manageInfo']").serialize();
+/* 		const queryString = $("form[name='frm_manageInfo']").serialize();
+		console.log(queryString); */
+		const formData = new FormData($('#frm_manageInfo')[0]) ; 
+
 		
 		$.ajax({
 			url:"<%= ctxPath%>/manage/info/viewInfoEnd.on",
-			data:queryString,
-			type:"POST",
+			data: formData,
+			type:"post",
 			dataType:"JSON",
 			// ajax를 이용한 요청인 경우 ajax 옵션에 processData: false, contentType: false 이 두가지 속성 값을 추가
 			enctype: 'multipart/form-data',
@@ -355,6 +364,7 @@
 				
 				if(json.n == 1) {
 					alert("정보수정이 완료되었습니다.");
+					history.go(0);// 새로고침
 				}
 				else {
 					alert("정보수정 실패하였습니다.");
@@ -367,24 +377,14 @@
 		
 		}); // $.ajax({ ---------------------
 	} // end of function go_update(){ -------------------------------
-	
-	function fileUpload(fis) {
-		var str = fis.value;
-		alert("파일네임: "+ fis.value.substring(str.lastIndexOf("\\")+1));
-		}
-	
-	const fileDOM = document.querySelector('#file');
-	const preview = document.querySelector('.image-box');
 
-	
-
-	
+		
 </script>
 
 
 
 
-<form id="frm_manageInfo" enctype="multipart/form-data">
+<form name="frm_manageInfo" id="frm_manageInfo" method="post" enctype="multipart/form-data">
 <div id="info_manageInfo">
 
 <div style='margin: 1% 0 5% 1%'>
@@ -396,10 +396,8 @@
 	<table class="m-4 mb-3 table table-bordered table-sm" id="first_table">
 		<tr>
 			<td rowspan='4' style="width:2%;">
-				<c:if test="${loginuser.empimg != null}">
-					<img src="<%=ctxPath%>/resources/images/empphoto/${loginuser.empimg}" class="image-box" />
-				</c:if>
-			    <label for="file" class="upload-btn"><input id="file" type="file" accept="image/*" /></label>
+				<img id="preview" src="<%=ctxPath%>/resources/images/empphoto/${loginuser.empimg}" class="image-box" width="150px;" />
+			    <input id="file" name="attach" type="file" accept="image/*" onchange="readURL(this)" style="width: 65px;"/>
 			</td>
 			<!-- <td rowspan='4' style="width:2%;"><input type="file" name="empimg" id="empimg" accept=".png, .jpeg" onchange="fileUpload(this)" class"readonly"/></td>   -->
 																					  <!-- accept는 입력받을 수 있는 파일의 유형을 지정하는 속성 -->

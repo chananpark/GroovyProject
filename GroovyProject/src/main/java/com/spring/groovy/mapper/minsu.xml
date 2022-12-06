@@ -40,8 +40,9 @@
 	
 	<!-- 사원정보 수정-->
 	<update id="viewInfoEnd" parameterType="HashMap"> 
-		UPDATE TBL_EMPLOYEE SET POSTCODE = #{mav.postcode} , ADDRESS= #{mav.address}, DETAILADDRESS= #{mav.detailaddress}, EXTRAADDRESS= #{mav.extraaddress}
-							  , EMPIMG= #{empimg}, PVEMAIL= #{mav.pvemail}, MOBILE= #{mav.mobile}, BANK=#{mav.bank}, ACCOUNT= #{mav.account}
+		UPDATE TBL_EMPLOYEE SET POSTCODE = #{mvo.postcode} , ADDRESS= #{mvo.address}, DETAILADDRESS= #{mvo.detailaddress}, EXTRAADDRESS= #{mvo.extraaddress}
+							  , EMPIMG= #{filename}, PVEMAIL= #{mvo.pvemail}, MOBILE= #{mobile}, BANK=#{mvo.bank}, ACCOUNT= #{mvo.account}
+		WHERE EMPNO = #{empno}
 	</update>
 	
 	

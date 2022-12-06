@@ -94,11 +94,6 @@
 		 }); // end of  $("tbody.list > tr> td").click(function(){---------------------
 		
 			 
-			 
-
-		
-		
-		
 	}); // end of $(document).ready(function(){
 		
 		
@@ -183,9 +178,9 @@
 					<tr class="text-center border" >
 						<td>1</td>
 						<td>기본급</td>
-						<td><fmt:formatNumber value="${emp.salary}" pattern="#,###" id="salary"/></td>
+						<td><fmt:formatNumber value="${emp.salary}" pattern="#,###" /></td>
 						<td>소득세</td>
-						<td><input type="text" name=""><fmt:formatNumber value="${emp.salary}" pattern="#,###" id="tax" /></input></td>
+						<td><input type="text" name=""><fmt:formatNumber value="${emp.salary}" pattern="#,###"/></input></td>
 					</tr>
 					<tr class="text-center border" >
 						<td>2</td>

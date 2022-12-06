@@ -380,6 +380,10 @@ select *
 from tbl_employee
 where name = '아이유'
 
+update tbl_employee
+set mobile = '010-1234-5678';
+commit;
+
 update tbl_employee set pwd = 'qwer1234$'
 where name = '아이유'
 

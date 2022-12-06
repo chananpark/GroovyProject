@@ -3,6 +3,8 @@ package com.spring.groovy.management.controller;
 
 
 
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
+
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
@@ -15,6 +17,7 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -91,6 +94,7 @@ public class ManagementController {
 	
 	
 	// 사원정보 수정 (첨부파일)
+	@ResponseBody
 	@RequestMapping(value="/manage/info/viewInfoEnd.on")
 	public String viewInfoEnd(MemberVO mvo,MultipartHttpServletRequest mtfRequest) {
 	/*
@@ -101,9 +105,8 @@ public class ManagementController {
 */	
 		// 파일 업로드 경로 지정
 		String path = setFilePath(mtfRequest, "images" + File.separator + "empphoto");
-		
-		// view에서 넘어온 파일들
-		MultipartFile empimg = mtfRequest.getFile("empimg");
+
+		MultipartFile empimg = mvo.getAttach();
 		
 		// 파일 업로드하기
 		String filename = "";
@@ -124,6 +127,8 @@ public class ManagementController {
 			e.printStackTrace();
 		}
 		
+		MemberVO loginuser = getLoginUser(mtfRequest);
+		
 		String hp1 = mtfRequest.getParameter("hp1");
 		String hp2 = mtfRequest.getParameter("hp2");
 		String hp3 = mtfRequest.getParameter("hp3");
@@ -133,6 +138,7 @@ public class ManagementController {
 		paraMap.put("filename", filename);
 		paraMap.put("mobile", mobile);
 		paraMap.put("mvo", mvo);
+		paraMap.put("empno", loginuser.getEmpno());
 		
 		
 		//  업데이트
@@ -140,10 +146,31 @@ public class ManagementController {
 		
 		JSONObject json = new JSONObject();
 		json.put("n", n);
-	
+		//맵 - 지금 로그인유저 cpemail, pwd
+		
+		String cpemail = loginuser.getCpemail();
+		String pwd = loginuser.getPwd();
+		
+		Map<String,String> paramap = new HashMap<>();
+		paramap.put("cpemail", cpemail);
+		paramap.put("pwd", pwd);
+		
+		loginuser = service.login2(paramap);		
+		HttpSession session = mtfRequest.getSession();
+		session.setAttribute("loginuser", loginuser);
+		
 		return json.toString();
 	}
 	
+	// mtfRequest안에 loginuser정보가 없기때문에 다시 객체에 담아야한다.
+	private MemberVO getLoginUser(HttpServletRequest request) {
+		HttpSession session = request.getSession();
+		MemberVO loginuser = (MemberVO) session.getAttribute("loginuser");
+		return loginuser;
+	}
+
+
+
 	// === 파일 경로를 지정하는 메소드 == //
 	private String setFilePath(MultipartHttpServletRequest mtfRequest, String directory) {
 		
