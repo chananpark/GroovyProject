@@ -15,11 +15,17 @@ public interface InterManagementDAO {
 	// 로그인- 비밀번호 입력
 	MemberVO login2(Map<String, String> paraMap);
 
-	
+	// 로그인 - 비밀번호 찾기 값입력
+	MemberVO findPwd(Map<String, String> paraMap);
+
+	// 로그인 - 비밀번호 변경하기
+	int updatePwd(Map<String, Object> paraMap);
+
+		
 	// =========================================================== //
 	
 	// 사원정보 수정
-	int viewInfoEnd(MemberVO mvo);
+	int viewInfoEnd(Map<String, Object> paraMap);
 
 	// 사원정보 수정 - 이메일 (이메일중복확인 Ajax)
 	int checkPvEmail(String pvemail);
@@ -117,6 +123,8 @@ public interface InterManagementDAO {
 	// 재직증명서 - 한 페이지에 표시할 글 목록  (페이징 페이지수를 알아온다음에 10개씩보여줌) (페이징)
 	List<ProofVO> getOnePageProofCnt(Map<String, Object> paraMap);
 
+	
+	
 	
 
 

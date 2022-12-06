@@ -16,9 +16,7 @@
 	div.marginbottom {
 		margin-bottom: 1%;
 	}
-	input {
-		border: solid 1px #d9d9d9;
-	}
+	
 	
 	button#btn_next {
 		width: 80px;
@@ -83,8 +81,9 @@
 	</div>
 	
 	<div align="center" style="margin-top: 3%;">
-		<button id="btn_cancle" class="btn btn-sm" onclick="javascript:location.href='<%= ctxPath%>/survey/surveyList.on'">취소</button>
-		<button id="btn_next" class="btn btn-sm" onclick="<%= ctxPath%>/survey/surveyWritingEnd.on" style="background-color:#086BDE; color:white; width: 80px;">다음</button>
+		<button id="btn_cancle" class="btn btn-sm" onclick="javascript:location.href='<%=ctxPath%>/survey/surveyList.on'">취소</button>
+		<button id="btn_storage" class="btn btn-sm"onclick="javascript:location.href='<%= ctxPath%>/survey/surveyJoin.on'">임시저장</button>
+		<button id="btn_submit" class="btn btn-sm" style="background-color:#086BDE; color:white; width: 80px;">완료</button>
 	</div>
 
 </div>

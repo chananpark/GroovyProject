@@ -1,16 +1,22 @@
 package com.spring.groovy.management.model;
 
-import java.util.List;
-
 public class PayVO {
 
 	private String payno;           // 급여번호
 	private String fk_empno;        // 사원번호
-	private String pay;             // 기본급
-	private String annualpay;       // 연차수당
-	private String overtimepay;     // 초과근무수당
+	private int pay;             // 기본급
+	private int annualpay;       // 연차수당
+	private int overtimepay;     // 초과근무수당
 	private String paymentdate;     // 지급일자(특정일자)
-	private String postcode;        // 우편번호
+	
+	
+	
+	// == 조인 == // 
+	private String name;        
+	private String bumun;        
+	private String department;      
+	private String position;       
+	private int salary;     
 	
 	
 
@@ -26,22 +32,22 @@ public class PayVO {
 	public void setFk_empno(String fk_empno) {
 		this.fk_empno = fk_empno;
 	}
-	public String getPay() {
+	public int getPay() {
 		return pay;
 	}
-	public void setPay(String pay) {
+	public void setPay(int pay) {
 		this.pay = pay;
 	}
-	public String getAnnualpay() {
+	public int getAnnualpay() {
 		return annualpay;
 	}
-	public void setAnnualpay(String annualpay) {
+	public void setAnnualpay(int annualpay) {
 		this.annualpay = annualpay;
 	}
-	public String getOvertimepay() {
+	public int getOvertimepay() {
 		return overtimepay;
 	}
-	public void setOvertimepay(String overtimepay) {
+	public void setOvertimepay(int overtimepay) {
 		this.overtimepay = overtimepay;
 	}
 	public String getPaymentdate() {
@@ -50,12 +56,41 @@ public class PayVO {
 	public void setPaymentdate(String paymentdate) {
 		this.paymentdate = paymentdate;
 	}
-	public String getPostcode() {
-		return postcode;
+
+	public String getName() {
+		return name;
 	}
-	public void setPostcode(String postcode) {
-		this.postcode = postcode;
+	public void setName(String name) {
+		this.name = name;
 	}
+	public String getBumun() {
+		return bumun;
+	}
+	public void setBumun(String bumun) {
+		this.bumun = bumun;
+	}
+	public String getDepartment() {
+		return department;
+	}
+	public void setDepartment(String department) {
+		this.department = department;
+	}
+	public String getPosition() {
+		return position;
+	}
+	public void setPosition(String position) {
+		this.position = position;
+	}
+	
+	public int getSalary() {
+		return salary;
+	}
+	public void setSalary(int salary) {
+		this.salary = salary;
+	}
+	
+	
+	
 	
 
 }

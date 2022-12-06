@@ -15,17 +15,32 @@
 	
 	<select id="login2" parameterType="HashMap" resultType="com.spring.groovy.management.model.MemberVO">
 		SELECT EMPNO, CPEMAIL, NAME, PWD, POSITION, JUBUN, POSTCODE, ADDRESS, DETAILADDRESS
-		     , EXTRAADDRESS,EMPIMG,BIRTHDAY, BUMUN,DEPARTMENT,PVEMAIL,MOBILE,DEPTTEL,JOINDATE
+		     , EXTRAADDRESS,EMPIMG,BIRTHDAY, BUMUN,DEPARTMENT,PVEMAIL,MOBILE,DEPTTEL,TO_CHAR(JOINDATE, 'YYYY-MM-DD') AS JOINDATE
 		     ,EMPSTAUTS,BANK, ACCOUNT,ANNUALCNT, EMPIMG, FK_POSITION_NO, FK_BUMUN_NO, FK_DEPARTMENT_NO,SIGNIMG,SALARY
 		FROM TBL_EMPLOYEE
 		WHERE CPEMAIL = #{cpemail} and PWD = #{pwd}
 	</select>
+	
+	
+	<select id="findPwd" parameterType="HashMap" resultType="com.spring.groovy.management.model.MemberVO">
+		SELECT EMPNO, CPEMAIL, NAME, JUBUN
+		FROM TBL_EMPLOYEE
+		WHERE CPEMAIL = #{cpemail} and JUBUN = #{jubun}
+	</select>
+	
+	<!--  로그인 - 비밀번호 변경하기-->
+	<update id="updatePwd" parameterType="HashMap"> 
+		UPDATE TBL_EMPLOYEE SET PWD = #{pwd} 
+	</update>
+	
+	
+	
 	<!-- ================================================================================================= -->
 	
 	<!-- 사원정보 수정-->
-	<update id="viewInfoEnd" parameterType="com.spring.groovy.management.model.MemberVO"> 
-		UPDATE TBL_EMPLOYEE SET POSTCODE = #{postcode} , ADDRESS= #{address}, DETAILADDRESS= #{detailaddress}, EXTRAADDRESS= #{extraaddress}
-							  , EMPIMG= #{empimg}, PVEMAIL= #{pvemail}, MOBILE= #{mobile}, BANK=#{bank}, ACCOUNT= #{account}
+	<update id="viewInfoEnd" parameterType="HashMap"> 
+		UPDATE TBL_EMPLOYEE SET POSTCODE = #{mav.postcode} , ADDRESS= #{mav.address}, DETAILADDRESS= #{mav.detailaddress}, EXTRAADDRESS= #{mav.extraaddress}
+							  , EMPIMG= #{empimg}, PVEMAIL= #{mav.pvemail}, MOBILE= #{mav.mobile}, BANK=#{mav.bank}, ACCOUNT= #{mav.account}
 	</update>
 	
 	
@@ -122,8 +137,10 @@
 	
 	<!-- 공용 증명서 - 월급리스트 -->
 	<select id="paySearch" parameterType="HashMap" resultType="com.spring.groovy.management.model.PayVO">
-		SELECT PAYNO, FK_EMPNO, PAY, ANNUALPAY, OVERTIMEPAY, PAYMENTDATE
-		FROM TBL_PAY
+		SELECT E.EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, SALARY,
+        		PAYNO, FK_EMPNO, PAY, ANNUALPAY, OVERTIMEPAY, TO_CHAR(PAYMENTDATE, 'YYYY-MM-DD') AS PAYMENTDATE
+		FROM TBL_EMPLOYEE E RIGHT JOIN TBL_PAY P
+		ON E.EMPNO = P.FK_EMPNO
 	</select>
 	
 	
@@ -182,7 +199,7 @@
 	<insert id="getRegisterInfo" parameterType="HashMap" >
 		INSERT INTO TBL_EMPLOYEE 
 			(EMPNO,PWD,CPEMAIL,NAME,EMPIMG,POSITION,JUBUN,POSTCODE,ADDRESS,DETAILADDRESS, EXTRAADDRESS
-			,BIRTHDAY, BUMUN,DEPARTMENT,MOBILE,DEPTTEL,JOINDATE,EMPSTAUTS,BANK,ACCOUNT,GENDER,SALARY, PVEMAIL,ANNUALCNT,FK_POSITION_NO,FK_BUMUN_NO,FK_DEPARTMENT_NO )
+			,BIRTHDAY, BUMUN,DEPARTMENT,MOBILE,DEPTTEL,TO_CHAR(CLBDATE, 'YYYY-MM-DD') AS JOINDATE,EMPSTAUTS,BANK,ACCOUNT,GENDER,SALARY, PVEMAIL,ANNUALCNT,FK_POSITION_NO,FK_BUMUN_NO,FK_DEPARTMENT_NO )
 			
 		VALUES(SEQ_TBL_EMPLOYEE.NEXTVAL,default,#{mvo.cpemail},#{mvo.name},#{mvo.empimg,jdbcType=VARCHAR},#{mvo.position}, #{mvo.jubun},#{mvo.postcode}
 			,#{mvo.address},#{mvo.detailaddress},#{mvo.extraaddress},#{birthday},#{mvo.bumun},#{mvo.department},#{mobile},#{mvo.depttel},SYSDATE,#{mvo.empstauts}
