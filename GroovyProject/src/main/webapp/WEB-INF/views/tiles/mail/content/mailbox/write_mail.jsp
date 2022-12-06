@@ -6,6 +6,7 @@
 
 <%
 	String ctxPath = request.getContextPath();
+	System.out.print("ctxPath"+ctxPath);
 %> 
 
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
@@ -83,6 +84,7 @@ td{
 </style>
 <link rel="stylesheet" href="http://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
 <script type="text/javascript">
 var fileNo = 0;
 
@@ -190,11 +192,7 @@ var fileSizeList = [];
 		        
 
             contentval = contentval.replace(/&nbsp;/gi, " "); // 공백을 " " 으로 변환
-         
-         /*
-           contentval = contentval.substring(contentval.indexOf("<p>")+3);   // "             </p>"
-           contentval = contentval.substring(0, contentval.indexOf("</p>")); // "             "
-           */       
+               
            if(contentval.trim().length == 0) {
         	   swal('발송 실패!', '글 내용을 입력하세요.', 'warning')
                return;
@@ -653,7 +651,14 @@ var fileSizeList = [];
 					<tr>
 						<th style="width: 15%; background-color: #E3F2FD;">내용</th>
 						<td>
-							<textarea style="width: 100%; height: 612px;" name="contents" id="contents"></textarea>
+							<textarea style="width: 100%; height: 612px;" name="contents" id="contents">
+								<p><br></p><p><br></p><p><br></p><p><br></p><p><br></p><p><br></p><p><br></p><p><br></p><p><br></p><p><br></p><p><br></p><p><br></p><p><br></p>
+								<p>------------------------------------ original message ------------------------------------</p>
+								<c:if test="${requestScope.type == 'reply'}">
+									${mailVO.contents}
+								</c:if>
+								<p>------------------------------------------------------------------------------------------</p>
+							</textarea>
 						</td>
 					</tr>
 					

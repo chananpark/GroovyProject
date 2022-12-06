@@ -250,7 +250,7 @@
 	<!-- 받은 메일 삭제  -->
 	<update id="deleteUpdate" parameterType = "String" >
 		update TBL_MAIL_Recipient
-		set RECIPIENT_IMPORTANT=  1
+		set RECIPIENT_delete=  1
    		where mail_recipient_no = #{mail_recipient_no}
 	</update>
 	
@@ -281,6 +281,21 @@
 		insert(tag_no,FK_mail_address,tag_color,tag_name ,fk_MAIL_NO )
 		values(seq_tag_no.nextval,#{FK_MAIL_ADDRESS},#{tag_color},#{tag_name},#{mail_no})
 	</update>
+	
+	
+	<resultMap type="HashMap" id="departmentMap">
+		<result property="department_no" column="empno" javaType="String"/>
+		<result property="department" column="department" javaType="String"/>
+		<result property="bumun_no" column="name" javaType="String"/>
+		<result property="bumun" column="position" javaType="String"/>
+	</resultMap>
+	<select id="getDepartmentList" resultMap="departmentMap">
+		select to_char(department_no) as department_no, department, to_char(bumun_no) as bumun_no, bumun 
+        from tbl_department D 
+        left join tbl_bumun B
+        on D.fk_bumun_no = B.bumun_no
+        order by bumun_no asc , department_no asc
+	</select>
 	
 	
 		

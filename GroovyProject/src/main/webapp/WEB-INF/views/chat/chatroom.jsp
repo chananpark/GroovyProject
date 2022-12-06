@@ -31,7 +31,7 @@
 	  Client 소켓에서 연결요청을 하면(올바른 port로 들어왔을 때) Server 소켓이 허락을 하여 통신을 할 수 있도록 연결(connection)되는 것이다.
 */
 
-	$(document).ready(function(){
+	$(()=>{
 		
 		$("div#mycontent").css({"background-color":"#cce0ff"});
 		// div#mycontent 는 /Board/src/main/webapp/WEB-INF/tiles/layout/layout-tiles1.jsp 파일의 내용에 들어있는 <div id="mycontent"> 이다. 
@@ -239,29 +239,30 @@
 </script>
 
 
-<div class="container-fluid">
+<div class="container-fluid" style="margin: -8px;">
 	<div class="row">
-		<div class="col-md-10 offset-md-1">
+		<div class="col-md-10 offset-md-1" >
 		   <div id="chatStatus"></div>
-		   <div class="my-3">
-			- 상대방의 대화내용이 검정색으로 보이면 채팅에 참여한 모두에게 보여지는 것입니다.<br>
-			- 상대방의 대화내용이 <span style="color: red;">붉은색</span>으로 보이면 나에게만 보여지는 1:1 귓속말 입니다.<br>
-			- 1:1 채팅(귓속말)을 하시려면 예를 들어, 채팅시 보이는 [이순신]대화내용 에서 이순신을 클릭하시면 됩니다.
+		   <div class="my-3" style="position:fixed; padding: 10px 15px; width: 80%;background-color: #fff;margin: 0 6%;">
+			 공지사항 입니다
 			</div>
 			<input type="hidden" id="to" placeholder="귓속말대상웹소켓.getId()"/>
-			<br/>
-			♡ 귓속말대상 : <span id="privateWho" style="font-weight: bold; color: red;"></span>
-			<br>
-			<button type="button" id="btnAllDialog" class="btn btn-secondary btn-sm">귀속말대화끊기</button>
-			<br><br>
-			현재접속자명단:<br/>
-			<div id="connectingUserList" style=" max-height: 100px; overFlow: auto;"></div>
-		
-		    <div id="chatMessage" style="max-height: 500px; overFlow: auto; margin: 20px 0;"></div>
-
-	        <input type="text"   id="message" class="form-control" placeholder="메시지 내용"/>
-	        <input type="button" id="btnSendMessage" class="btn btn-success btn-sm my-3" value="메시지보내기" />
-	        <input type="button" class="btn btn-danger btn-sm my-3 mx-3" onclick="javascript:location.href='<%=request.getContextPath() %>/index.action'" value="채팅방나가기" />
+			<div style="background-color:ghostwhite; height: 100%; width:100%">
+			
+			
+			
+			
+			</div>
+			
+			
+			
+		    
+		    
+			<div style="position:fixed; bottom:0; padding: 25px 5px; width:100%;background-color: #fff">
+		        <input type="text"   id="message" class="form-control" placeholder="메시지 내용"/ style="width: 80%;">
+		        <input type="button" id="btnSendMessage" class="btn btn-secondary btn-sm my-3" value="전송" />
+		        
+			</div>
 		</div>
 	</div>
 </div>

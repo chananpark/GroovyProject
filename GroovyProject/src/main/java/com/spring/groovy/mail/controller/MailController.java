@@ -3,7 +3,9 @@ package com.spring.groovy.mail.controller;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
+import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -17,7 +19,7 @@ import org.apache.commons.collections4.map.HashedMap;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
+import org.springframework.util.ResourceUtils;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -30,6 +32,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.spring.groovy.common.Pagination;
+import com.spring.groovy.common.FileManager;
 import com.spring.groovy.mail.model.MailVO;
 import com.spring.groovy.mail.model.TagVO;
 import com.spring.groovy.mail.service.InterMailService;
@@ -46,7 +49,10 @@ public class MailController {
 	
 	
 	@Autowired   // Type 에 따라 알아서 Bean 을 주입해준다.
-	private FileManager fileManager;
+	private FileManagerMail fileManager;
+	
+	@Autowired
+	private FileManager fm;
 	
 	
 	@RequestMapping(value = "/mail/receiveMailBox.on")
@@ -268,9 +274,21 @@ public class MailController {
 		// 자동완성용 메일리스트 가져오기 
 		List<String> mailList = service.getMailList();
 		
-
-
+		// 만약 mailno 받아왔다면 그 메일VO 가져옴
+		String mailNo = request.getParameter("mailNo");
+		if(mailNo != null && !(mailNo.trim().isEmpty())) {
+			Map<String,String> paraMap = new HashMap<>();
+			paraMap.put("mailNo", mailNo);
+			MailVO mailVO = service.getOneMail(paraMap);
+			
+			String type = request.getParameter("type");
+			request.setAttribute("mailVO", mailVO);
+			request.setAttribute("type", type);
+			
+		}
+		
 		request.setAttribute("mailList", mailList);
+		
 
 		return "mail/mailbox/write_mail.tiles";
 		// ==> views/tiles/mail/content/mailBox/receieve_mailbox.jsp
@@ -372,7 +390,7 @@ public class MailController {
 			     String orgFilename = mailvo.getOrgfilename_array().get(index);
 
  
-				 String path = "C:\\Users\\sist\\git\\GroovyProject\\GroovyProject\\src\\main\\webapp\\resources\\files";
+				 String path = "C:\\Users\\sist\\git\\GroovyProject\\GroovyProject\\src\\main\\webapp\\resources\\files\\mail";
 
 				 
 				 // **** file 다운로드 하기 **** //
@@ -605,6 +623,54 @@ public class MailController {
 	
 	
 	
+	// ==== 스마트에디터. 드래그앤드롭을 사용한 다중사진 파일업로드 ====
+	@RequestMapping(value="/image/multiPhotoUpload.on", method={RequestMethod.POST})
+	public void multiPhotoUpload(HttpServletRequest request, HttpServletResponse response) {
+	
+		HttpSession session = request.getSession();
+		String root = session.getServletContext().getRealPath("/"); 
+		
+		String ctxPath = request.getContextPath();
+		String path = root + "resources"+File.separator+"file"+File.separator+"images";
+
+
+		File dir = new File(path);
+		if(!dir.exists()) {
+		    dir.mkdirs();
+		}    
+					
+		try {
+			  String filename = request.getHeader("file-name");
+		    		
+		       InputStream is = request.getInputStream();
+	    	   
+	    	   String newFilename = fm.doFileUpload(is, filename, path);
+	    	
+		       int width = fm.getImageWidth(path+File.separator+newFilename);
+			
+		       if(width > 600) {
+		          width = 600;
+		       }  
+				
+				
+				String strURL = "";
+				strURL += "&bNewLine=true&sFileName="+newFilename; 
+				strURL += "&sWidth="+width;
+				strURL += "&sFileURL="+ctxPath+"/resources/file/images/"+newFilename;
+				System.out.println("strURL"+strURL);
+
+				// === 웹브라우저 상에 사진 이미지를 쓰기 === //
+				PrintWriter out = response.getWriter();
+				out.print(strURL);
+			   
+		} catch(Exception e){
+				e.printStackTrace();
+		}
+	   
+	}
+
+	
+	
 	
 	
 	
@@ -628,7 +694,7 @@ public class MailController {
 	@RequestMapping(value = "/chat/chatroom.on")
 	public String chatroom(HttpServletRequest request) {
 
-		return "chat/chatroom.tiles";
+		return "chat/chatroom";
 		// ==> views/tiles/chat/content/chatMain.jsp
 	}
 	

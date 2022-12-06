@@ -188,44 +188,56 @@ public class FileManager {
 		return height;
 	}
 	
-	// 네이버 스마트 에디터를 사용한 사진첨부
+	// == 파일 업로드 하기 두번째 방법(네이버 스마트 에디터를 사용한 사진첨부에 해당하는 것임) ==
 	public String doFileUpload(InputStream is, String originalFilename, String path) throws Exception {
-
+		
 		String newFilename = null;
 
 		// 클라이언트가 업로드한 파일의 이름
-		if (originalFilename == null || originalFilename.equals(""))
+		if(originalFilename==null || originalFilename.equals(""))
 			return null;
-
+		
 		// 확장자
 		String fileExt = originalFilename.substring(originalFilename.lastIndexOf("."));
-		if (fileExt == null || fileExt.equals(""))
+		if(fileExt == null || fileExt.equals(""))
 			return null;
-
-		// 서버에 저장할 새로운 파일명 생성
+		
+		// 서버에 저장할 새로운 파일명을 만든다.
 		newFilename = String.format("%1$tY%1$tm%1$td%1$tH%1$tM%1$tS", Calendar.getInstance());
 		newFilename += System.nanoTime();
 		newFilename += fileExt;
-
-		// 업로드할 경로가 존재하지 않는 경우 폴더를 생성
+		
+		// 업로드할 경로가 존재하지 않는 경우 폴더를 생성 한다.
 		File dir = new File(path);
-		if (!dir.exists())
+		if(!dir.exists())
 			dir.mkdirs();
 
 		String pathname = path + File.separator + newFilename;
-
+		
+		String pathname2 = "C:\\Users\\sist\\git\\GroovyProject\\GroovyProject\\src\\main\\webapp\\resources\\files\\images" + File.separator + newFilename;
+		// 공유용 폴더 경로 직접 지정
 		byte[] byteArr = new byte[1024];
 		int size = 0;
+		
+		File dir2 = new File("C:\\Users\\sist\\git\\GroovyProject\\GroovyProject\\src\\main\\webapp\\resources\\files\\images");
+		if(!dir2.exists()) {
+			// 만약에 파일을 저장할 경로인 폴더가 실제로 존재하지 않는다면
+			
+			dir2.mkdirs(); // 파일을 저장할 경로인 폴더를 생성한다.
+		}
 		FileOutputStream fos = new FileOutputStream(pathname);
-
-		while ((size = is.read(byteArr)) != -1) {
+		FileOutputStream fos_2 = new FileOutputStream(pathname2);
+		while((size = is.read(byteArr)) != -1) {
 			fos.write(byteArr, 0, size);
+			fos_2.write(byteArr,0, size);
 		}
 		fos.flush();
-
+		
 		fos.close();
+		fos_2.close();
 		is.close();
 
+		
 		return newFilename;
 	}
 

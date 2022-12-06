@@ -32,6 +32,7 @@
 }
 td.mail_list_option{
 	width:80px;
+
 }
 td.mail_list_sender{
 	width:150px;
@@ -87,7 +88,6 @@ i.fa-flag{
 </style>
 <script type="text/javascript">
 	$(document).ready(function(){
-		
 
 		
 		
@@ -197,7 +197,7 @@ i.fa-flag{
 		 importantCheck(result);  
 		}
 		else{
-			alert("체크박스를 선택해주세요.")
+			alert("체크박스를 선택해주세요.");
 		}
 	}
 	
@@ -219,15 +219,54 @@ i.fa-flag{
 		});
 	}
    	
-   	function tagCheckSelect(tagColor, tagName){
-   		
-		var mailCheck = ('input[name="mailCheck"]:checked');
+   	function deleteCheckSelect(){
+   		var mailCheck = document.querySelectorAll('input[name="mailCheck"]:checked');
 		console.log(mailCheck);
 		if(mailCheck.length > 0){
 		result="";
 		mailCheck.forEach((el) => {
 			result += el.value;
 			result += ',';
+		});
+		 result = result.slice(0, -1);
+		 console.log(result);
+		// 체크한 것들 번호 가져가서 , 로 이어지는 문자열로 변환
+		 deleteCheck(result);  
+		}
+		else{
+			alert("체크박스를 선택해주세요.");
+		}
+   	}
+   	
+   	function deleteCheck(mail_no){
+   		$.ajax({
+			url:"<%= ctxPath%>/mail/deleteCheck.on",
+			data:{"mail_no":mail_no},
+			type:"post",
+			dataType:"json",
+	        success:function(json){
+	        	if(json.n > 0){
+	        		alert(json.n+ "개 삭제");
+	        	}
+	        	listRefresh();
+	        },
+	        error: function(request, status, error){
+				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			}
+		});
+   	}
+   	
+   	function tagCheckSelect(tagColor, tagName){
+   		
+   		var mailCheck = $('input[name="mailCheck"]:checked');
+		console.log(mailCheck);
+		if(mailCheck.length > 0){
+		result="";
+		mailCheck.each(function(index, item){
+			result += $(item).attr("value");
+			console.log($(item).attr("value"));
+			result += ',';
+			
 		});
 		 result = result.slice(0, -1);
 		 console.log(result);
@@ -258,6 +297,26 @@ i.fa-flag{
 			}
 		});
 	}
+   	
+	function replySelect(){
+   		
+		var mailCheck = $('input[name="mailCheck"]:checked');
+		console.log(mailCheck);
+		if(mailCheck.length > 0){
+			result="";
+			mailCheck.each(function(index, item){
+				result += $(item).attr("value");			
+			});
+			console.log(result);
+		 	location.href="<%=ctxPath%>/mail/writeMail.on?mailNo="+ result+ "&type=reply";
+		}
+		else{
+			alert("체크박스를 하나만 선택해주세요.");
+		}
+	}
+	
+
+	
 
    	
    	
@@ -277,7 +336,7 @@ i.fa-flag{
 			<i class="fas fa-flag toolflag"></i>
 		</button>
 	    
-		<button type="button" class="btn btn-outline-dark toolbtn"><i class="fas fa-reply"></i> 답장</button>
+		<button type="button" class="btn btn-outline-dark toolbtn" onclick="replySelect()"><i class="fas fa-reply"></i> 답장</button>
 
 		<button type="button" class="btn btn-outline-dark toolbtn" onclick="deleteCheckSelect()"><i class="fas fa-trash-alt"></i> 삭제</button>
 		<button type="button" class="btn btn-outline-dark toolbtn" ><i class="fas fa-long-arrow-alt-right"></i> 전달</button>
@@ -333,10 +392,10 @@ i.fa-flag{
 				  	  <td class="mail_list_option" onclick="event.stopPropagation()">
 				      	<input type="checkbox" id="mailLCheck" name="mailCheck" value="${mailVO.mail_no}" style="vertical-align:middle">
 				      	<c:if test="${mailVO.sender_important == 0 }">
-				      		<i id="flag${mailVO.mail_no}" class="fas fa-flag" style="color:darkgray;" onclick="importantCheck(${mailVO.mail_no})"></i>
+				      	<i id="flag${mailVO.mail_no}" class="fas fa-flag" style="color:darkgray;" onclick="importantCheck(${mailVO.mail_no})"></i>
 				      	</c:if>
 				      	<c:if test="${mailVO.sender_important == 1 }">
-				      		<i id="flag${mailVO.mail_no}" class="fas fa-flag" onclick="importantCheck(${mailVO.mail_no})"></i>
+				      	<i id="flag${mailVO.mail_no}" class="fas fa-flag" onclick="importantCheck(${mailVO.mail_no})"></i>
 				      	</c:if>
 	
 				      </td>
@@ -362,7 +421,7 @@ i.fa-flag{
 				      	</c:forEach>
 				   
 					      	<!-- 태그 개수에 따라 제목옆에 보여줄 예정 -->
-				      	${mailVO.subject}  [임시노출 번호${mailVO.mail_no}]
+				      	${mailVO.subject}[임시노출 번호${mailVO.mail_no}]
 				      </td>
 			   
 				      	<c:if test="${sendTimeDD == today}">

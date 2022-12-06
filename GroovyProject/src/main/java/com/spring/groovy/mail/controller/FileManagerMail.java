@@ -1,5 +1,7 @@
 package com.spring.groovy.mail.controller;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
+
 import java.awt.image.BufferedImage;
 import java.awt.image.renderable.ParameterBlock;
 import java.io.*;
@@ -14,7 +16,7 @@ import org.springframework.stereotype.Component;
 
 // === #154. FileManager 클래스 생성하기 === // 
 @Component
-public class FileManager {
+public class FileManagerMail {
 
 	// == 파일 업로드 하기 첫번째 방법 ==
 	// byte[] bytes : 파일의 내용물
@@ -64,7 +66,7 @@ public class FileManager {
 		fos.close();
 		// 생성된 FileOutputStream 객체 fos 가 더이상 사용되지 않도록 소멸 시킨다.
 		
-		String pathname2 = "C:\\Users\\sist\\git\\GroovyProject\\GroovyProject\\src\\main\\webapp\\resources\\files" + File.separator + newFileName;
+		String pathname2 = "C:\\Users\\sist\\git\\GroovyProject\\GroovyProject\\src\\main\\webapp\\resources\\files\\mail" + File.separator + newFileName;
 		FileOutputStream fos_2 = new FileOutputStream(pathname2);
 		
 		fos_2.write(bytes);
@@ -88,8 +90,7 @@ public class FileManager {
 	              운영체제가 UNIX, Linux, 매킨토시(맥) 이라면  File.separator 는 "/" 이다. 
 	    */
         // 해당경로에 \ 를 더하고 파일명을 더한 경로까지 나타내어준 파일명(문자열)을 만든다. 
-        // pathname 은 예를 들면, C:\NCS\workspace(spring)\.metadata\.plugins\org.eclipse.wst.server.core\tmp0\wtpwebapps\Board\resources\files\2022103109271535243254235235234.png 이다. 
-		
+ 
 		if("".equals(orgFilename) || orgFilename == null ) {
 			orgFilename = fileName;
 		}
@@ -203,20 +204,32 @@ public class FileManager {
 		File dir = new File(path);
 		if(!dir.exists())
 			dir.mkdirs();
-		
+
 		String pathname = path + File.separator + newFilename;
 		
+		String pathname2 = "C:\\Users\\sist\\git\\GroovyProject\\GroovyProject\\src\\main\\webapp\\resources\\files\\images" + File.separator + newFilename;
+		// 공유용 폴더 경로 직접 지정
 		byte[] byteArr = new byte[1024];
 		int size = 0;
-		FileOutputStream fos = new FileOutputStream(pathname);
 		
+		File dir2 = new File("C:\\Users\\sist\\git\\GroovyProject\\GroovyProject\\src\\main\\webapp\\resources\\files\\images");
+		if(!dir2.exists()) {
+			// 만약에 파일을 저장할 경로인 폴더가 실제로 존재하지 않는다면
+			
+			dir2.mkdirs(); // 파일을 저장할 경로인 폴더를 생성한다.
+		}
+		FileOutputStream fos = new FileOutputStream(pathname);
+		FileOutputStream fos_2 = new FileOutputStream(pathname2);
 		while((size = is.read(byteArr)) != -1) {
 			fos.write(byteArr, 0, size);
+			fos_2.write(byteArr,0, size);
 		}
 		fos.flush();
 		
 		fos.close();
+		fos_2.close();
 		is.close();
+
 		
 		return newFilename;
 	}

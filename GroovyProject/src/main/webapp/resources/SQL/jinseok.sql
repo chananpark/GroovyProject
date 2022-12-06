@@ -407,3 +407,20 @@ rollback;
 		        order by SEND_TIME desc
 		    ) V;
 
+
+SELECT EMPNO, DEPARTMENT, NAME, E.POSITION AS POSITION, POSITION_NO
+		FROM TBL_EMPLOYEE E JOIN TBL_POSITION P 
+		ON E.POSITION = P.POSITION;
+        
+        select * from TBL_EMPLOYEE;
+        select * from TBL_POSITION;
+        
+        select * from tbl_bumun;
+        select * from tbl_department;
+        
+        select to_char(department_no) as department_no, department, to_char(bumun_no) as bumun_no, bumun 
+        from tbl_department D 
+        left join tbl_bumun B
+        on D.fk_bumun_no = B.bumun_no order by bumun_no;
+        ;
+        

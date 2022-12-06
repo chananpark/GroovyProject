@@ -24,8 +24,15 @@
 		
 	});// end of $(document).ready(function(){})-------------------
 	
-	function showChatroom() { window.open('<%=ctxPath%>/chat/chatroom.on','채팅방', height=400, width=300, left=100, top=50);}
-	
+	function showChatroom() {
+		var _width = '400';
+	    var _height = '600';
+		var _left = Math.ceil(( window.screen.width - _width )/2);
+	    var _top = Math.ceil(( window.screen.height - _height )/2); 
+		 
+		window.open('<%=ctxPath%>/chat/chatroom.on', '채팅방', 'width='+ _width +', height='+ _height +', left=' + _left + ', top='+ _top );
+
+	}
 </script>
 
 <h2>채팅</h2>
