@@ -23,8 +23,14 @@ public class OrganizationService implements InterOrganizationService {
 
 	@Override
 	public int getEmpTotalCount(Map<String, Object> paraMap) {
-		// TODO Auto-generated method stub
-		return 0;
+		int listCnt = dao.getEmpTotalCount(paraMap);
+		return listCnt;
+	}
+
+	@Override
+	public List<Map<String, String>> empListSearchWithPaging(Map<String, Object> paraMap) {
+		List<Map<String, String>> empList = dao.empListSearchWithPaging(paraMap);
+		return empList;
 	}
 
 }

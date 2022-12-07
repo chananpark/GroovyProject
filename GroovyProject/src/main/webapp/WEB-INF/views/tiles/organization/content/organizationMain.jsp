@@ -80,7 +80,7 @@
 	function goSearch() {
 		const frm = document.searchFrm;
 		frm.method = "GET";
-		frm.action = "<%= ctxPath%>/mail/sendMailBox.on";
+		frm.action = "<%= ctxPath%>/organization.on";
 		frm.submit();
 	}// end of function goSearch()--------------------
 	
@@ -205,14 +205,6 @@
 				</button>
 			    
 				<button type="button" class="btn btn-outline-dark toolbtn" onclick="replySelect()"><i class="fas fa-reply"></i> 답장</button>
-		
-		
-			
-		
-				
-				
-				
-		
 			</div>
 			
 		</div>
@@ -225,27 +217,35 @@
 				   		<th>
 				   		</th>
 				   		<th>부서</th>
+				   		<th>팀</th>
 				   		<th>직급</th>
 				   		<th>이름</th>
 				   		<th>이메일</th>
 				   </thead>
-					    <tr onclick = 'goMail(${mailVO.mail_no})'>
-					  	  <td class="mail_list_option" onclick="event.stopPropagation()">
-					      	<i id="flag${mailVO.mail_no}" class="fas fa-flag" style="color:darkgray;" onclick="importantCheck(${mailVO.mail_no})"></i>
-					      </td>
-					      <td class = "mail_list_sender" >
-								부서 이름
-					      </td>
-					      <td class = "mail_list_subject">
-					     		직급 이름
-					      </td>
-				   		  <td>
-				   		  	이름
-				   		  </td>
-				   		  <td>
-				   		  이메일
-				   		  </td>
-					    </tr>
+				   <c:forEach var="emp" items="${requestScope.empList}" varStatus="status">
+				 
+				   		<tr onclick = 'goMail(${mailVO.mail_no})'>
+						  	  <td class="mail_list_option" onclick="event.stopPropagation()">
+						      	<i id="flag${mailVO.mail_no}" class="fas fa-flag" style="color:darkgray;" onclick="importantCheck(${mailVO.mail_no})"></i>
+						      </td>
+						      <td class = "mail_list_sender" >
+									${emp.bumun}
+						      </td>
+						      <td class = "mail_list_subject">
+						     		${emp.department}
+						      </td>
+					   		  <td>
+					   		  		${emp.position}
+					   		  </td>
+					   		  <td>
+					   		  ${emp.name}
+					   		  </td>
+					   		  <td>
+					   		  ${emp.cpemail}
+					   		  </td>
+				    	</tr>
+				   </c:forEach>
+					    
 			  	
 			</table>
 		</div>
@@ -263,9 +263,9 @@
 	
 	    <form name="searchFrm" style="margin-top: 20px;">
 	        <select name="searchType" id="searchType" style="height: 26px;">
-	           <option value="subject">부문명</option>
-	           <option value="FK_Recipient_address">팀명</option> 
-	           <option value="FK_Recipient_address">직원명</option>
+	           <option value="bumun">부문명</option>
+	           <option value="department">팀명</option> 
+	           <option value="name">직원명</option>
 	        </select>
 	        <input type="text" name="searchWord" id="searchWord" size="40" autocomplete="off"/>
 	        <input type="text" style="display: none;" /> <%-- form 태그내에 input 태그가 오로지 1개 뿐일경우에는 엔터를 했을 경우 검색이 되어지므로 이것을 방지하고자 만든것이다. --%> 
@@ -280,7 +280,26 @@
 	<!-- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ -->
 
 	<div style="width:45%; float:right;">
-		ffsafsaasf
+		직원  ooo 님 정보
+		<table class="table">
+			<tr>
+				<td rowspan="2" style="width:150px;">
+					<img src="<%= ctxPath%>/resources/images/picture/꼬미사진.jpg" height="200px;" width="200px"/>
+				</td>
+				
+				
+			</tr>
+			<tr>
+				<th>사원번호</th>
+				<td><input type="text" id="" name="" /></td>
+				<th>사원번호</th>
+				<td><input type="text" id="" name="" /></td>
+			<tr>
+			<tr>	
+				<th>성명</th>
+				<td><input type="text" id="name" name="name" /></td>
+			</tr>
+		</table>
 	</div>
 	
 	

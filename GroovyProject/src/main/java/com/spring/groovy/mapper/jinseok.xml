@@ -35,6 +35,9 @@
     		and ((FK_Recipient_address_individual = #{mail_address} and Recipient_IMPORTANT = 1 and RECIPIENT_delete =0)
     			  or (FK_Sender_address = #{mail_address} and SENDER_IMPORTANT = 1 and sender_delete = 0))
     	</if>
+    	<if test='searchType != "" and searchWord != "" '>
+	    	and lower(${searchType}) like '%'||lower(#{searchWord})||'%'
+	    </if>
 			 
 	</select>
 		
@@ -296,6 +299,52 @@
         on D.fk_bumun_no = B.bumun_no
         order by bumun_no asc , department_no asc
 	</select>
+	
+	<!-- ############################################################################################################################################################### -->
+	<!-- 조직도 emp 목록 갯수 -->
+	<select id="getEmpTotalCount" parameterType="HashMap" resultType="int"> 
+		select count(*)
+	    from TBL_EMPLOYEE
+	    where 1=1
+	    <if test='searchType != "" and searchWord != "" '>
+	    	AND LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
+	    </if>
+	</select>
+	
+	<!-- 조직도 emp 목록 가져오기 -->
+	<resultMap type="HashMap" id="empList">
+		<result property="empno" column="empno" javaType="String"/>
+		<result property="cpemail" column="cpemail" javaType="String"/>
+		<result property="name" column="name" javaType="String"/>
+		<result property="position" column="position" javaType="String"/>
+		<result property="birth_date" column="birth_date" javaType="String"/>
+		<result property="empimg" column="empimg" javaType="String"/>
+		<result property="bumun" column="bumun" javaType="String"/>
+		<result property="department" column="department" javaType="String"/>
+		<result property="mobile" column="mobile" javaType="String"/>
+		<result property="joindate" column="joindate" javaType="String"/>
+	</resultMap>
+	
+	<select id="empListSearchWithPaging" parameterType="HashMap" resultMap="empList"> 
+		select *
+		from 
+		(
+		    select rownum AS rno, V.*
+		    from 
+		    ( 
+			select empno, cpemail, name, position, substr(jubun,0,6) as birth_date
+		          ,empimg, bumun,department, mobile,joindate
+		    from TBL_EMPLOYEE
+		    where 1=1
+		    <if test='searchType != "" and searchWord != "" '>
+		    	and lower(${searchType}) like '%'||lower(#{searchWord})||'%'
+		    </if>
+		    order by fk_bumun_no, fk_department_no,fk_position_no
+		    ) V
+		) T 
+		where rno between #{startRno} and #{endRno}
+    </select>
+	
 	
 	
 		

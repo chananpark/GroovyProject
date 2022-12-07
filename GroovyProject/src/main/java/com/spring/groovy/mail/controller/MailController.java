@@ -623,52 +623,7 @@ public class MailController {
 	
 	
 	
-	// ==== 스마트에디터. 드래그앤드롭을 사용한 다중사진 파일업로드 ====
-	@RequestMapping(value="/image/multiPhotoUpload.on", method={RequestMethod.POST})
-	public void multiPhotoUpload(HttpServletRequest request, HttpServletResponse response) {
 	
-		HttpSession session = request.getSession();
-		String root = session.getServletContext().getRealPath("/"); 
-		
-		String ctxPath = request.getContextPath();
-		String path = root + "resources"+File.separator+"file"+File.separator+"images";
-
-
-		File dir = new File(path);
-		if(!dir.exists()) {
-		    dir.mkdirs();
-		}    
-					
-		try {
-			  String filename = request.getHeader("file-name");
-		    		
-		       InputStream is = request.getInputStream();
-	    	   
-	    	   String newFilename = fm.doFileUpload(is, filename, path);
-	    	
-		       int width = fm.getImageWidth(path+File.separator+newFilename);
-			
-		       if(width > 600) {
-		          width = 600;
-		       }  
-				
-				
-				String strURL = "";
-				strURL += "&bNewLine=true&sFileName="+newFilename; 
-				strURL += "&sWidth="+width;
-				strURL += "&sFileURL="+ctxPath+"/resources/file/images/"+newFilename;
-				System.out.println("strURL"+strURL);
-
-				// === 웹브라우저 상에 사진 이미지를 쓰기 === //
-				PrintWriter out = response.getWriter();
-				out.print(strURL);
-			   
-		} catch(Exception e){
-				e.printStackTrace();
-		}
-	   
-	}
-
 	
 	
 	
@@ -762,6 +717,8 @@ public class MailController {
 		 if(searchWord == null || "".equals(searchWord) || searchWord.trim().isEmpty() ) {
 		 	searchWord = "";
 		 }
+		 System.out.println("searchType"+searchType);
+		 System.out.println("searchWord"+searchWord);
 		 paraMap.put("searchType",searchType);
 		 paraMap.put("searchWord",searchWord);	
 		 

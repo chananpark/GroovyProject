@@ -18,6 +18,19 @@ public class OrganizationDAO implements InterOrganizationDAO {
 		List<Map<String, String>> departmentList = sqlsession.selectList("jinseok.getDepartmentList");
 		return departmentList;
 	}
+
+	@Override
+	public int getEmpTotalCount(Map<String, Object> paraMap) {
+		int n = sqlsession.selectOne("jinseok.getEmpTotalCount", paraMap);
+
+		return n;
+	}
+
+	@Override
+	public List<Map<String, String>> empListSearchWithPaging(Map<String, Object> paraMap) {
+		List<Map<String, String>> empList = sqlsession.selectList("jinseok.empListSearchWithPaging", paraMap);
+		return empList;
+	}
 	
 	
 	

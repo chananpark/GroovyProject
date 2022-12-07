@@ -424,3 +424,24 @@ SELECT EMPNO, DEPARTMENT, NAME, E.POSITION AS POSITION, POSITION_NO
         on D.fk_bumun_no = B.bumun_no order by bumun_no;
         ;
         
+   select *
+		from 
+		(
+		    select rownum AS rno, V.*
+		    from 
+		    ( 
+                select empno, cpemail, name, position, substr(jubun,0,6) as birth_date
+                      ,empimg, bumun,fk_bumun_no,department, fk_department_no,mobile,joindate
+                from TBL_EMPLOYEE
+                where 1=1
+
+                order by bumun_no, department_no
+		    ) V
+		) T 
+		where rno between #{startRno} and #{endRno} 
+    
+    select count(*)
+    from TBL_EMPLOYEE
+    where 1=1
+    and lower(bumun) like ('%'||lower('it')||'%');
+        

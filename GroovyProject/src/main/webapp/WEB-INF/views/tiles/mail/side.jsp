@@ -25,10 +25,8 @@
             dataType:'json',
             cache:false,
             success:function(json){
-            	console.log(json);
             	var html="";
             	$.each(json, function(index, item){
-            		console.log(item);
 					html += '<li><a id="tag" class="nav-link" href="<%=ctxPath%>/approval/personal/sent.on"><i class="fas fa-tag" style="color:#';
 					html += item.tag_color;
 					html +=	'";"></i>&nbsp';

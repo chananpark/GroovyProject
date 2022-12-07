@@ -44,70 +44,60 @@ public class OrganizationController {
 		paraMap.put("mail_address", mail_address);
 
 		// 내 중요표시 가져오기
-		/*
-		 * List<TagVO> tagList = null; Map<String, String> paraMap2 = new HashMap<>();
-		 * paraMap2.put("FK_MAIL_ADDRESS", mail_address);
-		 * 
-		 * tagList=service.getTagListByMailNo(paraMap2);
-		 * 
-		 * for(TagVO tag :tagList ) { System.out.println("getTag_no:"+tag.getTag_no());
-		 * System.out.println("getTag_color:"+tag.getTag_color());
-		 * System.out.println("getFk_mail_no:"+tag.getFk_mail_no()); }
-		 */
+		List<String> importantList = null; 
+		Map<String, String> paraMap2 = new HashMap<>();
+		paraMap2.put("FK_MAIL_ADDRESS", mail_address);
 
-		/*
-		 * List<MailVO> empList = null;
-		 * 
-		 * String searchType = pagination.getSearchType(); String searchWord =
-		 * pagination.getSearchWord(); System.out.println(searchType);
-		 * System.out.println(searchWord); // 둘다 없다면 "" 처리 if(searchType == null ||
-		 * (!"subject".equals(searchType) && !"FK_Sender_address".equals(searchType)) )
-		 * { searchType = ""; }
-		 * 
-		 * if(searchWord == null || "".equals(searchWord) || searchWord.trim().isEmpty()
-		 * ) { searchWord = ""; } paraMap.put("searchType",searchType);
-		 * paraMap.put("searchWord",searchWord);
-		 * 
-		 * // 총 게시물 건수(totalCount) int listCnt = service.getEmpTotalCount(paraMap);
-		 * 
-		 * Map<String, Object> resultMap = pagination.getPageRange(listCnt );
-		 * 
-		 * paraMap.put("startRno",resultMap.get("startRno"));
-		 * paraMap.put("endRno",(resultMap.get("endRno")));
-		 * 
-		 * mailList = service.mailListSearchWithPaging(paraMap); // 페이징 처리한 글목록 가져오기(검색이
-		 * 있든지, 검색이 없든지 모두 다 포함한 것)
-		 * 
-		 * // 아래의 것은 검색대상 컬럼과 검색어를 뷰단 페이지에서 유지시키기 위한 것임. if( !"".equals(searchType) &&
-		 * !"".equals(searchWord) ) {
-		 * 
-		 * mav.addObject("paraMap", paraMap); }
-		 * 
-		 * System.out.println(mailList);
-		 * 
-		 * List<TagVO>tagListSide = service.getTagListSide(mail_address);
-		 * 
-		 * 
-		 * mav.addObject("mailList", mailList); mav.addObject("tagList", tagList);
-		 * mav.addObject("tagListSide", tagListSide);
-		 * 
-		 * for(MailVO mail :mailList ) {
-		 * System.out.println("sendTime:"+mail.getSend_time());
-		 * 
-		 * System.out.println("send_time_date"+mail.getSend_time_date()); }
-		 * 
-		 * 
-		 * 
-		 * 
-		 * mav.addObject("pagebar",
-		 * pagination.getPagebar("/groovy/mail/receiveMailBox.on"));
-		 */
+		//importantList=service.getImportantListByMailNo(paraMap2);
+
+
+		String searchType = pagination.getSearchType(); String searchWord =
+		pagination.getSearchWord(); System.out.println(searchType);
+		System.out.println(searchWord); 
+		// 둘다 없다면 "" 처리 
+		if(searchType == null ||(!"bumun".equals(searchType) && !"department".equals(searchType) && !"name".equals(searchType)) ){ 
+			searchType = ""; 
+		}
+
+		if(searchWord == null || "".equals(searchWord) || searchWord.trim().isEmpty()) {
+			searchWord = ""; 
+			} 
+		paraMap.put("searchType",searchType);
+		paraMap.put("searchWord",searchWord);
+
+		// 총 게시물 건수(totalCount) 
+		int listCnt = service.getEmpTotalCount(paraMap);
+		System.out.println("listCnt = " + listCnt);
+		
+		Map<String, Object> resultMap = pagination.getPageRange(listCnt);
+ 
+		paraMap.put("startRno",resultMap.get("startRno"));
+		paraMap.put("endRno",(resultMap.get("endRno")));
+		
+		List<Map<String, String>> empList = null;
+		empList = service.empListSearchWithPaging(paraMap); 
+		// 페이징 처리한 글목록 가져오기(검색이있든지, 검색이 없든지 모두 다 포함한 것)
+ 
+		// 아래의 것은 검색대상 컬럼과 검색어를 뷰단 페이지에서 유지시키기 위한 것임. 
+		if( !"".equals(searchType) &&!"".equals(searchWord) ) {
+			mav.addObject("paraMap", paraMap); 
+			}
+
+		System.out.println(empList);
+
+
+		mav.addObject("empList", empList); 
+
+
+		mav.addObject("pagebar",pagination.getPagebar("/groovy/organization.on"));
+
 
 		mav.setViewName("organization/organizationMain.tiles");
 		// ==> views/tiles/organization/content/organizationMain.jsp
 
 		return mav;
 	}
+	
 
 	@ResponseBody
 	@RequestMapping(value = "/organizationSideAjax.on", method = {
