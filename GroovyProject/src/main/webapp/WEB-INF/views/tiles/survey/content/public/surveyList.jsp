@@ -18,7 +18,7 @@
 		border: none;
 	}
 	
-	input#situation1 {
+	div#situation1 {
 		background-color:#086BDE;
 		width: 50px;
 		border: none;
@@ -26,19 +26,19 @@
 	}
 	
 	
-	input#situation2{
+	div#situation2{
 		background-color: #F9F9F9;
 		width: 50px;
 		border: none
 	}
 
-	input#input_unjoin {
+	div#input_unjoin {
 		background-color:#E3F2FD; 
 		width: 70px; 
 		border: none;
 	}
 	
-	input#input_join {
+	div#input_join {
 		background-color:#F9F9F9;
 		width: 70px; 
 		border: none;"
@@ -92,21 +92,21 @@
 			<tr>
 				<td>
 					<!-- 설문조사가 진행중인경우 -->
-					<input id="situation1" type="text" name="" value="진행중" readonly/>
+					<div id="situation1">진행중</div>
 					<!-- 설문조사가 종료된경우-->
-					<!-- <input id="situation2" type="text" name="" value="종료" readonly/> -->
+					<!-- <div id="situation2">종료</div> -->
 				</td>
 				<td><a href="<%= ctxPath%>/survey/surveyJoin.on" style="color:black;">구성원만족도 조사</a></td>
-				<td><input type="text" name="" value=" 2022-11-27 ~ 2022-12-10" readonly/></td>
+				<td>2022-11-27 ~ 2022-12-10</td>
 				
 				<!-- 미참여일 경우 설문조사 페이지로 이동 -->
 				<td>
 					<!-- 미참여 -->
-					<input id="input_unjoin"type="text" name="" value="미참여" readonly />
+					<div id="input_unjoin">미참여</div>
 					<!-- 참여 -->
-					<!-- <input id="input_join"type="text" name="" value="참여" readonly/> -->
+					<!-- <div id="input_join">참여</div> -->
 				</td>  
-				<td><input type="text" value="" name="" value=""/></td>
+				<td></td>
 			</tr>
 			
 			<tr>
@@ -121,8 +121,6 @@
 			</tbody>
 			
 			<div id="pagebar"></div>
-		
-		
 		</table>
 	</div>
 	

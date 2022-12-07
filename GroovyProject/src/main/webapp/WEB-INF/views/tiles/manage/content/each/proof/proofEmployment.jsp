@@ -62,6 +62,10 @@
 		
 	
 		
+		
+		
+		
+		
 	// function Declartion // 
 	// === 증명서신청=== //
 	function func_subProof(){

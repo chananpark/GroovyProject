@@ -40,21 +40,73 @@ nominvalue
 nocycle
 nocache;
 -- Sequence SEQ_TBL_EMPLOYEE이(가) 생성되었습니다.
-commit
+
 -- 급여테이블
 create table tbl_pay
-(payno               number        not null   -- 급여번호
-,fk_empno            number        not null   -- 사원번호
-,pay                 number(30)    not null   -- 기본급
-,annualpay           number(30)               -- 연차수당
-,overtimepay         number(30)               -- 초과근무수당
-,paymentdate         date  default sysdate    -- 지급일자(특정일자)
+(payno              number        not null       -- 급여번호
+,fk_empno           number        not null       -- 사원번호
+,pay                number(30)   default 10000   -- 기본급
+,annualpay          number(30)                  -- 연차수당
+,overtimepay        number(30)                  -- 초과근무수당
+,incomtax		    number        default 0.07   -- 소득세
+,pension		    number        default 0.05 	-- 국민연금
+,insurance	        number        default 0.008 	-- 건강보험
+,paymentdate        date  default sysdate       -- 지급일자(특정일자)
 ,constraint PK_tbl_pay_payno primary key(payno)
 ,constraint FK_tbl_pay_fk_empno foreign key(fk_empno) references tbl_employee(empno)
 );
+
 -- Table TBL_PAY이(가) 생성되었습니다.
+
+insert into TBL_PAY (payno,fk_empno,pay,overtimepay,incomtax,pension,insurance,paymentdate)
+values(seq_tbl_pay.nextval,13,default, 100000,default, default, default,sysdate)
+where fk_empno = 13
 commit
-drop table tbl_pay
+select *
+from TBL_PAY
+
+
+select PAYNO, FK_EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, SALARY,PAY ,ANNUALPAY,OVERTIMEPAY,PAYMENTDATE,OVERPAY,
+        INCOMTAX,PENSION,INSURANCE, ALLPAY, tax,
+        (ALLPAY - tax) AS monthpay
+from 
+    (
+        select PAYNO, FK_EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, SALARY,PAY ,ANNUALPAY,OVERTIMEPAY,PAYMENTDATE,OVERPAY,
+                    INCOMTAX,PENSION,INSURANCE, 
+                    (SALARY+ANNUALPAY+OVERTIMEPAY) AS ALLPAY,
+                    (INCOMTAX+PENSION+INSURANCE) AS tax
+                    
+        from 
+        (
+            SELECT PAYNO, FK_EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, SALARY,PAY ,ANNUALPAY,OVERTIMEPAY,PAYMENTDATE, (ANNUALPAY+OVERTIMEPAY) AS OVERPAY,
+                    CEIL(SALARY*INCOMTAX) AS INCOMTAX, CEIL(SALARY*PENSION)AS PENSION, CEIL(SALARY*INSURANCE)AS INSURANCE
+            FROM
+                (SELECT E.EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, ROUND(SALARY/12)AS SALARY,
+                        PAYNO, FK_EMPNO, PAY, NVL(ANNUALPAY,0) AS ANNUALPAY, NVL(OVERTIMEPAY,0)  AS OVERTIMEPAY, TO_CHAR(PAYMENTDATE, 'YYYY-MM-DD') AS PAYMENTDATE
+                        ,INCOMTAX,PENSION,INSURANCE
+                FROM TBL_EMPLOYEE E RIGHT JOIN TBL_PAY P
+                ON E.EMPNO = P.FK_EMPNO
+            )V
+        )A
+    )P
+
+-- 지급항목
+초과근무수당 :  pay * 1.5*근무시간
+연차수당 : 연차수당 일급(시간*8)*연차휴가 미사용갯수
+
+-- 공제항목
+소득세 : 0.07
+국민연금 : 0.05
+고용보험 : 0.008
+
+select extendstart*1.5
+from tbl_pay P join tbl_attendance A
+on P.fk_empno = A.fk_empno
+
+
+
+commit
+drop sequence seq_tbl_pay
 
 -- 급여테이블 시퀀스
 create sequence seq_tbl_pay
@@ -125,17 +177,26 @@ nocycle
 nocache;
 -- Sequence SEQ_TBL_CERTIFICATE이(가) 생성되었습니다.
 
--- 재직증명서 신청기록 테이블
-create table tbl_proof_history
-(fk_empno         varchar2(40)            not null  --회원아이디
-,logindate         date default sysdate    not null  -- 로그인한 날짜
-,clientip          varchar2(20)            not null
-,constraint  FK_tbl_login_history_fk_userid   foreign key(fk_userid) references tbl_member(userid)
+
+-- 근태 테이블
+tbl_attendance
+( fk_empno       number  not null                -- 사원번호
+, workdate        date default sysdate not null  -- 날짜(매일 1am 마다 insert 됨)
+, workstart      date                            -- 출근시간
+, workend        date                            -- 퇴근시간
+, trip           Nvarchar2(1) default 'N'        -- 출장여부
+, tripstart      date                            -- 출장시작 (ex. 2022-10-10 11:00)
+, tripend        date                            -- 출장종료 (ex. 2022-10-10 11:00)
+, dayoff         Nvarchar2(1) default 'N'        -- 연차여부
+, extendstart    date                            -- 연장근무시작시간 
+, constraint FK_tbl_attendance_fk_empno Foreign key(fk_empno) references tbl_employee(empno)
+, constraint PK_tbl_attendance_fk_empno_workdate primary key(fk_empno, workdate)
 );
 
-select joindate
-from tbl_employee
-commit
+select *
+from tbl_attendance
+
+
 -- 이미지 칼럼 추가
 alter table tbl_employee
    add joindate  VARCHAR2(15)    not null; 
@@ -158,6 +219,7 @@ ALTER TABLE tbl_employee
 ADD [CONSTRAINT UK_tbl_employee_pay]
 unique(pay);
 
+-- 제약추가하기
 ALTER TABLE tbl_employee add constraint  UK_tbl_employee_pay  unique(pay);
 alter table tbl_employee constraint UK_tbl_employee_pay unique(pay) ;
 
@@ -174,11 +236,16 @@ alter table tbl_employee add gender varchar2(2);
 -- 연차칼럼추가
 alter table tbl_employee add ANNUALCNT varchar2(5) default 15 not null;
 
+-- 급여 디폴트값걸기
+alter table tbl_pay add pay  number(30)  default 10000 not null;
+
 
 -- 칼럼 변경
+alter table tbl_pay modify pay NUMBER(30) default 10000   not null;
+
+
+
 alter table tbl_employee modify salary NUMBER(30)    not null;
-
-
 -- pvemail 칼럼변경
 alter table tbl_employee modify pvemail varchar2(200) null;
 
@@ -402,6 +469,57 @@ select E.empno, name, bumun, department, position, ceil(salary/12) as salary,
 from tbl_employee E right join TBL_PAY P
 on E.empno = P.fk_empno
 where name = '김민수'
+
+
+
+(payno               number        not null       -- 급여번호
+,fk_empno            number        not null       -- 사원번호
+,pay                 number(30)   default 10000   -- 기본급
+,annualpay           number(30)                  -- 연차수당
+,overtimepay         number(30)                  -- 초과근무수당
+,paymentdate   
+
+select payno, fk_empno,money,annualpay, overtimepay, paymentdate, money*3.3 as tax
+from V
+(select payno, fk_empno, ceil(salary/12) as money, annualpay, overtimepay, paymentdate
+from tbl_pay P join tbl_employee E
+on P.fk_empno = E.empno)
+
+-- 급여테이블에 넣는 방법
+select payno, fk_empno, money, annualpay, overtimepay, paymentdate, round(money*0.07) as incomtax, round(money*0.55) as pension, round(money*0.07) as insurance
+from 
+(
+    select empno, ceil(salary/12) as money
+    from tbl_employee
+)A
+join
+(
+    select payno,annualpay, overtimepay, paymentdate ,fk_empno
+    from tbl_pay
+)B
+on  A.empno = B.fk_empno
+
+
+-- 지급항목
+초과근무수당 :  pay * 1.5*근무시간
+연차수당 : 연차수당 일급(시간*8)*연차휴가 미사용갯수
+
+-- 공제항목
+소득세 : 0.07
+국민연금 : 0.55
+건강보험 : 0.07
+
+insert into tbl_pay set 
+
+insert into tbl_pay (salary,payno, fk_empno,annualpay, overtimepay, paymentdate)
+select salary
+from tbl_employee
+
+
+
+
+
+
 
 
 
