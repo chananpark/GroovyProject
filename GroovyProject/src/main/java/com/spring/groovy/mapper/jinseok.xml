@@ -15,18 +15,30 @@
 
 	<select id="getTotalCount" parameterType="HashMap" resultType="int">
 	    select count(*)
-	    from tbl_mail
+	    from tbl_mail M  
+	    <if test='listType == "FK_Recipient_address" or listType == "important"'>   
+	    right JOIN TBL_MAIL_Recipient R  
+   		ON R.fk_mail_no = M.mail_no
+   		</if>
 	    <![CDATA[where SEND_TIME <= sysdate]]>	    
-	    <if test='listType == "FK_Recipient_address" or listType == "FK_Sender_address"'>    	
-    		and  ${listType} =  #{mail_address}
+	
+       	<if test='listType == "FK_Sender_address"'>
+       		and sender_delete = 0
+       		and  ${listType} = #{mail_address}
+       	</if>
+       	<if test='listType == "FK_Recipient_address"'>  
+       		and RECIPIENT_delete =0  	
+    		and  ((FK_Recipient_address_individual = #{mail_address})
+    			  or (FK_REFERENCED_ADDRESS_individual = #{mail_address}))
     	</if>
     	<if test='listType == "important"'>    	
-    		and ((FK_Recipient_address = #{mail_address} and Recipient_IMPORTANT = 1)
-    			  or (FK_Sender_address = #{mail_address} and SENDER_IMPORTANT = 1))
+    		and ((FK_Recipient_address_individual = #{mail_address} and Recipient_IMPORTANT = 1 and RECIPIENT_delete =0)
+    			  or (FK_Sender_address = #{mail_address} and SENDER_IMPORTANT = 1 and sender_delete = 0))
     	</if>
-	    <if test='searchType != "" and searchWord != "" '>
+    	<if test='searchType != "" and searchWord != "" '>
 	    	and lower(${searchType}) like '%'||lower(#{searchWord})||'%'
 	    </if>
+			 
 	</select>
 		
 		<!-- 페이징한 메일 정보만 가져오기-->
@@ -37,20 +49,36 @@
 		    select rownum AS rno, V.*
 		    from 
 		    (
-		        select  MAIL_NO,FK_Sender_address,FK_Recipient_address,FK_Referenced_address
-                ,SUBJECT,CONTENTS,SEND_TIME,read_check,sender_delete,Recipient_delete
-                ,SENDER_IMPORTANT,Recipient_IMPORTANT,fileName,orgFilename,fileSize,MAIL_PWD
-                
-		        from tbl_mail
+		        select M.MAIL_NO,M.FK_SENDER_ADDRESS,M.FK_RECIPIENT_ADDRESS
+		        ,M.SUBJECT,M.contents,M.send_Time,M.SENDER_DELETE,M.SENDER_IMPORTANT
+		        ,M.FILENAME, M.ORGFILENAME, M.FILESIZE,M.MAIL_PWD
+		        <if test='listType == "FK_Recipient_address" or listType == "important"'>   
+	
+		        	,R.mail_recipient_no,R.FK_RECIPIENT_ADDRESS_individual
+		        	,R.FK_REFERENCED_ADDRESS_individual,R.READ_CHECK
+		        	,R.RECIPIENT_DELETE,RECIPIENT_IMPORTANT
+				</if>
+			
+			   from tbl_mail M  
+			   <if test='listType == "FK_Recipient_address" or listType == "important"'>
+				   right JOIN TBL_MAIL_Recipient R  
+				   ON R.fk_mail_no = M.mail_no
+			   </if>
 		        <!-- <![CDATA[]]> 파싱하지 않고 문자 그대로 들어감 -->
 		        <![CDATA[where SEND_TIME <= sysdate]]>
 		        <if test='listType != ""'>		
-		        	<if test='listType == "FK_Recipient_address" or listType == "FK_Sender_address"'>    	
-			    		and  ${listType} =  #{mail_address}
+		        	<if test='listType == "FK_Sender_address"'>
+		        		and sender_delete = 0
+		        		and  ${listType} = #{mail_address}
+		        	</if>
+		        	<if test='listType == "FK_Recipient_address"'>  
+		        		and RECIPIENT_delete =0    	
+			    		and  ((FK_Recipient_address_individual = #{mail_address})
+			    			  or (FK_REFERENCED_ADDRESS_individual = #{mail_address}))
 			    	</if>
 			    	<if test='listType == "important"'>    	
-			    		and ((FK_Recipient_address = #{mail_address} and Recipient_IMPORTANT = 1)
-			    			  or (FK_Sender_address = #{mail_address} and SENDER_IMPORTANT = 1))
+			    	    and ((FK_Recipient_address_individual = #{mail_address} and Recipient_IMPORTANT = 1 and RECIPIENT_delete =0  )
+			    			  or (FK_Sender_address = #{mail_address} and SENDER_IMPORTANT = 1 and sender_delete = 0)) 
 			    	</if>
 			    </if>
 		        
@@ -67,10 +95,257 @@
 	
 	<!-- 태그 리스트 가져오기 -->
 	<select id="getTagList" parameterType="String" resultType="com.spring.groovy.mail.model.TagVO"> 
-		select * 
+		select FK_MAIL_ADDRESS,TAG_COLOR,TAG_NAME,fk_mail_no,tag_no
 		from tbl_tag
 		where FK_mail_address = #{mail_address}
+		order by fk_mail_no desc, tag_color asc, tag_no asc 
+	</select>
+	
+	<!-- 태그 리스트 가져오기 (사이드바 전용)-->
+	<select id="getTagListSide" parameterType="String" resultType="com.spring.groovy.mail.model.TagVO"> 
+		select distinct FK_MAIL_ADDRESS,TAG_COLOR,TAG_NAME
+		from tbl_tag
+		where fk_mail_address = #{mail_address}
+		order by tag_color asc
+	</select>
+	
+	<!-- 태그 리스트 가져오기 -->
+	<select id="getTagListByMailNo" parameterType="HashMap" resultType="com.spring.groovy.mail.model.TagVO"> 
+		select * 
+		from tbl_tag
+		where FK_mail_address = #{FK_MAIL_ADDRESS}
+		<if test="mailNo != null">
+			and fk_MAIL_NO = #{mailNo}
+		</if>
+	</select>
+	
+	
+	<!-- 메일 채번하기 -->
+	<select id="getSeqMailNo" resultType="int">
+		select seq_mail_no.nextval
+		from dual
+	</select>
+	<!-- 메일 추가하기 -->
+	<insert id="addMail" parameterType="HashMap">
+		insert into tbl_mail(MAIL_NO, FK_Sender_address,FK_Recipient_address,SUBJECT, CONTENTS,
+							SEND_TIME,mail_pwd,orgFilename,fileName,fileSize)
+					values(#{mail_no}, #{FK_Sender_address} ,#{FK_Recipient_address},#{subject},#{contents},
+		
+		<choose>
+	    	<when test="send_time == ''">
+	    	    sysdate,
+	    	</when>
+	    	<otherwise>
+	    	    to_date(#{send_time},'mm/dd/yyyy hh24:mi:ss'),
+	    	</otherwise>
+	    </choose>
+	    
+	    <choose>
+	    	<when test="mail_pwd == ''">
+	    	    null,
+	    	</when>
+	    	<otherwise>
+	    	    to_date(#{send_time},'mm/dd/yyyy hh24:mi:ss'),
+	    	</otherwise>
+	    </choose>
+	    
+	    <choose>
+	    	<when test="originalFilename == ''">
+	    	    null,
+	    	</when>
+	    	<otherwise>
+	    	    #{originalFilename},
+	    	</otherwise>
+	    </choose>
+	    
+	    <choose>
+	    	<when test="newFileName == ''">
+	    	    null,
+	    	</when>
+	    	<otherwise>
+	    	    #{newFileName},
+	    	</otherwise>
+	    </choose>
+	    <choose>
+	    	<when test="fileSize == ''">
+	    	    null
+	    	</when>
+	    	<otherwise>
+	    	    #{fileSize}
+	    	</otherwise>
+	    </choose>
+		
+		
+
+		
+		)
+		
+	</insert>
+	
+	<!-- 하위 메일 추가하기 -->
+	<insert id="addMailRecipient" parameterType="HashMap">
+		insert into TBL_MAIL_Recipient(MAIL_Recipient_NO,FK_MAIL_NO, ${addressType})
+		values(seq_mail_recipient_no.nextval,#{mail_no},#{address})
+	</insert>
+	
+	
+	<!-- 메일 하나 가져오기 -->
+	<select id="getOneMail" parameterType="String" resultType="com.spring.groovy.mail.model.MailVO"> 
+		select * 
+		from tbl_mail
+		where mail_no = #{mailNo}
+	</select>
+	
+	<!--  메일리스트 가져오기 (자동완성용) -->
+	<select id="getMailList" resultType="String"> 
+		select '"'||department||' '||position||' '||name||'<![CDATA[<]]>'||cpemail||'<![CDATA[>]]>'||'"' as cpemail
+		from tbl_employee
 	</select>
 		
+	<!--  메일 읽음 처리하기 -->
+	<update id="readMail" parameterType = "HashMap" >
+		update TBL_MAIL_Recipient set read_check =  1
+   		where fk_MAIL_NO = ${mailNo}
+   		and FK_RECIPIENT_ADDRESS_INDIVIDUAL = #{FK_MAIL_ADDRESS}
+	</update>	
+	
+	<!-- 중요체크 되있는지 확인 -->
+	<select id="importantCheck" parameterType="String" resultType="int"> 
+		select RECIPIENT_IMPORTANT
+		from TBL_MAIL_Recipient
+		where MAIL_RECIPIENT_NO=#{mail_recipient_no}
+	</select>
+	
+	<!-- 중요체크 되있는지 확인 mailno-->
+	<select id="importantCheckM" parameterType="String" resultType="int"> 
+		select SENDER_IMPORTANT
+		from tbl_mail
+		where mail_no = #{mail_no}
+	</select>
+	
+	<!-- 중요체크 추가 or 해제 -->
+	<update id="importantUpdate" parameterType = "HashMap" >
+	
+		update TBL_MAIL_Recipient 
+		<if test="RECIPIENT_IMPORTANT == 0">
+		set RECIPIENT_IMPORTANT =  1
+		</if>
+		<if test="RECIPIENT_IMPORTANT == 1">
+		set RECIPIENT_IMPORTANT =  0
+		</if>
+   		where mail_recipient_no = #{mail_recipient_no}
+	</update>
+	
+	<!-- 중요체크 추가 or 해제 mailno -->
+	<update id="importantUpdateM" parameterType = "HashMap" >
+	
+		update TBL_MAIL
+		<if test="SENDER_IMPORTANT == 0">
+		set SENDER_IMPORTANT =  1
+		</if>
+		<if test="SENDER_IMPORTANT == 1">
+		set SENDER_IMPORTANT =  0
+		</if>
+   		where mail_no = #{mail_no}
+	</update>
+	
+
+	<!-- 받은 메일 삭제  -->
+	<update id="deleteUpdate" parameterType = "String" >
+		update TBL_MAIL_Recipient
+		set RECIPIENT_delete=  1
+   		where mail_recipient_no = #{mail_recipient_no}
+	</update>
+	
+	
+	<!-- 보낸 메일 삭제  -->
+	<update id="deleteUpdateM" parameterType = "String" >
+		update TBL_MAIL
+		set SENDER_Delete=  1
+   		where mail_no = #{mail_no}
+	</update>
+	
+	
+	
+	
+	
+	
+	<!-- 태그 추가 or 삭제 -->
+	<update id="tagCheckM" parameterType = "HashMap" >
+		MERGE 
+		INTO tbl_tag
+		USING dual
+		 ON (fk_MAIL_NO= #{mail_no} and TAG_COLOR = #{tag_color} and FK_MAIL_ADDRESS=#{FK_MAIL_ADDRESS})
+		WHEN MATCHED THEN
+		update set tag_no = tag_no
+		delete where fk_MAIL_NO= #{mail_no} and TAG_COLOR = #{tag_color} and FK_MAIL_ADDRESS=#{FK_MAIL_ADDRESS}
+		WHEN NOT MATCHED THEN
+		
+		insert(tag_no,FK_mail_address,tag_color,tag_name ,fk_MAIL_NO )
+		values(seq_tag_no.nextval,#{FK_MAIL_ADDRESS},#{tag_color},#{tag_name},#{mail_no})
+	</update>
+	
+	
+	<resultMap type="HashMap" id="departmentMap">
+		<result property="department_no" column="empno" javaType="String"/>
+		<result property="department" column="department" javaType="String"/>
+		<result property="bumun_no" column="name" javaType="String"/>
+		<result property="bumun" column="position" javaType="String"/>
+	</resultMap>
+	<select id="getDepartmentList" resultMap="departmentMap">
+		select to_char(department_no) as department_no, department, to_char(bumun_no) as bumun_no, bumun 
+        from tbl_department D 
+        left join tbl_bumun B
+        on D.fk_bumun_no = B.bumun_no
+        order by bumun_no asc , department_no asc
+	</select>
+	
+	<!-- ############################################################################################################################################################### -->
+	<!-- 조직도 emp 목록 갯수 -->
+	<select id="getEmpTotalCount" parameterType="HashMap" resultType="int"> 
+		select count(*)
+	    from TBL_EMPLOYEE
+	    where 1=1
+	    <if test='searchType != "" and searchWord != "" '>
+	    	AND LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
+	    </if>
+	</select>
+	
+	<!-- 조직도 emp 목록 가져오기 -->
+	<resultMap type="HashMap" id="empList">
+		<result property="empno" column="empno" javaType="String"/>
+		<result property="cpemail" column="cpemail" javaType="String"/>
+		<result property="name" column="name" javaType="String"/>
+		<result property="position" column="position" javaType="String"/>
+		<result property="birth_date" column="birth_date" javaType="String"/>
+		<result property="empimg" column="empimg" javaType="String"/>
+		<result property="bumun" column="bumun" javaType="String"/>
+		<result property="department" column="department" javaType="String"/>
+		<result property="mobile" column="mobile" javaType="String"/>
+		<result property="joindate" column="joindate" javaType="String"/>
+	</resultMap>
+	
+	<select id="empListSearchWithPaging" parameterType="HashMap" resultMap="empList"> 
+		select *
+		from 
+		(
+		    select rownum AS rno, V.*
+		    from 
+		    ( 
+			select empno, cpemail, name, position, substr(jubun,0,6) as birth_date
+		          ,empimg, bumun,department, mobile,joindate
+		    from TBL_EMPLOYEE
+		    where 1=1
+		    <if test='searchType != "" and searchWord != "" '>
+		    	and lower(${searchType}) like '%'||lower(#{searchWord})||'%'
+		    </if>
+		    order by fk_bumun_no, fk_department_no,fk_position_no
+		    ) V
+		) T 
+		where rno between #{startRno} and #{endRno}
+    </select>
+	
+	
+	
 		
 </mapper>
