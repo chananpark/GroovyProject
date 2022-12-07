@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.mybatis.spring.SqlSessionTemplate;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.spring.groovy.management.model.MemberVO;
@@ -14,6 +15,7 @@ public class ApprovalDAO implements InterApprovalDAO {
 	
 	private SqlSessionTemplate sqlsession;
 	
+	@Autowired
 	public ApprovalDAO(SqlSessionTemplate sqlsession) {
 		this.sqlsession = sqlsession;
 	}
@@ -144,19 +146,19 @@ public class ApprovalDAO implements InterApprovalDAO {
 	// approval 테이블에 insert
 	@Override
 	public int addApproval(List<ApprovalVO> apvoList) {
-		return sqlsession.update("approval.addApproval", apvoList);
+		return sqlsession.insert("approval.addApproval", apvoList);
 	}
 	
 	// draft_file 테이블에 insert
 	@Override
 	public int addFiles(List<DraftFileVO> fileList) {
-		return sqlsession.update("approval.addFiles", fileList);
+		return sqlsession.insert("approval.addFiles", fileList);
 	}
 
 	// 지출내역 리스트 insert
 	@Override
 	public int addExpenseList(List<ExpenseListVO> evoList) {
-		return sqlsession.update("approval.addExpenseList", evoList);
+		return sqlsession.insert("approval.addExpenseList", evoList);
 	}
 
 	// 출장보고 insert

@@ -250,7 +250,7 @@ CREATE TABLE TBL_DEPARTMENT
 );
         
 -- 커뮤니티 게시판 테이블 --
-CREATE TABLE TBL_COMMUNITY
+CREATE TABLE TBL_COMMUNITY_POST
 (POST_NO NUMBER -- 글번호(기본키)
 ,FK_EMPNO NOT NULL -- 작성자 사원번호(외래키)
 ,POST_SUBJECT NVARCHAR2(100) NOT NULL -- 글 제목
@@ -515,3 +515,29 @@ begin
    o_updateCnt := SQL%rowcount;
    
 end pcd_tbl_approval_proxy;
+
+-------------------------------------------------------------------------------
+
+-- 커뮤니티 글 목록 조회하기 뷰 --
+create or replace view view_post_list
+as
+select P.*, nvl(commentCnt,0) commentCnt, name, empimg, nvl(likeCnt,0) likeCnt,
+lag(post_no, 1) over(order by post_no) as pre_no,
+lag(post_subject, 1) over(order by post_no) as pre_subject,
+lead(post_no) over(order by post_no) as next_no,
+lead(post_subject) over(order by post_no) as next_subject
+from TBL_COMMUNITY_POST P
+left join 
+    (select count(*) commentCnt, fk_post_no 
+    from tbl_community_comment
+    group by fk_post_no) C
+on post_no = C.fk_post_no
+left join
+    (select count(*) likeCnt, fk_post_no 
+    from tbl_community_like
+    group by fk_post_no) L
+on post_no = L.fk_post_no
+join tbl_employee E
+on P.fk_empno = empno
+and POST_STATUS = 1
+;

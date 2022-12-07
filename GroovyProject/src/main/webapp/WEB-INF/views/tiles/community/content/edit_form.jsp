@@ -166,6 +166,9 @@ $(() => {
    	 $(this).parent().remove();
    	 
 	});
+	
+	// 기존 첨부파일 조회
+	getPostFiles();
 });
 
 /* 폼 제출하기 */
@@ -178,7 +181,7 @@ const submitPost = () => {
 	getFiles(formData);
 	
 	 $.ajax({
-	     url : "<%=ctxPath%>/community/addPost.on",
+	     url : "<%=ctxPath%>/community/editPostEnd.on",
 	     data : formData,
 	     type:'POST',
 	     enctype:'multipart/form-data',
@@ -188,13 +191,13 @@ const submitPost = () => {
 	     cache:false,
 	     success:function(json){
 	     	if(json.result == true) {
-	 	    	swal("등록 완료", "게시글이 작성되었습니다.", "success")
+	 	    	swal("수정 완료", "게시글이 수정되었습니다.", "success")
 	 	    	.then((value) => {
-		    	    	location.href = "<%=ctxPath%>/community/list.on";
+		    	    	location.href="<%=ctxPath%>/community/detail.on?post_no=${post.post_no}";
 		    		});
 	     	}
 	     	else
-	     		swal("등록 실패", "게시글 작성을 실패하였습니다.", "error");
+	     		swal("수정 실패", "게시글 수정을 실패하였습니다.", "error");
 	     },
 	     error: function(request, status, error){
 			alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
@@ -213,6 +216,54 @@ const getFiles = formData => {
 	}
 }
 
+// 기존 첨부파일 조회하기
+const getPostFiles = () => {
+	
+	 $.ajax({
+		url : "<%=ctxPath%>/community/getPostFiles.on",
+		data : {"post_no": "${post.post_no}"},
+		dataType:'json',
+		cache:false,
+		success:function(jsonArr){
+			
+			let html = "";
+			
+			// 첨부파일이 있을 경우			
+			if(jsonArr.length > 0) {
+				jsonArr.forEach(el => {
+					html += "<div>"+el.originalFilename+"<button type='button' class='ml-2' onclick='deleteFile("+el.post_file_no+")'>삭제</button></div>"
+				});
+			}
+			$("#attachedFiles").html(html);
+     	},
+	     error: function(request, status, error){
+			alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+		}
+	 });
+}
+
+// 기존 첨부파일 삭제하기
+const deleteFile = post_file_no => {
+	
+	 $.ajax({
+	     url : "<%=ctxPath%>/community/deleteFile.on",
+	     data : {"post_file_no": post_file_no},
+	     type:'POST',
+	     dataType:'json',
+	     cache:false,
+	     success:function(json){
+	     	if(json.result == true) {
+	     		// 첨부파일 다시 조회
+	     		getPostFiles();
+	     	}
+	     	else
+	     		swal("등록 실패", "게시글 작성을 실패하였습니다.", "error");
+	     },
+	     error: function(request, status, error){
+			alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			}
+	 });
+}
 
 </script>
 
@@ -223,15 +274,25 @@ const getFiles = formData => {
 	</div>
 
 	<form id="postFrm">
+		<input type="hidden" name="post_no" value="${post.post_no}"/>
 		<h5 class='text-left mb-3' style="margin-top: 80px">제목</h5>
-		<input type="text" name="post_subject" id="post_subject" placeholder='제목을 입력하세요' style='width: 100%; font-size: small;' />
+		<input type="text" name="post_subject" id="post_subject" placeholder='제목을 입력하세요' style='width: 100%; 
+		font-size: small;' value="${post.post_subject}"/>
 	
 		<div class='mb-3' style='margin-top: 30px'>
 			<h5 style='display: inline-block;'>내용</h5>
 			<button id='saveBtn' type="button" class="btn btn-sm btn-light" style='float: right'>임시저장</button>
 			<button id='getSavedPostBtn' type="button" class="btn btn-sm btn-light mr-2" style='float: right'>임시저장 불러오기</button>
 		</div>
-		<textarea style="width: 100%; height: 612px;" name="post_content" id="post_content" placeholder='내용을 입력하세요'></textarea>
+		<textarea style="width: 100%; height: 612px;" name="post_content" id="post_content" placeholder='내용을 입력하세요'>
+		${post.post_content}</textarea>
+		
+		<div class='card'>
+			<div class='card-header small'>첨부된 파일</div>
+			<div class='card-body small' id='attachedFiles'>
+				
+			</div>
+		</div>
 	
 		<div class="filebox">
 			<div class="dropBox mt-2">
