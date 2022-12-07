@@ -94,18 +94,15 @@
 		
 		// === 다음버튼을 누르면 === //
 		$("button#btn_next").click(function(){
-			
 			func_login();
 		}); // end of $("button#btn_next").click(function(){---------------------
 			
 			
 		// 엔터를 했을 경우
 		$("input#pwd").keydown(function(e){
-			
 			if(e.keyCode == 13) { 
 				func_login();
 			}
-			
 		}); // end of $("input#pwd").keydown(function(e){
 			
 		
@@ -128,7 +125,7 @@
 			$("input#email").focus();
 			return;  // 종료
 		}
-		 
+			
 		const frm = document.frm_login
 		
 		frm.action = "<%= ctxPath%>/login.on";

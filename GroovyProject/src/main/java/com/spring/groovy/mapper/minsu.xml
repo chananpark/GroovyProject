@@ -7,44 +7,164 @@
 	<!-- 이 안에 sql문을 적는다 -->
 	
 	<select id="getLogin" resultType="com.spring.groovy.management.model.MemberVO" parameterType="String" >
-		select cpemail
-		from tbl_employee
-		where cpemail = #{cpemail}
+		SELECT CPEMAIL
+		FROM TBL_EMPLOYEE
+		WHERE CPEMAIL = #{cpemail}
 	</select>
 	
 	
 	<select id="login2" parameterType="HashMap" resultType="com.spring.groovy.management.model.MemberVO">
-		select empno, cpemail, name, pwd, position, jubun, postcode, address, detailaddress
-		     , extraaddress,empimg,birthday, bumun,department,pvemail,mobile,depttel,joindate
-		     ,empstauts,bank, account,annualcnt, empimg, fk_position_no, fk_bumun_no, fk_department_no
-		from tbl_employee
-		where cpemail = #{cpemail} and pwd = #{pwd}
+		SELECT EMPNO, CPEMAIL, NAME, PWD, POSITION, JUBUN, POSTCODE, ADDRESS, DETAILADDRESS
+		     , EXTRAADDRESS,EMPIMG,BIRTHDAY, BUMUN,DEPARTMENT,PVEMAIL,MOBILE,DEPTTEL,TO_CHAR(JOINDATE, 'YYYY-MM-DD') AS JOINDATE
+		     ,EMPSTAUTS,BANK, ACCOUNT,ANNUALCNT, EMPIMG, FK_POSITION_NO, FK_BUMUN_NO, FK_DEPARTMENT_NO,SIGNIMG,SALARY
+		FROM TBL_EMPLOYEE
+		WHERE CPEMAIL = #{cpemail} and PWD = #{pwd}
 	</select>
+	
+	
+	<select id="findPwd" parameterType="HashMap" resultType="com.spring.groovy.management.model.MemberVO">
+		SELECT EMPNO, CPEMAIL, NAME, JUBUN
+		FROM TBL_EMPLOYEE
+		WHERE CPEMAIL = #{cpemail} and JUBUN = #{jubun}
+	</select>
+	
+	<!--  로그인 - 비밀번호 변경하기-->
+	<update id="updatePwd" parameterType="HashMap"> 
+		UPDATE TBL_EMPLOYEE SET PWD = #{pwd} 
+		WHERE CPEMAIL = #{cpemail}
+	</update>
+	
+	
+	
 	<!-- ================================================================================================= -->
+	
+	<!-- 사원정보 수정-->
+	<update id="viewInfoEnd" parameterType="HashMap"> 
+		UPDATE TBL_EMPLOYEE SET POSTCODE = #{mvo.postcode} , ADDRESS= #{mvo.address}, DETAILADDRESS= #{mvo.detailaddress}, EXTRAADDRESS= #{mvo.extraaddress}
+							  , EMPIMG= #{filename}, PVEMAIL= #{mvo.pvemail}, MOBILE= #{mobile}, BANK=#{mvo.bank}, ACCOUNT= #{mvo.account}
+		WHERE EMPNO = #{empno}
+	</update>
+	
+	
+	<!-- 공용 사원관리 - 정보수정(이메일중복확인 Ajax)-->
+	<select id="checkPvEmail" parameterType="String" resultType="int">
+		SELECT COUNT(*)
+		FROM TBL_EMPLOYEE
+		WHERE PVEMAIL = #{pvemail}
+	</select>
+	
+	
+	
 	
 	<!-- 재직증명서 - 재직증명서신청 (insert) -->
 	<insert id="proofEmployment" parameterType="com.spring.groovy.management.model.ProofVO">
-		insert into tbl_certificate (proofno, fk_empno, issuedate, issueuse)
-		values(seq_tbl_certificate.nextval, #{fk_empno}, sysdate, #{issueuse})
+		INSERT INTO TBL_CERTIFICATE (PROOFNO, FK_EMPNO, ISSUEDATE, ISSUEUSE)
+		VALUES(seq_tbl_certificate.nextval, #{fk_empno}, sysdate, #{issueuse})
 	</insert>
 	
 	
 	<!-- 재직증명서 신청내역을 가져오기(select) -->
 	<select id="getProofList" resultType="com.spring.groovy.management.model.ProofVO" parameterType="String">
-		select proofno,fk_empno, to_char(issuedate, 'yyyy-mm-dd') issuedate, issueuse
-		from tbl_certificate
-		where fk_empno = #{empno}
+		SELECT PROOFNO,FK_EMPNO, TO_CHAR(ISSUEDATE, 'YYYY-MM-DD') ISSUEDATE, ISSUEUSE
+		FROM TBL_CERTIFICATE
+		WHERE FK_EMPNO = #{empno}
+		ORDER BY ISSUEDATE DESC
+	</select>
+	
+		
+	<!-- 재직증명서 한 페이지에 표시할 재직증명서 전체 글 개수 구하기(페이징)  -->
+	<select id="getcountPfList" resultType="int" parameterType="com.spring.groovy.common.Pagination" >
+		SELECT COUNT(*) FROM TBL_CELEBRATE
+		<if test='searchType != "" and searchWord != "" '>
+		WHERE LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
+		</if>
+	</select>	
+	
+	
+	<!-- 재직증명서 - 한 페이지에 표시할 글 목록   (페이징) -->
+	<select id="getOnePagePfCnt" parameterType="HashMap" resultType="com.spring.groovy.management.model.ProofVO">
+		SELECT *
+		FROM (SELECT ROWNUM AS RNO, V.*
+			FROM( 
+			    SELECT *
+			    FROM TBL_CERTIFICATE
+			     <if test='searchType != "" and searchWord != "" '>
+		            WHERE LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
+	            </if>
+	            ORDER BY PROOFNO DESC
+			)V)
+		WHERE RNO BETWEEN #{startRno} AND #{endRno} 
 	</select>
 	
 	
 	
+	<!-- 공용 경조비관리 - 경조비신청 -->
+	<insert id="receiptCelebrate" parameterType="com.spring.groovy.management.model.CelebrateVO">
+		INSERT INTO TBL_CELEBRATE (CLBNO, FK_EMPNO, CLBDATE, CLBPAY, CLBTYPE, CLBSTATUS)
+		VALUES(seq_tbl_celebrate.nextval, #{fk_empno}, sysdate, #{clbpay}, #{clbtype}, default)
+	</insert>
+	
+	
+	<!-- 공용 경조비관리 - 경조비신청목록 -->
+	<select id="getCelebrateList" parameterType="String" resultType="com.spring.groovy.management.model.CelebrateVO">
+		SELECT CLBNO, FK_EMPNO, TO_CHAR(CLBDATE, 'YYYY-MM-DD') AS CLBDATE, CLBPAY, CLBTYPE, CLBSTATUS
+		FROM TBL_CELEBRATE
+		WHERE FK_EMPNO = #{empno}
+	</select>
+	
+	
+	<!-- 경조비 목록 - 전체 글 개수 구하기(페이징)  -->
+	<select id="getcountCelebList" parameterType="com.spring.groovy.common.Pagination" resultType="int" >
+		SELECT COUNT(*) FROM tbl_celebrate
+		<if test='searchType != "" and searchWord != "" '>
+		WHERE LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
+		</if>
+	</select>
+	
+	<!-- 경조비 목록 - 한 페이지에 표시할 글 목록 (페이징) -->
+	<select id="getCelebPageCelebCnt" parameterType="HashMap" resultType="com.spring.groovy.management.model.CelebrateVO">
+		SELECT *
+		FROM (SELECT ROWNUM AS RNO, V.*
+			FROM( 
+			    SELECT *
+			    FROM TBL_CELEBRATE
+			     <if test='searchType != "" and searchWord != "" '>
+		            WHERE LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
+	            </if>
+	            ORDER BY CLBNO DESC
+			)V)
+		WHERE RNO BETWEEN #{startRno} AND #{endRno}
+	</select>
 	
 	
 	
-	
-	
-	
-	
+	<!-- 공용 증명서 - 월급리스트 -->
+	<select id="paySearch" parameterType="HashMap" resultType="com.spring.groovy.management.model.PayVO">
+		
+	SELECT PAYNO, FK_EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, SALARY,PAY ,ANNUALPAY,OVERTIMEPAY,PAYMENTDATE,OVERPAY,
+	        INCOMTAX,PENSION,INSURANCE, ALLPAY, TAX,
+	        (ALLPAY - TAX) AS MONTHPAY
+	FROM 
+	    (
+	        SELECT PAYNO, FK_EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, SALARY,PAY ,ANNUALPAY,OVERTIMEPAY,PAYMENTDATE,OVERPAY,
+	                    INCOMTAX,PENSION,INSURANCE, 
+	                    (SALARY+ANNUALPAY+OVERTIMEPAY) AS ALLPAY,
+	                    (INCOMTAX+PENSION+INSURANCE) AS TAX
+	                    
+	        FROM 
+	        (
+	            SELECT PAYNO, FK_EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, SALARY,PAY ,ANNUALPAY,OVERTIMEPAY,PAYMENTDATE, (ANNUALPAY+OVERTIMEPAY) AS OVERPAY,
+	                    CEIL(SALARY*INCOMTAX) AS INCOMTAX, CEIL(SALARY*PENSION)AS PENSION, CEIL(SALARY*INSURANCE)AS INSURANCE
+	            FROM
+	                (SELECT E.EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, ROUND(SALARY/12)AS SALARY,
+	                        PAYNO, FK_EMPNO, PAY, NVL(ANNUALPAY,0) AS ANNUALPAY, NVL(OVERTIMEPAY,0)  AS OVERTIMEPAY, TO_CHAR(PAYMENTDATE, 'YYYY-MM-DD') AS PAYMENTDATE
+	                        ,INCOMTAX,PENSION,INSURANCE
+	                FROM TBL_EMPLOYEE E RIGHT JOIN TBL_PAY P
+	                ON E.EMPNO = P.FK_EMPNO
+	            )V
+	        )A
+	    )P
+	</select>
 	
 	
 	
@@ -61,30 +181,153 @@
 	
 	<!-- 관리자 사원관리 - 사원조회 -->
 	<select id="searchInfoAdmin" resultType="com.spring.groovy.management.model.MemberVO">
-		select empno, name, position, department,cpemail,mobile,joindate
-		from tbl_employee
+		SELECT EMPNO, NAME, POSITION, DEPARTMENT,CPEMAIL,MOBILE,JOINDATE
+		FROM TBL_EMPLOYEE
 	</select>
 	
-	<!-- 관리자 사원조회 - 회원목록 수 조회  -->
+	<!-- 관리자 사원관리 - 사원조회 한 페이지에 표시할 사원조회 전체 글 개수 구하기(페이징)  -->
 	<select id="getcountList" resultType="int" parameterType="com.spring.groovy.common.Pagination" >
-		SELECT COUNT(*) FROM tbl_employee
+		SELECT COUNT(*) FROM TBL_EMPLOYEE
 		<if test='searchType != "" and searchWord != "" '>
 		WHERE LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
 		</if>
-
 	</select>
 	
-	<!-- 관리자 사원관리 - 사원조회 한 페이지에 표시할 글 목록조회-->
+	
+	<!-- 관리자 사원관리 - 사원조회 한 페이지에 표시할 글 목록조회 (페이징)-->
 	<select id="getOnePageCnt" resultType="com.spring.groovy.management.model.MemberVO" parameterType="HashMap" >
-		select *
-		from (SELECT ROWNUM AS RNO, v.*
-			from( 
-			    select *
-			    from tbl_employee
+		SELECT *
+		FROM (SELECT ROWNUM AS RNO, V.*
+			FROM( 
+			    SELECT *
+			    FROM TBL_EMPLOYEE
 			     <if test='searchType != "" and searchWord != "" '>
 		            WHERE LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
 	            </if>
-	            ORDER BY empno desc
+	            ORDER BY EMPNO DESC
+			)V)
+		WHERE RNO BETWEEN #{startRno} AND #{endRno}
+	</select>
+	
+	
+	<!-- 사원등록 - 내선번호를 갖고오기위해 필요함 -->
+<!--
+	<select id="manageList" resultType="com.spring.groovy.management.model.MemberVO">
+		select bumun, department, depttel
+		from tbl_employee
+	</select>
+ -->
+ 	
+	<!-- 관리자 사원관리 - 사원등록 -->
+	<insert id="getRegisterInfo" parameterType="HashMap" >
+		INSERT INTO TBL_EMPLOYEE 
+			(EMPNO,PWD,CPEMAIL,NAME,EMPIMG,POSITION,JUBUN,POSTCODE,ADDRESS,DETAILADDRESS, EXTRAADDRESS
+			,BIRTHDAY, BUMUN,DEPARTMENT,MOBILE,DEPTTEL,TO_CHAR(CLBDATE, 'YYYY-MM-DD') AS JOINDATE,EMPSTAUTS,BANK,ACCOUNT,GENDER,SALARY, PVEMAIL,ANNUALCNT,FK_POSITION_NO,FK_BUMUN_NO,FK_DEPARTMENT_NO )
+			
+		VALUES(SEQ_TBL_EMPLOYEE.NEXTVAL,default,#{mvo.cpemail},#{mvo.name},#{mvo.empimg,jdbcType=VARCHAR},#{mvo.position}, #{mvo.jubun},#{mvo.postcode}
+			,#{mvo.address},#{mvo.detailaddress},#{mvo.extraaddress},#{birthday},#{mvo.bumun},#{mvo.department},#{mobile},#{mvo.depttel},SYSDATE,#{mvo.empstauts}
+			,#{mvo.bank},#{mvo.account},#{mvo.gender},#{mvo.salary},#{mvo.pvemail,jdbcType=VARCHAR},default,#{mvo.fk_position_no},#{mvo.fk_bumun_no},#{mvo.fk_department_no})
+	</insert>
+	
+	
+	<!-- 관리자 사원관리 - 사원등록(이메일중복확인 Ajax)-->
+	<select id="cpEmailList" parameterType="String" resultType="int">
+		SELECT COUNT(*)
+		FROM TBL_EMPLOYEE
+		WHERE CPEMAIL = #{cpemail}
+	</select>
+
+
+
+	<!-- 관리자 사원관리 - 경조비신청현황 -->
+	<select id="receiptCelebrateStatus" resultType="com.spring.groovy.management.model.CelebrateVO">
+		SELECT NAME, CLBNO, FK_EMPNO, TO_CHAR(CLBDATE, 'YYYY-MM-DD') AS CLBDATE, CLBPAY, CLBTYPE, CLBSTATUS
+		FROM TBL_CELEBRATE C JOIN TBL_EMPLOYEE E
+		ON C.FK_EMPNO = E.EMPNO
+		WHERE CLBSTATUS = '0'
+		ORDER BY CLBNO DESC
+	</select>
+	
+	
+	
+	<!-- 경조비신청현황 한 페이지에 표시할 재직증명서 전체 글 개수 구하기(페이징) -->
+	<select id="getcountClSList" resultType="int" parameterType="com.spring.groovy.common.Pagination" >
+		SELECT COUNT(*) FROM TBL_CELEBRATE
+		<if test='searchType != "" and searchWord != "" '>
+		WHERE LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
+		</if>
+	</select>
+	
+	
+	<!-- 경조비신청현황 - 한 페이지에 표시할 글 목록  (페이징 페이지수를 알아온다음에 10개씩보여줌) (페이징) -->
+	<select id="getOnePageClSCnt" resultType="com.spring.groovy.management.model.CelebrateVO" parameterType="HashMap">
+		SELECT *
+		FROM (SELECT ROWNUM AS RNO, V.*
+			FROM( 
+			    SELECT *
+			    FROM TBL_CELEBRATE
+			     <if test='searchType != "" and searchWord != "" '>
+		            WHERE LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
+	            </if>
+	            ORDER BY clbno desc
+			)V)
+		WHERE RNO BETWEEN #{startRno} AND #{endRno}
+	</select>
+	
+	
+	<!-- 관리자 사원관리 - 경조비신청현황(결제상태 변경 Ajax) -->
+	<update id="receiptCelebrateStatusEnd" parameterType="HashMap">
+		UPDATE TBL_CELEBRATE SET CLBSTATUS = '1'
+	</update>
+	
+	
+	
+	
+	
+	<!-- 관리자 사원관리 - 경조비지급목록 -->
+	<!-- <resultMap type="com.spring.groovy.management.model.CelebrateVO" id="celebList" autoMapping="true">
+		<id column="CLBNO" property="clbno" jdbcType="NUMBER"/>
+		<result column="FK_EMPNO" property="fk_empno" jdbcType="NUMBER"/>
+		<result column="CLBDATE" property="clbdate" jdbcType="DATE"/>
+		<result column="CLBPAY" property="clbpay" jdbcType="NUMBER"/>
+		<result column="CLBTYPE" property="clbtype" jdbcType="VARCHAR"/>
+		<result column="CLBSTATUS" property="clbstatus" jdbcType="VARCHAR"/>
+		
+		tbl_employee 테이블의 name을 조인시키기 위함
+		<collection property="employeeList" ofType="com.spring.groovy.management.model.MemberVO"  >
+			<id column="EMPNO" property="empno" jdbcType="NUMBER"/>
+			<result column="NAME" property="name" jdbcType="VARCHAR"/>
+		</collection>
+	</resultMap> -->
+	<select id="receiptcelebrateList" resultType="com.spring.groovy.management.model.CelebrateVO">
+		SELECT NAME, CLBNO, FK_EMPNO, TO_CHAR(CLBDATE, 'YYYY-MM-DD') AS CLBDATE, CLBPAY, CLBTYPE, CLBSTATUS
+		FROM TBL_CELEBRATE C JOIN TBL_EMPLOYEE E
+		ON C.FK_EMPNO = E.EMPNO
+		WHERE CLBSTATUS = '1'
+		ORDER BY CLBNO DESC
+	</select>
+	
+	
+	<!-- 경조비지급목록 한 페이지에 표시할 재직증명서 전체 글 개수 구하기(페이징) -->
+	<select id="getcountClList" parameterType="com.spring.groovy.common.Pagination" resultType="int">
+		SELECT COUNT(*) FROM TBL_CELEBRATE
+		<if test='searchType != "" and searchWord != "" '>
+		WHERE LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
+		</if>
+	</select>
+	
+	
+	<!-- 경조비지급목록 - 한 페이지에 표시할 글 목록  (페이징 페이지수를 알아온다음에 10개씩보여줌) (페이징) -->
+	<select id="getOnePageClCnt" parameterType="HashMap" resultType="com.spring.groovy.management.model.CelebrateVO">
+		SELECT *
+		FROM (SELECT ROWNUM AS RNO, V.*
+			FROM( 
+			    SELECT *
+			    FROM TBL_CELEBRATE
+			     <if test='searchType != "" and searchWord != "" '>
+		            WHERE LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
+	            </if>
+	            ORDER BY CLBNO DESC
 			)V)
 		WHERE RNO BETWEEN #{startRno} AND #{endRno}
 	</select>
@@ -92,23 +335,40 @@
 	
 	
 	
-	<!-- 관리자 사원관리 - 사원등록 -->
-	<insert id="getRegisterInfo" parameterType="HashMap" >
-		insert into tbl_employee 
-			(empno,cpemail,name,position,jubun,postcode,address,detailaddress, extraaddress
-			,empimg,birthday, bumun,department,pvemail
-			,mobile,depttel,joindate,empstauts,bank,account,annualcnt,gender, fk_position_no, fk_bumun_no, fk_department_no )
-		values( ${empno}, ${cpemail}, ${name}, ${position}, ${jubun}, ${postcode}, ${address}, ${detailaddress}, ${extraaddress}
-				,${empimg}, ${birthday}, ${bumun}, ${department}, ${pvemail}, ${mobile}, ${depttel}, ${joindate}, ${empstauts}
-				, ${bank}, ${account}, ${annualcnt}, ${gender},${fk_position_no}, ${fk_bumun_no}, ${fk_department_no})
-	</insert>
+	<!-- 관리자 - 재직증명서 -->
+	<select id="proofEmploymentSearch" resultType="com.spring.groovy.management.model.ProofVO" >
+		SELECT NAME, PROOFNO, FK_EMPNO, TO_CHAR(ISSUEDATE, 'YYYY-MM-DD') AS ISSUEDATE, ISSUEUSE
+		FROM TBL_CERTIFICATE C JOIN TBL_EMPLOYEE E
+		ON C.FK_EMPNO = E.EMPNO
+		ORDER BY PROOFNO DESC
+	</select>
 	
 	
-	<!-- 관리자 사원관리 - 사원등록(이메일중복확인 Ajax)-->
-	<select id="cpEmailList" parameterType="String" resultType="int">
-		select count(*)
-		from tbl_employee
-		where cpemail = #{cpemail}
+	
+	
+	
+	<!-- 재직증명서 한 페이지에 표시할 재직증명서 전체 글 개수 구하기(페이징) -->
+	<select id="getcountProofList" resultType="int" parameterType="com.spring.groovy.common.Pagination">
+		SELECT COUNT(*) FROM TBL_CERTIFICATE
+		<if test='searchType != "" and searchWord != "" '>
+		WHERE LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
+		</if>
+	</select>
+	
+	
+	<!-- 재직증명서 - 한 페이지에 표시할 글 목록  (페이징 페이지수를 알아온다음에 10개씩보여줌) (페이징) -->
+	<select id="getOnePageProofCnt" parameterType="HashMap" resultType="com.spring.groovy.management.model.ProofVO">
+		SELECT *
+		FROM (SELECT ROWNUM AS RNO, V.*
+			FROM( 
+			    SELECT *
+			    FROM TBL_CERTIFICATE
+			     <if test='searchType != "" and searchWord != "" '>
+		            WHERE LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
+	            </if>
+	            ORDER BY proofno desc
+			)V)
+		WHERE RNO BETWEEN #{startRno} AND #{endRno}
 	</select>
 	
 	
@@ -121,13 +381,8 @@
 	
 	
 	
-	
-	
-	
-	
-	
-	
-	
-	
+
+
+		
 		
 </mapper>

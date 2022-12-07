@@ -9,7 +9,8 @@ public class Pagination {
 	private int currentPage = 1; // 현재 페이지번호 (초기값 1)
 	private String searchType = ""; // 검색기준
 	private String searchWord = ""; // 검색어
-
+	private String queryString = ""; // 추가 쿼리스트링
+	
 	private int blockSize = 5; // 한 페이지 당 보여줄 페이지 개수
 	private int totalPage; // 총 페이지수
 	private int startRno; // 시작 행번호
@@ -78,6 +79,14 @@ public class Pagination {
 	public void setEndRno(int endRno) {
 		this.endRno = endRno;
 	}
+	
+	public String getQueryString() {
+		return queryString;
+	}
+	
+	public void setQueryString(String queryString) {
+		this.queryString = queryString;
+	}
 
 	// 특정 페이지 조회 시 필요한 정보들을 Map에 담아서 리턴해줌
 	public Map<String, Object> getPageRange(int listCnt) {
@@ -129,9 +138,9 @@ public class Pagination {
 		// === [맨처음][이전] 만들기 === //
 		if (pageNo != 1) {
 			pageBar += "<li class='page-item'><a class='page-link' href='" + url + "?searchType="
-					+ searchType + "&searchWord=" + searchWord + "&currentPage=1" + "&pageSize=" + pageSize +"'><i class='fas fa-angle-double-left'></i></a></li>";
+					+ searchType + "&searchWord=" + searchWord + "&currentPage=1" + "&pageSize=" + pageSize + queryString + "'><i class='fas fa-angle-double-left'></i></a></li>";
 			pageBar += "<li class='page-item'><a class='page-link' href='" + url + "?searchType="
-					+ searchType + "&searchWord=" + searchWord + "&currentPage=" + (pageNo - 1) + "&pageSize=" + pageSize
+					+ searchType + "&searchWord=" + searchWord + "&currentPage=" + (pageNo - 1) + "&pageSize=" + pageSize + queryString
 					+ "'><i class='fas fa-angle-left'></i></i></a></li>";
 		}
 
@@ -141,7 +150,7 @@ public class Pagination {
 				pageBar += "<li class='page-item active'><a class='page-link' href=#>" + pageNo + "</a></li>";
 			} else {
 				pageBar += "<li class='page-item'><a class='page-link' href='" + url
-						+ "?searchType=" + searchType + "&searchWord=" + searchWord + "&currentPage=" + pageNo + "&pageSize=" + pageSize
+						+ "?searchType=" + searchType + "&searchWord=" + searchWord + "&currentPage=" + pageNo + "&pageSize=" + pageSize + queryString
 						+ "'>" + pageNo + "</a></li>";
 			}
 
@@ -152,9 +161,9 @@ public class Pagination {
 		// === [다음][마지막] 만들기 === //
 		if (pageNo <= totalPage) {
 			pageBar += "<li class='page-item'><a class='page-link' href='" + url + "?searchType="
-					+ searchType + "&searchWord=" + searchWord + "&currentPage=" + pageNo + "&pageSize=" + pageSize + "'><i class='fas fa-angle-right'></i></a></li>";
+					+ searchType + "&searchWord=" + searchWord + "&currentPage=" + pageNo + "&pageSize=" + pageSize + queryString + "'><i class='fas fa-angle-right'></i></a></li>";
 			pageBar += "<li class='page-item'><a class='page-link' href='" + url + "?searchType="
-					+ searchType + "&searchWord=" + searchWord + "&currentPage=" + totalPage + "&pageSize=" + pageSize + "'><i class='fas fa-angle-double-right'></i></a></li>";
+					+ searchType + "&searchWord=" + searchWord + "&currentPage=" + totalPage + "&pageSize=" + pageSize + queryString + "'><i class='fas fa-angle-double-right'></i></a></li>";
 		}
 
 		pageBar += "</ul>";

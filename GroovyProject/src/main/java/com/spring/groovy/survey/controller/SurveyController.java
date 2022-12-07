@@ -30,18 +30,37 @@ public class SurveyController {
 	}
 	
 	
-	// 관리자 - 설문작성
+	// 관리자 - 설문작성1
 	@RequestMapping(value="/survey/surveyWriting.on")
 	public String surveyWriting(HttpServletRequest request) {
 		
 		return "survey/admin/surveyWriting.tiles";
 	}
 	
+	// 관리자 - 설문작성2
+	@RequestMapping(value="/survey/surveyWritingEnd.on")
+	public String surveyWritingEnd(HttpServletRequest request) {
+		
+		return "survey/admin/surveyWritingEnd.tiles";
+	}
+	
 	// 관리자 - 설문관리
 	@RequestMapping(value="/survey/surveyManage.on")
-	public String payChart(HttpServletRequest request) {
+	public String surveyManage(HttpServletRequest request) {
 		
 		return "survey/admin/surveyManage.tiles";
 	}
+	
+	// 관리자 - 설문관리
+	@RequestMapping(value="/survey/surveyManageView.on")
+	public String surveyManageView(HttpServletRequest request) {
+		
+		return "survey/admin/surveyManageView.tiles";
+	}
+	
+	
+	
+	
+	
 	
 }

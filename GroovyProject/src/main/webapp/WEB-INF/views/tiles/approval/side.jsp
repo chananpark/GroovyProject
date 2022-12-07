@@ -1,6 +1,6 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <% String ctxPath = request.getContextPath(); %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <style>
 #goWriteBtn:hover{
 	border: 1px solid #086BDE;
@@ -24,6 +24,11 @@
 
 .modal-body > div {
 	display: table-row-group;
+}
+
+label:hover {
+	cursor: pointer;
+	background-color: #E3F2FD;
 }
 </style>
 
@@ -54,47 +59,55 @@ const goWriteForm = () => {
 	const forms = Array.from($('.formChoice'));
 	const selected = forms.filter(el => $(el).is(':checked'))[0].id;
 	
-	location.href="<%=ctxPath%>/approval/write/"+selected+".on";
+	location.href="<%=ctxPath%>/approval/write.on?type_no="+selected;
 }
 </script>
 
 <!-- A vertical navbar -->
 <nav class="navbar bg-light">
 
-  <!-- Links -->
-  <ul class="navbar-nav" style='width:100%'>
-    <li class="nav-item">
-      <h4 class='mb-4'>전자결재</h4>
-    </li>
-    <li class="nav-item mb-4">
+ 	<!-- Links -->
+	<ul class="navbar-nav" style='width:100%'>
+	<li class="nav-item">
+		<h4 class='mb-4'>전자결재</h4>
+	</li>
+	<li class="nav-item mb-4">
 
-
-
-      <button id="goWriteBtn" type="button" style='width:100%' class="btn btn-outline-dark"  onclick="selectApv()">기안문서 작성</button>
+	<button id="goWriteBtn" type="button" style='width:100%' class="btn btn-outline-dark"  onclick="selectApv()">기안문서 작성</button>
 
     </li>
     <li class="nav-item">
-      <a id="home" class="nav-link" href="<%=ctxPath%>/approval/home.on">홈</a>
+		<a id="home" class="nav-link" href="<%=ctxPath%>/approval/home.on">홈</a>
+    </li>
+    <li class="nav-item topMenu">결재하기
+    	<ul class='subMenus processingMenu'>
+     		<li><a id="requestedList" class="nav-link" href="<%=ctxPath%>/approval/requested.on">결재 대기 문서</a></li>
+     		<li><a id="upcomingList" class="nav-link" href="<%=ctxPath%>/approval/upcoming.on">결재 예정 문서</a></li>     	
+  		</ul>
+    </li>
+    <li style="margin-top: 7px;" class="nav-item topMenu">개인 문서함
+		<ul class='subMenus personalMenu'>
+     		<li><a id="sentList" class="nav-link" href="<%=ctxPath%>/approval/personal/sent.on">상신함</a></li>
+     		<li><a id="processedList" class="nav-link" href="<%=ctxPath%>/approval/personal/processed.on">결재함</a></li>
+     		<li><a id="savedList" class="nav-link" href="<%=ctxPath%>/approval/personal/saved.on">임시저장함</a></li>
+     	</ul>
     </li>
     <li class="nav-item">
-      <a id="requestedList" class="nav-link" href="<%=ctxPath%>/approval/requested.on">결재하기<span class="badge badge-pill badge-primary ml-1">7</span></a>
-    </li>
-    <li class="nav-item topMenu">개인 문서함
-      	<ul class='subMenus personalMenu'>
-      		<li><a id="sentList" class="nav-link" href="<%=ctxPath%>/approval/personal/sent.on">상신함</a></li>
-      		<li><a id="processedList" class="nav-link" href="<%=ctxPath%>/approval/personal/processed.on">결재함</a></li>
-      		<li><a id="savedList" class="nav-link" href="<%=ctxPath%>/approval/personal/saved.on">임시저장함</a></li>
-      	</ul>
-    </li>
-    <li class="nav-item">
-      <a id="teamList" class="nav-link" href="<%=ctxPath%>/approval/team.on">팀 문서함</a>
+		<a id="teamList" class="nav-link" href="<%=ctxPath%>/approval/team.on">팀 문서함</a>
     </li>
     <li class="nav-item topMenu">환경설정
       	<ul class='subMenus configMenu'>
-      		<li><a id="approvalLine" class="nav-link" href="<%=ctxPath%>/approval/config/approvalLine.on">결재라인</a></li>
+      		<li style="margin-top: 7px;"><a id="approvalLine" class="nav-link" href="<%=ctxPath%>/approval/config/approvalLine.on">결재라인</a></li>
       		<li><a id="signature" class="nav-link" href="<%=ctxPath%>/approval/config/signature.on">서명 관리</a></li>
       	</ul>
     </li>
+	<c:if test="${loginuser != null && loginuser.fk_department_no ==  2}">
+    <li style="margin-top: 7px;" class="nav-item topMenu">관리자메뉴
+      	<ul class='subMenus adminMenu'>
+      		<li style="margin-top: 7px;"><a id="officialApprovalLine" class="nav-link" href="<%=ctxPath%>/approval/admin/officialApprovalLine.on">공통 결재라인 설정</a></li>
+      	</ul>
+    </li>
+	</c:if>
   </ul>
 
 </nav>
@@ -104,7 +117,7 @@ const goWriteForm = () => {
 	<div class="modal-dialog modal-dialog-centered ">
 		<div class="modal-content">
 
-			<!-- Modal Header -->
+	<!-- Modal Header -->
 	<div class="modal-header">
 		<h5 class="modal-title">결재양식 선택</h5>
 		<button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -113,16 +126,16 @@ const goWriteForm = () => {
 	<!-- Modal body -->
 	<div class="modal-body" style='display: table'>
 		<div>
-			<input type="radio" id="work" name="formChoice" class='formChoice mr-3'>
-			<label for='work'>업무품의</label>
+			<input type="radio" id="1" name="formChoice" class='formChoice mr-3'>
+			<label for='1'>업무품의</label>
 		</div>
 		<div>
-			<input type="radio" id="expense" name="formChoice" class='formChoice mr-3'>
-			<label for='expense'>지출결의서</label>
+			<input type="radio" id="2" name="formChoice" class='formChoice mr-3'>
+			<label for='2'>지출결의서</label>
 		</div>
 		<div>
-			<input type="radio" id="businessTrip" name="formChoice" class='formChoice mr-3'>
-			<label for='businessTrip'>출장보고서</label>
+			<input type="radio" id="3" name="formChoice" class='formChoice mr-3'>
+			<label for='3'>출장보고서</label>
 		</div>
 	</div>
 

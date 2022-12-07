@@ -16,13 +16,8 @@
 	div.marginbottom {
 		margin-bottom: 1%;
 	}
-	
-	button#btn_cancle {
-		width: 80px;
-		background-color: #F9F9F9;
-		font-size: 14px;
-		margin-right: 1%;
-		border: none;
+	input {
+		border: solid 1px #d9d9d9;
 	}
 	
 	button#btn_next {
@@ -33,7 +28,13 @@
 		border: none;
 	}
 
-
+	
+	button#btn_cancle {
+	 	background-color:#d9d9d9; 
+	 	width: 80px; 
+	 	margin-right: 2%;
+	}
+	
 </style>
 
 <script type="text/javascript">
@@ -82,8 +83,8 @@
 	</div>
 	
 	<div align="center" style="margin-top: 3%;">
-		<button id="btn_cancle"onclick="func_cancle">취소</button>
-		<button id="btn_next"  onclick="func_next">다음</button>
+		<button id="btn_cancle" class="btn btn-sm" onclick="javascript:location.href='<%= ctxPath%>/survey/surveyList.on'">취소</button>
+		<button id="btn_next" class="btn btn-sm" onclick="<%= ctxPath%>/survey/surveyWritingEnd.on" style="background-color:#086BDE; color:white; width: 80px;">다음</button>
 	</div>
 
 </div>

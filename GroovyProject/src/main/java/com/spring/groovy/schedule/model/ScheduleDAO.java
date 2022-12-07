@@ -165,6 +165,54 @@ public class ScheduleDAO implements InterScheduleDAO {
 	public int deleteSchedule(String scheduleno) {
 		int n = sqlsession.delete("yeojin.deleteSchedule", scheduleno);
 		return n;
+	}
+
+
+	// 일정 검색 전체 글 개수 구하기
+	@Override
+	public int getScheSearchCnt(Map<String, Object> paraMap) {
+		int n = sqlsession.selectOne("yeojin.getScheSearchCnt", paraMap);
+		return n;
+	}
+
+
+	// 한 페이지에 표시할 글 목록
+	@Override
+	public List<Map<String, String>> getScheduleList(Map<String, Object> paraMap) {
+		List<Map<String,String>> scheduleList = sqlsession.selectList("yeojin.getScheduleList", paraMap);
+		return scheduleList;
+	}
+
+
+	// === 검색한 일정 다운로드 받기
+	@Override
+	public List<Map<String, String>> scheDownList(Map<String, String> paraMap) {
+		List<Map<String,String>> scheduleList = sqlsession.selectList("yeojin.scheDownList", paraMap);
+		return scheduleList;
+	}
+
+
+	// 해당 사원이 생성한 개인일정 카테고리가 있는지 여부
+	@Override
+	public int smallCategCheck(String empno) {
+		int n = sqlsession.selectOne("yeojin.smallCategCheck", empno);
+		return n;
+	}
+
+
+	// 해당 부서에 생성한 카테고리가 있는지 여부
+	@Override
+	public int teamSmallCategCheck(String empno) {
+		int n = sqlsession.selectOne("yeojin.teamSmallCategCheck", empno);
+		return n;
+	}
+
+
+	// 전사 일정에 생성한 카테고리가 있는지 여부
+	@Override
+	public int comSmallCategCheck() {
+		int n = sqlsession.selectOne("yeojin.comSmallCategCheck");
+		return n;
 	} 
 	
 	

@@ -81,8 +81,8 @@ $(()=>{
 <nav class="navbar navbar-expand-sm">
 
   <ul class="navbar-nav headerNavbar">
-  	<li class="nav-item mt-1 ">
-      	<div style="padding: 0; margin-right: 100px; cursor:pointer;" class="nav-link" onClick='location.href="<%=ctxPath%>/index.on"'>
+  	<li class="nav-item mt-1">
+      	<div style="padding: 0 0 0 10%; margin-right: 100px; cursor:pointer;" class="nav-link" onClick='location.href="<%=ctxPath%>/index.on"'>
       		<img src='<%=ctxPath%>/resources/images/logo/groovy_loco_edit.png' width="150"/>
     	</div>
     </li>
@@ -130,7 +130,7 @@ $(()=>{
    		</div>
     </li>
     <li class="nav-item">
-      	<div id='' class="nav-link text-dark  header_hover header_width" onClick='location.href="#"'>
+      	<div id='reservation' class="nav-link text-dark  header_hover header_width" onClick='location.href="<%=ctxPath%>/reservation/meetingRoom.on"'>
     		<div class="text-center"><i class="fas fa-bookmark fa-lg"></i></div>
     		<div style="text-align: center;">자원예약</div>
    		</div>
@@ -142,13 +142,13 @@ $(()=>{
    		</div>
     </li>
     <li class="nav-item">
-      	<div id='' class="nav-link text-dark  header_hover header_width" onClick='location.href="#"'>
+      	<div id='community' class="nav-link text-dark  header_hover header_width" onClick='location.href="<%=ctxPath%>/community/list.on"'>
     		<div class="text-center"><i class="fas fa-chalkboard-teacher fa-lg"></i></div>
     		<div style="text-align: center;">커뮤니티</div>
    		</div>
     </li>
     <li class="nav-item">
-      	<div id='' class="nav-link text-dark  header_hover header_width" onClick='location.href="#"'>
+      	<div id='survey' class="nav-link text-dark  header_hover header_width" onClick='location.href="<%=ctxPath%>/survey/surveyList.on"'>
     		<div class="text-center"><i class="fas fa-chart-pie fa-lg"></i></div>
     		<div style="text-align: center;">설문조사</div>
    		</div>
@@ -161,7 +161,7 @@ $(()=>{
     </li>
     
     <%-- 프로필 이미지 --%>
-    <li class="nav-item" style="margin-left: 13%;">
+    <li class="nav-item" style="margin-left: 12%;">
       	<div class="nav-link dropdown" onClick='location.href="#"'>
     		<div class="dropbtn">
     			

@@ -15,6 +15,8 @@ public class DraftVO {
 
 	private String draft_emp_name; // 기안자 이름(join)
 	private String draft_department; // 기안부서(join)
+	private String position; // 기안자 부서(join)
+	private String empimg; // 기안자 프로필이미지(join)
 
 	private String approval_date; // 결재완료일	(join)
 	
@@ -149,6 +151,22 @@ public class DraftVO {
 
 	public void setUrgent_status(int urgent_status) {
 		this.urgent_status = urgent_status;
+	}
+
+	public String getPosition() {
+		return position;
+	}
+
+	public void setPosition(String position) {
+		this.position = position;
+	}
+
+	public String getEmpimg() {
+		return empimg;
+	}
+
+	public void setEmpimg(String empimg) {
+		this.empimg = empimg;
 	}
 	
 }

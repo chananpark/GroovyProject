@@ -67,6 +67,13 @@ values(seq_smcatgono.nextval, 2, '외부출장', 15);
 insert into tbl_calendar_small_category(smcatgono, fk_lgcatgono, smcatgoname, fk_empno)
 values(seq_smcatgono.nextval, 2, '외부출장', 14);
 
+insert into tbl_calendar_small_category(smcatgono, fk_lgcatgono, smcatgoname, fk_empno)
+values(seq_smcatgono.nextval, 2, '개발팀일정', 2);
+
+insert into tbl_calendar_small_category(smcatgono, fk_lgcatgono, smcatgoname, fk_empno)
+values(seq_smcatgono.nextval, 2, '이사실일정', 1);
+
+
 commit;
 
 select *
@@ -169,7 +176,11 @@ order by scheduleno desc;
 
 
 -- 일정 상세 보기
-select SD.scheduleno
+select scheduleno, startdate, enddate, subject, color, place, joinuser, content, fk_smcatgono, fk_lgcatgono, fk_empno, name, smcatgoname, department, position, cpemail
+from 
+(
+select  row_number() over(order by SD.scheduleno desc) as rno 
+     , SD.scheduleno
      , to_char(SD.startdate,'yyyy-mm-dd hh24:mi') as startdate
      , to_char(SD.enddate,'yyyy-mm-dd hh24:mi') as enddate  
      , SD.subject
@@ -180,16 +191,57 @@ select SD.scheduleno
      , SD.fk_smcatgono
      , SD.fk_lgcatgono
      , SD.fk_empno
-     , M.name
+     , E.name
      , SC.smcatgoname
      , department
      , position
+     , cpemail
 from tbl_calendar_schedule SD 
-JOIN tbl_employee M
-ON SD.fk_empno = M.empno
+JOIN tbl_employee E
+ON SD.fk_empno = E.empno
 JOIN tbl_calendar_small_category SC
 ON SD.fk_smcatgono = SC.smcatgono
-where SD.scheduleno = 10;
+) V 
+where V.rno between 1 and 10;
+
+select scheduleno
+    from tbl_calendar_schedule
+    where scheduleno = 36
+
+select scheduleno, 
+       startdate, enddate, subject, color, place, joinuser, content, 
+       fk_smcatgono, fk_lgcatgono, smcatgoname, 
+       fk_empno, name, department, position, cpemail
+from 
+(
+    select  row_number() over(order by SD.scheduleno desc) as rno 
+         , SD.scheduleno
+         , to_char(SD.startdate,'yyyy-mm-dd hh24:mi') as startdate
+         , to_char(SD.enddate,'yyyy-mm-dd hh24:mi') as enddate  
+         , SD.subject
+         , SD.color
+         , nvl(SD.place,'-') as place
+         , nvl(SD.joinuser,'공유자가 없습니다.') as joinuser
+         , nvl(SD.content,'') as content
+         , SD.fk_smcatgono
+         , SD.fk_lgcatgono
+         , SD.fk_empno
+         , E.name
+         , SC.smcatgoname
+         , department
+         , position
+         , cpemail
+    from tbl_calendar_schedule SD 
+    JOIN tbl_employee E
+    ON SD.fk_empno = E.empno
+    JOIN tbl_calendar_small_category SC
+    ON SD.fk_smcatgono = SC.smcatgono
+    
+   where ( to_char(startdate,'YYYY-MM-DD') between '2022-10-25' and '2022-12-25' )
+   and   ( to_char(enddate,'YYYY-MM-DD') between '2022-10-25' and '2022-12-25' ) 
+
+) V 
+where V.rno between 1 and 10;
 
 
 -- 일정 공유자 리스트 찾아오기
@@ -244,11 +296,195 @@ VALUES(SEQ_TBL_EMPLOYEE.NEXTVAL, 'schedule@groovy.com', '김일정', 'qwer1234$'
 
 
 -- 참석자 선택하기에서 사원 list 불러오는 쿼리문
-select empno, name, bumun, department, position
+select empno, name, bumun, department, position, cpemail
 from tbl_employee
-where lower(name) like '%'|| lower('김') ||'%'
+where lower(name) like '%'|| lower('김') ||'%';
+
+
+-- 일정 검색 전체 글 개수 구하기
+select count(*) 
+from tbl_calendar_schedule C join tbl_employee E
+on C.fk_empno = E.empno
+where ( to_char(startdate,'YYYY-MM-DD hh24:mi:ss') between '2022-10-28 00:00:00' and '2022-11-28 00:00:00' )
+or  ( to_char(enddate,'YYYY-MM-DD hh24:mi:ss')  between '2022-10-28 00:00:00' and '2022-11-28 00:00:00' );
+
+-- 일정분류가 없고 검색어도 없는 경우
+select count(*) 
+from tbl_calendar_schedule C join tbl_employee E
+on C.fk_empno = E.empno
+where ( to_char(startdate,'YYYY-MM-DD') between '2022-10-25' and '2022-12-25' )
+and   ( to_char(enddate,'YYYY-MM-DD') between '2022-10-25' and '2022-12-25' ) 
+and ((fk_lgcatgono = 1 OR (fk_lgcatgono = 2 AND department = (select department from tbl_employee where empno = 15)) OR fk_empno = 15)
+OR ( fk_empno != 15 and lower(joinuser) like '%'||lower('schedule@groovy.com')||'%' )) ;
+   
+-- 전사일정이고 검색어가 없을 경우
+select count(*) 
+from tbl_calendar_schedule C join tbl_employee E
+on C.fk_empno = E.empno
+where ( to_char(startdate,'YYYY-MM-DD') between '2022-10-25' and '2022-12-25' )
+and   ( to_char(enddate,'YYYY-MM-DD') between '2022-10-25' and '2022-12-25' ) 
+and ( fk_lgcatgono = 1 );       
+      
+-- 팀별일정이고 검색어가 없을 경우    
+select count(*) 
+from tbl_calendar_schedule C join tbl_employee E
+on C.fk_empno = E.empno
+where ( to_char(startdate,'YYYY-MM-DD') between '2022-10-25' and '2022-12-25' )
+and   ( to_char(enddate,'YYYY-MM-DD') between '2022-10-25' and '2022-12-25' ) 
+and ( fk_lgcatgono = 2 AND department = (select department from tbl_employee where empno = 15));                                  
+
+-- 전사일정이고 검색어가 없을 경우
+select count(*) 
+from tbl_calendar_schedule
+where ( to_char(startdate,'YYYY-MM-DD') between '2022-10-25' and '2022-11-25' )
+or   ( to_char(enddate,'YYYY-MM-DD') between '2022-10-25' and '2022-11-25' ) 
+-- 내캘린더이고 검색대상이 없을 경우 -->
+and ( fk_lgcatgono = 1 AND fk_empno = 15 )                                   
+
+-- 참석자로 검색할 경우
+select count(*) 
+from tbl_calendar_schedule
+where ( to_char(startdate,'YYYY-MM-DD') between '2022-10-25' and '2022-12-25' )
+and   ( to_char(enddate,'YYYY-MM-DD') between '2022-10-25' and '2022-12-25' ) 
+    and fk_lgcatgono != 1                        
+    and fk_empno = 15                            -- 로그인한 사용자가 작성한 것을 다른 사용자에게 공유 한것
+    and lower(joinuser) like '%'||lower('shonyj')||'%' -- 검색대상 및 검색어 -->
+
+
+-- 참석자 외로 검색한 경우
+select count(*) 
+from tbl_calendar_schedule
+where ( to_char(startdate,'YYYY-MM-DD') between '2022-10-25' and '2022-12-25' )
+and   ( to_char(enddate,'YYYY-MM-DD') between '2022-10-25' and '2022-12-25' ) 
+
+    and lower(subject) like '%'||lower('일정')||'%' <!-- 검색대상 및 검색어 -->
+    <choose>
+        <when test='fk_lgcatgono == "1" '>                       <!-- 내캘린더내에서만 검색할 경우  -->
+            and fk_lgcatgono = 1 
+            and fk_userid = #{fk_userid}                         <!-- 로그인한 사용자가 작성한 것 -->
+        </when>
+        
+        <when test='fk_lgcatgono == "2" '>                       <!-- 사내캘린더내에서만 검색할 경우  -->
+            and fk_lgcatgono = 2 
+        </when>
+    </choose>			
+
+
+
+select scheduleno, 
+			   startdate, enddate, subject, color, place, joinuser, content, 
+			   fk_smcatgono, fk_lgcatgono, smcatgoname, 
+			   fk_empno, name, department, position, cpemail
+		from 
+		(
+			select  row_number() over(order by SD.scheduleno desc) as rno 
+			     , SD.scheduleno
+			     , to_char(SD.startdate,'yyyy-mm-dd hh24:mi') as startdate
+			     , to_char(SD.enddate,'yyyy-mm-dd hh24:mi') as enddate  
+			     , SD.subject
+			     , SD.color
+			     , nvl(SD.place,'-') as place
+			     , nvl(SD.joinuser,'공유자가 없습니다.') as joinuser
+			     , nvl(SD.content,'') as content
+			     , SD.fk_smcatgono
+			     , SD.fk_lgcatgono
+			     , SD.fk_empno
+			     , E.name
+			     , SC.smcatgoname
+			     , department
+			     , position
+			     , cpemail
+			from tbl_calendar_schedule SD 
+			JOIN tbl_employee E
+			ON SD.fk_empno = E.empno
+			JOIN tbl_calendar_small_category SC
+			ON SD.fk_smcatgono = SC.smcatgono
+
+    )
 
 
 
 
+select scheduleno, 
+           startdate, enddate, subject, color, place, joinuser, content, 
+           fk_smcatgono, fk_lgcatgono, smcatgoname, 
+           fk_empno, name, department, position, cpemail
+    from 
+    (
+        select  row_number() over(order by SD.scheduleno desc) as rno 
+             , SD.scheduleno
+             , to_char(SD.startdate,'yyyy-mm-dd hh24:mi') as startdate
+             , to_char(SD.enddate,'yyyy-mm-dd hh24:mi') as enddate  
+             , SD.subject
+             , SD.color
+             , nvl(SD.place,'-') as place
+             , nvl(SD.joinuser,'공유자가 없습니다.') as joinuser
+             , nvl(SD.content,'') as content
+             , SD.fk_smcatgono
+             , SD.fk_lgcatgono
+             , SD.fk_empno
+             , E.name
+             , SC.smcatgoname
+             , department
+             , position
+             , cpemail
+        from tbl_calendar_schedule SD 
+        JOIN tbl_employee E
+        ON SD.fk_empno = E.empno
+        JOIN tbl_calendar_small_category SC
+        ON SD.fk_smcatgono = SC.smcatgono
 
+where (( to_char(startdate,'YYYY-MM-DD') between '2022-10-25' and '2022-12-25' )
+or  ( to_char(enddate,'YYYY-MM-DD') between '2022-10-25' and '2022-12-25' ) )
+)
+    and ((lower(SD.subject) like '%'||lower('스왈')||'%') or (lower(SD.content) like '%'||lower('스왈')||'%') or (lower(SD.joinuser) like '%'||lower('스왈')||'%'))
+    and SD.fk_lgcatgono = 2 AND E.department = (select department from tbl_employee where empno = 15)
+)
+
+
+DELETE FROM tbl_calendar_schedule
+WHERE scheduleno = 23;
+commit;
+
+
+select scheduleno, startdate, enddate, subject, color, place, joinuser, content, fk_smcatgono, fk_lgcatgono, fk_empno, department
+		from tbl_calendar_schedule C join tbl_employee E
+		on C.fk_empno = E.empno
+		where C.fk_empno = 14 OR
+		fk_lgcatgono = 1 OR
+		(fk_lgcatgono = 2 AND department = (select department from tbl_employee where empno = 14) ) OR
+		(fk_lgcatgono = 3 and lower(joinuser) like '%'|| lower('sche') ||'%') OR
+        (fk_lgcatgono = 3 and C.fk_empno = 14 )
+		order by scheduleno asc
+        
+        
+select count(*)
+from tbl_calendar_small_category 
+where fk_empno = 15 and fk_lgcatgono = 3
+        
+        
+select count(*)
+from tbl_calendar_schedule SD 
+JOIN tbl_employee E
+ON SD.fk_empno = E.empno
+JOIN tbl_calendar_small_category SC
+ON SD.fk_smcatgono = SC.smcatgono
+where SD.fk_lgcatgono = 2 AND E.department = (select department from tbl_employee where empno = 3)
+        
+         select fk_empno, department
+        from tbl_calendar_small_category SC
+        JOIN tbl_employee E
+        ON SC.fk_empno = E.empno
+        
+select count(*)
+from tbl_calendar_small_category SC
+JOIN tbl_employee E
+ON SC.fk_empno = E.empno
+where SC.fk_lgcatgono = 2 AND E.department = (select department from tbl_employee where empno = 15)       
+        
+select count(*)
+from tbl_calendar_small_category         
+where fk_lgcatgono = 1    
+
+        
+        

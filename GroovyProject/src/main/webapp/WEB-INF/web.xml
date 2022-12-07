@@ -29,7 +29,7 @@
 		<servlet-name>appServlet</servlet-name>
 		<url-pattern>*.on</url-pattern>
 	</servlet-mapping>
-	
+     
 	<filter>
 	   <filter-name>encodingFilter</filter-name>
 	   <filter-class>org.springframework.web.filter.CharacterEncodingFilter</filter-class>
@@ -44,9 +44,37 @@
 	   <url-pattern>*</url-pattern>
 	</filter-mapping>
 	
+	<!-- multipartFilter -->
+	<filter>
+	    <filter-name>multipartFilter</filter-name>
+	    <filter-class>
+	        org.springframework.web.multipart.support.MultipartFilter
+	    </filter-class>
+	    <init-param>
+	        <param-name>multipartResolverBeanName</param-name>
+	        <param-value>multipartResolver</param-value>
+	    </init-param>
+	</filter>
+	 
+	<filter-mapping>
+	    <filter-name>multipartFilter</filter-name>
+	    <url-pattern>/*</url-pattern>
+	</filter-mapping>
+	
+	<!-- xssEscapeServletFilter -->
+	<filter>
+		<filter-name>xssEscapeServletFilter</filter-name>
+		<filter-class>com.navercorp.lucy.security.xss.servletfilter.XssEscapeServletFilter</filter-class>
+	</filter>
+	<filter-mapping>
+	    <filter-name>xssEscapeServletFilter</filter-name>
+	    <url-pattern>/*</url-pattern>
+	</filter-mapping>
+	
 	<!-- 웰컴페이지 -->
 	<welcome-file-list>
 	   <welcome-file>index.on</welcome-file>
 	</welcome-file-list>
+
 
 </web-app>

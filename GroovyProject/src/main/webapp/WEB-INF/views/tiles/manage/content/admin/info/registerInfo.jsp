@@ -4,6 +4,7 @@
 <% String ctxPath = request.getContextPath(); %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
+
 <style>
 
 	div#info_manageInfo {
@@ -105,12 +106,12 @@ let b_flag_emailDuplicate_click = false;
 
 	$(document).ready(function(){
 	
+
+		$('.subadmenu').show();
 		 $('.eachmenu3').show();
 		 $("div.msg_error").hide();
 		 $("div#msg_probation").hide();
 		 
-
-		
 		 // === 주민등록번호=== // 
 		 $("input#jubun").blur(function(e){
 			 
@@ -141,8 +142,14 @@ let b_flag_emailDuplicate_click = false;
 			 }
 			
 		 }); //  end of $("input#jubunbirth").bulr((e) => {--------------------
-		 
-		
+	
+	
+	
+	
+	
+	
+	
+	
 		 
 		// === 생년월일 === //
 	        
@@ -271,6 +278,7 @@ let b_flag_emailDuplicate_click = false;
 					
 				}
 				
+				
 			}); // end of $("input#hp3").blur() ----------------- // 아이디가 hp3 인 것은 포커스를 잃어버렸을 경우(blur) 이벤트를 처리해주는 것이다.
 
 			
@@ -293,33 +301,31 @@ let b_flag_emailDuplicate_click = false;
 		});// $("button#checkCpEmail").click(function(){ ---------------------
 			
 		*/ 
+	
+			
+		// === 텍스트넣는법  === // 
+	/* 	$( "select[name=empstatus]").change(function(){
+			var value = $("option:selected").val();
+			var inputText = $("input#emppay");
+			
+			if (value == '계약직') {
+				inputText.text('80%');
+			}
+			
+		}); */
+			
+			
 		
-		// === 수습시간 체크박스 버튼을 누르면 === // 
-		$("input#che_probation").click(function(){
 			
-			$("div#msg_probation").show();
+		// === 저장버튼을 누르면 === //
+		$("button#btn_submit").click(function(){
+			 
+			btn_register();
+		});
 		
-		}); // end of $("input#che_probation").click(function(){
-			
-			
-			$( "select[name=empstatus]").change(function(){
-				var value = $("option:selected").val();
-				var inputText = $(this).find('input.emppay');
-				
-				if (value == '1') {
-					$(inputText).val('');
-				}
-				else if(value == '2'){
-					$(inputText).val('80%');
-				}
-				
-			});
-			
-			
+	
+		
 	}); // end of $(document).ready(function(){}-----------------------------------------
-
-
-
 
 
 
@@ -387,7 +393,7 @@ let b_flag_emailDuplicate_click = false;
 	// >>> 부문선택값에 따라 하위 셀렉트 팀옵션 다르게 하기 <<< // 
 	function bumunchange(value){
 		
-		var dept_1 = ["인사총무팀"]; 
+		var dept_1 = ["인사총무팀","재경팀"]; 
 		var dept_2 = ["개발팀","기획팀"]; 
 		var dept_3 = ["영업팀","마케팅팀"]; 
 		var target = document.getElementById("department");
@@ -419,7 +425,8 @@ let b_flag_emailDuplicate_click = false;
 		}
 	
 	
-	// >>> 회사이메일 확인버튼 누르면 <<<
+	
+	// >>> 회사이메일 확인버튼 누르면 (ajax)<<<
 	function func_checkEmail(cpemail) {
 	 
 		let b_flag_emailDuplicate_click = true;
@@ -433,31 +440,6 @@ let b_flag_emailDuplicate_click = false;
 		}
 		else {
 			$("div#cpemailCheck").text("이메일을 입력해주세요").hide();
-		
-		
-		/*
-		$("input#cpemail").blur(function(e) {
-			
-			const $target = $(e.target);
-			const regExp = new RegExp(/^[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_\.]?[0-9a-zA-Z])*\.[a-zA-Z]{2,3}$/i);
-			// 이메일 정규표현식 객체 생성
-			const bool = regExp.test( $target.val() );
-			
-			if(!bool && $target == "") {
-				// 입력하지 않거나 공백만 입력한 경우
-				$target.prop("disabled", true);
-				$("div#cpemailCheck").text("이메일을 입력해주세요").show();
-				$("input#cpemail").focus();
-				
-			}
-			else {
-				$("div#cpemailCheck").text("이메일을 입력해주세요").hide();
-				
-			}
-		}); // end of $("input#userid").blur() ----------------- // 아이디가 userid 인 것은 포커스를 잃어버렸을 경우(blur) 이벤트를 처리해주는 것이다.
-		*/
-		
-		
 		
 		$.ajax({
 		  url:"<%= request.getContextPath()%>/manage/admin/checkCpEmail.on",
@@ -483,35 +465,51 @@ let b_flag_emailDuplicate_click = false;
 	} // end of function btn_register() { -----------------------------
 	
 	
+
 	// >>> 등록버튼을 누르면 <<<
 	function btn_register() {
-		 
-		// 필수입력사항이 빈칸인경우
-		const $required =  $(".required");
-		const required = $required.val().trim();
 		
-		if(required == null){
-			alert("필수입력사항을 모두 기입해주세요.");
-		}
-		else {
-			const frm = document.frm_manageInfo
-			frm.action = "<%= ctxPath%>/manage/admin/registerInfo.on";
-			frm.method = "POST";
-			frm.submit();
-		}
+		<%--  
+		  // 보내야할 데이터를 선정하는 또 다른 방법
+		  // jQuery에서 사용하는 것으로써,
+		  // form태그의 선택자.serialize(); 을 해주면 form 태그내의 모든 값들을 name값을 키값으로 만들어서 보내준다. 
+		  const queryString = $("form[name='addWriteFrm']").serialize();
+		--%>
+		
+		const queryString = $("form[name='frm_manageInfo']").serialize();
+		
+		$.ajax({
+			url:"<%=ctxPath%>/manage/admin/registerEnd.on",
+			data:queryString, 
+			type:"POST",
+			dataType:"text",
+		  	success:function(json){
+		  		
+		  		if(json.n == 1) {
+		  			alert("사원정보 등록성공");
+		  			location.href="redirect:/manage/admin/registerInfo.on";
+		  		}
+		  		else{
+		  			alert("사원정보 등록실패");
+		  			location.href="javascript:history.back()";
+		  			console.log(json);
+		  		} 
+		  	},
+			 error: function(request, status, error){
+				  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			  }
+		});
+	} // end of function btn_register() { ---------------------------
+	
+	// >>> 삭제버튼을 누르면<<<
+	function func_delete() {
+		$("input").val("");
+		$("select").val("");
 	}
-	
-	
-	
-	
-	
 	
 </script>
 
-
-
-
-<form id="frm_manageInfo">
+<form name="frm_manageInfo">
 <div id="info_manageInfo">
 
 <div style='margin: 1% 0 5% 1%'>
@@ -522,36 +520,44 @@ let b_flag_emailDuplicate_click = false;
 	
 	<table class="m-4 mb-3 table table-bordered table-sm" id="first_table">
 		<tr>
-			<td rowspan='4' style="width:2%;"><img name="empimg" class="float-center" src="<%= ctxPath%>/resources/images/picture/꼬미사진.jpg" height="150px;" width="150px" alt="..."/></td>
+			<td rowspan='4' style="width: 2%;"><i class="fas fa-user-tie fa-10x mt-2 ml-2" ></i><input type="hidden" name="empimg"/></td>
 			<th class="t1"><span class="alert_required" style="color: red;">*</span>사원번호</th>
 			<td>	
-				<input type="text" id="empno" name="empno" class="required"  placeholder="자동입력됩니다." readonly/>
+				<input type="text" id="empno" name="empno" required placeholder="자동입력됩니다." readonly/>
 			</td>
 			
 			<th class="t1"><span class="alert_required" style="color: red;">*</span>성명</th>
-			<td><input type="text" id="name" name="name" class="required" /></td>
+			<td><input type="text" id="name" name="name" required /></td>
 		</tr>
 		<tr >
 			<th class="t1"><span class="alert_required" style="color: red;">*</span>주민등록번호</th>
 				<td>
+				
 					<span>
-						<input type="text" id="jubun" name="jubun" class="required" style="display: inline;" />
+						<input type="text" id="jubun" name="jubun"required style="display: inline;" />
 					</span>
+					
+					 <!-- 
+					 <span>
+						<input type="text" id="jubun1" name="jubun1"required style="display: inline;" /> - <input type="text" id="jubun2" name="jubun2"required style="display: inline;" /> 
+					</span>
+					  -->
+					 
 					<div class="msg_error">형식에 올바르지 않습니다.</div>
 				</td>
 			<th class="t1">성별</th>
 			 <td style="text-align: left;">
-	            <input type="radio" id="male" name="gender" value="1" /><label for="male" style="margin-left: 2%;">남자</label>
-	            <input type="radio" id="female" name="gender" value="2" style="margin-left: 10%;" /><label for="female" style="margin-left: 2%;">여자</label>
+	            <input type="radio" id="male" name="gender" value="1" required/><label for="male" style="margin-left: 2%;">남자</label>
+	            <input type="radio" id="female" name="gender" value="2" style="margin-left: 10%;" required /><label for="female" style="margin-left: 2%;">여자</label>
 	         </td>
 		</tr>
 		<tr>
 			<th class="t1"><span class="alert_required" style="color: red;">*</span>생년월일</th>
 			<td>
-				<span id="birthday" name="birthday" class="required">
-				    	<select name="birthyyyy" id="birthyyyy" title="년도" class=" requiredInfo" ></select>
-						<select name="birthmm" id="birthmm" title="월" class=" requiredInfo" ></select>
-						<select name="birthdd" id="birthdd" title="일" class=" requiredInfo"></select>
+				<span id="birthday" class="required" >
+				    	<select name="birthyyyy" id="birthyyyy" title="년도" class=" requiredInfo" required ></select>
+						<select name="birthmm" id="birthmm" title="월" class=" requiredInfo"  required></select>
+						<select name="birthdd" id="birthdd" title="일" class=" requiredInfo" required></select>
 				</span>
 			</td>
 			<th></th>
@@ -561,10 +567,10 @@ let b_flag_emailDuplicate_click = false;
 			<th class="t1"><span class="alert_required" style="color: red;">*</span>자택주소</th>
 			<td colspan="3">
 			<span>
-				<input type="text" id="postcode" name="postcode" class="required" placeholder="우편번호" style="display: inline-block;"/>
-				<input type="text" id="address" name="address" class="input_style required" placeholder="예)00동, 00로" readonly/>
-				<input type="text" id="detailaddress" name="detailaddress" class="input_style required"  placeholder="상세주소" style="display: inline-block;  width: 190px;"/>
-				<input type="text" id="extraaddress" name="extraaddress" class="required" placeholder="참고항목" style="display: inline-block;  width: 190px;  margin: 10px 0 10px 8px;"readonly/>
+				<input type="text" id="postcode" name="postcode"required placeholder="우편번호" style="display: inline-block;"/>
+				<input type="text" id="address" name="address" class="input_style" required placeholder="예)00동, 00로" readonly/>
+				<input type="text" id="detailaddress" name="detailaddress" class="input_style"  placeholder="상세주소" style="display: inline-block;  width: 190px;"/>
+				<input type="text" id="extraaddress" name="extraaddress" required placeholder="참고항목" style="display: inline-block;  width: 190px;  margin: 10px 0 10px 8px;"readonly/>
 				<button type="button" id="btn_adrsearch" onclick="openDaumPOST();" class="btn btn-sm ml-2">추가</button>
 			</span>
 			</td>
@@ -576,21 +582,21 @@ let b_flag_emailDuplicate_click = false;
 		<tr>
 			<th><span class="alert_required"style="color: red;">*</span>내선번호</th>
 			<td>
-				<input type="text" id="depttel" class="required" name="depttel" readonly/>
-				<button class="btn btn-sm ml-5 btn_check" onclick="go_search" data-toggle="modal" data-target="#go_searchTel"><i class="fas fa-search"></i>찾기</button>
+				<input type="text" id="depttel" class="required" name="depttel" required/>
+				<!-- <button class="btn btn-sm ml-5 btn_check" onclick="go_search" data-toggle="modal" data-target="#go_searchTel"><i class="fas fa-search"></i>찾기</button> -->
 			</td>
 			<th><span class="alert_required" style="color: red;">*</span>핸드폰번호</th>
-	         <td style="text-align: left;" id="mobile" name="mobile">
-	             <input type="text" id="hp1" name="hp1" size="6" maxlength="3" value="010" class="requiredInfo required" />&nbsp;-&nbsp;
-	             <input type="text" id="hp2" name="hp2" size="6" maxlength="4" class="requiredInfo required"/>&nbsp;-&nbsp;
-	             <input type="text" id="hp3" name="hp3" size="6" maxlength="4" class="requiredInfo required"/>
+	         <td style="text-align: left;" id="mobile">
+	             <input type="text" id="hp1" name="hp1" size="6" maxlength="3" value="010" class="requiredInfo" required />&nbsp;-&nbsp;
+	             <input type="text" id="hp2" name="hp2" size="6" maxlength="4" class="requiredInfo" required/>&nbsp;-&nbsp;
+	             <input type="text" id="hp3" name="hp3" size="6" maxlength="4" class="requiredInfo" required/>
 	         </td>
 
 		</tr>
 		<tr>
 			<th><span class="alert_required" style="color: red;">*</span>회사이메일</th>
 			<td>
-				<input type="email" id="cpemail" class="required" name="cpemail" />
+				<input type="email" id="cpemail" class="required" name="cpemail" required />
 				<button type="button" class="btn btn-sm ml-5 btn_check" id="checkCpEmail" onclick="func_checkEmail()">확인</button>
 				<div id="cpemailCheck"></div>
 				<div id="empnocheckResult"></div>
@@ -598,7 +604,7 @@ let b_flag_emailDuplicate_click = false;
 				
 			</td>
 			<th>외부이메일</th>
-			<td><input type="email" id="pvemail" name="pvemail" /></td>
+			<td><input type="email" id="pvemail" readonly name="pvemail"/></td>
 
 		</tr>
 	</table>
@@ -607,7 +613,7 @@ let b_flag_emailDuplicate_click = false;
 		<tr>
 			<th><span class="alert_required" style="color: red;">*</span>부문</th>
 			<td>
-				<select name="bumun" class="select_3 required" onchange="bumunchange(value)">
+				<select name="bumun" class="select_3" required onchange="bumunchange(value)">
 					<option value="">부문을 선택해주세요</option>
 					<option value="경영지원부문">경영지원부문</option>
 					<option value="IT사업부문">IT사업부문</option>
@@ -616,7 +622,7 @@ let b_flag_emailDuplicate_click = false;
 			</td>
 			<th><span class="alert_required required" style="color: red;">*</span>부서</th>
 			<td>
-				<select name="department" id="department" class="select_3 required"  >
+				<select name="department" id="department" class="select_3" required  >
 						<option value="">부서를 선택해주세요</option>
 				</select>
 			</td>
@@ -625,7 +631,7 @@ let b_flag_emailDuplicate_click = false;
 		<tr>
 			<th><span class="alert_required" style="color: red;">*</span>직급</th>
 			<td>
-				<select name="extension" class="select_3 required" >
+				<select name="position" class="select_3"  required >
 					<option value="">직급을 선택해주세요</option>
 					<option value="부문장">부문장</option>
 					<option value="팀장">팀장</option>
@@ -634,7 +640,7 @@ let b_flag_emailDuplicate_click = false;
 				</select>
 			</td>
 			<th><span class="alert_required" style="color: red;">*</span>급여계약기준</th>
-			<td><select name="empstatus" class="select_3 required" onchange="empstatus(value)">
+			<td><select name="empstauts" class="select_3" required>
 					<option value="">계약기준을 선택해주세요</option>
 					<option value="1">정규직</option>
 					<option value="2">계약직</option>
@@ -642,77 +648,37 @@ let b_flag_emailDuplicate_click = false;
 			</td>
 		</tr>
 		<tr>
-			<th>임금적용률</th>
-			<td>
-				<input type="text" class="emppay required" name="emppay" readonly style="background-color: #d9d9d9;" />
-			</td>
-			<th><span class="alert_required" style="color: red;">*</span>입사일자</th>
-			<td><input type="date" style="width: 165px;" /></td>
-		</tr>
-		<tr>
 			<th><span class="alert_required" style="color: red;">*</span>은행</th>
 			<td>
-				<input type="text" class="emppay required" name="emppay" readonly />
+				<input type="text" class="bank" name="bank" required />
 			</td>
 			<th><span class="alert_required" style="color: red;">*</span>계좌</th>
-			<td><input type="text" name="account"  class="required" style="width: 165px;" /></td>
+			<td><input type="text" name="account" required style="width: 165px;" /></td>
 		</tr>
+		<tr>
+			<th><span class="alert_required" style="color: red;">*</span>연봉</th>
+			<td>
+				<input type="text" id="salary" class="required" name="salary"/>
+			</td>
+			<th>입사일자</th>
+			<td>
+				<input type="text" id="joindate" class="required" name="joindate" readonly placeholder="자동입력 됩니다."/>
+				
+				<input type="hidden" name="annualcnt" />
+			<!-- 	<input type="hidden" name="fk_position_no" />
+				<input type="hidden" name="fk_bumun_no" />
+				<input type="hidden" name="fk_department_no" /> -->
+			</td>
+		</tr>
+			
 	</table>
 	
 	<%-- 정보수정 페이지에서 보이는 버튼 --%>
 	<div align="right" style="margin: 3% 0;">
-		<button id="btn_update" style="background-color:#F9F9F9; border: none; width: 80px;">삭제</button>
-		<button id="btn_register" onclick ="btn_register()" style="color: white; background-color:#086BDE; border: none; width: 80px;">저장</button>
+		<button id="btn_update" style="background-color:#F9F9F9; border: none; width: 80px;" onclick="func_delete()">삭제</button>
+		<button style="color: white; background-color:#086BDE; border: none; width: 80px;" id="btn_submit">저장</button>
 	</div>
 </div>
 </form>
-
-
-
-
-
-
-
-<%-- 급여상세 모달창 --%>
-<div class="modal" id="go_searchTel" style="font-size: 12px;">
-   <div class="modal-dialog" >
-      <div class="modal-content modals-fullsize">
-      
-         <div class='modal-body px-3'>
- 		<button class="btn btn-sm float-right" style="background-color:#086BDE; color:white;" onclick="javascript:self.close();">닫기</button>        
-          <div align="center" style="padding: 2%; margin: 8% auto;">
-                  
-         <h6 class="float-left mb-5"> ▶ 내선전화</h6>
-
-         
-         <table class="table table-bordered table-sm mt-5" >
-         	<thead>
-         		<tr>
-         			<th></th>
-         			<th>부문</th>
-         			<th>부서</th>
-         			<th>전화번호</th>
-         		</tr>
-         	</thead>
-	         <tbody>
-	         <tr class="text-center">
-		         <c:forEach  var="employee" items="${requestScope.n}" varStatus="status">
-					<tr>
-			         	<td style="width: 5px;"><input type="checkbox" /></td>
-						<td>${employee.bumun}</td>
-						<td>${employee.department}</td>
-						<td>${employee.depttel}</td>
-					</tr>
-				</c:forEach>
-	         </tr>
-	         </tbody>
-         </table>
-  
-         </div>
-         </div>
-       </div>
-    </div>
- </div>
-
 
 

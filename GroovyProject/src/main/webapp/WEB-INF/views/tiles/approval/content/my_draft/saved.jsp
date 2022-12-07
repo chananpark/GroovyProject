@@ -7,6 +7,14 @@
 	margin-bottom: 50px !important;
 }
 
+a {
+	color: black;
+}
+
+a:hover {
+	text-decoration: none;
+}
+
 #pageList a{
 	font-size: small;
 	color: black;
@@ -188,7 +196,11 @@ const deleteDraft = () => {
 							</td>
 							<td class='col col-2'>${temp.draft_date}</td>
 							<td class='col col-2'>${temp.draft_type}</td>
-							<td class='col'>${temp.draft_subject}</td>
+							<td class='col'>
+							<a href='<%=ctxPath%>/approval/draftDetail.on?draft_no=${temp.draft_no}&fk_draft_type_no=${temp.fk_draft_type_no}'>
+							${temp.draft_subject}
+							</a>
+							</td>
 						</tr>
 					</c:forEach>
 				</c:when>

@@ -63,6 +63,24 @@ public interface InterScheduleDAO {
 
 	// === 일정 삭제하기 ===
 	int deleteSchedule(String scheduleno);
+
+	// 일정 검색 전체 글 개수 구하기
+	int getScheSearchCnt(Map<String, Object> paraMap);
+
+	// 한 페이지에 표시할 글 목록
+	List<Map<String, String>> getScheduleList(Map<String, Object> paraMap);
+
+	// === 검색한 일정 다운로드 받기
+	List<Map<String, String>> scheDownList(Map<String, String> paraMap);
+
+	// 해당 사원이 생성한 개인일정 카테고리가 있는지 여부
+	int smallCategCheck(String empno);
+
+	// 해당 부서에 생성한 카테고리가 있는지 여부
+	int teamSmallCategCheck(String empno);
+
+	// 전사 일정에 생성한 카테고리가 있는지 여부
+	int comSmallCategCheck();
 	
 	
 	

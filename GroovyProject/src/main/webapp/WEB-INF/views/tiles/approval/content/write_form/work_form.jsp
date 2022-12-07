@@ -1,4 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <% String ctxPath=request.getContextPath(); %>
 
 <style>
@@ -58,22 +59,22 @@ label:hover {
 	float: left;
 }
 
-#fileRemoveBtn, #resetLineBtn {
+#resetLineBtn {
 	border: 1px solid gray;
 	color: gray;
 }
 
-#fileRemoveBtn:hover, #resetLineBtn:hover {
+#resetLineBtn:hover {
 	background-color: gray;
 	color: white;
 }
 
-#fileAttachBtn, #getLineBtn {
+#getLineBtn {
 	border: 1px solid #086BDE;
 	color: #086BDE;
 }
 
-#fileAttachBtn:hover, #getLineBtn:hover {
+#getLineBtn:hover {
 	background-color: #086BDE;
 	color: white
 }
@@ -99,13 +100,15 @@ label:hover {
 
 <script>
 
-let submitFlag;
+//수신처 배열
+const recipientArr = JSON.parse('${recipientArr}');
 
 // 네이버 스마트 에디터용 전역변수
 var obj = [];
 
 // 파일 정보를 담아 둘 배열
 let fileList = [];
+
 
 $(() => {
 
@@ -134,8 +137,11 @@ $(() => {
 		// 글제목 유효성 검사
 		const draft_subject = $("input#draft_subject").val().trim();
 		if(draft_subject == "") {
-			swal("글제목을 입력하세요!");
-    		return;
+			swal("글제목을 입력하세요!")
+			.then(function (result) {
+				document.getElementById("draft_subject").focus(); //포커싱
+		      })
+			return;
 		}
 		
 		// 글내용 유효성검사
@@ -143,7 +149,10 @@ $(() => {
 
 	    if( draft_content == ""  || draft_content == null || draft_content == '&nbsp;' || draft_content == '<p>&nbsp;</p>')  {
 			obj.getById["draft_content"].exec("FOCUS"); //포커싱
-			swal("글내용을 입력하세요!");
+			swal("글내용을 입력하세요!")
+			.then(function (result) {
+				obj.getById["draft_content"].exec("FOCUS"); //포커싱
+		      })
 			return;
 	         
 	    }
@@ -178,6 +187,7 @@ $(() => {
 	});
 	
 	/* 파일 드래그 & 드롭 */
+	// 파일 드롭 영역
 	const $drop = document.querySelector(".dropBox");
 	
 	// 드래그한 파일 객체가 해당 영역에 놓였을 때
@@ -203,11 +213,12 @@ $(() => {
 		        
 		     	// 파일 정보 표시하기
 		        tag += 
-		                "<div class='fileList'>" +
-		                    "<span class='fileName'>"+fileName+"</span>" +
-		                    "<span class='fileSize'>"+fileSize+" MB</span>" +
-		                    "<a href='#' onclick='deleteFile(" + i + "); return false;' class='btn small bg_02'>삭제</a>" +
-		                "</div>";
+	                "<div class='fileList'>" +
+	                    "<span class='fileName'>" + fileName + "</span>" +
+	                    "<span class='fileSize'>" + fileSize +" MB</span>" +
+	                    "<span class='digitFileSize' style='display:none'>" + f.size + "</span>" +
+	                    "<span class='removeFile btn small' name='removeFile'>삭제</span>" +
+	                "</div>";
 		    }
 		    $(".dropBox span").hide();
 		    $(this).append(tag);
@@ -234,14 +245,24 @@ $(() => {
 	  $drop.classList.remove("active");
 	}
 
+	// 파일 삭제 버튼 클릭시
+	$(document).on('click','[name=removeFile]', function(){
+   	 	const $this = $(this);
+   	 	delete_file_name = $this.parent().children('.fileName').text();
+   	 	delete_file_size = $this.parent().children('.digitFileSize').text();
+   	 	
+   	 	for(let i = 0; i < fileList.length; i++) {
+   	 		if(fileList[i].name = delete_file_name && delete_file_size == fileList[i].size )  {
+   	 			
+   	 			fileList.splice(i, 1);
+   	 		    i--;
+   	 		  }
+   	 	}
+   	 $(this).parent().remove();
+   	 
+	});
 });
 
-// 업로드 파일 삭제
-function deleteFile(fIndex){
-    
-    // 파일 배열에서 삭제
-    delete fileList[fIndex];
-}
 
 // 긴급 여부 체크
 const checkUrgent = () => {
@@ -277,8 +298,22 @@ const submitDraft = () => {
 	// 첨부파일 가져오기
 	getFiles(formData);
 	
+	// 수신처 결재라인 추가하기
+	if (recipientArr != null && recipientArr.length > 0) {
+		
+		// 내부결재라인 결재자 수
+		const aprvLength = aprvTblBody.children('tr').length;
+		
+		// 수신처 결재자 추가
+		recipientArr.forEach((el, i) => {
+			formData.append("avoList[" + (aprvLength + i)+ "].levelno", (aprvLength + i + 1));
+			formData.append("avoList[" + (aprvLength + i) + "].fk_approval_empno", el.empno);
+			formData.append("avoList[" + (aprvLength + i) + "].external", 1);
+		});
+	}
+	
     $.ajax({
-        url : "<%=ctxPath%>/approval/write/work.on",
+        url : "<%=ctxPath%>/approval/addDraft.on",
         data : formData,
         type:'POST',
         enctype:'multipart/form-data',
@@ -303,7 +338,7 @@ const submitDraft = () => {
 	
 }
 
-/* 임시저장하가 */
+/* 임시저장하기 */
 const saveTemp = () => {
 	
     let formData = new FormData($("#draftForm")[0]);
@@ -312,7 +347,7 @@ const saveTemp = () => {
 	getFiles(formData);
 	
     $.ajax({
-        url : "<%=ctxPath%>/approval/save/work.on",
+        url : "<%=ctxPath%>/approval/saveDraft.on",
         data : formData,
         type:'POST',
         enctype:'multipart/form-data',
@@ -336,7 +371,7 @@ const saveTemp = () => {
     });
 }
 
-/* 결재라인 불러오기 */
+/* 저장된 결재라인 선택창 */
 const getMyApprovalLine = () => {
 	
 	$.ajax({
@@ -344,20 +379,27 @@ const getMyApprovalLine = () => {
 		url:"<%=ctxPath%>/approval/getSavedAprvLine.on",
 		dataType:"json",
 		success : function(aprvLine){
+
 			// 저장된 결재라인 불러오기
 			let html = "";
-			aprvLine.forEach((el, index) => {
-				html += "<tr>"
-						+ "<td><input type='radio' name='aprvLine' value=" + el.aprv_line_no + " id='" + index + "'></td>" 
-						+ "<td><label for='" + index + "'>" + el.aprv_line_name + "</label></td>"
-						+ "</tr>";
-			});
+			
+			if (aprvLine.length > 0) {
+				aprvLine.forEach((el, index) => {
+					html += "<tr>"
+							+ "<td><input type='radio' name='aprvLine' value=" + el.aprv_line_no + " id='radio" + index + "'></td>" 
+							+ "<td><label for='radio" + index + "'>" + el.aprv_line_name + "</label></td>"
+							+ "</tr>";
+				});
+			} else {
+				html = "<tr><td colspan='2' style='text-align: center'>저장된 결재라인이 없습니다.</td></tr>";
+			}
 			
 			$("#modalBody").html(html);
 			
 			$("#myApprovalLineModal").modal();
 			
 			$("#lineOkBtn").click(()=>{
+
 				// 결재자 정보 검색하기
 				getApprovalEmpInfo(aprvLine);
 			});
@@ -369,19 +411,23 @@ const getMyApprovalLine = () => {
 	
 }
 
-// 불러온 결재자 정보 출력하기
+/* 선택한 저장된 결재자 출력하기 */
 const getApprovalEmpInfo = aprvLine => {
 	const selectedNo = $('input[name=aprvLine]:checked').val();
 	
 	const selectedAprvLine = aprvLine.filter(el => el.aprv_line_no == selectedNo);
+	
+	if (selectedAprvLine.length == 0) {
+		swal("선택된 결재라인이 없습니다.");
+		return;
+	}
 	
 	$.ajax({
 		type: "GET",
 		url:"<%=ctxPath%>/approval/getSavedAprvEmpInfo.on",
 		data: {"selectedAprvLine": JSON.stringify(selectedAprvLine)},
 		dataType:"json",
-		success : function(json){
-						
+		success : function(json){		
 			emptyApprovalLine();
 			
 			json.forEach((emp, index) => {
@@ -390,7 +436,9 @@ const getApprovalEmpInfo = aprvLine => {
 			 			+ "<td class='levelno'>" + (index+1) + "</td>"
 						+ "<td class='department'>" + emp.department + "</td>"
 						+ "<td class='position'>" + emp.position + "</td>"
-						+ "<input type='hidden' name='fk_approval_empno' value='" + emp.empno + "'></td>"
+						+ "<input type='hidden' name='avoList[" + index + "].levelno' value='" + (index+1) + "'></td>"
+						+ "<input type='hidden' name='avoList[" + index + "].fk_approval_empno' value='" + emp.empno + "'></td>"
+						+ "<input type='hidden' name='avoList[" + index + "].external' value='0'></td>"
 						+ "<td class='name'>" + emp.name + "</td></tr>";
 					
 				aprvTblBody.append(html);
@@ -403,7 +451,7 @@ const getApprovalEmpInfo = aprvLine => {
 }
 
 
-/* 결재라인 선택하기 */
+/* 결재자 선택하기 */
 const selectApprovalLine = empno => {
 	emptyApprovalLine();
 	
@@ -413,15 +461,15 @@ const selectApprovalLine = empno => {
 	const popupX = (window.screen.width / 2) - (popupWidth / 2);
 	const popupY= (window.screen.height / 2) - (popupHeight / 2);
 	
-	window.open('<%=ctxPath%>/approval/selectApprovalLine.on','결제라인 선택','height=' + popupHeight  + ', width=' + popupWidth  + ', left='+ popupX + ', top='+ popupY);
+	window.open('<%=ctxPath%>/approval/selectApprovalLine.on?type=personal','결재라인 선택','height=' + popupHeight  + ', width=' + popupWidth  + ', left='+ popupX + ', top='+ popupY);
 }	
 
 
-/* 자식창에서 넘겨준 데이터를 받아 출력함 */
+/* 선택된 결재자 출력하기 */
 const receiveMessage = async (e) =>
-{
+{	
    	const jsonArr = e.data;
-
+	
    	// 선택된 사원을 테이블에 표시함
 	jsonArr.forEach((emp, index) => {
 
@@ -429,7 +477,9 @@ const receiveMessage = async (e) =>
 	 			+ "<td class='levelno'>" + emp.levelno + "</td>"
 				+ "<td class='department'>" + emp.department + "</td>"
 				+ "<td class='position'>" + emp.position + "</td>"
-				+ "<input type='hidden' name='fk_approval_empno' value='" + emp.empno + "'></td>"
+				+ "<input type='hidden' name='avoList[" + index + "].levelno' value='" + emp.levelno + "'></td>"
+				+ "<input type='hidden' name='avoList[" + index + "].fk_approval_empno' value='" + emp.empno + "'></td>"
+				+ "<input type='hidden' name='avoList[" + index + "].external' value='0'></td>"
 				+ "<td class='name'>" + emp.name + "</td></tr>";
 			
 		aprvTblBody.append(html);
@@ -441,7 +491,7 @@ const receiveMessage = async (e) =>
 window.addEventListener("message", receiveMessage, false);
 
 
-/* 선택된 결재라인 비우기 */
+/* 결재라인 비우기 */
 const emptyApprovalLine = () => {
 	aprvTblBody.empty();
 }
@@ -516,6 +566,41 @@ const emptyApprovalLine = () => {
 				<script>
 					const aprvTblBody = $('#aprvTblBody');
 				</script>
+				
+				
+				<!-- 수신처 -->
+				<c:if test="${recipientArr != '[]'}">
+				<div class='recipientLineInfo' style='width: 60%'>
+					<h5 class='my-4' style='display: inline-block; float: left'>수신처</h5>
+					<table class='mr-4 table table-sm table-bordered text-left' id='recipient'>
+					    <thead>
+					      <tr>
+					        <th>순서</th>
+					        <th>소속</th>
+					        <th>직급</th>
+					        <th>성명</th>
+					      </tr>
+					    </thead>
+					    <tbody id="recipientTblBody">
+					    </tbody>
+					</table>
+				    <script>
+				    	const recipientTblBody = $('#recipientTblBody');
+				    	// 수신처 결재라인을 테이블에 표시함
+				    	recipientArr.forEach((emp, index) => {
+
+				    		var html = "<tr>"
+				    	 			+ "<td class='levelno'>" + (index + 1) + "</td>"
+				    				+ "<td class='department'>" + emp.department + "</td>"
+				    				+ "<td class='position'>" + emp.position + "</td>"
+				    				+ "<td class='name'>" + emp.name + "</td></tr>";
+				    			
+		    				recipientTblBody.append(html);
+				    		
+				    	});
+				    </script>
+				</div>
+				</c:if>
 				
 				<div style="clear: both; height: 30px; padding-top: 8px; margin-bottom: 30px;">
 					<hr>
@@ -595,14 +680,6 @@ const emptyApprovalLine = () => {
 		      </tr>
 		    </thead>
 		    <tbody id="modalBody">
-		      <tr>
-		        <td><input type="radio"/></td>
-		        <td>기본 결재라인</td>
-		      </tr>
-		      <tr>
-		        <td><input type="radio"/></td>
-		        <td>간략 결재라인</td>
-		      </tr>
 		    </tbody>
 		</table>
 	</div>
@@ -615,4 +692,3 @@ const emptyApprovalLine = () => {
 		</div>
 	</div>
 </div>
-<!-- 저장된 결재라인 불러오기 모달 끝 -->
