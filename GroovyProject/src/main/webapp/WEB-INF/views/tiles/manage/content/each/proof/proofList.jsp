@@ -89,14 +89,6 @@
 	}); // end  of $(document).ready(function(){--------------------
 	
 	
-	// >>> Function Declartion<<<	
-	// >>> 해당 회원을 클릭하면<<< 
-	/* function go_detailproof(){
-		
-	} // end of function go_detailInfo(){
-		 */
-	
-
 	
 
 
@@ -151,7 +143,7 @@
 				<td>${emp.issuedate}</td>
 				<td>
 					<!-- <button class="btn btn-sm" id="detail" data-toggle="modal" data-target="#viewDetailProof" > -->
-						<a href="#" id="detail" data-toggle="modal" data-target="#viewDetailProof"  data-backdrop="static">출력</a> 
+					<a href="#" id="detail" data-toggle="modal" data-target="#viewDetailProof"  data-backdrop="static">출력</a> 
 					<!-- </button> -->
 				</td> 
 			</tr>

@@ -2,8 +2,6 @@
     pageEncoding="UTF-8"%>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
-
-
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <% String ctxPath = request.getContextPath(); %>   
@@ -134,6 +132,7 @@
 		<table class="table table-bordered table-sm mx-4 ">
 			<thead>
 				<tr>
+					<th>NO</th>
 					<th>사원번호</th>
 					<th>사원명</th>
 					<th>부문</th>
@@ -145,17 +144,18 @@
 					<th>지급일</th>
 				</tr>
 			</thead>
-			<tbody  onclick="go_detailInfo">
+			<tbody  onclick="go_detailInfo(payno)">
 				<c:forEach  var="emp" items="${requestScope.payList}" varStatus="status">
 					<tr class="text-center border" id="list">
+						<td ><c:out value="${status.count}" /></td>
 						<td>${emp.fk_empno}</td>
 						<td>${emp.name}</td>
 						<td>${emp.bumun}</td>
 						<td>${emp.department}</td>
 						<td>${emp.position}</td>
-						<td><fmt:formatNumber value="${emp.salary}" pattern="#,###" /></td>
-						<td><fmt:formatNumber value="${emp.annualpay}" pattern="#,###" /></td>
-						<td><fmt:formatNumber value="${emp.overtimepay}" pattern="#,###" /></td>
+						<td><fmt:formatNumber value="${emp.allpay}" pattern="#,###" /></td>
+						<td><fmt:formatNumber value="${emp.tax}" pattern="#,###" /></td>
+						<td><fmt:formatNumber value="${emp.monthpay}" pattern="#,###" /></td>
 						<td>${emp.paymentdate}</td>
 					</tr>
 				</c:forEach>
@@ -175,36 +175,40 @@
 				</tr>
 			</thead>
 			<tbody>
+				<c:forEach  var="emp" items="${requestScope.payList}" varStatus="status">
 					<tr class="text-center border" >
 						<td>1</td>
 						<td>기본급</td>
 						<td><fmt:formatNumber value="${emp.salary}" pattern="#,###" /></td>
 						<td>소득세</td>
-						<td><input type="text" name=""><fmt:formatNumber value="${emp.salary}" pattern="#,###"/></input></td>
+						<td><fmt:formatNumber value="${emp.incomtax}" pattern="#,###"/></td>
 					</tr>
 					<tr class="text-center border" >
 						<td>2</td>
 						<td>초과근무수당</td>
-						<td><input type="text" name=""/></td>
+						<td><fmt:formatNumber value="${emp.overtimepay}" pattern="#,###" /></td>
 						<td>국민연금</td>
-						<td><input type="text" name=""/></td>
+						<td><fmt:formatNumber value="${emp.pension}" pattern="#,###" /></td>
 					</tr>
 					<tr class="text-center border" >
 						<td>3</td>
 						<td>연차수당</td>
-						<td><input type="text" name=""/></td>
+						<td><fmt:formatNumber value="${emp.annualpay}" pattern="#,###" /></td>
 						<td>고용보험</td>
-						<td><input type="text" name=""/></td>
+						<td><fmt:formatNumber value="${emp.insurance}" pattern="#,###" /></td>
 					</tr>
+					</c:forEach>
 			</tbody>
 			<tfoot>
 				<tr>
-				<th>합계</th>
-				<th>지급총액</th>
-				<td><input type="text" name=""/></td>
-				<th>공제총액</th>
-				<td><input type="text" name=""/></td>
-				</tr>
+				<c:forEach  var="emp" items="${requestScope.payList}" varStatus="status">
+					<th>합계</th>
+					<th>지급총액</th>
+					<td><fmt:formatNumber value="${emp.allpay}" pattern="#,###" /></td>
+					<th>공제총액</th>
+					<td><fmt:formatNumber value="${emp.tax}" pattern="#,###" /></td>
+					</tr>
+				</c:forEach>
 			</tfoot>
 		</table>
 		
@@ -234,6 +238,7 @@
          <table class="table table-bordered table-sm">
 	         <tbody>
 	         <tr>
+	         
 	         	<th>신청번호</th>
 	         	<td><input type="text" style="border: none;"/></td>
 	         	<th>사원번호</th>

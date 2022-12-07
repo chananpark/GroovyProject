@@ -374,9 +374,22 @@ public class ManagementController {
 	
 	//공용 증명서 -  급여관리(기본외수당조회)
 	@RequestMapping(value="/manage/pay/overtimepaySearch.on")
-	public String overtimepaySearch(HttpServletRequest request) {
+	public ModelAndView overtimepaySearch(ModelAndView mav, HttpServletRequest request, PayVO pvo) {
+		HttpSession session = request.getSession();
+		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
 		
-		return "manage/each/pay/overtimepaySearch.tiles";
+		Map<String,Object> paramap = new HashMap<>();
+		paramap.put("pvo", pvo);
+		
+		// 공용 증명서 - 월급리스트
+		List<PayVO> payList = service.paySearch(paramap);
+		
+		mav.addObject("loginuser", loginuser);
+		mav.addObject("payList", payList);
+
+		mav.setViewName("manage/each/pay/overtimepaySearch.tiles");
+		
+		return mav;
 	}
 
 	
