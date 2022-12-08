@@ -100,7 +100,7 @@ $(()=>{
    		</div>
     </li>
     <li class="nav-item">
-    	<div id='' class="nav-link text-dark  header_hover header_width" onClick='location.href="#"'>
+    	<div id='' class="nav-link text-dark  header_hover header_width" onClick='location.href="<%=ctxPath%>/organization.on"'>
     		<div class="text-center"><i class="fas fa-sitemap fa-lg"></i></div>
     		<div style="text-align: center;">조직도</div>
    		</div>
@@ -154,7 +154,7 @@ $(()=>{
    		</div>
     </li>
     <li class="nav-item">
-      	<div id='' class="nav-link text-dark  header_hover header_width" onClick='location.href="#"'>
+      	<div id='' class="nav-link text-dark  header_hover header_width" onClick='location.href="<%=ctxPath%>/chat.on"'>
     		<div class="text-center"><i class="fas fa-comments fa-lg"></i></div>
     		<div style="text-align: center;">채팅</div>
    		</div>

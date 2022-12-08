@@ -331,7 +331,42 @@ var fileSizeList = [];
 		$("#receieveName").autocomplete({
 			source : emailList
 		});
-		
+		// 답장이면 보낸이 이메일 추가
+		if('${requestScope.replyList}' != null){
+				<c:forEach var="reply" items="${requestScope.replyList}" varStatus="status">
+				var emailStartIdx = '${reply}'.indexOf("<")+2;
+				var emailEndIdx = '${reply}'.indexOf(">")-1;
+				var emailOnly = '${reply}'.substring(emailStartIdx, emailEndIdx);
+				
+				for(let i = 0; i < recipient_addressList.length; i++) {
+	    	 		if(recipient_addressList[i] == emailOnly )  {
+	    	 			swal('중복된 이메일입니다', "다른 이메일을 선택해주세요.", 'warning')
+	    	 			$("input#receieveName").val('');
+	    	 			return false;
+	    	 		  }
+	    	 	}
+				
+				
+				$("#receieveName").val("");
+				
+				
+				
+				if(emailOnly == '${sessionScope.loginuser.cpemail}'){
+					$("#receiver").append(`<span class="rounded-pill email-ids myMail" name="email-container">`
+							 + '${sessionScope.loginuser.department } '+ '${sessionScope.loginuser.position } '+ '${sessionScope.loginuser.name}'
+							 + '&lt;'+'${sessionScope.loginuser.cpemail}' +'&gt;'
+							 + '<span class = "removeAddress" name="removeAddress"><i class="far fa-window-close"></i></span></span>');
+					$("#selfMail").prop("checked", true);
+				}
+				else{
+					$("#receiver").append('<span class="rounded-pill email-ids" name="email-container">'
+							+ ${reply} + '<span class = "removeAddress" name="removeAddress"><i class="far fa-window-close"></i></span></span>');
+				}
+				recipient_addressList.push(emailOnly);
+
+			</c:forEach>
+			
+		}
 		
 		
 		// 받는사람 입력후 스페이스바나 엔터 누르면 한 단위로 묶기
@@ -340,7 +375,6 @@ var fileSizeList = [];
 				var getValue = $(this).val();
 				console.log("getValue: "+getValue);
 				
-				var inList = false;
 				for(let i = 0; i < emailList.length; i++) {
 	    	 		if(emailList[i] == getValue )  {
 	    	 			// 가져온 리스트 안의값이라면 
@@ -363,20 +397,31 @@ var fileSizeList = [];
 				console.log("emailOnly"+emailOnly)
 				
 				if(inList == true){
-					$("#receiver").append('<span class="rounded-pill email-ids" name="email-container">'
-							+ getValue + '<span class = "removeAddress" name="removeAddress"><i class="far fa-window-close"></i></span></span>');
-					$("#receieveName").val("")
+					if(emailOnly == '${sessionScope.loginuser.cpemail}'){
+						$("#receiver").append(`<span class="rounded-pill email-ids myMail" name="email-container">`
+								 + '${sessionScope.loginuser.department } '+ '${sessionScope.loginuser.position } '+ '${sessionScope.loginuser.name}'
+								 + '&lt;'+'${sessionScope.loginuser.cpemail}' +'&gt;'
+								 + '<span class = "removeAddress" name="removeAddress"><i class="far fa-window-close"></i></span></span>');
+						$("#selfMail").prop("checked", true);
+					}
+					else{
+						$("#receiver").append('<span class="rounded-pill email-ids" name="email-container">'
+								+ ${reply} + '<span class = "removeAddress" name="removeAddress"><i class="far fa-window-close"></i></span></span>');
+					}
 				}
 				else{
 					$("#receiver").append('<span class="rounded-pill non-email-ids" name="email-container">'
 							+ getValue + '<span class = "removeAddress" name="removeAddress"><i class="far fa-window-close"></i></span></span>');
-					$("#receieveName").val("")
+					$("#receieveName").val("");
 					
 				}
 				
 				
 				
 				recipient_addressList.push(emailOnly);
+				if(emailOnly == '${sessionScope.loginuser.cpemail}'){
+					$("#selfMail").prop("checked", true);
+				}
 			}
 			
 			
@@ -652,12 +697,14 @@ var fileSizeList = [];
 						<th style="width: 15%; background-color: #E3F2FD;">내용</th>
 						<td>
 							<textarea style="width: 100%; height: 612px;" name="contents" id="contents">
-								<p><br></p><p><br></p><p><br></p><p><br></p><p><br></p><p><br></p><p><br></p><p><br></p><p><br></p><p><br></p><p><br></p><p><br></p><p><br></p>
-								<p>------------------------------------ original message ------------------------------------</p>
+								
 								<c:if test="${requestScope.type == 'reply'}">
-									${mailVO.contents}
+									<p><br></p><p><br></p><p><br></p><p><br></p><p><br></p><p><br></p><p><br></p><p><br></p><p><br></p><p><br></p><p><br></p><p><br></p><p><br></p>
+									<p>------------------------------------ original message ------------------------------------</p>
+										${mailVO.contents}
+									<p>------------------------------------------------------------------------------------------</p>	
 								</c:if>
-								<p>------------------------------------------------------------------------------------------</p>
+								
 							</textarea>
 						</td>
 					</tr>

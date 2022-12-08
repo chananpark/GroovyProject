@@ -43,7 +43,10 @@ public interface InterMailService {
 
 	int tagCheckM(Map<String, String> paraMap);
 
+	/** ,로 구분되는 메일 주소로 추가될 태그 만들어서 반환*/
+	List<String> getreplyList(String getfK_recipient_address);
 	
+
 	
 
 }

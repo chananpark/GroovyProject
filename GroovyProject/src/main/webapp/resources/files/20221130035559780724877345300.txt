@@ -1,0 +1,454 @@
+$$$$$$$$$$$$$ Controller_HR
+-------------------------
+//이 메소드만 바꾸고 나머지는 추가
+private void menu_personal(EmployeeDTO employee, Scanner sc) {
+		String menu_no = ""; // 입력받은 메뉴번호 저장
+		do {
+		System.out.println("\n====================  개인메뉴" + employee.getName() + "(사원)로그인중..  ====================");
+		System.out.println("1.인사정보  2.출퇴근시간 입력   3.연차신청   4.문서기안	5.문서처리확인		6.결재할문서확인\n"
+							+ "7.결재할문서확인(new)	8.문서수정		9.나가기");
+		System.out.println("=============================================================");
+
+		System.out.print("▷ 메뉴번호 선택 : ");
+		menu_no = sc.nextLine();
+
+		switch (menu_no) {
+			case "1": // 1.인사정보
+				
+				break;
+				
+			case "2": // 2.출퇴근시간 입력
+				commnute_insert(employee,sc);
+				break;
+
+			case "3": // 3.연차신청
+				YsinCheong(employee, sc);
+				break;
+
+			case "4": // 4.문서기안 (관리자로 옮겨야함)
+				Docinsert(employee, sc);	
+				break;
+			case "5": // 5.기안한 문서 처리상태 확인
+				DocView(employee, sc);
+				break;
+			case "6": // 6.결제할 문서 확인
+				DocAproval(employee, sc);
+				
+				break;
+			case "7": // 7.결제할 문서 확인 2
+				DocAproval_2(employee, sc);
+				break;	
+			case "8": // 8.반려 문서 or 아직 승인전 문서 수정
+				DocChange(employee, sc);
+				break;	
+				
+
+				
+			default:
+				System.out.println(">> 메뉴에 없는 번호입니다. <<\n");
+				break;
+		}// end of switch (menu_no)
+	} while (!"9".equals(menu_no)); // end of do~ while()---------------------------------------
+
+------------------------------------------------
+
+
+private void DocAproval_2(EmployeeDTO employee, Scanner sc) {
+			// (a)전결자가 (b)같은문서에대해 (c)결재한 문서중 내가 결재자인 문서(d(결재가능상태))만 가져오기 
+			StringBuilder sb = new StringBuilder();
+			sb = tdao.DocAproval2(employee, sc);
+			int n = 0 ;
+			
+			if(sb.length() != 0) {
+
+				System.out.println("\n---------------------------------------------- [문서 목록] ----------------------------------------------");
+				System.out.println("문서번호\t기안작성자사원번호\t문서내용\t\t작성일자\t\t승인단계\t\t승인사원번호\t승인사원명\t승인여부\t코멘트\t\t\t승인날짜\t");
+				System.out.println("---------------------------------------------------------------------------------------------------------"); 
+				System.out.println(sb.toString());
+				String choiceno;
+				String Docno;
+				
+				do {// 승인처리할 문서의 문서번호 입력
+					System.out.print("▷ 처리할 문서의 문서번호를 입력해주세요 : ");
+					Docno = sc.nextLine();
+					
+					try {
+						Integer.parseInt(Docno);
+						int a = tdao.DocCheck(employee,sc,Docno);
+						
+						if(a != 1) {
+							System.out.println(Docno+"번에 대한 처리권한이 없습니다.");
+						}
+						else{
+							break;	
+						}	
+					} catch(NumberFormatException e) {
+						System.out.println("[경고] 승인할 문서의 문서번호는 숫자로만 입력하세요!! \n");
+					}	
+				} while(true);
+				
+				do {
+					System.out.println(Docno + "번의 문서를 어떻게 처리하시겠습니까?");
+					System.out.print("1.승인  2.반려	3.보류");
+				    choiceno = sc.nextLine();
+					
+					if(!(choiceno.equals("1") ||choiceno.equals("2")||choiceno.equals("3"))) {
+						System.out.println(">> 1 또는 2 또는 3 만 선택해주세요! <<");
+					}
+					
+				} while (!(choiceno.equals("1") ||choiceno.equals("2")||choiceno.equals("3")));
+				
+				n = tdao.Aproval(employee, choiceno, Docno, sc );
+				
+				if(n == 0) {
+					
+				}
+				else if(n == 1) {
+					System.out.println(">> 문서가 성공적으로 처리되었습니다! <<");
+				}
+				else {// -1 인 경우
+					System.out.println(">> 문서처리에 실패하였습니다! <<");
+				}
+			}
+			else {
+				System.out.println("승인할 문서내역이 존재하지 않습니다");
+			}
+			
+		}
+		// 반려, 승인 전 문서 수정
+		private void DocChange(EmployeeDTO employee, Scanner sc) {
+			System.out.println("* 문서수정은 반려된 문서 혹은 아직 결재가 진행되지 않은 문서에 한하여 가능합니다 * ");
+			int n = tdao.DocChange(employee, sc);
+			if(n == 1) {
+				System.out.println("문서가 성공적으로 수정되었습니다!");
+			}
+			else {
+				System.out.println("문서가 변경되지 않았습니다!");
+			}
+		}
+
+
+-----------------------------------------------------------------------------
+$$$$$$$$$$$$$$$$$$$$$ 여기서부터 DAO
+--------------------------------------------------------------------------
+
+@Override
+	// &&&
+	public StringBuilder DocAproval2(EmployeeDTO employee, Scanner sc) {
+		StringBuilder sb = new StringBuilder();
+		try {
+			conn = ProjectDBConnection.getConn();
+			
+			String sql = " WITH  "+
+					" V1 AS (\n"+
+					" select   A.DOC_ID "+
+					"    , A.fk_writer_emp_id "+
+					"    , E1.name as WRITER_NAME "+
+					"    , A.DOC_TITLE "+
+					"    , A.DOC_CONTENTS "+
+					"    , A.writeday "+
+					" from TBL_DOCUMENTS A JOIN TBL_EMPLOYEES E1 "+
+					" on A.FK_WRITER_EMP_ID = E1.emp_id) "+
+					" ,V2 AS ( "+
+					" select C.FK_DOC_ID "+
+					"    , C.LEVEL_ID "+
+					"    , C.FK_DECISION_EMP_ID "+
+					"    , E2.name AS DECISION_NAME "+
+					"    , C.CK_APPROVAL "+
+					"    , C.COMMENTS "+
+					"    , C.DECISION_DAY "+
+					"    , C.DECISION_ID "+
+					"            ,case when (((lead(CK_APPROVAL, 1)over(order by DECISION_ID desc)) =1 and "+
+					"             ( FK_DOC_ID =(lead(FK_DOC_ID, 1)over(order by DECISION_ID desc))) and "+
+					"             ((level_id - 1 =(lead(level_id, 1)over(order by DECISION_ID desc))) and "+
+					"             (CK_APPROVAL)=0)) or level_id =1 )then 1 else 0 end  as checks "+
+					" from tbl_documents_decision C JOIN TBL_EMPLOYEES E2 "+
+					" on C.fk_decision_emp_id = E2.emp_id "+
+					" ) "+
+					" select   V1.DOC_ID AS 문서번호 "+
+					"    , V1.fk_writer_emp_id AS 기안작성자사원번호 "+
+					"    , V1.WRITER_NAME AS 기안작성자사원명 "+
+					"    , V1.DOC_TITLE AS 문서제목 "+
+					"    , V1.DOC_CONTENTS AS 문서내용 "+
+					"    , V1.writeday AS 작성일자 "+
+					"    , V2.LEVEL_ID AS 승인단계 "+
+					"    , V2.FK_DECISION_EMP_ID AS 승인사원번호 "+
+					"    , V2.DECISION_NAME AS 승인사원명 "+
+					"    , V2.CK_APPROVAL AS 승인여부 "+
+					"    , V2.comments AS 코멘트 "+
+					"    , V2.decision_day AS 승인날짜"+
+					"    , V2.checks as 체크 "+
+					"    from V1 JOIN V2 "+
+					" on V1.DOC_ID = V2.FK_DOC_ID "+
+					" WHERE  V2.FK_DECISION_EMP_ID = ?  and "+
+					"        V2.checks  = 1 "+
+					" order by 문서번호 desc, 승인단계 asc ";;
+			 
+			 pstmt = conn.prepareStatement(sql);
+			 pstmt.setInt(1,employee.getEmp_id());
+			 
+			 rs = pstmt.executeQuery();
+
+			 while(rs.next()) {	
+				 
+				 sb.append(  Integer.toString(rs.getInt("문서번호"))+ "\t" +
+							 Integer.toString(rs.getInt("기안작성자사원번호"))+ "\t" +
+							 rs.getString("문서제목")+ "\t" +
+							 rs.getString("문서내용")+ "\t" +
+							 rs.getString("작성일자")+ "\t" +
+							 Integer.toString(rs.getInt("승인단계"))+ "\t" +			 
+							 Integer.toString(rs.getInt("승인사원번호"))+ "\t" +
+							 rs.getString("승인사원명")+ "\t" +
+							 Integer.toString(rs.getInt("승인여부"))+ "\t" +
+							 rs.getString("코멘트")+ "\t" +
+							 rs.getString("승인날짜")+ "\n");
+			 }			 	 
+		} catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			close();
+		}
+		
+		return sb;
+	}
+
+	@Override
+	//&&&
+	public int DocCheck(EmployeeDTO employee, Scanner sc, String docno) {
+		int result = 0;
+		try {
+			String sql = " with V as( "
+					+ " select FK_DECISION_EMP_ID, fk_DOC_ID, CK_APPROVAL, "
+					+ " case when (((lead(CK_APPROVAL, 1)over(order by DECISION_ID desc)) =1 and "+
+					"             ( FK_DOC_ID =(lead(FK_DOC_ID, 1)over(order by DECISION_ID desc))) and "+
+					"             ((level_id - 1 =(lead(level_id, 1)over(order by DECISION_ID desc))) and "+
+					"             (CK_APPROVAL)=0)) or level_id =1 )then 1 else 0 end  as checks "+
+					" from TBL_DOCUMENTS_DECISION "
+					+ " order by DECISION_ID desc "
+					+ " ) "
+					+ " select V.* "
+					+ " from V "
+					+ " where FK_DECISION_EMP_ID = ? and fk_DOC_ID = ? and checks = 1 ";
+			
+			pstmt = conn.prepareStatement(sql);              
+			pstmt.setInt(1, employee.getEmp_id()); 	 
+			pstmt.setString(2, docno);    
+			
+			rs = pstmt.executeQuery();   
+			
+			if(rs.next()) {// 값이 있다면
+				result = 1;
+			}// end of if()------------------------------------------------
+			
+		}catch (SQLException e) {
+			e.printStackTrace();
+		} finally {
+			close();
+		}
+		return result; 
+	}
+
+	@Override
+	public void InnerDocinsert(EmployeeDTO employee, Scanner sc) {
+		
+		String doc_id = "";
+		int n = 0;
+		int result = 0;
+		System.out.println("기안자 사원번호 : " + employee.getEmp_id());
+		System.out.println("문서 제목 : ");
+		String doc_title = sc.nextLine();
+		System.out.println("문서 내용 : ");
+		String doc_contents = sc.nextLine();
+		System.out.println("최종 결재자 id : ");
+		String doc_final = sc.nextLine();
+		
+		try {
+			conn = ProjectDBConnection.getConn(); 
+			conn.setAutoCommit(false);
+			String sql = " select seq_doc_id.nextval as doc_id "+
+					" from dual ";
+			pstmt = conn.prepareStatement(sql);
+			rs = pstmt.executeQuery();
+			
+			
+			if(rs.next()) {
+				doc_id = Integer.toString(rs.getInt("doc_id"));
+			}
+			
+			sql = " insert into tbl_documents(doc_id, fk_writer_emp_id, doc_title, doc_contents) "+
+					" values(?,?, ?, ?) ";
+			pstmt = conn.prepareStatement(sql);
+			pstmt.setString(1, doc_id);
+			pstmt.setInt(2, employee.getEmp_id());
+			pstmt.setString(3, doc_title);
+			pstmt.setString(4, doc_contents);
+						
+			n = pstmt.executeUpdate(); // 실행 --> 1 or 0
+			
+			if(n == 1) { // insert 성공시
+				System.out.println("문서 기안에 성공했습니다.");
+				
+				sql = " insert into tbl_documents_decision(decision_id, fk_doc_id, level_id, fk_decision_emp_id,CK_APPROVAL) "+
+						" values(seq_decision_id.nextval, ?, 0, ?,3) ";
+				pstmt = conn.prepareStatement(sql);
+				pstmt.setString(1, doc_id);
+				pstmt.setString(2, doc_final);
+				result = pstmt.executeUpdate();
+				if(result == 1) {
+					conn.commit();
+				}
+					
+			}
+			else if(n==0) {
+				System.out.println("문서 기안에 실패했습니다.");
+				result = -1;
+			}
+			if(result != 1) {
+			conn.rollback(); // 롤백을 해준다.
+			}
+		} catch (SQLIntegrityConstraintViolationException e) {// 제약조건에 위배되는 애들
+			System.out.println("제약 조건 위배!");
+			e.printStackTrace();
+		}catch (SQLException e) {
+			
+			try {
+				conn.rollback();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+			e.printStackTrace();
+		} finally {
+			try {
+				conn.setAutoCommit(true);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			close();
+		}
+		
+	}
+
+	@Override
+	public int DocChange(EmployeeDTO employee, Scanner sc) {
+		int result = 0;
+		String DOC_TITLE = "";
+		String DOC_CONTENTS = "";
+		System.out.println("▷ 수정할 문서의 문서번호를 입력하세요 : ");
+		
+		String doc_id =sc.nextLine();
+		do {
+
+			try {
+				int doc_no = Integer.parseInt(doc_id);
+				break;
+			} catch (NumberFormatException e) {
+				System.out.println("문서의 문서번호는 숫자만 입력가능합니다. ");
+			}
+		} while (true);
+		
+		try {// 문서 있는지부터 확인
+			conn = ProjectDBConnection.getConn(); 
+			conn.setAutoCommit(false);
+			String sql = " select DOC_ID, DOC_TITLE, DOC_CONTENTS,  FK_WRITER_EMP_ID, CK_1, CK_2 "+
+					" from TBL_DOCUMENTS D "+
+					" join ( "+
+					" select FK_DOC_ID, sum(CK_APPROVAL) as CK_1 "+
+					" from TBL_DOCUMENTS_decision "+
+					" group by FK_DOC_ID "+
+					" )DD "+
+					" on D.DOC_ID = DD.FK_DOC_ID "+
+					" join ( "+
+					" select FK_DOC_ID, decode(CK_APPROVAL , 2 , 1 ,0) as CK_2 "+
+					" from TBL_DOCUMENTS_decision "+
+					" )DDD " +
+					" on DDD.FK_DOC_ID = D.DOC_ID "+
+					" where (CK_1 = 0 or CK_2 = 1) and  FK_WRITER_EMP_ID = ? and DOC_ID = ? ";
+			
+			pstmt = conn.prepareStatement(sql);              
+			pstmt.setInt(1, employee.getEmp_id()); 	
+			pstmt.setString(2, doc_id);    
+			
+			rs = pstmt.executeQuery();   
+			
+			if(rs.next()) {// 값이 있다면
+				
+				DOC_CONTENTS = rs.getString("DOC_CONTENTS");
+				DOC_TITLE = rs.getString("DOC_TITLE");
+				System.out.print("▷ 문서명 (현재: "+DOC_TITLE + " ) [변경하지 않으려면 엔터] : ");
+				DOC_TITLE = sc.nextLine();
+				if( DOC_TITLE != null && (DOC_TITLE.trim().isEmpty()) ) {
+					DOC_TITLE = rs.getString("DOC_TITLE");
+				}
+				System.out.print("▷ 문서명 (현재: "+DOC_CONTENTS + " ) [변경하지 않으려면 엔터] : ");
+				DOC_CONTENTS = sc.nextLine();
+				if( DOC_CONTENTS != null && (DOC_CONTENTS.trim().isEmpty()))  {
+					DOC_CONTENTS = rs.getString("DOC_CONTENTS");
+				}
+					
+					sql = " update TBL_DOCUMENTS set DOC_TITLE = ? , DOC_CONTENTS = ? "+
+						  " where DOC_ID = ? ";	
+					
+					pstmt = conn.prepareStatement(sql);              
+						
+					pstmt.setString(1, DOC_TITLE);
+					pstmt.setString(2, DOC_CONTENTS);
+					pstmt.setString(3, doc_id); 
+					System.out.println("2");
+					
+					int n = pstmt.executeUpdate();
+					System.out.println("3");
+					if(n==1) {
+						System.out.println("4");
+						sql = " update TBL_DOCUMENTS_DECISION   set CK_APPROVAL = 0   "+
+							  " where fk_DOC_ID = ?  ";
+						pstmt = conn.prepareStatement(sql); 
+						
+						pstmt.setString(1,doc_id);
+						
+						result = pstmt.executeUpdate();
+						System.out.println("5");
+						if(result == 1) {
+							System.out.println("1");
+							conn.commit();
+						}	
+					}
+					conn.rollback();
+				}
+			else{
+				System.out.println(doc_id + "번의 문서에 대한 처리권한이 없거나 문서가 존재하지 않습니다.");
+			}
+
+		} catch (SQLIntegrityConstraintViolationException e) {// 제약조건에 위배되는 애들
+			System.out.println("제약 조건 위배!");
+			e.printStackTrace();
+		}catch (SQLException e) {
+			e.printStackTrace();
+			try {
+				conn.rollback();
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
+			e.printStackTrace();
+		} finally {
+			try {
+				conn.setAutoCommit(true);
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+			close();
+		}
+		return result;
+		
+	}
+
+----------------------------------------------------------------------------
+$$$$$$$$$$$$InterDAO 추가
+---------------------------------------------------------------------------
+
+	StringBuilder DocAproval2(EmployeeDTO employee, Scanner sc);
+
+	int DocCheck(EmployeeDTO employee, Scanner sc, String docno);
+
+	void InnerDocinsert(EmployeeDTO employee, Scanner sc);
+
+	int DocChange(EmployeeDTO employee, Scanner sc);
