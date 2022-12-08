@@ -452,7 +452,7 @@ SELECT EMPNO, DEPARTMENT, NAME, E.POSITION AS POSITION, POSITION_NO
     and lower(bumun) like ('%'||lower('it')||'%');
     
     
-    
+
 create table tbl_important_organization 
 (fk_user_empno number not null
 , fk_important_empno number not null
@@ -462,6 +462,8 @@ create table tbl_important_organization
 );
 
 commit;
+
+
         
 select * from tbl_important_organization;
 
