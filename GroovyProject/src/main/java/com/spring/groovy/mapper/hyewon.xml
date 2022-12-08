@@ -95,7 +95,7 @@
 	</resultMap>
 	<select id="getMonthlyWorkTimes" resultMap="monthlyworkTimesMap" parameterType="HashMap">
 		select trunc((sum((workend-workstart)*24)*60)/60)|| '시간 ' ||  round(mod((sum((workend-workstart)*24)*60), 60)) || '분' as monthlywork
-		     , trunc((sum((workend-extendstart)*24)*60)/60)|| '시간 ' ||  round(mod((sum((workend-extendstart)*24)*60), 60)) || '분' as monthlyextend
+		     , NVL(trunc((sum((workend-extendstart)*24)*60)/60), 0)|| '시간 ' ||  NVL(round(mod((sum((workend-extendstart)*24)*60), 60)), 0) || '분' as monthlyextend
 		from tbl_attendance 
 		where fk_empno = #{empno} and workdate between( SELECT TRUNC(SYSDATE, 'MM') FROM DUAL ) and  (select last_day(sysdate) from dual )  
 	</select>

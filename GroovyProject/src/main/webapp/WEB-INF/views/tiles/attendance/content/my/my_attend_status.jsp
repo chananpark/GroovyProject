@@ -133,6 +133,8 @@
 		margin-top: 20px;
 	}
 	
+	
+	
 
 </style>   
 
@@ -145,7 +147,11 @@
 		$("#extraInfo").hide();
 		$("#dayoffInfo").hide();
 		
-		const now = new Date();		
+		const now = new Date();	
+
+		// alert( weekNumOfMonth(now));
+		
+		
 		const year = now.getFullYear();
 		const month = now.getMonth()+1;
 		const thisMonth = year+"-"+month;
@@ -266,6 +272,8 @@
 		getWeeklyWorkTimes();		
 		getMonthlyWorkTimes();
 		
+		
+		
 	}); // end of $(document).ready() =============================
 		
 	function toggle(e){	
@@ -313,7 +321,7 @@
 								"<th style='width:20%; padding-bottom: 10px;'>승인요청내역</th>"+
 							"</tr>"+
 						"</thead>"+
-						"<tbody id='show_week1'>";
+						"<tbody>";
 					  
 					  
 				  if(json.length > 0) {
@@ -444,10 +452,15 @@
 					  
 					  $("#weekList").html(html);
 					  
+					  $("#table_week1").hide();
 					  $("#table_week2").hide();
 						$("#table_week3").hide();
 						$("#table_week4").hide();
 						$("#table_week5").hide();
+						
+						const today = new Date();
+						  weekOpen(today);
+						
 				  }
 				  else {
 				  }
@@ -517,6 +530,60 @@
 		
 	} // end of function getMonthlyWorkTimes() -----------------------------------------------
 	
+	// 오늘이 이번달의 몇번째 주인지 구하기	
+	function weekNumOfMonth(date){
+		var WEEK_KOR = ["1", "2", "3", "4", "5"];
+		var THURSDAY_NUM = 4;	// 첫째주의 기준은 목요일(4)이다. (https://info.singident.com/60)
+		// console.log(date);
+
+		var firstDate = new Date(date.getFullYear(), date.getMonth(), 1);
+		var firstDayOfWeek = firstDate.getDay();
+
+		var firstThursday = 1 + THURSDAY_NUM - firstDayOfWeek;	// 첫째주 목요일
+		if(firstThursday <= 0){
+			firstThursday = firstThursday + 7;	// 한주는 7일
+		}
+		var untilDateOfFirstWeek = firstThursday-7+3;	// 월요일기준으로 계산 (월요일부터 한주의 시작)
+		var weekNum = Math.ceil((date.getDate()-untilDateOfFirstWeek) / 7) - 1;
+
+		if(weekNum < 0){	// 첫째주 이하일 경우 전월 마지막주 계산
+			var lastDateOfMonth = new Date(date.getFullYear(), date.getMonth(), 0);
+		 	var result = Util.Date.weekNumOfMonth(lastDateOfMonth);
+		 	return result;
+		}
+
+		return WEEK_KOR[weekNum];
+	}
+	
+	function weekOpen(date){
+		const weekNo = weekNumOfMonth(date);
+		// alert(weekNo);	
+		
+		switch (weekNo) {
+		case "1":
+			$("#table_week1").show();
+			break;
+			
+		case "2":
+			$("#table_week2").show();
+			break;
+			
+		case "3":
+			$("#table_week3").show();
+			break;
+	
+		case "4":
+			$("#table_week4").show();
+			break;
+			
+		case "5":
+			$("#table_week5").show();	
+			break;
+
+		}
+	}
+		
+		
 	
 
 </script> 

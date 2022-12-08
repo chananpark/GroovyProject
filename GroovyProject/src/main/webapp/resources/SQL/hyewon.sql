@@ -383,6 +383,7 @@ values (, sysdate)
 
 select *
 from tbl_attendance
+where fk_empno = 6 and to_char(workdate, 'yyyy-mm-dd') = '2022-12-07'
 
 ALTER TABLE tbl_attendance MODIFY workstart DEFAULT NULL;
 
@@ -392,10 +393,24 @@ values (6, sysdate+3);
 rollback;
 -------------------------------------------------------------------------------------------------
 select empno from tbl_employee
-select * from tbl_attendance
+
+select to_char(workdate, 'yyyy-mm-dd hh24:mi') from tbl_attendance
+where fk_empno = 6
+
+select * from tbl_attendance_request
+order by requestid
+
+delete from tbl_attendance
+where to_char(workdate, 'yyyy-mm-dd hh24:mi') = '2022-12-08 09:22';
+
+select * from tbl_employee
+order by empno;
+
+commit;
+
 
 -- 프로시저 생성
-create or replace procedure pcd_insert_daily_attendance
+create or replace procedure pcd_insert_daily_attendance2
 is
     cursor cur_empno
     is
@@ -405,17 +420,24 @@ is
  
 begin
     for v_rcd in cur_empno loop
-        insert into tbl_attendance(fk_empno, workdate)
-        values(v_rcd.empno, sysdate);
+        update tbl_attendance set workstart = to_date('2022-12-07 09:00', 'yyyy-mm-dd hh24:mi')
+             , workend = to_date('2022-12-07 18:00', 'yyyy-mm-dd hh24:mi')
+        where fk_empno = v_rcd.empno and to_char(workdate, 'yyyy-mm-dd') = '2022-12-07';
     end loop;
     
-    commit;
     
-end pcd_insert_daily_attendance;
+end pcd_insert_daily_attendance2;
 
-exec pcd_insert_daily_attendance;
+exec pcd_insert_daily_attendance2;
 
 rollback;
+
+commit;
+
+update tbl_attendance set fk_empno = 1
+     , workstart = to_date('2022-11-28 09:00', 'yyyy-mm-dd hh24:mi')
+     , workend = to_date('2022-11-28 18:00', 'yyyy-mm-dd hh24:mi')
+where to_char(workdate, 'yyyy-mm-dd') = '2022-11-28';
 
 
 grant create any job to FINAL_ORAUSER4;

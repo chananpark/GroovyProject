@@ -42,10 +42,10 @@ public class AttendanceController {
 		
 	}
 		
-	@RequestMapping(value = "/attend/teamStatusWeekly.on")
+	@RequestMapping(value = "/attend/teamStatus.on")
 	public String teamAttendStatusWeekly(HttpServletRequest request) {
 		request.setAttribute("submenuId", "team1");
-		return "attendance/team/team_attend_status_weekly.tiles";
+		return "attendance/team/team_attend_status.tiles";
 		
 	}	
 	
@@ -181,6 +181,7 @@ public class AttendanceController {
 		if(place == null || "".equals(place)) {	place = " ";	}
 		if(reason == null || "".equals(reason)) {	reason = " ";	}
 		
+		/*
 		System.out.println("empno : " + empno);
 		System.out.println("attend_index : " + attend_index);
 		System.out.println("usedate : " + usedate);
@@ -190,13 +191,13 @@ public class AttendanceController {
 		System.out.println("endTime2 : " + endTime2);
 		System.out.println("place : [" + place + "]");
 		System.out.println("reason : " + reason);
-		
+		*/
 		String starttime = usedate + " " + startTime1 + ":" + startTime2;
 		String endtime = usedate + " " + endTime1 + ":" + endTime2;
-		
+		/*
 		System.out.println("starttime : " + starttime);
 		System.out.println("endtime : " + endtime);
-		
+		*/
 		Map<String, String> paraMap = new HashMap<String, String>();
 		paraMap.put("empno", empno);
 		paraMap.put("attend_index", attend_index);
@@ -210,7 +211,8 @@ public class AttendanceController {
 		int n = service.requestAttendance(paraMap);
 		
 		if(n == 1) {
-			mav.setViewName("redirect:/attend/myAttendStatusList.on");
+			mav.addObject("submenuId", "my2");
+			mav.setViewName("attendance/my/my_attend_manage.tiles");
 		}
 		
 				
@@ -801,7 +803,7 @@ public class AttendanceController {
 		mav.addObject("teamSearchList", teamSearchList);
 		
 		mav.setViewName("attendance/team/team_attend_manage.tiles");
-		
+				
 		return mav;
 	}
 	

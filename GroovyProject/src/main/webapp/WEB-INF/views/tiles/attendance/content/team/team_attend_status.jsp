@@ -141,6 +141,8 @@
 	}
 	
 	.fridays{ border-bottom: solid 1px gray;}
+	
+	.bgcolor { background-color: rgba(0, 0, 0, 0.1); box-shadow: 1px 1px 8px #ddd; }
 
 </style>   
 
@@ -309,6 +311,8 @@
 		$("#titleDepartment").text(bumun + " - " + department);
 		
 		
+		
+		
 	}); // end of $(document).ready() ===============================================
 	
 	function day_kor(day){
@@ -350,7 +354,7 @@
 				  if(json.length > 0) {
 					  $.each(json, function(index, item){
 						  
-						  html += "<div class='pplHover' onclick='goDptPplInfo("+item.empno+")'>"+
+						  html += "<div id='bg"+item.empno+"' class='pplHover' onclick='goDptPplInfo("+item.empno+")'>"+
 									"<span class='boxes tInfo_positions'>"+item.position+"</span>"+
 									"<span class='boxes tInfo_names'>"+item.name+"</span>"+
 								"</div>";
@@ -358,6 +362,8 @@
 					  });
 					  
 					  $("#boxTeamInfo").html(html);
+					  
+					  $("#bg"+empno).addClass('bgcolor');
 				  }
 				  else {
 					  // console.log('ㅅㅓㅇ공');
@@ -433,7 +439,7 @@
 						  						  
 						  let workstart = item.workstart;					  
 
-						  console.log("workstart: "+workstart);						  
+						  // console.log("workstart: "+workstart);						  
 						  
 						  let date = item.workstart.substr(0, 10);
 						  let starttime = item.workstart.substr(11, 5);
@@ -488,6 +494,8 @@
 		
 		// console.log(empno);
 		
+		$(".pplHover").removeClass('bgcolor');
+		$("#bg"+empno).addClass('bgcolor');
 		personalInfoBox(empno);
 		
 		getWeeklyWorkList(empno);

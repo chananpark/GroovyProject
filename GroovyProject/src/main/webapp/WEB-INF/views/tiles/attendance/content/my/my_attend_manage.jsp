@@ -50,6 +50,8 @@
 		text-align: center;
 	}
 	
+	.dates { width: 140px; font-size: 15pt;}
+	
 		
 	/* 박스 끝 */
 	
@@ -357,9 +359,16 @@
 						  html += "<tr style='height: 30px; padding-top: 10px;'>"+
 									"<td style='text-align: left; padding-left: 30px;'>"+name+"</td>"+
 									"<td style='text-align: left;'>경영지원</td>"+
-									"<td style='text-align: left;'>"+attend_index+"</td>"+
-									"<td style='text-align: left;'>"+item.starttime+" ~ "+item.endtime+"</td>"+
-									"<td style='text-align: left;'>"+item.registerdate+"</td>"+
+									"<td style='text-align: left;'>"+attend_index+"</td>";
+									
+									if(attend_index == "연차"){
+										html += "<td style='text-align: left;'>"+item.starttime.substr(0,10)+"</td>";
+									}
+									else{
+										html += "<td style='text-align: left;'>"+item.starttime+" ~ "+item.endtime+"</td>";
+									}
+									
+								html += "<td style='text-align: left;'>"+item.registerdate+"</td>"+
 									"<td style='text-align: left;'>"+item.place+"</td>"+
 									"<td style='text-align: left;'><i class='fas fa-trash-alt hoverShadowText trash' onclick='deleteRequest("+item.requestid+")'></i></td>"+
 								  "</tr>";
@@ -472,8 +481,8 @@
 
 <div style="font-size: 16pt; text-align: center; margin-bottom: 30px;">
 	<span id="prevWeek" class="fas fa-angle-left hoverShadowText" style="color: #bfbfbf; font-size: 14pt;"></span>
-	<input id="dateStart" class="cals hoverShadowText" type="text" onfocus="this.blur()"/> ~ 
-	<input id="dateEnd" class="cals hoverShadowText" type="text" onfocus="this.blur()"/>
+	<input id="dateStart" class="dates cals hoverShadowText" type="text" onfocus="this.blur()"/> ~ 
+	<input id="dateEnd" class="dates cals hoverShadowText" type="text" onfocus="this.blur()"/>
 	<span id="nextWeek" class="fas fa-angle-right hoverShadowText" style="color: #bfbfbf; font-size: 14pt;"></span>
 </div>
 
@@ -510,7 +519,7 @@
 
 
 <div id="requestInfo" class="widths" style="">
-	<div class="titles">&nbsp;신청내역 (전체)</div>
+	<div class="titles">&nbsp;신청내역</div>
 	<hr>
 	<div>
 		<table class="table-hover tables" style="width: 100%;" id="requestTbl">
@@ -534,7 +543,7 @@
 
 
 <div id="usedInfo" class="widths">
-	<div class="titles">&nbsp;사용내역 (전체)</div>
+	<div class="titles">&nbsp;사용내역</div>
 	<hr>
 	<div>
 		<table class="tables" style="width: 100%;" id="requestTbl">
@@ -545,6 +554,27 @@
 					<th style="width:13%; padding-bottom: 10px;">종류</th>
 					<th style="padding-bottom: 10px;">사용기간</th>
 					<th style="width:10%; padding-bottom: 10px;">사용내역</th>
+					<th style="width:25%; padding-bottom: 10px;">상세</th>
+				</tr>
+			</thead>
+			<tbody id="usedAttendList"> 											
+			</tbody>
+		</table>
+	</div>
+	<%-- <div class="showMore hoverShadowText">더보기</div> --%>
+</div>
+
+<div id="dayoffInfo" class="widths">
+	<div class="titles">&nbsp;연차 생성내역</div>
+	<hr>
+	<div>
+		<table class="tables" style="width: 100%;" id="requestTbl">
+			<thead>
+				<tr style="height: 30px; border-bottom: solid 1px #f2f2f2;">
+					<th style="width:13%; padding: 0 0 10px 30px;">이름</th>
+					<th style="width:13%; padding-bottom: 10px;">부서명</th>
+					<th style="width:13%; padding-bottom: 10px;">생성일</th>
+					<th style="padding-bottom: 10px;">사용가능기간</th>
 					<th style="width:25%; padding-bottom: 10px;">상세</th>
 				</tr>
 			</thead>
