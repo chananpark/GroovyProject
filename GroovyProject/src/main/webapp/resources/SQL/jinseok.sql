@@ -418,6 +418,12 @@ SELECT EMPNO, DEPARTMENT, NAME, E.POSITION AS POSITION, POSITION_NO
         select * from tbl_bumun;
         select * from tbl_department;
         
+        select * from tbl_mail;
+
+        select '"'||department||' '||position||' '||name||'<![CDATA[<]]>'||cpemail||'<![CDATA[>]]>'||'"' as cpemail
+		from tbl_employee
+        where cpemail = lower('kjsaj0525@groovy.com');
+        
         select to_char(department_no) as department_no, department, to_char(bumun_no) as bumun_no, bumun 
         from tbl_department D 
         left join tbl_bumun B
@@ -444,4 +450,7 @@ SELECT EMPNO, DEPARTMENT, NAME, E.POSITION AS POSITION, POSITION_NO
     from TBL_EMPLOYEE
     where 1=1
     and lower(bumun) like ('%'||lower('it')||'%');
+    
+    
+    
         

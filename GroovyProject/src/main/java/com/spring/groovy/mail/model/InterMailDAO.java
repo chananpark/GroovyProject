@@ -53,6 +53,9 @@ public interface InterMailDAO {
 	/** 태그 by mail_no*/
 	int tagCheckM(Map<String, String> paraMap);
 
+	/** cpemail 넣으면 이메일 작성하기에서 사용할 값 반환 */
+	String getreply(String cpemail);
+
 	
 
 	
