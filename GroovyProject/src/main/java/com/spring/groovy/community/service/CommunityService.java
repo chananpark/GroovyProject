@@ -233,4 +233,13 @@ public class CommunityService implements InterCommunityService {
 		return dao.getAttachedFile(post_file_no);
 	}
 
+	// 답댓글 작성
+	@Override
+	public boolean addReComment(CommunityCommentVO comment) {
+		
+		int n = dao.addReComment(comment);
+		
+		return (n==1)? true: false;
+	}
+
 }

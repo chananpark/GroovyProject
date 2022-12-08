@@ -51,4 +51,7 @@ public interface InterCommunityService {
 	// 첨부파일 1개 조회
 	CommunityPostFileVO getAttachedFile(String post_file_no);
 
+	// 답댓글 작성
+	boolean addReComment(CommunityCommentVO comment);
+
 }

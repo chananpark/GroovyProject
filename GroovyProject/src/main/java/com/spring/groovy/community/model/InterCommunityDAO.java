@@ -56,4 +56,7 @@ public interface InterCommunityDAO {
 	// 첨부파일 1개 조회
 	CommunityPostFileVO getAttachedFile(String post_file_no);
 
+	// 답댓글 작성
+	int addReComment(CommunityCommentVO comment);
+
 }

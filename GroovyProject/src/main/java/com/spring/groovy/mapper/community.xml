@@ -86,7 +86,9 @@
 		ON FK_EMPNO = EMPNO
 		WHERE FK_POST_NO = #{post_no}
 		AND COMMENT_STATUS = 1
-		ORDER BY COMMENT_NO DESC
+		START WITH PARENT_COMMENT_NO = 0
+		CONNECT BY PRIOR COMMENT_NO = PARENT_COMMENT_NO
+		ORDER BY GROUP_NO DESC, COMMENT_DATE ASC
 	</select>
 		
 	<!-- 파일번호로 파일 한개 조회 -->
@@ -137,7 +139,13 @@
 		SET COMMENT_STATUS = 0
 		WHERE COMMENT_NO = #{comment_no}
 	</update>
-	
+		
+	<!-- 답댓글 작성하기 -->
+	<insert id="addReComment" parameterType="com.spring.groovy.community.model.CommunityCommentVO">
+		INSERT INTO TBL_COMMUNITY_COMMENT
+		(COMMENT_NO, FK_EMPNO, FK_POST_NO, COMMENT_CONTENT, PARENT_COMMENT_NO, GROUP_NO, DEPTH)
+		VALUES (SEQ_COMMENT_NO.nextval, #{fk_empno}, #{fk_post_no}, #{comment_content}, #{parent_comment_no}, #{group_no}, 1)
+	</insert>
 	<!-- 검색 sql문 -->
 	<sql id="search">
 		WHERE

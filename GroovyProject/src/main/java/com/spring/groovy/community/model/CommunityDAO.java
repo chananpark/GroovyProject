@@ -119,4 +119,10 @@ public class CommunityDAO implements InterCommunityDAO {
 		return sqlsession.selectOne("community.getAttachedFile", post_file_no);
 	}
 
+	// 답댓글 작성
+	@Override
+	public int addReComment(CommunityCommentVO comment) {
+		return sqlsession.insert("community.addReComment", comment);
+	}
+
 }

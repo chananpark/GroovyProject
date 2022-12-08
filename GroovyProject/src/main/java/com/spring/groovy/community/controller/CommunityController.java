@@ -381,7 +381,23 @@ public class CommunityController {
 		jsonObj.put("result", result);
 
 		return jsonObj.toString();
-			
+	}
+	
+	// 답댓글 작성
+	@ResponseBody
+	@RequestMapping(value = "/addReComment.on", produces = "text/plain;charset=UTF-8")
+	public String addReComment(HttpServletRequest request, CommunityCommentVO comment) {
+		System.out.println("답댓작성컨트롤러");
+		MemberVO loginuser = getLoginUser(request);
+		comment.setFk_empno(loginuser.getEmpno());
+		
+		// 댓글 작성하기
+		boolean result = service.addReComment(comment);
+		
+		JSONObject jsonObj = new JSONObject();
+		jsonObj.put("result", result);
+		
+		return jsonObj.toString();
 	}
 	
 	// 댓글 수정

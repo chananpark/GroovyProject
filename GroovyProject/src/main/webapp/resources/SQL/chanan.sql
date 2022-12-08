@@ -524,11 +524,12 @@ as
 select POST_NO, FK_EMPNO, 
 REGEXP_REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(POST_SUBJECT, '&'||'lt;','<' ),'&'||'gt;','>'),'&amp;', '&'),'&nbsp;',' ') , '<[^>]*>' ,'' ) AS POST_SUBJECT,
 REGEXP_REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(POST_CONTENT, '&'||'lt;','<' ),'&'||'gt;','>'),'&amp;', '&'),'&nbsp;',' ') , '<[^>]*>' ,'' ) AS POST_CONTENT,
-POST_DATE, POST_HIT, POST_STATUS, nvl(commentCnt,0) commentCnt, name, empimg, nvl(likeCnt,0) likeCnt
+POST_DATE, POST_HIT, POST_STATUS, nvl(commentCnt,0) commentCnt, name, empimg, nvl(likeCnt,0) likeCnt, nvl(fileCnt,0) fileCnt
 from TBL_COMMUNITY_POST P
 left join 
     (select count(*) commentCnt, fk_post_no 
     from tbl_community_comment
+    where comment_status = 1
     group by fk_post_no) C
 on post_no = C.fk_post_no
 left join
@@ -536,6 +537,11 @@ left join
     from tbl_community_like
     group by fk_post_no) L
 on post_no = L.fk_post_no
+left join
+    (select count(*) fileCnt, fk_post_no 
+    from tbl_community_post_file
+    group by fk_post_no) F
+on post_no = F.fk_post_no
 join tbl_employee E
 on P.fk_empno = empno
 and POST_STATUS = 1

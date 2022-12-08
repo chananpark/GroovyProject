@@ -67,17 +67,21 @@ function getComment() {
 			
 			let cmt = "";
 			cmtArr.forEach(el=>{
-				cmt += "<div class='my-2'><form name='editFrm'>"
-					+ "<img id='profile' src='<%=ctxPath%>/resources/images/profile/" + el.empimg + "' width='100'/>&nbsp;" + el.name
+				cmt += "<div class='my-2' style='margin-left:" + el.depth * 30 + "px'>"
+					+ "<img id='profile' src='<%=ctxPath%>/resources/images/profile/" + el.empimg + "' width='100'/>&nbsp;" 
+					+ el.name
 					+ "<span style='color:gray' class='ml-2'>" + el.comment_date + "</span>"
-					+ "<i class='fas fa-reply fa-rotate-180 mx-2'></i>댓글 작성";
+					+ "<button type='button' style='background-color:transparent' onclick='addReComment("+el.comment_no+ "," + el.group_no+")'>";
+				if(el.depth == 0) {
+					cmt += "<i class='fas fa-reply fa-rotate-180 mx-2'></i>답댓글 작성</button>";
+				}
 				if (el.fk_empno == "${loginuser.empno}") {
 					cmt += "<button type='button' id='editComment"+el.comment_no+"' class='text-right mx-2 commentControl' onclick='editComment("+el.comment_no+")'>수정</button>"
 					+ "<button type='button' style='display:none' id='cancelEdit"+el.comment_no+"' class='text-right mx-2 commentControl' onclick='cancelEdit("+el.comment_no+")'>취소</button>"
 					+ "<button type='button' id='delComment"+el.comment_no+"' class='text-right mx-2 commentControl' onclick='delComment("+el.comment_no+")'>삭제</button>";
 
 				}
-				cmt += "<div id='comment"+el.comment_no+"' style='padding-left:50px'><p>" + el.comment_content + "</p></div></div></form>";
+				cmt += "<div id='comment"+el.comment_no+"' style='padding-left:50px'><p>" + el.comment_content + "</p></div></div>";
 				
 			});
 			
@@ -165,6 +169,53 @@ const editSubmit = (target) => {
 
 }
 
+// 답댓글 작성
+const addReComment = (comment_no, group_no) => {
+	
+	// 답댓글 입력폼 추가
+	let html = "<form id='reCommentFrm" + comment_no + "'>"
+			+ "<img id='profile' src='<%=ctxPath%>/resources/images/profile/${loginuser.empimg}' width='100'/>"
+			+ "<input type='hidden' name='fk_post_no' value='${post.post_no}'/>"
+			+ "<input type='hidden' name='group_no' value='"+group_no+"'/>"
+			+ "<input type='hidden' name='parent_comment_no' value='" + comment_no + "'/>"
+			+ "<textarea name='comment_content' placeholder='댓글을 입력하세요' style='width: 85%; vertical-align: middle;' onkeydown='resize(this)' onkeyup='resize(this)'></textarea>"
+			/* + "<i class='fas fa-upload btn'></i>" */
+			+ "<button type='button' id='addReComment"+comment_no+"' class='btn-secondary listView rounded'>등록</button>"
+			+ "</form>";
+			
+	$("div#comment"+comment_no).append(html);
+	
+	// 등록버튼 이벤트바인딩
+	$("#addReComment"+comment_no).click(()=>{
+		reCommentSubmit(comment_no);
+	});
+		
+}
+
+// 답댓글 작성 컨트롤러 호출
+const reCommentSubmit = comment_no => {
+	var queryString = $("#reCommentFrm"+comment_no).serialize();
+	
+	$.ajax({
+		url:"<%=ctxPath%>/community/addReComment.on",
+		data : queryString,
+		dataType : "json",
+		method: "post",
+		success : function(json) {
+			if (json.result == true) {
+				getComment(); // 댓글 읽어오기
+			} else {
+				swal("답댓글 작성 실패");
+			}
+		},
+		error : function(request, status, error) {
+			alert("code: " + request.status + "\n" + "message: "
+					+ request.responseText + "\n" + "error: " + error);
+		}
+	});
+
+}
+
 // 댓글 삭제
 const delComment = comment_no => {
 	
@@ -233,7 +284,7 @@ const editPost = () => {
 // 댓글 작성
 const addComment = () => {
 	
-	const frm = document.commentFrm;
+	//const frm = document.commentFrm;
 	var queryString = $("form[name=commentFrm]").serialize();
 	
 	$.ajax({
@@ -347,7 +398,7 @@ const addComment = () => {
 			<input type="hidden" name="fk_post_no" value="${post.post_no}"/>
 			<img id='profile' src='<%=ctxPath%>/resources/images/profile/${loginuser.empimg}' width='100'/>
 			<textarea name="comment_content" placeholder="댓글을 입력하세요" style="width: 85%; vertical-align: middle;" onkeydown="resize(this)" onkeyup="resize(this)"></textarea>
-			<!-- 파일첨부버튼 --><i class="fas fa-upload btn"></i>
+			<!-- 파일첨부버튼 --><!-- <i class="fas fa-upload btn"></i> -->
 			<button type="button" id="addReplyBtn" class="btn-secondary listView rounded" onclick="addComment()">등록</button>
 		</form>
 		
