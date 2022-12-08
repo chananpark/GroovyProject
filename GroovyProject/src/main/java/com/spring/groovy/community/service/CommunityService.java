@@ -209,4 +209,28 @@ public class CommunityService implements InterCommunityService {
 		return (n==1)? true: false;
 	}
 
+	// 댓글 수정하기
+	@Override
+	public boolean editComment(CommunityCommentVO comment) {
+
+		int n = dao.editComment(comment);
+		
+		return (n==1)? true: false;
+	}
+
+	// 댓글 삭제하기
+	@Override
+	public boolean delComment(CommunityCommentVO comment) {
+		
+		int n = dao.delComment(comment);
+		
+		return (n==1)? true: false;
+	}
+
+	// 첨부파일 1개 조회
+	@Override
+	public CommunityPostFileVO getAttachedFile(String post_file_no) {
+		return dao.getAttachedFile(post_file_no);
+	}
+
 }

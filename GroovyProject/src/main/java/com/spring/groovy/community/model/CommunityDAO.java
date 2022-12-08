@@ -101,4 +101,22 @@ public class CommunityDAO implements InterCommunityDAO {
 		return sqlsession.insert("community.addComment", comment);
 	}
 
+	// 댓글 수정하기
+	@Override
+	public int editComment(CommunityCommentVO comment) {
+		return sqlsession.update("community.editComment", comment);
+	}
+
+	// 댓글 삭제하기
+	@Override
+	public int delComment(CommunityCommentVO comment) {
+		return sqlsession.update("community.delComment", comment);
+	}
+
+	// 첨부파일 1개 조회
+	@Override
+	public CommunityPostFileVO getAttachedFile(String post_file_no) {
+		return sqlsession.selectOne("community.getAttachedFile", post_file_no);
+	}
+
 }

@@ -42,4 +42,13 @@ public interface InterCommunityService {
 	// 댓글 작성하기
 	boolean addComment(CommunityCommentVO comment);
 
+	// 댓글 수정하기
+	boolean editComment(CommunityCommentVO comment);
+
+	// 댓글 삭제하기
+	boolean delComment(CommunityCommentVO comment);
+
+	// 첨부파일 1개 조회
+	CommunityPostFileVO getAttachedFile(String post_file_no);
+
 }

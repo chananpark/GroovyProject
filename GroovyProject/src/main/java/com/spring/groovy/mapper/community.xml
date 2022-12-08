@@ -53,7 +53,7 @@
 	<select id="getPostDetail" resultType="com.spring.groovy.community.model.CommunityPostVO" parameterType="HashMap" >
 		SELECT *
         FROM
-        VIEW_POST_LIST
+        VIEW_POST_DETAIL
         WHERE POST_NO = #{post_no}
 	</select>
 	
@@ -63,6 +63,12 @@
         FROM
         TBL_COMMUNITY_POST_FILE
         WHERE FK_POST_NO = #{post_no}
+	</select>
+	
+	<!-- 첨부파일 1개 조회 -->
+	<select id="getAttachedFile" resultType="com.spring.groovy.community.model.CommunityPostFileVO" parameterType="String" >
+		SELECT * FROM TBL_COMMUNITY_POST_FILE
+		WHERE POST_FILE_NO = #{post_file_no}
 	</select>
 			
 	<!-- 게시글 조회수 증가하기 -->
@@ -74,11 +80,12 @@
 		
 	<!-- 댓글 조회하기 -->
 	<select id="getComment" resultType="com.spring.groovy.community.model.CommunityCommentVO" parameterType="String" >
-		SELECT COMMENT_CONTENT, COMMENT_DATE, NAME, EMPIMG
-		FROM TBL_COMMUNITY_COMMENT
+		SELECT C.*, NAME, EMPIMG
+		FROM TBL_COMMUNITY_COMMENT C
 		JOIN TBL_EMPLOYEE
 		ON FK_EMPNO = EMPNO
 		WHERE FK_POST_NO = #{post_no}
+		AND COMMENT_STATUS = 1
 		ORDER BY COMMENT_NO DESC
 	</select>
 		
@@ -116,6 +123,20 @@
 		VALUES (SEQ_COMMENT_NO.nextval, #{fk_empno}, #{fk_post_no}, #{comment_content}, 
 				(SELECT NVL(MAX(GROUP_NO),0)+1 GROUP_NO FROM TBL_COMMUNITY_COMMENT WHERE FK_POST_NO=#{fk_post_no}))
 	</insert>
+		
+	<!-- 댓글 수정하기 -->
+	<update id="editComment" parameterType="com.spring.groovy.community.model.CommunityCommentVO">
+		UPDATE TBL_COMMUNITY_COMMENT
+		SET COMMENT_CONTENT = #{comment_content}
+		WHERE COMMENT_NO = #{comment_no}
+	</update>
+		
+	<!-- 댓글 삭제하기 -->
+	<update id="delComment" parameterType="com.spring.groovy.community.model.CommunityCommentVO">
+		UPDATE TBL_COMMUNITY_COMMENT
+		SET COMMENT_STATUS = 0
+		WHERE COMMENT_NO = #{comment_no}
+	</update>
 	
 	<!-- 검색 sql문 -->
 	<sql id="search">
@@ -123,8 +144,8 @@
 		<choose>
 			<!-- 제목+내용으로 검색 시 -->
 			<when test="searchType == 'all' ">
-				POST_SUBJECT like '%'||LOWER(#{searchWord})||'%'
-				OR POST_CONTENT like '%' ||LOWER(#{searchWord})||'%'
+				LOWER(POST_SUBJECT) like '%'||LOWER(#{searchWord})||'%'
+				OR LOWER(POST_CONTENT) like '%' ||LOWER(#{searchWord})||'%'
 			</when>
 			<!-- 기타 -->
 			<otherwise>

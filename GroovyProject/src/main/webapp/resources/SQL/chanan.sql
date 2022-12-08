@@ -517,9 +517,32 @@ begin
 end pcd_tbl_approval_proxy;
 
 -------------------------------------------------------------------------------
-
+SET DEFINE OFF;
 -- 커뮤니티 글 목록 조회하기 뷰 --
 create or replace view view_post_list
+as
+select POST_NO, FK_EMPNO, 
+REGEXP_REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(POST_SUBJECT, '&'||'lt;','<' ),'&'||'gt;','>'),'&amp;', '&'),'&nbsp;',' ') , '<[^>]*>' ,'' ) AS POST_SUBJECT,
+REGEXP_REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(POST_CONTENT, '&'||'lt;','<' ),'&'||'gt;','>'),'&amp;', '&'),'&nbsp;',' ') , '<[^>]*>' ,'' ) AS POST_CONTENT,
+POST_DATE, POST_HIT, POST_STATUS, nvl(commentCnt,0) commentCnt, name, empimg, nvl(likeCnt,0) likeCnt
+from TBL_COMMUNITY_POST P
+left join 
+    (select count(*) commentCnt, fk_post_no 
+    from tbl_community_comment
+    group by fk_post_no) C
+on post_no = C.fk_post_no
+left join
+    (select count(*) likeCnt, fk_post_no 
+    from tbl_community_like
+    group by fk_post_no) L
+on post_no = L.fk_post_no
+join tbl_employee E
+on P.fk_empno = empno
+and POST_STATUS = 1
+;
+
+-- 커뮤니티 글 내용 조회하기 뷰 --
+create or replace view view_post_detail
 as
 select P.*, nvl(commentCnt,0) commentCnt, name, empimg, nvl(likeCnt,0) likeCnt,
 lag(post_no, 1) over(order by post_no) as pre_no,

@@ -30,7 +30,7 @@ $(()=>{
 	// 댓글 읽어오기
 	getComment();
 	
-	// 삭제 클릭 시 확인창
+	// 글 삭제 클릭 시 확인창
 	$("#deleteBtn").click(()=>{
 		swal({
 			  title: "이 게시글을 삭제하시겠습니까?",
@@ -48,8 +48,7 @@ $(()=>{
 			  }
 			});
 	});
-	
-	
+
 })
 
 // 댓글입력창 리사이징
@@ -68,16 +67,22 @@ function getComment() {
 			
 			let cmt = "";
 			cmtArr.forEach(el=>{
-				cmt += "<div class='my-2'>"
+				cmt += "<div class='my-2'><form name='editFrm'>"
 					+ "<img id='profile' src='<%=ctxPath%>/resources/images/profile/" + el.empimg + "' width='100'/>&nbsp;" + el.name
 					+ "<span style='color:gray' class='ml-2'>" + el.comment_date + "</span>"
-					+ "<i class='fas fa-reply fa-rotate-180 mx-2'></i>댓글 작성"
-					+ "<button type='button' class='text-right mx-2'>수정</button>"
-					+ "<button type='button' class='text-right mx-2'>삭제</button>"
-					+ "<p style='padding-left:50px'>" + el.comment_content + "</p></div>";
+					+ "<i class='fas fa-reply fa-rotate-180 mx-2'></i>댓글 작성";
+				if (el.fk_empno == "${loginuser.empno}") {
+					cmt += "<button type='button' id='editComment"+el.comment_no+"' class='text-right mx-2 commentControl' onclick='editComment("+el.comment_no+")'>수정</button>"
+					+ "<button type='button' style='display:none' id='cancelEdit"+el.comment_no+"' class='text-right mx-2 commentControl' onclick='cancelEdit("+el.comment_no+")'>취소</button>"
+					+ "<button type='button' id='delComment"+el.comment_no+"' class='text-right mx-2 commentControl' onclick='delComment("+el.comment_no+")'>삭제</button>";
+
+				}
+				cmt += "<div id='comment"+el.comment_no+"' style='padding-left:50px'><p>" + el.comment_content + "</p></div></div></form>";
+				
 			});
 			
 			$("#cmtArea").html(cmt);
+			
 		},
 		error : function(request, status, error) {
 			alert("code: " + request.status + "\n" + "message: "
@@ -86,6 +91,116 @@ function getComment() {
 	});
 }
 
+// 댓글 수정
+const editComment = comment_no => {
+	
+	// p태그 감추기
+	$("div#comment"+comment_no).find('p').hide();
+	
+	// textarea 추가
+	$("div#comment"+comment_no).append('<textarea id="comment_textarea'+comment_no+'" name="comment_content" placeholder="댓글을 입력하세요" style="width: 85%; vertical-align: middle;" onkeydown="resize(this)" onkeyup="resize(this)"></textarea>')
+	
+	console.log($("div#comment"+comment_no).find('p').text())
+	// textarea에 내용 추가
+	$("#comment_textarea"+comment_no).val($("div#comment"+comment_no).find('p').text());
+	
+	// 등록버튼 추가
+	$("div#comment"+comment_no).append("<button type='button' id='editSubmit"+comment_no+"' class='text-right mx-2 commentControl'>등록</button>")
+	
+	// 수정버튼을 감추기
+	$("#editComment"+comment_no).hide();
+	
+	// 취소버튼을 보이기
+	$("#cancelEdit"+comment_no).show();
+
+	// 등록버튼 이벤트바인딩
+	$("#editSubmit"+comment_no).click((e)=>{
+		const target = $(e.target);
+		editSubmit(target);
+	});
+}
+
+// 댓글 수정 취소
+const cancelEdit = comment_no => {
+	
+	// textarea 삭제
+	$("#comment_textarea"+comment_no).remove();
+	
+	// p태그 보이기
+	$("div#comment"+comment_no).find('p').show();
+	
+	// 등록버튼 삭제
+	$("#editSubmit"+comment_no).remove();
+	
+	// 수정버튼을 보이기
+	$("#editComment"+comment_no).show();
+	
+	// 취소버튼을 감추기
+	$("#cancelEdit"+comment_no).hide();
+	
+}
+
+// 댓글 수정 컨트롤러 호출
+const editSubmit = (target) => {
+	const comment_content = target.parent().children('textarea').val();
+	const comment_no = target.attr('id').substring(10);
+	
+	$.ajax({
+		url:"<%=ctxPath%>/community/editComment.on",
+		data : {"comment_no":comment_no, "comment_content":comment_content},
+		dataType : "json",
+		method: "post",
+		success : function(json) {
+			if (json.result == true) {
+				getComment(); // 댓글 읽어오기
+			} else {
+				swal("댓글 수정 실패");
+			}
+		},
+		error : function(request, status, error) {
+			alert("code: " + request.status + "\n" + "message: "
+					+ request.responseText + "\n" + "error: " + error);
+		}
+	});
+
+}
+
+// 댓글 삭제
+const delComment = comment_no => {
+	
+	swal({
+		  title: "이 댓글을 삭제하시겠습니까?",
+		  icon: "warning",
+		  buttons: true,
+		  dangerMode: true,
+		})
+		.then((willDelete) => {
+		  if (willDelete) {
+				$.ajax({
+					url:"<%=ctxPath%>/community/delComment.on",
+					data : {"comment_no":comment_no},
+					dataType : "json",
+					method: "post",
+					success : function(json) {
+						if (json.result == true) {
+							getComment(); // 댓글 읽어오기
+						} else {
+							swal("댓글 삭제 실패");
+						}
+					},
+					error : function(request, status, error) {
+						alert("code: " + request.status + "\n" + "message: "
+								+ request.responseText + "\n" + "error: " + error);
+					}
+				});
+			
+		  } else {
+		    swal("삭제가 취소되었습니다.");
+		  }
+		});
+
+	
+}
 
 // 글 삭제
 const deletePost = () => {
@@ -140,6 +255,7 @@ const addComment = () => {
 		}
 	});
 }
+
 </script>
 <div class='container'>
 	<div class='my-4'>
@@ -187,7 +303,7 @@ const addComment = () => {
 			<p style='margin-top: 30px;' class='text-small text-right'>
 				<span>첨부파일: </span>
 				<c:forEach items="${postFileList}" var="file" varStatus="sts">
-					<a href="<%= ctxPath%>/community/fileDownload.on?post_file_no=${file.post_file_no}">${file.originalFilename}</a>
+					<a href="<%= ctxPath%>/community/download.on?post_file_no=${file.post_file_no}">${file.originalFilename}</a>
 					<c:if test="${sts.count != fn:length(postFileList) }">,</c:if>
 				</c:forEach>
 			</p>
@@ -229,15 +345,15 @@ const addComment = () => {
 		<!-- 댓글 작성폼 -->
 		<form name="commentFrm">
 			<input type="hidden" name="fk_post_no" value="${post.post_no}"/>
-			<img id='profile' src='<%=ctxPath%>/resources/images/profile/ham.jpg' width='100'/>
+			<img id='profile' src='<%=ctxPath%>/resources/images/profile/${loginuser.empimg}' width='100'/>
 			<textarea name="comment_content" placeholder="댓글을 입력하세요" style="width: 85%; vertical-align: middle;" onkeydown="resize(this)" onkeyup="resize(this)"></textarea>
 			<!-- 파일첨부버튼 --><i class="fas fa-upload btn"></i>
 			<button type="button" id="addReplyBtn" class="btn-secondary listView rounded" onclick="addComment()">등록</button>
-		
-			<!-- 댓글 표시 영역 -->
-			<div style="margin-top: 30px" id="cmtArea">
-			</div>
 		</form>
+		
+		<!-- 댓글 표시 영역 -->
+		<div style="margin-top: 30px" id="cmtArea">
+		</div>
 	
 		</c:when>
 		<c:otherwise>

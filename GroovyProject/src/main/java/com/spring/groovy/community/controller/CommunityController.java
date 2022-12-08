@@ -1,6 +1,8 @@
 package com.spring.groovy.community.controller;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -8,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.beanutils.BeanUtils;
@@ -24,6 +27,8 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.nhncorp.lucy.security.xss.XssPreventer;
+import com.spring.groovy.approval.model.DraftFileVO;
 import com.spring.groovy.common.FileManager;
 import com.spring.groovy.common.Myutil;
 import com.spring.groovy.common.Pagination;
@@ -50,7 +55,9 @@ public class CommunityController {
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/list.on")
 	public ModelAndView getCommunityList(ModelAndView mav, Pagination pagination, HttpServletRequest request) throws IllegalAccessException, InvocationTargetException, NoSuchMethodException {
-		
+
+		String unescaped = XssPreventer.unescape(pagination.getSearchWord());
+		pagination.setSearchWord(unescaped);
 		Map<String, String> paraMap = BeanUtils.describe(pagination); // pagination을 Map으로
 
 		// 전체 글 개수 구하기
@@ -375,6 +382,87 @@ public class CommunityController {
 
 		return jsonObj.toString();
 			
+	}
+	
+	// 댓글 수정
+	@ResponseBody
+	@PostMapping(value = "/editComment.on", produces = "text/plain;charset=UTF-8")
+	public String editComment(HttpServletRequest request, CommunityCommentVO comment) {
+		
+		// 댓글 수정하기
+		boolean result = service.editComment(comment);
+		
+		JSONObject jsonObj = new JSONObject();
+		jsonObj.put("result", result);
+		
+		return jsonObj.toString();
+		
+	}
+	
+	// 댓글 삭제
+	@ResponseBody
+	@PostMapping(value = "/delComment.on", produces = "text/plain;charset=UTF-8")
+	public String delComment(HttpServletRequest request, CommunityCommentVO comment) {
+		
+		// 댓글 삭제하기
+		boolean result = service.delComment(comment);
+		
+		JSONObject jsonObj = new JSONObject();
+		jsonObj.put("result", result);
+		
+		return jsonObj.toString();
+		
+	}
+	
+	// 파일 다운로드
+	@ResponseBody
+	@RequestMapping(value = "/download.on")
+	public void fileDownload(HttpServletRequest request, HttpServletResponse response) {
+		
+		// 첨부파일 번호
+		String post_file_no = request.getParameter("post_file_no");
+		
+		response.setContentType("text/html; charset=UTF-8");
+		PrintWriter out = null;
+
+		try {
+			CommunityPostFileVO pfvo = service.getAttachedFile(post_file_no); // 파일 조회
+			
+			// 글번호가 없거나 파일 이름이 없다면
+			if (pfvo == null || (pfvo != null && pfvo.getFilename() == null)) {
+				out = response.getWriter();
+				out.println("<script type='text/javascript'>alert('존재하지 않는 파일입니다.'); history.back();</script>");
+				return;
+			}
+			
+			String filename = pfvo.getFilename(); // 저장된 파일 이름
+			String originalFilename = pfvo.getOriginalFilename(); // 원본 파일 이름
+			
+			// 첨부파일이 저장되어 있는 WAS 서버의 디스크 경로명을 알아온다.
+			HttpSession session = request.getSession();
+			String root = session.getServletContext().getRealPath("/");
+			
+			String path = root+"resources"+File.separator+"files";
+			
+			boolean flag = false;// file 다운로드 성공, 실패를 알려주는 용도
+			
+			// FileManager의 파일 다운로드 메소드 호출
+			flag = fileManager.doFileDownload(filename, originalFilename, path, response);
+			
+			if (!flag) { // 파일 다운로드 실패 시
+				out = response.getWriter();
+				out.println("<script type='text/javascript'>alert('파일 다운로드 실패');</script>");
+			}
+			
+		} catch (IOException e) { // 입출력예외가 발생한 경우
+			try {
+				e.printStackTrace();
+				out = response.getWriter();
+				out.println("<script type='text/javascript'>alert('파일 다운로드 불가');</script>");
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
+		}
 	}
 	
 	// 로그인 사용자 정보 가져오기

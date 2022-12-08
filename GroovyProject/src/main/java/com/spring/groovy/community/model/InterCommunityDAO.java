@@ -47,5 +47,13 @@ public interface InterCommunityDAO {
 	// 댓글 작성하기
 	int addComment(CommunityCommentVO comment);
 
+	// 댓글 수정하기
+	int editComment(CommunityCommentVO comment);
+
+	// 댓글 삭제하기
+	int delComment(CommunityCommentVO comment);
+
+	// 첨부파일 1개 조회
+	CommunityPostFileVO getAttachedFile(String post_file_no);
 
 }
