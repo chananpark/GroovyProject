@@ -55,6 +55,9 @@
 	        }else{
 	        	$("input:checkbox[id='mailLAllCheck']").prop("checked", true);
 	        }
+			
+			if($("#mailLAllCheck").is(":checked")) $("input[name=mailCheck]").prop("checked", true);
+			else $("input[name=mailCheck]").prop("checked", false);
 		});
 		
 		
@@ -71,6 +74,20 @@
 			$("select#searchType").val("${requestScope.paraMap.searchType}");
 			$("input#searchWord").val("${requestScope.paraMap.searchWord}");
 		}
+		
+		// 체크박스 전체선택
+		$("input#mailLAllCheck").click(function() {
+			if($("#mailLAllCheck").is(":checked")) $("input[name=mailCheck]").prop("checked", true);
+			else $("input[name=mailCheck]").prop("checked", false);
+		});
+
+		$("input[name=mailCheck]").click(function() {
+			var total = $("input[name=mailCheck]").length;
+			var checked = $("input[name=mailCheck]:checked").length;
+
+			if(total != checked) $("input#mailLAllCheck").prop("checked", false);
+			else $("input#mailLAllCheck").prop("checked", true); 
+		});
 
 		
 	});
@@ -83,6 +100,7 @@
 	}// end of function goSearch()--------------------
 	
 	
+	// 우측 정보보기 창에 클릭한 사원의 정보 띄우기
 	function ViewInfo(empno){
 		$("#afClick").show();
 		$("#bfClick").hide();
@@ -98,11 +116,35 @@
 				$("#selectBirth_date").val("${emp.birth_date}");
 			}
 		</c:forEach>
-			
-		
-		
-		
 	}
+	
+	// 체크박스로 표기한 대상자를 대상으로 이메일 작성으로 이동
+	function emailSelect(){
+	   		
+		var mailCheck = $('input[name="mailCheck"]:checked');
+		console.log(mailCheck);
+		if(mailCheck.length > 0){
+			result="";
+			mailCheck.each(function(index, item){
+				result += $(item).attr("value");
+				result += ",";
+
+			});
+
+			result = result.slice(0, -1);
+
+			
+			console.log(result);
+			result = result.replace(/\./g,'%2E')
+			console.log(result);
+		 	location.href="<%=ctxPath%>/mail/writeMail.on?cpemail="+ result; 
+		}
+		else{
+			alert("체크박스를  선택해주세요.");
+		}
+	}
+	
+	
 
 
 
@@ -117,7 +159,7 @@
 </script>
 
 <div style="margin: 1% 0 5% 1%;">
-	<h4>보낸 메일</h4>
+	<h4>조직도</h4>
 </div>
 
 
@@ -131,11 +173,11 @@
 					<input type="checkbox" id="mailLAllCheck" value="off" style="vertical-align:middle;"/>&nbsp전체선택
 			    
 			    </button>
-			    <button type="button" class="btn btn-outline-dark toolbtn" onclick="importantCheckSelect()">
+			    <button type="button" class="btn btn-outline-dark toolbtn">
 					<i class="fas fa-flag toolflag"></i>
 				</button>
 			    
-				<button type="button" class="btn btn-outline-dark toolbtn" onclick="replySelect()"><i class="fas fa-reply"></i> 답장</button>
+				<button type="button" class="btn btn-outline-dark toolbtn" onclick="emailSelect()"><i class="fas fa-reply"></i> 답장</button>
 			</div>
 			
 		</div>
@@ -147,8 +189,8 @@
 				   <thead>
 				   		<th>
 				   		</th>
+				   		<th>부문</th>
 				   		<th>부서</th>
-				   		<th>팀</th>
 				   		<th>직급</th>
 				   		<th>이름</th>
 				   		<th>이메일</th>
@@ -157,6 +199,7 @@
 				 
 				   		<tr onclick = 'ViewInfo(${emp.empno})'>
 						  	  <td class="mail_list_option" onclick="event.stopPropagation()">
+						  	  	<input type="checkbox" id="mailLCheck" name="mailCheck" value="${emp.cpemail}" style="vertical-align:middle">
 						      	<i id="flag${mailVO.mail_no}" class="fas fa-flag" style="color:darkgray;" onclick="importantCheck(${mailVO.mail_no})"></i>
 						      </td>
 						      <td class = "mail_list_sender" >
@@ -211,58 +254,70 @@
 
 	<div style="width:45%; float:right;" id="infoPage">
 		<div class="text-center" id="bfClick" style="width:100%; height: 100%">
-			<h2 style="margin-top: 50%;">사원을 선택해주세요.</h2>
+			<h2 style="margin-top: 30%;">사원을 선택해주세요</h2>
 		</div>
 		<div id="afClick">
-			<table id="empInfo" class="table">
-				<tr>
-					<td colspan="3" class="text-center">
-						<h4 class="font-weight-bold ">직원  ooo 님 정보</h4>
-					</td>
-				</tr>
-				<tr>
-					<td rowspan="5" style="width:150px;">
-						<img src="<%= ctxPath%>/resources/images/picture/꼬미사진.jpg" height="200px;" width="200px"/>
-						
-					</td>
-					
-					
-				</tr>
-				<tr>
-					<th>성명</th>
-					<td><input type="text" id="selectName" name="selecteName" value="이름" /></td>
-				</tr>
-	
-				<tr>	
-					<th>부문</th>
-					<td><input type="text" id="selectBumun" name="selectBumun" /></td>
-				<tr>
-				<tr>	
-					<th>부서</th>
-					<td><input type="text" id="selectDepartment" name="selectDepartment" /></td>
-				</tr>
-			</table>
+			<div class="card mb-3 shadow mt-3">
+				<div class="card-header bg-white index_card_header" >직원 ooo 님 정보</div>
+				
+				<div class="card-body ">
+					<table id="empInfo" class="table">
 			
-			<table id="empInfo2" class="table">
-				<tr>	
-					<th>이메일</th>
-					<td><input type="text" id="selectCpemail" name="selectCpemail" /></td>
-				</tr>
-				<tr>	
-					<th>휴대폰 번호</th>
-					<td><input type="text" id="selectMobile" name="selectMobile" /></td>
-				</tr>
-				<tr>	
-					<th>입사일자</th>
-					<td><input type="text" id="selectJoindate" name="selectJoindate" /></td>
-				</tr>
-				<tr>	
-					<th>생년월일</th>
-					<td><input type="text" id="selectBirth_date" name="selectBirth_date" /></td>
-				</tr>
-			</table>
-		</div>
-	</div>
+						<tr>
+							<td rowspan="5" style="width:150px;">
+								<img src="<%= ctxPath%>/resources/images/picture/꼬미사진.jpg" height="200px;" width="200px"/>
+								
+							</td>
+							
+							
+						</tr>
+						<tr>
+							<th>성명</th>
+							<td><input type="text" id="selectName" name="selecteName" value="이름" /></td>
+						</tr>
+			
+						<tr>	
+							<th>부문</th>
+							<td><input type="text" id="selectBumun" name="selectBumun" /></td>
+						<tr>
+						<tr>	
+							<th>부서</th>
+							<td><input type="text" id="selectDepartment" name="selectDepartment" /></td>
+						</tr>
+					</table>
+					
+					<table id="empInfo2" class="table">
+						<tr>	
+							<th>이메일</th>
+							<td><input type="text" id="selectCpemail" name="selectCpemail" style="width:400px"/></td>
+						</tr>
+						<tr>	
+							<th>휴대폰 번호</th>
+							<td><input type="text" id="selectMobile" name="selectMobile" style="width:400px"/></td>
+						</tr>
+						<tr>	
+							<th>입사일자</th>
+							<td><input type="text" id="selectJoindate" name="selectJoindate" style="width:400px"/></td>
+						</tr>
+						<tr>	
+							<th>생년월일</th>
+							<td><input type="text" id="selectBirth_date" name="selectBirth_date" style="width:400px"/></td>
+						</tr>
+					</table>
+				</div>
+			</div>
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 	
 	
 </div>

@@ -418,6 +418,12 @@ SELECT EMPNO, DEPARTMENT, NAME, E.POSITION AS POSITION, POSITION_NO
         select * from tbl_bumun;
         select * from tbl_department;
         
+        select * from tbl_mail;
+
+        select '"'||department||' '||position||' '||name||'<![CDATA[<]]>'||cpemail||'<![CDATA[>]]>'||'"' as cpemail
+		from tbl_employee
+        where cpemail = lower('kjsaj0525@groovy.com');
+        
         select to_char(department_no) as department_no, department, to_char(bumun_no) as bumun_no, bumun 
         from tbl_department D 
         left join tbl_bumun B
@@ -444,4 +450,32 @@ SELECT EMPNO, DEPARTMENT, NAME, E.POSITION AS POSITION, POSITION_NO
     from TBL_EMPLOYEE
     where 1=1
     and lower(bumun) like ('%'||lower('it')||'%');
+    
+    
+    
+create table tbl_important_organization 
+(fk_user_empno number not null
+, fk_important_empno number not null
+
+,constraint Fk_tbl_important_organization_fk_user_empno foreign key(fk_user_empno) references tbl_EMPLOYEE(empno)
+,constraint Fk_tbl_important_organization_fk_important_empno foreign key(fk_important_empno) references tbl_EMPLOYEE(empno)
+);
+
+commit;
         
+select * from tbl_important_organization;
+
+
+insert into tbl_important_organization(fk_user_empno, fk_important_empno) 
+Values(12,1);
+-- 12 kjsaj0525 17 kjskjskjs
+
+select *   
+from tbl_employee E 
+left join 
+{
+select fk_user_empno,fk_important_empno
+from tbl_important_organization 
+where fk_user_empno = 12
+}I
+on E.empno = I.fk_important_empno;

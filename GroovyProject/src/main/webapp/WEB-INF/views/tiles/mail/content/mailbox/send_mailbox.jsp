@@ -99,6 +99,24 @@ i.fa-flag{
 	        }else{
 	        	$("input:checkbox[id='mailLAllCheck']").prop("checked", true);
 	        }
+			
+			if($("#mailLAllCheck").is(":checked")) $("input[name=mailCheck]").prop("checked", true);
+			else $("input[name=mailCheck]").prop("checked", false);
+			
+		});
+		
+		// 체크박스 전체선택
+		$("input#mailLAllCheck").click(function() {
+			if($("#mailLAllCheck").is(":checked")) $("input[name=mailCheck]").prop("checked", true);
+			else $("input[name=mailCheck]").prop("checked", false);
+		});
+
+		$("input[name=mailCheck]").click(function() {
+			var total = $("input[name=mailCheck]").length;
+			var checked = $("input[name=mailCheck]:checked").length;
+
+			if(total != checked) $("input#mailLAllCheck").prop("checked", false);
+			else $("input#mailLAllCheck").prop("checked", true); 
 		});
 		
 		// 검색 엔터
@@ -302,7 +320,7 @@ i.fa-flag{
    		
 		var mailCheck = $('input[name="mailCheck"]:checked');
 		console.log(mailCheck);
-		if(mailCheck.length > 0){
+		if(mailCheck.length == 1){
 			result="";
 			mailCheck.each(function(index, item){
 				result += $(item).attr("value");			

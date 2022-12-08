@@ -281,11 +281,23 @@ public class MailController {
 			paraMap.put("mailNo", mailNo);
 			MailVO mailVO = service.getOneMail(paraMap);
 			
+			List<String> replyList = service.getreplyList(mailVO.getfK_sender_address());
+			
 			String type = request.getParameter("type");
 			request.setAttribute("mailVO", mailVO);
+			request.setAttribute("replyList", replyList);
 			request.setAttribute("type", type);
 			
 		}
+		String cpemail = request.getParameter("cpemail");
+		if(cpemail!= null && !(cpemail.trim().isEmpty())) {
+			System.out.println(cpemail);
+			List<String> replyList = service.getreplyList(cpemail);
+			request.setAttribute("replyList", replyList);
+			
+		}
+		
+	
 		
 		request.setAttribute("mailList", mailList);
 		

@@ -160,6 +160,18 @@ public class MailService implements InterMailService {
 		return mail_no_List.size();
 	}
 	
+	@Override
+	public List<String> getreplyList(String getfK_recipient_address) {
+		List<String> cpemail_List = commaArray(getfK_recipient_address);		
+		List<String> replyList = new ArrayList<String>();
+		for(String cpemail : cpemail_List) {
+			String reply = dao.getreply(cpemail);
+			replyList.add(reply);
+		}
+		
+		return replyList;
+	}
+	
 	
 	
 	// , 로 구분되는 문자열 ArrayList<String> 로 반환
@@ -171,6 +183,8 @@ public class MailService implements InterMailService {
 		}
 		return resultList;
 	}
+
+
 	
 
 }

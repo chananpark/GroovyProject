@@ -50,3 +50,16 @@ nhn.husky.SE2M_Configuration.Quote = {
 nhn.husky.SE2M_Configuration.SE2M_ColorPalette = {
 	bAddRecentColorFromDefault : false
 };
+
+/**
+ * 사진 사이즈 조절 레이어가 나타나게끔 구현
+ */
+nhn.husky.SE2M_Configuration.QuickEditor = {
+    common : {
+        bUseConfig : false
+    },
+    Image : {
+        nImageMaxWidthSize : 9999,
+        nImageMaxHeightSize : 9999
+    }
+};

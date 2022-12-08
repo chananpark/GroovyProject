@@ -43,11 +43,14 @@ public class CommonController {
 	          
 	             int width = fm.getImageWidth(path+File.separator+newFilename);
 	         
+	             System.out.println("width"+width);
 	             if(width > 600) {
 	                width = 600;
-	             }  
-	            
-	            
+	             } 
+	             
+	             
+	             
+	             System.out.println("width"+width);
 	            String strURL = "";
 	            strURL += "&bNewLine=true&sFileName="+newFilename; 
 	            strURL += "&sWidth="+width;
