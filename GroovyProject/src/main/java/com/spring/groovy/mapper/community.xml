@@ -3,11 +3,134 @@
 
 <mapper namespace="community">
 
+	<!-- 게시글 번호 얻어오기  -->
+	<select id="getPostNo" resultType="String" >
+		SELECT SEQ_POST_NO.NEXTVAL FROM DUAL
+	</select>
+	
 	<!-- 게시글 작성하기 -->
-	<insert id="addPost" parameterType="com.spring.groovy.community.model.CommunityVO">
-		INSERT INTO TBL_COMMUNITY
+	<insert id="addPost" parameterType="com.spring.groovy.community.model.CommunityPostVO">
+		INSERT INTO TBL_COMMUNITY_POST
 		(POST_NO, FK_EMPNO, POST_SUBJECT, POST_CONTENT)
 		VALUES(#{post_no}, #{fk_empno}, #{post_subject}, #{post_content})
 	</insert>
+	
+	<!-- 첨부파일 등록하기 -->
+	<insert id="addFiles" parameterType="java.util.List">
+		INSERT INTO TBL_COMMUNITY_POST_FILE (POST_FILE_NO, FK_POST_NO, ORIGINALFILENAME, FILENAME, FILESIZE)
+		SELECT SEQ_POST_FILE_NO.NEXTVAL AS POST_FILE_NO, A.* 
+		FROM (
+		<foreach collection="list" item="file" separator="union all">
+			SELECT #{file.fk_post_no} AS FK_POST_NO, #{file.originalFilename} AS ORIGINALFILENAME,
+			#{file.filename} AS FILENAME, #{file.filesize} AS FILESIZE FROM DUAL
+		</foreach>) A
+	</insert>
+	
+	<!-- 게시글 수 조회 -->
+	<select id="getPostCnt" resultType="int" parameterType="HashMap" >
+		SELECT COUNT(*) FROM VIEW_POST_LIST
+		<if test='searchType != "" and searchWord != "" '>
+			<include refid="search" />
+		</if>
+	</select>
+	
+	<!-- 게시글 목록 조회하기 -->
+	<select id="getPostList" resultType="com.spring.groovy.community.model.CommunityPostVO" parameterType="HashMap" >
+		SELECT * 
+		FROM ( SELECT A.*, ROWNUM AS RNO
+		    FROM ( SELECT *
+		            FROM
+		            VIEW_POST_LIST
+            		<if test='searchType != "" and searchWord != "" '>
+						<include refid="search" />
+		            </if>
+					ORDER BY ${sortType} ${sortOrder} NULLS LAST
+		            )A )
+		WHERE RNO BETWEEN #{startRno} AND #{endRno}
+	</select>
+	
+	<!-- 게시글 내용 조회하기 -->
+	<select id="getPostDetail" resultType="com.spring.groovy.community.model.CommunityPostVO" parameterType="HashMap" >
+		SELECT *
+        FROM
+        VIEW_POST_LIST
+        WHERE POST_NO = #{post_no}
+	</select>
+	
+	<!-- 게시글 첨부파일 조회하기 -->
+	<select id="getPostFiles" resultType="com.spring.groovy.community.model.CommunityPostFileVO" parameterType="String" >
+		SELECT *
+        FROM
+        TBL_COMMUNITY_POST_FILE
+        WHERE FK_POST_NO = #{post_no}
+	</select>
+			
+	<!-- 게시글 조회수 증가하기 -->
+	<update id="addPostHit" parameterType="com.spring.groovy.community.model.CommunityPostVO">
+		UPDATE TBL_COMMUNITY_POST
+		SET POST_HIT = POST_HIT + 1 
+		WHERE POST_NO = #{post_no}
+	</update>
+		
+	<!-- 댓글 조회하기 -->
+	<select id="getComment" resultType="com.spring.groovy.community.model.CommunityCommentVO" parameterType="String" >
+		SELECT COMMENT_CONTENT, COMMENT_DATE, NAME, EMPIMG
+		FROM TBL_COMMUNITY_COMMENT
+		JOIN TBL_EMPLOYEE
+		ON FK_EMPNO = EMPNO
+		WHERE FK_POST_NO = #{post_no}
+		ORDER BY COMMENT_NO DESC
+	</select>
+		
+	<!-- 파일번호로 파일 한개 조회 -->
+	<select id="getFile" resultType="com.spring.groovy.community.model.CommunityPostFileVO" parameterType="String" >
+		SELECT *
+		FROM TBL_COMMUNITY_POST_FILE
+		WHERE POST_FILE_NO = #{post_file_no}
+	</select>
+	
+	<!-- 게시글 삭제하기 -->
+	<update id="deletePost" parameterType="HashMap">
+		UPDATE TBL_COMMUNITY_POST
+		SET POST_STATUS = 0 
+		WHERE POST_NO = #{post_no}
+	</update>
+	
+	<!-- 파일 한개 삭제하기 -->
+	<delete id="deleteFile" parameterType="String">
+		DELETE TBL_COMMUNITY_POST_FILE
+		WHERE POST_FILE_NO = #{post_file_no}
+	</delete>
+	
+	<!-- 게시글 수정하기 -->
+	<update id="editPost" parameterType="com.spring.groovy.community.model.CommunityPostVO">
+		UPDATE TBL_COMMUNITY_POST
+		SET POST_SUBJECT = #{post_subject}, POST_CONTENT = #{post_content}
+		WHERE POST_NO = #{post_no}
+	</update>
+	
+	<!-- 댓글 작성하기 -->
+	<insert id="addComment" parameterType="com.spring.groovy.community.model.CommunityCommentVO">
+		INSERT INTO TBL_COMMUNITY_COMMENT
+		(COMMENT_NO, FK_EMPNO, FK_POST_NO, COMMENT_CONTENT, GROUP_NO)
+		VALUES (SEQ_COMMENT_NO.nextval, #{fk_empno}, #{fk_post_no}, #{comment_content}, 
+				(SELECT NVL(MAX(GROUP_NO),0)+1 GROUP_NO FROM TBL_COMMUNITY_COMMENT WHERE FK_POST_NO=#{fk_post_no}))
+	</insert>
+	
+	<!-- 검색 sql문 -->
+	<sql id="search">
+		WHERE
+		<choose>
+			<!-- 제목+내용으로 검색 시 -->
+			<when test="searchType == 'all' ">
+				POST_SUBJECT like '%'||LOWER(#{searchWord})||'%'
+				OR POST_CONTENT like '%' ||LOWER(#{searchWord})||'%'
+			</when>
+			<!-- 기타 -->
+			<otherwise>
+				LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
+			</otherwise>
+		</choose>
+	</sql>
 	
 </mapper>

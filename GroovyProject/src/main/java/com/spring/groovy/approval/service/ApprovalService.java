@@ -35,46 +35,55 @@ public class ApprovalService implements InterApprovalService {
         this.dao = dao;
     }
 	
+    // 팀 문서함 게시글 수 조회
 	@Override
 	public int getTeamDraftCnt(Map<String, Object> paraMap) {
 		return dao.getTeamDraftCnt(paraMap);
 	}
 
+	// 팀 문서함 목록 조회
 	@Override
 	public List<DraftVO> getTeamDraftList(Map<String, Object> paraMap) {
 		return dao.getTeamDraftList(paraMap);
 	}
 
+	// 상신함 게시글 수 조회
 	@Override
 	public int getSentDraftCnt(Map<String, Object> paraMap) {
 		return dao.getSentDraftCnt(paraMap);
 	}
 
+	// 상신함 목록 조회
 	@Override
 	public List<DraftVO> getSentDraftList(Map<String, Object> paraMap) {
 		return dao.getSentDraftList(paraMap);
 	}
 
+	// 결재함 게시글 수 조회
 	@Override
 	public int getProcessedDraftCnt(Map<String, Object> paraMap) {
 		return dao.getProcessedDraftCnt(paraMap);
 	}
-
+	
+	// 결재함 목록 조회
 	@Override
 	public List<DraftVO> getProcessedDraftList(Map<String, Object> paraMap) {
 		return dao.getProcessedDraftList(paraMap);
 	}
 	
+	// 임시저장함 게시글 수 조회
 	@Override
 	public int getSavedDraftCnt(Map<String, Object> paraMap) {
 		return dao.getSavedDraftCnt(paraMap);
 	}
 	
+	// 임시저장함 목록 조회
 	@Override
 	public List<DraftVO> getSavedDraftList(Map<String, Object> paraMap) {
 		return dao.getSavedDraftList(paraMap);
 	}
 
+	// 임시저장함 게시글 삭제
 	@Override
 	public int deleteDraftList(String[] deleteArr) {
 		return dao.deleteDraftList(deleteArr);
@@ -340,7 +349,7 @@ public class ApprovalService implements InterApprovalService {
 		// draft에서 select
 		dvo = dao.getDraftInfo(dvo);
 		
-		// 에디터에 표시되는 내용은 태그를 되돌린다.
+		// 에디터로 작성한 내용은 태그를 되돌린다.
 		String unescapedContent = XssPreventer.unescape(dvo.getDraft_content());
 		dvo.setDraft_content(unescapedContent);
 		draftMap.put("dvo", dvo);
