@@ -3,6 +3,8 @@
     
 <% String ctxPath = request.getContextPath(); %>
 
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %> 
+
 <style>
 
 	* {font-family: 'Pretendard', sans-serif; !important}
@@ -169,7 +171,51 @@
 		    
 		}); // end of $(".topMenu").click() -------------------------------
 		
+		// =========================================================================================== //
 		
+		getWorkTimes();
+		
+		
+		$("#goStartWorkBtn").click(function(){ // -------------------------
+			
+			const empno = "${sessionScope.loginuser.empno}";	
+			
+			$.ajax({
+				  url:"<%=ctxPath%>/attend/goStartWork.on",
+				  data:{"empno":empno},
+				  type:"POST",
+				  dataType:"JSON",
+				  success:function(json){
+					  getWorkTimes();
+				  },
+				  error: function(request, status, error){
+					  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+				  }
+			});			
+			
+		}); // end of $("#goStartWorkBtn").click() --------------------------
+		
+		
+		$("#goEndWorkBtn").click(function(){ // -------------------------
+			
+			const empno = "${sessionScope.loginuser.empno}";			
+			
+			$.ajax({
+				  url:"<%=ctxPath%>/attend/goEndWork.on",
+				  data:{"empno":empno},
+				  type:"POST",
+				  dataType:"JSON",
+				  success:function(json){
+					  getWorkTimes();
+				  },
+				  error: function(request, status, error){
+					  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+				  }
+			  });			
+			
+		}); // end of $("#goStartWorkBtn").click() --------------------------
+		
+		getDepartment();
 		
 		
 	}); // end of $(document).ready(function(){} ==========================
@@ -267,6 +313,57 @@
 		$("#attSelectBox").hide();
 		
 	}
+	
+	// ============================================================================================================= //
+	
+	
+	function getWorkTimes() { // -----------------------------------------
+		
+		const empno = "${sessionScope.loginuser.empno}";
+		
+		$.ajax({
+			  url:"<%=ctxPath%>/attend/getWorkTimes.on",
+			  data:{"empno":empno},
+			  dataType:"JSON",
+			  success:function(json){
+				  
+				  const workStartTime = json.workTimeMap.workstart;
+				  const workEndTime = json.workTimeMap.workend;
+				  
+				  // console.log("workStartTime: "+ workStartTime);
+				  // console.log("workEndTime: "+ workEndTime);
+				  
+				  $("#workStartTime").text(workStartTime);
+				  $("#workEndTime").text(workEndTime);
+				  
+			  },
+			  error: function(request, status, error){
+				  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			  }
+		  });
+		
+	} // end of function getWorkTimes() ----------------------------------
+	
+	function getDepartment(){ // -----------------------------------------
+		
+		const empno = "${sessionScope.loginuser.empno}";	
+		
+		$.ajax({
+			  url:"<%=ctxPath%>/attend/getDepartment.on",
+			  data:{"empno":empno},
+			  type:"POST",
+			  dataType:"JSON",
+			  success:function(json){
+				  const part = json.partMap.department;
+				  
+				  // $("#topMenu2").text(part);
+			  },
+			  error: function(request, status, error){
+				  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			  }
+		});	
+		
+	} // end of function getDepartment(){} --------------------------------
 
 </script>
 
@@ -276,20 +373,20 @@
 	
 	<div>
 		<span class="attTime">출근시간</span>
-		<span class="attTime attTimeRight">10:00:00</span>
+		<span class="attTime attTimeRight" id="workStartTime">00:00:00</span>
 	</div>
 	<div>
 		<span class="attTime">퇴근시간</span>
-		<span class="attTime attTimeRight">10:00:00</span>
+		<span class="attTime attTimeRight" id="workEndTime">00:00:00</span>
 	</div>
 	<div>
 		<span class="attTime">누적근무시간<span style="font-size: 8pt;">(주간)</span></span>
-		<span class="attTime attTimeRight">9h 20m 52s</span>
+		<span class="attTime attTimeRight">0h 0m 0s</span>
 	</div>
 	<hr>
 	<div id="workSelectBox">
-		<button type="button" class="onOff hoverShadow" id="">출근하기</button>
-		<button type="button" class="onOff hoverShadow" id="">퇴근하기</button>
+		<button type="button" class="onOff hoverShadow" id="goStartWorkBtn">출근하기</button>
+		<button type="button" class="onOff hoverShadow" id="goEndWorkBtn">퇴근하기</button>
 		<button style="display: block;" type="button" id="attSelectBtn" class="hoverShadow">근무상태 <span id="attSelectComp" class="fas fa-caret-down"></span></button>
 		<div id="attSelectBox">
 			<div class="selectContent" style="border-top-left-radius: 9px; border-top-right-radius: 9px;" onclick="workStatus('업무')">업무</div>
@@ -310,18 +407,19 @@
 			</ul>
 		</li>
 		
-		<li class="menu topMenu" id="topMenu2">경영 지원
+		<li class="menu topMenu" id="topMenu2">부서 관리
 			<ul class="menu subMenus" id="subMenu2">
-				<li style="margin-top: 7px;"><a href="<%= ctxPath%>/attend/teamStatusDaily.on" class="hoverShadowText" id="team1">부서 근태 조회</a></li>
-				<li class=""><a href="<%= ctxPath%>/attend/teamManage.on" class="hoverShadowText" id="team2">부서 근태 관리</a></li>
+				<li class="nav-link" style="margin-top: 7px;"><a href="<%= ctxPath%>/attend/teamStatusWeekly.on" class="hoverShadowText" id="team1">부서 근태 조회</a></li>
+				<li class="nav-link"><a href="<%= ctxPath%>/attend/teamManage.on" class="hoverShadowText" id="team2">부서 근태 관리</a></li>
 			</ul>
 		</li>
-		
+		<c:if test="${sessionScope.loginuser.department == '이사실'}">
 		<li class="menu topMenu" id="topMenu3">전사 근태관리
 			<ul class="menu subMenus" id="subMenu3">
 				<li style="margin-top: 7px;"><a href="<%= ctxPath%>/attend/allStatus.on" class="hoverShadowText" id="all1" >전사 근태 조회</a></li>
 				<li class=""><a href="<%= ctxPath%>/attend/allManage.on" class="hoverShadowText" id="all2">전사 근태 관리</a></li>
 			</ul>
 		</li>
+		</c:if>
 	</ul>
 </div>

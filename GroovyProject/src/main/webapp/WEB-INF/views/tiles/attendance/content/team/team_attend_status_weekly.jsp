@@ -139,6 +139,8 @@
 		border: none;
 		font-size: 10pt;
 	}
+	
+	.fridays{ border-bottom: solid 1px gray;}
 
 </style>   
 
@@ -152,7 +154,6 @@
 		
 		$.datepicker.setDefaults({
 		  dateFormat: 'yy.mm.dd(D)',
-		  maxDate: 0,
 		  prevText: '이전 달',
 		  nextText: '다음 달',
 		  monthNames: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
@@ -171,6 +172,7 @@
 		
 		
 		const now = new Date();
+		const now2 = new Date();
 		
 		let year = now.getFullYear();
 		let month = now.getMonth()+1;
@@ -182,17 +184,23 @@
 		if(day != 1){ // 오늘이 월요일이 아니라면
 			start = new Date(now.setDate( now.getDate()-(day-1) )); // 이번주의 월요일 구하기
 			
-			start = start.getFullYear() + "." + (start.getMonth()+1) + "." + start.getDate() + "(" + day_kor(start.getDay()) + ")";
+			let startdate = start.getDate();
+			if(startdate < 10){	startdate = '0'+startdate;	}
+			
+			start = start.getFullYear() + "." + (start.getMonth()+1) + "." + startdate + "(" + day_kor(start.getDay()) + ")";
 			// console.log(start);
 		}
 		else{ // 오늘이 월요일 이라면
 			start = year + "." + month + "." + date + "(" + day_kor(day) + ")";
 		}
 		
-		if(day != 5){ // 오늘이 금요일이 아니라면			
-			end = new Date(now.setDate(now.getDate()+(5-day))); // 이번주의 금요일 구하기
+		if(day != 5){ // 오늘이 금요일이 아니라면	
+			end = new Date(now2.setDate(now2.getDate()+(5-day))); // 이번주의 금요일 구하기
 			
-			end = end.getFullYear() + "." + (end.getMonth()+1) + "." + end.getDate() + "(" + day_kor(end.getDay()) + ")";
+			let enddate = end.getDate();
+			if(enddate < 10){	enddate = '0'+enddate;	}
+			
+			end = end.getFullYear() + "." + (end.getMonth()+1) + "." + enddate + "(" + day_kor(end.getDay()) + ")";
 			// console.log(endDate);
 		}
 		else { // 오늘이 금요일 이라면
@@ -205,7 +213,9 @@
 		$('input#dateStart').datepicker('setDate', start);
 		$('input#dateEnd').datepicker('setDate', end);
 		
+		/*
 		$("#prevWeek").click(function(){
+			
 			
 			let startVal = $('input#dateStart').val().substr(0,10);
 			let endVal = $('input#dateEnd').val().substr(0,10);
@@ -226,6 +236,9 @@
 			
 			$('input#dateStart').datepicker('setDate', newStart);
 			$('input#dateEnd').datepicker('setDate', newEnd);
+			
+			getWeeklyWorkList();
+			personalInfoBox();
 		}); // end of $("#prevWeek").click() -------------------------
 		
 		$("#nextWeek").click(function(){
@@ -253,10 +266,47 @@
 				
 				$('input#dateStart').datepicker('setDate', newStart);
 				$('input#dateEnd').datepicker('setDate', newEnd);
+				
+				getWeeklyWorkList();
+				personalInfoBox();
 			}
 			
 		}); // end of $("#prevWeek").click() -------------------------
+		*/
 		
+		
+		$("#dateStart").change(function(){
+			const empno = $("#personalEmpno").val();
+			
+			personalInfoBox(empno);			
+			getWeeklyWorkList(empno);
+			
+		});
+		
+		$("#dateEnd").change(function(){
+			const empno = $("#personalEmpno").val();
+			
+			personalInfoBox(empno);			
+			getWeeklyWorkList(empno);
+			
+			
+		});
+		
+		// ================================================================================================== // 
+		
+		const empno = "${sessionScope.loginuser.empno}";
+		
+		const bumun = "${sessionScope.loginuser.bumun}";
+		const department = "${sessionScope.loginuser.department}";
+		// 개인정보 박스 조회
+		teamInfoBox();
+		
+		personalInfoBox(empno);
+		
+		getWeeklyWorkList(empno);
+		
+		
+		$("#titleDepartment").text(bumun + " - " + department);
 		
 		
 	}); // end of $(document).ready() ===============================================
@@ -284,6 +334,166 @@
 		
 		return result;
 	}
+	
+	// 개인정보 박스 조회
+	function teamInfoBox(){
+		
+		const empno = "${sessionScope.loginuser.empno}";
+		
+		$.ajax({
+			  url:"<%=ctxPath%>/attend/getTeamInfoBox.on",
+			  data:{"empno":empno},
+			  dataType:"JSON",
+			  success:function(json){				  
+				  let html = "";
+				  
+				  if(json.length > 0) {
+					  $.each(json, function(index, item){
+						  
+						  html += "<div class='pplHover' onclick='goDptPplInfo("+item.empno+")'>"+
+									"<span class='boxes tInfo_positions'>"+item.position+"</span>"+
+									"<span class='boxes tInfo_names'>"+item.name+"</span>"+
+								"</div>";
+						  
+					  });
+					  
+					  $("#boxTeamInfo").html(html);
+				  }
+				  else {
+					  // console.log('ㅅㅓㅇ공');
+				  }
+			  },
+			  error: function(request, status, error){
+				  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			  }
+		  });
+		
+		
+	} // end of function teamInfoBox(){} ----------------------------
+	
+	
+	
+	function personalInfoBox(empno){		
+		
+		const dateStart = $("#dateStart").val().substr(0,10);
+		const dateEnd = $("#dateEnd").val().substr(0,10);
+		
+		
+		$.ajax({
+			  url:"<%=ctxPath%>/attend/getPersonalInfoBox.on",
+			  data:{"empno":empno,
+				    "dateStart":dateStart,
+				    "dateEnd":dateEnd},
+			  dataType:"JSON",
+			  success:function(json){
+				  
+				  const name = json.PersonalInfoMap.name;
+				  const department = json.PersonalInfoMap.department;
+				  const position = json.PersonalInfoMap.position;
+				  const empimg = json.PersonalInfoMap.empimg;
+				  const worksum = json.PersonalInfoMap.worksum;
+				  const fk_empno = json.PersonalInfoMap.fk_empno;
+				  				  
+				  $("#name").text(name);
+				  $("#department").text(department);
+				  $("#position").text(position);
+				  $("#worksum").text(worksum);
+				  // console.log("worksum: "+worksum);
+				  $("#period").text($("#dateStart").val() + ' ~ ' + $("#dateEnd").val());
+				  $("#personalEmpno").val(fk_empno);
+				  
+			  },
+			  error: function(request, status, error){
+				  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			  }
+		  });
+		
+	} // end of function personalInfoBox(){} -------------------------
+	
+	
+	function getWeeklyWorkList(empno){ // -----------------------------------
+		
+		const dateStart = $("#dateStart").val().substr(0,10);
+		const dateEnd = $("#dateEnd").val().substr(0,10);
+		
+
+		console.log("datestart: "+$("#dateStart").val());
+		console.log("dateend: "+$("#dateEnd").val());
+		
+		$.ajax({
+			  url:"<%=ctxPath%>/attend/getWeeklyWorkList.on",
+			  data:{"empno":empno,
+				    "dateStart":dateStart,
+				    "dateEnd":dateEnd},
+			  dataType:"JSON",
+			  success:function(json){
+				  let html = "";
+				  if(json.length > 0) {
+					  $.each(json, function(index, item){
+						  						  
+						  let workstart = item.workstart;					  
+
+						  console.log("workstart: "+workstart);						  
+						  
+						  let date = item.workstart.substr(0, 10);
+						  let starttime = item.workstart.substr(11, 5);
+						  let day = item.workstart.substr(17, 1);
+						  
+						  if(day == '금'){
+							  html += "<tr>"+
+								"<td class='fridays' style='padding: 5px 0 5px 10px;'>"+date+"</td>"+
+								"<td class='fridays' style='padding: 5px 0;'>"+day+"</td>"+
+								"<td class='tbltexts fridays'>"+item.worksum+"</td>"+
+								"<td class='tbltexts fridays'>"+starttime+"</td>"+
+								"<td class='tbltexts fridays'>"+item.workend+"</td>"+
+								"<td class='tbltexts fridays'>01:00</td>"+	
+								"<td class='tbltexts fridays'>"+item.extendtime+"</td>"+
+								"<td class='fridays' style='padding: 5px 0;'>"+item.dayoff+item.trip+item.tripstart+item.tripend+"</td>"+			
+							"</tr>";
+							  
+						  }
+						  else{
+							  html += "<tr>"+
+								"<td style='padding: 5px 0 5px 10px;'>"+date+"</td>"+
+								"<td style='padding: 5px 0;'>"+day+"</td>"+
+								"<td class='tbltexts'>"+item.worksum+"</td>"+
+								"<td class='tbltexts'>"+starttime+"</td>"+
+								"<td class='tbltexts'>"+item.workend+"</td>"+
+								"<td class='tbltexts'>01:00</td>"+	
+								"<td class='tbltexts'>"+item.extendtime+"</td>"+
+								"<td style='padding: 5px 0;'>"+item.dayoff+item.trip+item.tripstart+item.tripend+"</td>"+			
+							"</tr>";
+							  
+						  }
+						  
+														
+					  });					  
+					  
+					  $("tbody#weeklyWorkList").html(html);
+				  }
+				  else {
+				  }
+				  
+				  
+			  },
+			  error: function(request, status, error){
+				  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			  }
+		});
+		
+	} // end of function getWeeklyWorkList(){} -------------------------
+	
+	
+	function goDptPplInfo(empno){ // ------------------------------------
+		
+		// console.log(empno);
+		
+		personalInfoBox(empno);
+		
+		getWeeklyWorkList(empno);
+		
+		
+	} // end of function goDptPplInfo(empno){} --------------------------
 
 </script>
 
@@ -297,53 +507,42 @@
 </div>
 
 <div>
-	<div id="title">
-		<span id="todayBtn">&nbsp;</span>
-		<a class="category hoverShadow" href="<%= ctxPath%>/attend/teamStatusDaily.on">일</a>
-		<a class="category hoverShadow" style="background-color: #086BDE; color: white;" href="<%= ctxPath%>/attend/teamStatusWeekly.on">주</a>
-		<a class="category hoverShadow" href="<%= ctxPath%>/attend/teamStatusMonthly.on">월</a>
-	</div>
 	
 	<%-- 중앙 박스 시작 --%>
 	
 	<div style="">
 		<div class="infoBoxes" id="teamInfo">
-			<div style="font-size: 14pt; margin-bottom: 10px;">경영지원</div>
+			<div id="titleDepartment" style="font-size: 14pt; margin-bottom: 10px;"></div>
 			<div id="teamInfoTitle" style="">
 				<span class="boxes tInfo_positions">직급</span>
 				<span class="boxes tInfo_names">이름</span>
 			</div>
-			<div class="pplHover">
-				<span class="boxes tInfo_positions">책임</span>
-				<span class="boxes tInfo_names">김혜원</span>
-			</div>
-			<div class="pplHover">
-				<span class="boxes tInfo_positions">선임</span>
-				<span class="boxes tInfo_names">김원티드</span>
+			<div id="boxTeamInfo">
 			</div>
 		</div>
 		
 		<div class="infoBoxes" id="personalInfo">
-			<div style="font-size: 14pt; margin-bottom: 10px;">김혜원</div>
+			<div id="name" style="font-size: 14pt; margin-bottom: 10px;"></div>
+			<input id="personalEmpno" type="hidden" />
 			<div>
 				<span class="boxes pInfo_titles">부서</span>
-				<span class="boxes pInfo_contents">경영지원</span>
+				<span id="department" class="boxes pInfo_contents"></span>
 			</div>
 			<div>
 				<span class="boxes pInfo_titles">직급</span>
-				<span class="boxes pInfo_contents">책임</span>
+				<span id="position" class="boxes pInfo_contents"></span>
 			</div>
 			<div>
 				<span class="boxes pInfo_titles">기간</span>
-				<span class="boxes pInfo_contents">2022-11-07(월)~2022-11-11(금)</span>
+				<span id="period" class="boxes pInfo_contents"></span>
 			</div>
 			<div>
 				<span class="boxes pInfo_titles">누적 근무시간</span>
-				<span class="boxes pInfo_contents">5h 30m</span>
+				<span id="worksum" class="boxes pInfo_contents"></span>
 			</div>
 			<div>
 				<span class="boxes pInfo_titles">예상 근무시간</span>
-				<span class="boxes pInfo_contents">36시간</span>
+				<span class="boxes pInfo_contents">40시간</span>
 			</div>
 			<div>
 				<span class="boxes pInfo_titles">최대 근무가능시간</span>
@@ -369,61 +568,7 @@
 					<th style="padding: 5px 0;">비고</th>
 				</tr>
 			</thead>
-			<tbody> 				
-				<tr style="">
-					<td style="padding: 5px 0 5px 10px;">2022.11.07</td>
-					<td class="" style="padding: 5px 0;">월</td>
-					<td class="tbltexts" style="">05:00</td>
-					<td class="tbltexts" style="">10:00</td>
-					<td class="tbltexts" style="">15:00</td>
-					<td class="tbltexts" style="">01:00</td>		
-					<td class="tbltexts" style="">0분</td>
-					<td style="padding: 5px 0;"></td>				
-				</tr>
-				
-				<tr style="">
-					<td style="padding: 5px 0 5px 10px;">2022.11.07</td>
-					<td class="" style="padding: 5px 0;">화</td>
-					<td class="tbltexts" style="">05:00</td>
-					<td class="tbltexts" style="">10:00</td>
-					<td class="tbltexts" style="">15:00</td>
-					<td class="tbltexts" style="">01:00</td>		
-					<td class="tbltexts" style="">0분</td>
-					<td style="padding: 5px 0;"></td>				
-				</tr>
-				
-				<tr style="">
-					<td class="today" style="padding: 5px 0 5px 10px;">2022.11.07</td>
-					<td class="today" style="padding: 5px 0;">수(오늘)</td>
-					<td class="tbltexts" style="">05:00</td>
-					<td class="tbltexts" style="">10:00</td>
-					<td class="tbltexts" style="">15:00</td>
-					<td class="tbltexts" style="">01:00</td>		
-					<td class="tbltexts" style="">0분</td>
-					<td style="padding: 5px 0;"></td>				
-				</tr>
-				
-				<tr style="">
-					<td style="padding: 5px 0 5px 10px;">2022.11.07</td>
-					<td class="" style="padding: 5px 0;">목</td>
-					<td class="tbltexts" style="">05:00</td>
-					<td class="tbltexts" style="">10:00</td>
-					<td class="tbltexts" style="">15:00</td>
-					<td class="tbltexts" style="">01:00</td>		
-					<td class="tbltexts" style="">0분</td>
-					<td style="padding: 5px 0;"><button class="tblBtn">연차</button></td>				
-				</tr>
-				
-				<tr style="">
-					<td style="padding: 5px 0 5px 10px;">2022.11.07</td>
-					<td class="" style="padding: 5px 0;">금</td>
-					<td class="tbltexts" style="">05:00</td>
-					<td class="tbltexts" style="">10:00</td>
-					<td class="tbltexts" style="">15:00</td>
-					<td class="tbltexts" style="">01:00</td>		
-					<td class="tbltexts" style="">0분</td>
-					<td style="padding: 5px 0;"></td>				
-				</tr>
+			<tbody id="weeklyWorkList"> 	
 											
 			</tbody>
 		</table>

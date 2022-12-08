@@ -15,10 +15,12 @@
 	   <property name="password" value="aclass" />
 	</bean>
 		
-	<!-- mapper 파일 위치 지정 -->
 	<bean id="sqlSessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean">
+		<!-- mapper 파일 -->
 	   <property name="mapperLocations" value="classpath*:com/spring/groovy/mapper/*.xml" />
 	   <property name="dataSource" ref="dataSource"/>
+	   <!-- 환경설정 파일 -->
+	   <property name="configLocation" value="classpath:/mybatis-config.xml"></property>
 	</bean>
 		
 	<!-- sqlSessionTemplate 의존 객체 설정 -->

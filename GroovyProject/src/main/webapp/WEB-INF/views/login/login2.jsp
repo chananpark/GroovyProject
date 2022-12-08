@@ -149,20 +149,19 @@
 		
 	}); // end of $(document).ready(function(){ ----------------------
 		
-		
 	// >>> Function Declartion <<<
-
+	function findPwd(cpemail){ // -------------------------
+		
+		const url = "<%=ctxPath%>/findPwd.on";
+		const name = "findPwd";
+		const option = "width=550, height=500, top=130, left=500";
+		
+		window.open(url, name, option);
+	} // end of function managePopup(){} ---------------
+	
+	
 	// >>> 다음으로 넘어가는 함수 생성하기 <<< 
 	function func_login() {
-		
-		const pwd = $("input#pwd").val();
-		
-		if(pwd.trim() == "") {
-			$("div#first_error").show();
-			$("input#pwd").val("");
-			$("input#pwd").focus();
-			return;  // 종료
-		}
 		
 		const frm = document.frm_login
 		frm.action = "<%= ctxPath%>/login2.on";
@@ -185,22 +184,21 @@
 		
 		<div id="container" class="card card-body">
 			<h3 style="font-weight: bold;">로그인</h3>
-			<div name="cpemail" style="padding:0 1%; color:#086BDE; border: solid 1px #cccccc; margin: 2% auto; width: 200px; font-size: 13px; padding: 1% 0;" readonly>${loginuser.cpemail}</div>
+			<div style="padding:0 1%; color:#086BDE; border: solid 1px #cccccc; margin: 2% auto; width: 200px; font-size: 13px; padding: 1% 0;" readonly>${loginuser.cpemail}</div>
+			<input type="hidden" name="cpemail" value="${loginuser.cpemail}"/>
 			
 			<div style="color:#b3b3b3; margin: 5% 0 0 5%;" align="left">비밀번호(8자이상 15자 이하로 입력해주세요)</div>
-			<input type="password" name="pwd" id="pwd" style="width: 90%; border: solid 2px #086BDE; height: 35px; margin: auto;" autofocus="autofocus" required/>
+			<input type="password" name="pwd" id="pwd" style="width: 90%; background-color:#E3F2FD; border:none; height: 35px; margin: auto;" autofocus="autofocus" required/>
 			<div id="first_error" style="color:red; font-size: 12px;">비밀번호를 입력해주세요</div>
-			<div id="result_error">비밀번호가 일치하지 않습니다.</div>
+			<div id="result_error">비밀번호 형식에 맞지 않습니다.</div>
 			<div></div>
-			<div align="left" style="color:#b3b3b3; margin: 2% 0 0 5%;"><input type="checkbox" id="checkbox"/>자동로그인</div>
 			
-			<div style="margin: 2% 0 0 20%;">
-				<button type="button" style="background-color: white; border: none;"><a href="#">비밀번호를 잊으셨나요?</a></button>
+			<div style="margin: 5% 0 0 20%;">
+				<a onclick="findPwd('cpemail')" name="findPwd">비밀번호를 잊으셨나요?</a>
 				<button type="button" id="btn_back" onclick="javascript:history.back()">뒤로</button>
 				<button type="button" id="btn_next">다음</button>
 			</div>
 		</div>
-		
 	</form>	
 	 </div>
 	</div>

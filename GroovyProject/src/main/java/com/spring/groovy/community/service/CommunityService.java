@@ -1,0 +1,212 @@
+package com.spring.groovy.community.service;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+import com.nhncorp.lucy.security.xss.XssPreventer;
+import com.spring.groovy.common.FileManager;
+import com.spring.groovy.community.model.CommunityCommentVO;
+import com.spring.groovy.community.model.CommunityPostFileVO;
+import com.spring.groovy.community.model.CommunityPostVO;
+import com.spring.groovy.community.model.InterCommunityDAO;
+
+@Service
+public class CommunityService implements InterCommunityService {
+
+	private InterCommunityDAO dao;
+	private FileManager fileManager;
+	
+    @Autowired
+    public CommunityService(InterCommunityDAO dao, FileManager fileManager) {
+        this.dao = dao;
+        this.fileManager = fileManager;
+    }
+
+	// 글 작성하기
+	@SuppressWarnings("unchecked")
+	@Override
+	@Transactional(propagation=Propagation.REQUIRED, isolation=Isolation.READ_COMMITTED, rollbackFor= {Throwable.class})
+	public boolean addPost(Map<String, Object> paraMap) {
+		
+		int n = 0;
+		boolean result = false;
+		
+		// 글번호 생성
+		String post_no = dao.getPostNo();
+		
+		CommunityPostVO post = (CommunityPostVO)paraMap.get("post");
+		post.setPost_no(post_no); // 글번호 set
+		
+		// 글 작성하기
+		n = dao.addPost(post);
+		
+		result = (n == 1)? true: false;
+		
+		// 글 작성 실패 시 리턴
+		if (!result)
+			return false;
+		
+		// 첨부 파일 리스트
+		List<CommunityPostFileVO> fileList = (List<CommunityPostFileVO>) paraMap.get("fileList");
+		
+		// 첨부파일이 있다면
+		if (fileList != null && fileList.size() > 0) {
+			for (CommunityPostFileVO cfvo : fileList) {
+				cfvo.setFk_post_no(post_no); // 글번호 set
+			}
+			
+			// 첨부 파일 insert
+			n = dao.addFiles(fileList);
+			result = (n == fileList.size())? true : false;
+			
+			// 첨부 파일 테이블 insert가 실패했으면 리턴
+			if (!result)
+				return result;
+		}
+		
+		 return result;
+	}
+
+	// 전체 글 개수 구하기
+	@Override
+	public int getPostCnt(Map<String, String> paraMap) {
+		return dao.getPostCnt(paraMap);
+	}
+
+	// 한 페이지에 표시할 글 목록
+	@Override
+	public List<CommunityPostVO> getPostList(Map<String, String> paraMap) {
+		return dao.getPostList(paraMap);
+	}
+
+	// 글 내용 조회 + 조회수 증가
+	@Transactional(propagation=Propagation.REQUIRED, isolation=Isolation.READ_COMMITTED, rollbackFor= {Throwable.class})
+	@Override
+	public CommunityPostVO getPostDetailWithCnt(Map<String, String> paraMap) {
+		
+		// 글내용 조회
+		CommunityPostVO post = dao.getPostDetail(paraMap);
+
+		try {
+			// 다른 사람이 쓴 글이라면 
+			if (!post.getFk_empno().equals(paraMap.get("empno"))) {
+				// 조회수 증가
+				dao.addPostHit(post);
+			
+				// 조회수 증가 후 다시 읽어오기
+				post = dao.getPostDetail(paraMap);
+			}
+			
+			// 글내용 태그 원복
+			String originalContent = XssPreventer.unescape(post.getPost_content());
+			post.setPost_content(originalContent);
+			
+		} catch(NullPointerException e) {
+			// 존재하지 않는 글이라면 여기로
+		}
+		
+		return post;
+	}
+	
+	// 조회수 증가 없는 글 조회
+	@Override
+	public CommunityPostVO getPostDetail(Map<String, String> paraMap) {
+		
+		// 글내용 조회
+		return dao.getPostDetail(paraMap);
+	}
+
+	// 댓글 목록 조회
+	@Override
+	public List<CommunityCommentVO> getComment(String post_no) {
+		return dao.getComment(post_no);
+	}
+
+	// 글 삭제하기	
+	@Override
+	public boolean deletePost(Map<String, String> paraMap) {
+
+		int n = dao.deletePost(paraMap);
+		return n == 1 ? true : false;
+		
+	}
+
+	// 첨부파일 조회
+	@Override
+	public List<CommunityPostFileVO> getPostFiles(String post_no) {
+		return dao.getPostFiles(post_no);
+	}
+
+	// 파일 삭제하기
+	@Override
+	public boolean deleteFile(String post_file_no, String path) {
+		
+		// 파일번호로 파일 조회
+		CommunityPostFileVO file = dao.getFile(post_file_no);
+		
+		// 테이블에서 파일 삭제
+		int n = dao.deleteFile(post_file_no);
+		
+		if (n==1) {
+			// 서버에서 파일 삭제
+			fileManager.doFileDelete(file.getFilename(), path);
+		}
+		
+		return (n==1)? true: false;
+	}
+
+	// 글 수정하기
+	@SuppressWarnings("unchecked")
+	@Override
+	public boolean editPost(Map<String, Object> paraMap) {
+		int n = 0;
+		boolean result = false;
+		
+		CommunityPostVO post = (CommunityPostVO)paraMap.get("post");
+		
+		// 글 수정하기
+		n = dao.editPost(post);
+		
+		result = (n == 1)? true: false;
+		
+		// 글 작성 실패 시 리턴
+		if (!result)
+			return false;
+		
+		// 첨부 파일 리스트
+		List<CommunityPostFileVO> fileList = (List<CommunityPostFileVO>) paraMap.get("fileList");
+		
+		// 첨부파일이 있다면
+		if (fileList != null && fileList.size() > 0) {
+			for (CommunityPostFileVO cfvo : fileList) {
+				cfvo.setFk_post_no(post.getPost_no()); // 글번호 set
+			}
+			
+			// 첨부 파일 insert
+			n = dao.addFiles(fileList);
+			result = (n == fileList.size())? true : false;
+			
+			// 첨부 파일 테이블 insert가 실패했으면 리턴
+			if (!result)
+				return result;
+		}
+		
+		 return result;
+	}
+
+	// 댓글 작성하기
+	@Override
+	public boolean addComment(CommunityCommentVO comment) {
+		
+		int n = dao.addComment(comment);
+		
+		return (n==1)? true: false;
+	}
+
+}

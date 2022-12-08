@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.spring.groovy.common.Sha256;
 import com.spring.groovy.management.model.MemberVO;
 import com.spring.groovy.management.service.InterManagementService;
 
@@ -47,8 +48,7 @@ public class LoginController {
 			}
 			
 			// 입력한 이메일이 있는경우 
-			HttpSession session = request.getSession();
-			session.setAttribute("loginuser", loginuser);
+			request.setAttribute("loginuser", loginuser);
 			// session(세션)에 로그인 되어진 사용자 정보인 loginuser 를  키이름을 "loginuser" 으로 저장시켜두는 것이다.
 			
 			mav.setViewName("login/login2");
@@ -66,9 +66,9 @@ public class LoginController {
 	 @RequestMapping(value="/login2.on", method= {RequestMethod.POST} ) 
 	 public ModelAndView login2(ModelAndView mav,HttpServletRequest request) {
 		 
-		 HttpSession session = request.getSession();
-		 MemberVO loginuser = (MemberVO) session.getAttribute("loginuser");
-		 String cpemail = loginuser.getCpemail();
+		 ///MemberVO loginuser = (MemberVO) request.getParameter("loginuser");
+		 
+		 String cpemail = request.getParameter("cpemail");
 		 String pwd = request.getParameter("pwd");
 		 
 		 Map<String,String> paraMap = new HashMap<String, String>();
@@ -76,12 +76,12 @@ public class LoginController {
 		 paraMap.put("cpemail", cpemail);
 		 paraMap.put("pwd", pwd);
 		 
-		 loginuser = service.login2(paraMap);
+		 MemberVO loginuser = service.login2(paraMap);
 		 
 		 if(loginuser == null) { // 비밀번호가 틀린경우
 				
 			String message = "비밀번호가 일치하지 않습니다..";
-			String loc = request.getContextPath()+"/login2.on";
+			String loc = request.getContextPath()+"/login.on";
 			
 			mav.addObject("message", message);
 			mav.addObject("loc", loc);
@@ -90,15 +90,113 @@ public class LoginController {
 			return mav;
 		}
 	 
-		 session = request.getSession();
+		 HttpSession session = request.getSession();
 		 session.setAttribute("loginuser", loginuser);
 		 // session(세션)에 로그인 되어진 사용자 정보인 loginuser 를  키이름을 "loginuser" 으로 저장시켜두는 것이다.
 		
-		 mav.setViewName("index/index.tiles2");
+		 mav.setViewName("redirect:/index.on");
 	 
 		return mav;
 	 }
 	 
+
+	  // 로그인 - 비밀번호 찾기
+	 @RequestMapping(value="/findPwd.on" ) 
+	 public ModelAndView findPwd(ModelAndView mav,HttpServletRequest request, MemberVO mvo) {
+		 mav.setViewName("login/findPwd");
+		return mav;
+	 }
+	 
+	  // 로그인 - 비밀번호 찾기 값입력
+	 @RequestMapping(value="/findPwdEnd.on", method= {RequestMethod.POST} ) 
+	 public ModelAndView findPwdEnd(ModelAndView mav,HttpServletRequest request, MemberVO mvo) {
+		 
+		 String cpemail = request.getParameter("cpemail");
+		 String jubun1 = request.getParameter("jubun1");
+		 String jubun2 = request.getParameter("jubun2");
+		 
+		 String jubun = jubun1+ "-" + jubun2;
+		 
+		 Map<String,String>paraMap = new HashMap<>();
+		 paraMap.put("cpemail",cpemail);
+		 paraMap.put("jubun",jubun);
+		 
+		 MemberVO employee = service.findPwd(paraMap);
+		 
+		 if(employee == null) { // 이메일과 주민번호가 일치하지 않는경우
+				
+				String message = "일치하는 정보가 없습니다.";
+				String loc = request.getContextPath()+"/login.on";
+				
+				mav.addObject("message", message);
+				mav.addObject("loc", loc);
+				mav.setViewName("msg");
+				
+				return mav;
+			}
+		 
+		 mav.setViewName("login/findPwdEnd");
+		 mav.addObject("employee", employee);
+		return mav;
+	 }
+	 
+	 
+	 
+	 
+		 
+	  // 로그인 - 비밀번호 변경하기
+	 @RequestMapping(value="/findPwdChange.on", method= {RequestMethod.POST}) 
+	 public ModelAndView findPwdEndReal(ModelAndView mav,HttpServletRequest request, MemberVO mvo) {
+		 
+		 String cpemail = request.getParameter("cpemail");
+		 String pwd = request.getParameter("pwd");
+		 
+		 Map<String,Object>paraMap = new HashMap<>();
+		 paraMap.put("cpemail",cpemail);
+		 paraMap.put("pwd",pwd);
+		 
+		 int n = service.updatePwd(paraMap);
+		 
+		 if(n != 1) { // 이메일과 주민번호가 일치하지 않는경우
+				
+			 String message = "비밀번호 변경이 실패되었습니다.";
+			 String loc = request.getContextPath()+"/login.on";
+			
+			 mav.addObject("message", message);
+			 mav.addObject("loc", loc);
+			 mav.setViewName("msg");
+			
+			return mav;
+			}
+		 
+			String message = "비밀번호가 변경되었습니다.";
+			String loc = request.getContextPath()+"/login.on";
+			 
+			mav.addObject("message", message);
+			mav.addObject("loc", loc);
+			mav.setViewName("msg");
+			return mav;
+	 }
+	 
+	 
+	 // 로그아웃 
+	 @RequestMapping(value="/logout.on", method= {RequestMethod.POST}) 
+	public ModelAndView logout(ModelAndView mav, HttpServletRequest request){
 	
+
+		// 로그아웃시 시작페이지로 돌아가는 것임 //
+		HttpSession session = request.getSession();
+		session.invalidate();
+		
+		String message = "로그아웃 되었습니다.";
+		String loc = request.getContextPath()+"/login.on";
+		
+		mav.addObject("message", message);
+		mav.addObject("loc", loc);
+		mav.setViewName("msg");
+		
+		return mav;
+ 
+	 }
 	
 }

@@ -2,6 +2,7 @@
     pageEncoding="UTF-8"%>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <% String ctxPath = request.getContextPath(); %>   
 
@@ -75,18 +76,16 @@
 	</div>
 	
 	<div class='mx-4'  style="background-color:#e3f2fd; width: 100%; height: 45px;">
-		<div class="pt-2">
-			<span class="mx-5 my-3 ">기간조회 <input type="date" style="border:solid 1px #cccccc;"/>  ~  <input type="date" style="border:solid 1px #cccccc;"/></span>
-			<span class="float-right">
-			<span >
-				<select style="width: 110px; border:solid 1px #cccccc;">
-					<option value="">추가근무수당</option>
-					<option>연차수당</option>
+		<div style="margin-left: 73%;" class="pt-1">
+			<span>
+				<select style="width: 100px; border:solid 1px #cccccc;" name="searchType"> 
+					<option> ====== </option>
+					<option value="1">추가근무수당</option>
+					<option value="2">연차근무수당</option>
 				</select> 
 			</span>
-			<input type="text"style="width: 120px; border:solid 1px #cccccc;"/>
-			<button class="btn btn-sm mr-3" style="background-color: #086BDE; color:white;"><i class="fas fa-search"></i>검색</button>
-			</span>
+			<input type="text"style="width: 120px; border:solid 1px #cccccc;" name="searchWord"/>
+			<button class="btn btn-sm" style="background-color: #086BDE; color:white; width: 60px;font-size:14px;"><i class="fas fa-search"></i>검색</button>
 		</div>
 	</div>
 	
@@ -96,25 +95,29 @@
 			<thead>
 				<tr>
 					<th>No</th>
-					<th>지급기준일</th>
 					<th>사원번호</th>
 					<th>사원명</th>
+					<th>부문</th>
 					<th>부서</th>
-					<th>지급총액</th>
-					<th>공제급액</th>
-					<th>실지급액</th>
+					<th>직급</th>
+					<th>금액<th>
+					<th>지급기준일<th>
 				</tr>
+				
 			</thead>
 			<tbody  onclick="go_detailInfo">
-				<tr class="text-center border" id="list">
-					<td>1</td>
-					<td>223</td>
-					<td>명절상여금</td>
-					<td>김민수</td>
-					<td>200,000</td>
-					<td>완료</td>
-					<td>2022-11-12</td>
-				</tr>
+				<c:forEach  var="emp" items="${requestScope.payList}" varStatus="status">
+					<tr class="text-center border" id="list">
+						<td><c:out value="${status.count}" /></td>
+						<td>${emp.payno}</td>
+						<td>${emp.name}</td>
+						<td>${emp.bumun}</td>
+						<td>${emp.department}</td>
+						<td>${emp.position}</td>
+						<td><fmt:formatNumber value="${emp.overpay}" pattern="#,###" /></td>
+						<td>${emp.paymentdate}</td>
+					</tr>
+				</c:forEach>
 			</tbody>
 		</table>
 	</div>
@@ -127,21 +130,64 @@
 				<tr>
 				<th>NO</th>
 				<th>지급기준일</th>
-				<th>수당구분</th>
-				<th>지급액</th>
+				<th>초과근무수당</th>
+				<th>연차수당</th>
+				<th>합계</th>
 				</tr>
 			</thead>
 			<tbody>
-				<tr class="text-center border" >
-					<td>1</td>
-					<td>2022.11.12</td>
-					<td><input type="text" name=""/>초과근무수당</td>
-					<td><input type="text" name=""/>20,000</td>
-				</tr>
+				<c:forEach  var="emp" items="${requestScope.payList}" varStatus="status">
+					<tr class="text-center border" >
+						<td ><c:out value="${status.count}" /></td>
+						<td>${emp.paymentdate}</td>
+						
+						<c:if test="${not empty emp.overtimepay}">
+							<td><fmt:formatNumber value="${emp.overtimepay}" pattern="#,###" /></td>
+						</c:if>
+						<c:if test="${empty emp.overtimepay}">
+							<td> - </td>
+						</c:if>
+						
+							
+						<c:if test="${not empty emp.annualpay}">
+							<td><fmt:formatNumber value="${emp.annualpay}" pattern="#,###" /></td>
+						</c:if>
+						<c:if test="${empty emp.annualpay}">
+							<td> - </td>
+						</c:if>
+						<td><fmt:formatNumber value="${emp.overpay}" pattern="#,###" /></td>
+					</tr>
+				</c:forEach>
 			</tbody>
 			
 		</table>
 		
+	<!-- 
+		<table class="table table-bordered table-sm mx-4 ">
+		<c:forEach  var="emp" items="${requestScope.payList}" varStatus="status">
+			<tr>
+				<th>NO</th>
+				<td ><c:out value="${status.count}" /></td>
+			</tr>	
+			<tr>
+				<th>지급기준일</th>
+				<td>${emp.paymentdate}</td>
+			</tr>		
+			<tr>	
+				<th>초과근무수당</th>
+				<c:if test="${not empty emp.overtimepay}">
+					<td>${emp.overtimepay}</td>
+				</c:if>
+			</tr>	
+			<tr>	
+				<th>연차수당</th>
+				<c:if test="${not empty emp.annualpay}">
+					<td>${emp.annualpay}</td>
+				</c:if>
+			</tr>		
+		</c:forEach>
+		</table>
+	 -->	
 	</div>
 </div>
 </form>

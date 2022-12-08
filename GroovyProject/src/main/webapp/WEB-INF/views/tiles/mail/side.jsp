@@ -8,6 +8,41 @@
 	background-color: #086BDE;
 }
 </style>
+<%-- <link rel="stylesheet" href="/resources/colorPicker/src/colorPick.dark.theme.css"/>
+
+<script src="${ctxPath}/resources/colorPicker/src/colorPick.js"></script> --%>
+<script type="text/javascript">
+	$(document).ready(function(){
+		sideTag();
+	});// ------------------- end of $(document).ready(function(){})
+
+	function sideTag(){
+		$.ajax({
+            url : '<%= ctxPath%>/mail/getTagListSide.on',
+            type:'POST',
+            processData:false,
+            contentType:"application/json;charset=UTF-8",
+            dataType:'json',
+            cache:false,
+            success:function(json){
+            	var html="";
+            	$.each(json, function(index, item){
+					html += '<li><a id="tag" class="nav-link" href="<%=ctxPath%>/approval/personal/sent.on"><i class="fas fa-tag" style="color:#';
+					html += item.tag_color;
+					html +=	'";"></i>&nbsp';
+					html += item.tag_name
+					html +='</a></li>';
+				});	
+            	$("#sidebarTag").html(html);
+            	
+
+            	
+            },error: function(request, status, error){
+                alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+            } 
+        });
+	}
+</script>
 
 <!-- A vertical navbar -->
 <nav class="navbar bg-light">
@@ -36,14 +71,16 @@
 
     <li class="nav-item">
       <a class="nav-link" href="#">태그 메일함</a>
-      	<ul>
-      		<li><a id="tag" class="nav-link" href="<%=ctxPath%>/approval/personal/sent.on">태그1</a></li>
-      		<li><a id="tag" class="nav-link" href="<%=ctxPath%>/approval/personal/processed.on">태그2</a></li>
-      		<li><a id="tag" class="nav-link" href="<%=ctxPath%>/approval/personal/saved.on">태그3</a></li>
-      		<li><a id="tag" class="nav-link" href="<%=ctxPath%>/mail/viewMail.on">(임시) 메일 보기</a></li>
+      	<ul id="sidebarTag">
+      		 	
       	</ul>
     </li>
+    <!-- 
+    <li><div id ="tagAdd" class="nav-link" onclick="">태그 추가</div></li>
+    <li><div class="colorPickSelector"  ></div></li>
+     -->
 
   </ul>
+  
 
 </nav>

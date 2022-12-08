@@ -48,6 +48,19 @@
 		color: #086BDE !important;
 		background-color: #E3F2FD;
 	}
+	
+	.header_profile_css {
+		border-radius: 50%; 
+		background-color: #E3F2FD; 
+		width:50px; 
+		height:50px; 
+		display: flex; 
+		justify-content: center; 
+		align-items: center;
+		color:white;
+		font-size: 25pt;
+		font-weight: bold;
+	}
 </style>
 
 <script>
@@ -57,24 +70,25 @@ $(()=>{
 	const ctxPath = '<%=ctxPath%>';
 	let menuName = pathName.substring(ctxPath.length+1);
 	const index = menuName.indexOf("/");
-	menuName = menuName.substring(0,index);
+	menuName = menuName.substring(0,index) || 'index';
 	
-	$('div#'+menuName).addClass('activeHeaderMenu');
+	$('div#'+menuName).addClass('activeHeaderMenu'); // 현재 메뉴에 색 입히기
 	
+	$("#header_profile_bg").text("${sessionScope.loginuser.name}".substring(0,1));
 });
 </script>
 
 <nav class="navbar navbar-expand-sm">
 
   <ul class="navbar-nav headerNavbar">
-  	<li class="nav-item mt-1 ">
-      	<div style="padding: 0; margin-right: 100px; cursor:pointer;" class="nav-link" onClick='location.href="<%=ctxPath%>/index.on"'>
+  	<li class="nav-item mt-1">
+      	<div style="padding: 0 0 0 10%; margin-right: 100px; cursor:pointer;" class="nav-link" onClick='location.href="<%=ctxPath%>/index.on"'>
       		<img src='<%=ctxPath%>/resources/images/logo/groovy_loco_edit.png' width="150"/>
     	</div>
     </li>
     
     <li class="nav-item"  >
-    	<div class="nav-link text-dark header_hover header_width" onClick='location.href="<%=ctxPath%>/index.on"'>
+    	<div id='index' class="nav-link text-dark header_hover header_width" onClick='location.href="<%=ctxPath%>/index.on"'>
     		<div class="text-center"><i class="fas fa-home fa-lg"></i></div>
     		<div style="text-align: center;">홈</div>
     	</div>
@@ -116,7 +130,7 @@ $(()=>{
    		</div>
     </li>
     <li class="nav-item">
-      	<div id='' class="nav-link text-dark  header_hover header_width" onClick='location.href="#"'>
+      	<div id='reservation' class="nav-link text-dark  header_hover header_width" onClick='location.href="<%=ctxPath%>/reservation/meetingRoom.on"'>
     		<div class="text-center"><i class="fas fa-bookmark fa-lg"></i></div>
     		<div style="text-align: center;">자원예약</div>
    		</div>
@@ -128,13 +142,13 @@ $(()=>{
    		</div>
     </li>
     <li class="nav-item">
-      	<div id='' class="nav-link text-dark  header_hover header_width" onClick='location.href="#"'>
+      	<div id='community' class="nav-link text-dark  header_hover header_width" onClick='location.href="<%=ctxPath%>/community/list.on"'>
     		<div class="text-center"><i class="fas fa-chalkboard-teacher fa-lg"></i></div>
     		<div style="text-align: center;">커뮤니티</div>
    		</div>
     </li>
     <li class="nav-item">
-      	<div id='' class="nav-link text-dark  header_hover header_width" onClick='location.href="#"'>
+      	<div id='survey' class="nav-link text-dark  header_hover header_width" onClick='location.href="<%=ctxPath%>/survey/surveyList.on"'>
     		<div class="text-center"><i class="fas fa-chart-pie fa-lg"></i></div>
     		<div style="text-align: center;">설문조사</div>
    		</div>
@@ -147,10 +161,18 @@ $(()=>{
     </li>
     
     <%-- 프로필 이미지 --%>
-    <li class="nav-item" style="margin-left: 13%;">
+    <li class="nav-item" style="margin-left: 12%;">
       	<div class="nav-link dropdown" onClick='location.href="#"'>
     		<div class="dropbtn">
-    			<img style="border-radius: 50%; height:50px; width: 50px;" src="<%=ctxPath %>/resources/images/test/cat_ex.PNG" />
+    			
+    			<c:if test="${empty sessionScope.loginuser.empimg}">
+					<div class="header_profile_css" id="header_profile_bg"></div>
+				</c:if>
+				
+				<c:if test="${not empty sessionScope.loginuser.empimg}">
+					<img style="border-radius: 50%; height:50px; width: 50px;" src="<%=ctxPath %>/resources/images/profile/${sessionScope.loginuser.empimg}" />
+				</c:if>
+								
    			</div>
    			<div class="dropdown-content">
 			    <a href="#">프로필</a>

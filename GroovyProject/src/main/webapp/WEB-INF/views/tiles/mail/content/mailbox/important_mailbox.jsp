@@ -1,5 +1,15 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %> 
+
+<%
+	String ctxPath = request.getContextPath();
+%>  
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
+
+<jsp:useBean id="now" class="java.util.Date" />
+<fmt:formatDate value="${now}" pattern="yyyy-MM-dd" var="today" />
+
 <style type="text/css">
 .btn_submenu>a{
 	color:black;
@@ -16,9 +26,8 @@
 }
 
 #mailToolbar{
-    padding: 10px 0;
-    border-bottom: solid 1px #ddd;
-    border-top: solid 1px #ddd;
+    padding: 0;
+
 }
 td.mail_list_option{
 	width:80px;
@@ -26,8 +35,9 @@ td.mail_list_option{
 td.mail_list_sender{
 	width:150px;
 }
-td.mail_list_time{
-	width:150px;
+td.mail_list_time {
+    width: 300px;
+    text-align: end;
 }
 #mail_box{
 	margin-top:10px;
@@ -69,6 +79,8 @@ i.fa-flag{
 </style>
 <script type="text/javascript">
 	$(document).ready(function(){
+		$("div#displayList").hide();
+		
 		$(document).on('click','#mailLAllCheck_btn', function(){
 			if($("#mailLAllCheck").is(":checked")){
 				$("input:checkbox[id='mailLAllCheck']").prop("checked", false);
@@ -77,11 +89,43 @@ i.fa-flag{
 	        }
 		});
 		
+		// 검색 엔터
+		$("input#searchWord").keyup(function(e){
+			if(e.keyCode == 13) {
+				// 검색어에 엔터를 했을 경우
+				goSearch();
+			}
+		});
+		
+		// 검색시 검색조건 및 검색어 값 유지시키기
+		if( ${not empty requestScope.paraMap} ) {
+			$("select#searchType").val("${requestScope.paraMap.searchType}");
+			$("input#searchWord").val("${requestScope.paraMap.searchWord}");
+		}
+		
+		// 사이드바에 태그 추가해주기
+		var sidebarTag = ``;
+		<c:forEach var="tagVO" items="${requestScope.tagList}" varStatus="status">   		
+			
+			sidebarTag += `<li><a id="tag" class="nav-link" href="<%=ctxPath%>/approval/personal/sent.on"><i class="fas fa-tag" style="color:#${tagVO.tag_color};"></i>${tagVO.tag_name}</a></li>`;
+			
+
+		</c:forEach>
+		$("#sidebarTag").html(sidebarTag);
+		
 	});
+	
+	function goSearch() {
+		const frm = document.searchFrm;
+		frm.method = "GET";
+		frm.action = "<%= ctxPath%>/mail/receiveMailBox.on";
+		frm.submit();
+	}// end of function goSearch()--------------------
 </script>
 
-<h2>중요메일함</h2>
-
+<div style="margin: 1% 0 5% 1%">
+	<h4>중요 메일</h4>
+</div>
 <div id="mailToolbar" class="tool_bar">
 	<div class="critical">
 		
@@ -135,198 +179,83 @@ i.fa-flag{
 <div id="mail_box">
 	<table class="table">
 
-	  <tbody>
-	    <tr>
-	      <td class="mail_list_option">
-	      	<input type="checkbox" id="mailLCheck" value="off" style="vertical-align:middle">
-	      	<i class="fas fa-flag"></i>
-	      	<!-- 색조정 or 다른 아이콘 -->
-	      	<i class="far fa-envelope"></i>
-	      	<!-- 봤다면 <i class="far fa-envelope-open"></i> -->
-	      </td>
-	      <td class = "mail_list_sender" >받는사람 이름</td>
-	      <td class = "mail_list_subject">
-	      	<a href="#"><i class="fas fa-tag" style="color:#f9320c"></i> &nbsp</a>
-		    <a href="#"><i class="fas fa-tag" style="color:#00b9f1"></i> &nbsp</a>
-		    <a href="#"><i class="fas fa-tag" style="color:#f9c00c"></i> &nbsp</a>
-		      	<!-- 태그 개수에 따라 제목옆에 보여줄 예정 -->
-	      	메일제목
-	      </td>
-	      <td class = "mail_list_time">보낸시간</td>
-	    </tr>
+	
 	    
-	    <tr>
-	      <td class="mail_list_option">
-	      	<input type="checkbox" id="mailLCheck" value="off" style="vertical-align:middle">
-	      	<i class="fas fa-flag"></i>
-	      	<!-- 색조정 or 다른 아이콘 -->
-	      	<i class="far fa-envelope"></i>
-	      	<!-- 봤다면 <i class="far fa-envelope-open"></i> -->
-	      </td>
-	      <td class = "mail_list_sender" >받는사람 이름</td>
-	      <td class = "mail_list_subject">
-	      	<a href="#"><i class="fas fa-tag" style="color:#f9320c"></i> &nbsp</a>
-		    <a href="#"><i class="fas fa-tag" style="color:#00b9f1"></i> &nbsp</a>
-		    <a href="#"><i class="fas fa-tag" style="color:#f9c00c"></i> &nbsp</a>
-		      	<!-- 태그 개수에 따라 제목옆에 보여줄 예정 -->
-	      	메일제목
-	      </td>
-	      <td class = "mail_list_time">보낸시간</td>
-	    </tr>
-	    
-	    <tr>
-	      <td class="mail_list_option">
-	      	<input type="checkbox" id="mailLCheck" value="off" style="vertical-align:middle">
-	      	<i class="fas fa-flag"></i>
-	      	<!-- 색조정 or 다른 아이콘 -->
-	      	<i class="far fa-envelope"></i>
-	      	<!-- 봤다면 <i class="far fa-envelope-open"></i> -->
-	      </td>
-	      <td class = "mail_list_sender textCut" >받는사람 이름</td>
-	      <td class = "mail_list_subject textCut">
-	      	<a href="#"><i class="fas fa-tag" style="color:#f9320c"></i> &nbsp</a>
-		    <a href="#"><i class="fas fa-tag" style="color:#00b9f1"></i> &nbsp</a>
-		    <a href="#"><i class="fas fa-tag" style="color:#f9c00c"></i> &nbsp</a>
-		      	<!-- 태그 개수에 따라 제목옆에 보여줄 예정 -->
-	      	메일제목
-	      </td>
-	      <td class = "mail_list_time">보낸시간</td>
-	    </tr>
-	    
-	    <tr>
-	      <td class="mail_list_option">
-	      	<input type="checkbox" id="mailLCheck" value="off" style="vertical-align:middle">
-	      	<i class="fas fa-flag"></i>
-	      	<!-- 색조정 or 다른 아이콘 -->
-	      	<i class="far fa-envelope"></i>
-	      	<!-- 봤다면 <i class="far fa-envelope-open"></i> -->
-	      </td>
-	      <td class = "mail_list_sender" >받는사람 이름</td>
-	      <td class = "mail_list_subject">
-	      	<a href="#"><i class="fas fa-tag" style="color:#f9320c"></i> &nbsp</a>
-		    <a href="#"><i class="fas fa-tag" style="color:#00b9f1"></i> &nbsp</a>
-		    <a href="#"><i class="fas fa-tag" style="color:#f9c00c"></i> &nbsp</a>
-		      	<!-- 태그 개수에 따라 제목옆에 보여줄 예정 -->
-	      	메일제목
-	      </td>
-	      <td class = "mail_list_time">보낸시간</td>
-	    </tr>
-	    
-	    <tr>
-	      <td class="mail_list_option">
-	      	<input type="checkbox" id="mailLCheck" value="off" style="vertical-align:middle">
-	      	<i class="fas fa-flag"></i>
-	      	<!-- 색조정 or 다른 아이콘 -->
-	      	<i class="far fa-envelope"></i>
-	      	<!-- 봤다면 <i class="far fa-envelope-open"></i> -->
-	      </td>
-	      <td class = "mail_list_sender" >받는사람 이름</td>
-	      <td class = "mail_list_subject">
-	      	<a href="#"><i class="fas fa-tag" style="color:#f9320c"></i> &nbsp</a>
-		    <a href="#"><i class="fas fa-tag" style="color:#00b9f1"></i> &nbsp</a>
-		    <a href="#"><i class="fas fa-tag" style="color:#f9c00c"></i> &nbsp</a>
-		      	<!-- 태그 개수에 따라 제목옆에 보여줄 예정 -->
-	      	메일제목
-	      </td>
-	      <td class = "mail_list_time">보낸시간</td>
-	    </tr>
-	    
-	    <tr>
-	      <td class="mail_list_option">
-	      	<input type="checkbox" id="mailLCheck" value="off" style="vertical-align:middle">
-	      	<i class="fas fa-flag"></i>
-	      	<!-- 색조정 or 다른 아이콘 -->
-	      	<i class="far fa-envelope"></i>
-	      	<!-- 봤다면 <i class="far fa-envelope-open"></i> -->
-	      </td>
-	      <td class = "mail_list_sender" >받는사람 이름</td>
-	      <td class = "mail_list_subject">
-	      	<a href="#"><i class="fas fa-tag" style="color:#f9320c"></i> &nbsp</a>
-		    <a href="#"><i class="fas fa-tag" style="color:#00b9f1"></i> &nbsp</a>
-		    <a href="#"><i class="fas fa-tag" style="color:#f9c00c"></i> &nbsp</a>
-		      	<!-- 태그 개수에 따라 제목옆에 보여줄 예정 -->
-	      	메일제목
-	      </td>
-	      <td class = "mail_list_time">보낸시간</td>
-	    </tr>
-	    
-	    <tr>
-	      <td class="mail_list_option">
-	      	<input type="checkbox" id="mailLCheck" value="off" style="vertical-align:middle">
-	      	<i class="fas fa-flag"></i>
-	      	<!-- 색조정 or 다른 아이콘 -->
-	      	<i class="far fa-envelope"></i>
-	      	<!-- 봤다면 <i class="far fa-envelope-open"></i> -->
-	      </td>
-	      <td class = "mail_list_sender" >받는사람 이름</td>
-	      <td class = "mail_list_subject">
-	      	<a href="#"><i class="fas fa-tag" style="color:#f9320c"></i> &nbsp</a>
-		    <a href="#"><i class="fas fa-tag" style="color:#00b9f1"></i> &nbsp</a>
-		    <a href="#"><i class="fas fa-tag" style="color:#f9c00c"></i> &nbsp</a>
-		      	<!-- 태그 개수에 따라 제목옆에 보여줄 예정 -->
-	      	메일제목
-	      </td>
-	      <td class = "mail_list_time">보낸시간</td>
-	    </tr>
-	    
-	    <tr>
-	      <td class="mail_list_option">
-	      	<input type="checkbox" id="mailLCheck" value="off" style="vertical-align:middle">
-	      	<i class="fas fa-flag"></i>
-	      	<!-- 색조정 or 다른 아이콘 -->
-	      	<i class="far fa-envelope"></i>
-	      	<!-- 봤다면 <i class="far fa-envelope-open"></i> -->
-	      </td>
-	      <td class = "mail_list_sender" >받는사람 이름</td>
-	      <td class = "mail_list_subject">
-	      	<a href="#"><i class="fas fa-tag" style="color:#f9320c"></i> &nbsp</a>
-		    <a href="#"><i class="fas fa-tag" style="color:#00b9f1"></i> &nbsp</a>
-		    <a href="#"><i class="fas fa-tag" style="color:#f9c00c"></i> &nbsp</a>
-		      	<!-- 태그 개수에 따라 제목옆에 보여줄 예정 -->
-	      	메일제목
-	      </td>
-	      <td class = "mail_list_time">보낸시간</td>
-	    </tr>
-	    
-	    <tr>
-	      <td class="mail_list_option">
-	      	<input type="checkbox" id="mailLCheck" value="off" style="vertical-align:middle">
-	      	<i class="fas fa-flag"></i>
-	      	<!-- 색조정 or 다른 아이콘 -->
-	      	<i class="far fa-envelope"></i>
-	      	<!-- 봤다면 <i class="far fa-envelope-open"></i> -->
-	      </td>
-	      <td class = "mail_list_sender" >받는사람 이름</td>
-	      <td class = "mail_list_subject">
-	      	<a href="#"><i class="fas fa-tag" style="color:#f9320c"></i> &nbsp</a>
-		    <a href="#"><i class="fas fa-tag" style="color:#00b9f1"></i> &nbsp</a>
-		    <a href="#"><i class="fas fa-tag" style="color:#f9c00c"></i> &nbsp</a>
-		      	<!-- 태그 개수에 따라 제목옆에 보여줄 예정 -->
-	      	메일제목
-	      </td>
-	      <td class = "mail_list_time">보낸시간</td>
-	    </tr>
-	    
-	    <tr>
-	      <td class="mail_list_option">
-	      	<input type="checkbox" id="mailLCheck" value="off" style="vertical-align:middle">
-	      	<i class="fas fa-flag"></i>
-	      	<!-- 색조정 or 다른 아이콘 -->
-	      	<i class="far fa-envelope"></i>
-	      	<!-- 봤다면 <i class="far fa-envelope-open"></i> -->
-	      </td>
-	      <td class = "mail_list_sender" >받는사람 이름</td>
-	      <td class = "mail_list_subject">
-	      	<a href="#"><i class="fas fa-tag" style="color:#f9320c"></i> &nbsp</a>
-		    <a href="#"><i class="fas fa-tag" style="color:#00b9f1"></i> &nbsp</a>
-		    <a href="#"><i class="fas fa-tag" style="color:#f9c00c"></i> &nbsp</a>
-		      	<!-- 태그 개수에 따라 제목옆에 보여줄 예정 -->
-	      	메일제목
-	      </td>
-	      <td class = "mail_list_time">보낸시간</td>
-	    </tr>
+		    <c:forEach var="mailVO" items="${requestScope.mailList}" varStatus="status">
+		    	<fmt:formatDate value="${mailVO.send_time_date}" pattern="yyyy-MM-dd" var="sendTimeDD"/>
+		        <fmt:formatDate value="${mailVO.send_time_date}" pattern="HH:mm:ss" var="sendTimeToday"/>
+		        <fmt:formatDate value="${mailVO.send_time_date}" pattern="yyyy-MM-dd HH:mm:ss" var="sendTimeNotToday"/>
+		        
+		    	
+		    	<c:if test="${status.index ne 0}">
+			    	<fmt:formatDate value="${mailList[status.index-1].send_time_date}" pattern="yyyy-MM-dd" var="sendTimeBefore"/>
+			    	
+			    	<c:if test="${sendTimeBefore != sendTimeDD}">
+			    	<fmt:formatDate value="${mailVO.send_time_date}" pattern="yyyy년 MM월dd일" var="sendTimeDDT"/>
+				    	<tr>
+				    	 	
+				    	 	<td colspan="4" style="background-color:#F9F9F9; font-size: small;padding: 0.3rem 0.75rem;">${sendTimeDDT}<td>
+			    	 	</tr>
+			    	</c:if>
+			    </c:if> 
+			    <tr>
+			  	  <td class="mail_list_option">
+			      	<input type="checkbox" id="mailLCheck" value="off" style="vertical-align:middle">
+			      	<i class="fas fa-flag"></i>
+			      	<!-- 색조정 or 다른 아이콘 -->
+			      	<i class="far fa-envelope"></i>
+			      	<!-- 봤다면 <i class="far fa-envelope-open"></i> -->
+			      </td>
+			      <td class = "mail_list_sender" >${mailVO.fK_sender_address}</td>
+			
+			      <td class = "mail_list_subject">
+			      	<c:forEach var="tagVO" items="${requestScope.tagList}" varStatus="status">   		
+	
+			      		<c:forEach var="tag_mail_no" items="${tagVO.mail_no_list}" varStatus="status">
+			      			<c:if test="${mailVO.mail_no == tag_mail_no}">
+			      				<a href="#"><i class="fas fa-tag" style="color:#${tagVO.tag_color};"></i> &nbsp</a>
+			      			</c:if>
+			      	
+			      		</c:forEach>
+			      	</c:forEach>
+			      	<c:if test="${mailVO.sender_important == 1 and mailVO.recipient_important == 0}">[보낸메일함]</c:if>
+			      	<c:if test="${mailVO.sender_important == 0 and mailVOr.ecipient_important == 1}">[받은메일함]</c:if>
+			   		<c:if test="${mailVO.sender_important == 1 and mailVO.recipient_important == 1}">[내게쓴메일]</c:if>
+			   
+				  ${mailVO.subject}  [임시노출 번호${mailVO.mail_no}]   
+			      </td>
+			  
+			      	<c:if test="${sendTimeDD == today}">
+			      		<td class = "mail_list_time">오늘 ${sendTimeToday}</td>
+			      	</c:if>
+			        <c:if test="${sendTimeDD != today}">
+				      	<td class = "mail_list_time">${sendTimeNotToday}</td>
+			      	</c:if>	
+			      	
+			    </tr>
+		    </c:forEach>
+	   
+	   
+	
 	  	
 	</table>
+	${pagebar}
+	
+
+    <form name="searchFrm" style="margin-top: 20px;">
+        <select name="searchType" id="searchType" style="height: 26px;">
+           <option value="subject">메일제목</option>
+           <option value="FK_Sender_address">보낸사람</option> <!-- 여기만 바꿔가면서 재활용 -->
+        </select>
+        <input type="text" name="searchWord" id="searchWord" size="40" autocomplete="off" />
+        <input type="text" style="display: none;" /> <%-- form 태그내에 input 태그가 오로지 1개 뿐일경우에는 엔터를 했을 경우 검색이 되어지므로 이것을 방지하고자 만든것이다. --%> 
+        
+        <button type="button" class="btn btn-secondary btn-sm" onclick="goSearch()">검색</button>
+    </form>
+    
+
+    <div id="displayList" style="border:solid 1px gray; border-top:0px; height:100px; margin-left:75px; margin-top:-1px; overflow:auto;">
+	</div>
 </div>
 
 
