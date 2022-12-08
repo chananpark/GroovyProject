@@ -8,8 +8,6 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions"%>
 
-<jsp:useBean id="now" class="java.util.Date" />
-<fmt:formatDate value="${now}" pattern="yyyy-MM-dd" var="today" />
 
 <style type="text/css">
 .btn_submenu>a{
@@ -35,22 +33,22 @@
 	color:inherit !important;
 }
 
-.table td, .table th {
+.table#empInfo td, .table#empInfo th ,.table#empInfo2 td, .table#empInfo2 th{
     padding: 0.75rem;
     vertical-align: top;
-    border-top: 1px solid #dee2e6;
+    border-top: none;
 }
+
+
 
 
 
 </style>
 <script type="text/javascript">
 	$(document).ready(function(){
+		$("#afClick").hide();
+		
 
-		
-		
-		$("div#displayList").hide();
-		
 		$(document).on('click','#mailLAllCheck_btn', function(){
 			if($("#mailLAllCheck").is(":checked")){
 				$("input:checkbox[id='mailLAllCheck']").prop("checked", false);
@@ -84,96 +82,29 @@
 		frm.submit();
 	}// end of function goSearch()--------------------
 	
-
 	
-	function listRefresh(){ // 체크박스 유지용
-		var formData = new FormData();
-		var param = window.location.search;
-		console.log("param"+param);
-		
-		// 원래 체크박스 기억
-		var mailCheck = document.querySelectorAll('input[name="mailCheck"]:checked');
-		console.log(mailCheck);
-		if(mailCheck.length > 0){
-		result="";
-		mailCheck.forEach((el) => {
-			result += el.value;
-			result += ',';
-		});
-		 var checkbox = result.slice(0, -1);
-		 console.log("checkbox"+checkbox);
-		// 체크한 것들 번호 가져가서 , 로 이어지는 문자열로 변환
-		}
-		
-		$.ajax({
-			url:"<%= ctxPath%>/mail/sendMailBoxAjax.on"+param,
-			type:"get",
-			dataType:"json",
-	        success:function(json){
-	        	if(json.html != "" && json.html != null){
-	        		/* console.log("html : " + json.html); */
-	        		$("div#mailTable").html(json.html);
-	        		
-	        		$("div#papagebar").html(json.papagebar);
-	        		
-	        		
-	        		if(checkbox != null){
-	        			const checkbox_arr = checkbox.split(',');
-		        		console.log(checkbox_arr);
-		        		checkbox_arr.forEach((el) => {
-		        			$("input:checkbox[value='"+el+"']").prop("checked", true); // 체크유지
-		        		});
-	        		}
-	        		
-	        	}
+	function ViewInfo(empno){
+		$("#afClick").show();
+		$("#bfClick").hide();
+		<c:forEach var="emp" items="${requestScope.empList}" varStatus="status">
 
-	        	
-	        },
-	        error: function(request, status, error){
-				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			if('${emp.empno}'==empno){
+				$("#selectName").val("${emp.name}");
+				$("#selectBumun").val("${emp.bumun}");
+				$("#selectDepartment").val("${emp.department}");
+				$("#selectCpemail").val("${emp.cpemail}");
+				$("#selectMobile").val("${emp.mobile}");
+				$("#selectJoindate").val("${emp.joindate}");
+				$("#selectBirth_date").val("${emp.birth_date}");
 			}
-		});
+		</c:forEach>
+			
+		
+		
+		
 	}
 
 
-	function importantCheckSelect(){
-	
-		var mailCheck = document.querySelectorAll('input[name="mailCheck"]:checked');
-		console.log(mailCheck);
-		if(mailCheck.length > 0){
-		result="";
-		mailCheck.forEach((el) => {
-			result += el.value;
-			result += ',';
-		});
-		 result = result.slice(0, -1);
-		 console.log(result);
-		// 체크한 것들 번호 가져가서 , 로 이어지는 문자열로 변환
-		 importantCheck(result);  
-		}
-		else{
-			alert("체크박스를 선택해주세요.");
-		}
-	}
-	
-   	function importantCheck(mail_no){
-		$.ajax({
-			url:"<%= ctxPath%>/organization/orgImportantCheck.on",
-			data:{"mail_no":mail_no},
-			type:"post",
-			dataType:"json",
-	        success:function(json){
-	        	if(json.n > 0){
-	        		alert(json.n+ "개 중요 클릭");
-	        	}
-	        	listRefresh();
-	        },
-	        error: function(request, status, error){
-				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-			}
-		});
-	}
-   	
 
 
    	
@@ -224,7 +155,7 @@
 				   </thead>
 				   <c:forEach var="emp" items="${requestScope.empList}" varStatus="status">
 				 
-				   		<tr onclick = 'goMail(${mailVO.mail_no})'>
+				   		<tr onclick = 'ViewInfo(${emp.empno})'>
 						  	  <td class="mail_list_option" onclick="event.stopPropagation()">
 						      	<i id="flag${mailVO.mail_no}" class="fas fa-flag" style="color:darkgray;" onclick="importantCheck(${mailVO.mail_no})"></i>
 						      </td>
@@ -263,9 +194,9 @@
 	
 	    <form name="searchFrm" style="margin-top: 20px;">
 	        <select name="searchType" id="searchType" style="height: 26px;">
-	           <option value="bumun">부문명</option>
-	           <option value="department">팀명</option> 
-	           <option value="name">직원명</option>
+	           <option value="bumun">부문</option>
+	           <option value="department">부서</option> 
+	           <option value="name">성명</option>
 	        </select>
 	        <input type="text" name="searchWord" id="searchWord" size="40" autocomplete="off"/>
 	        <input type="text" style="display: none;" /> <%-- form 태그내에 input 태그가 오로지 1개 뿐일경우에는 엔터를 했을 경우 검색이 되어지므로 이것을 방지하고자 만든것이다. --%> 
@@ -274,32 +205,63 @@
 	    </form>
 	    
 	
-	    <div id="displayList" style="border:solid 1px gray; border-top:0px; height:100px; margin-left:75px; margin-top:-1px; overflow:auto;">
-		</div>
+
 	</div>
 	<!-- @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@ -->
 
-	<div style="width:45%; float:right;">
-		직원  ooo 님 정보
-		<table class="table">
-			<tr>
-				<td rowspan="2" style="width:150px;">
-					<img src="<%= ctxPath%>/resources/images/picture/꼬미사진.jpg" height="200px;" width="200px"/>
-				</td>
-				
-				
-			</tr>
-			<tr>
-				<th>사원번호</th>
-				<td><input type="text" id="" name="" /></td>
-				<th>사원번호</th>
-				<td><input type="text" id="" name="" /></td>
-			<tr>
-			<tr>	
-				<th>성명</th>
-				<td><input type="text" id="name" name="name" /></td>
-			</tr>
-		</table>
+	<div style="width:45%; float:right;" id="infoPage">
+		<div class="text-center" id="bfClick" style="width:100%; height: 100%">
+			<h2 style="margin-top: 50%;">사원을 선택해주세요.</h2>
+		</div>
+		<div id="afClick">
+			<table id="empInfo" class="table">
+				<tr>
+					<td colspan="3" class="text-center">
+						<h4 class="font-weight-bold ">직원  ooo 님 정보</h4>
+					</td>
+				</tr>
+				<tr>
+					<td rowspan="5" style="width:150px;">
+						<img src="<%= ctxPath%>/resources/images/picture/꼬미사진.jpg" height="200px;" width="200px"/>
+						
+					</td>
+					
+					
+				</tr>
+				<tr>
+					<th>성명</th>
+					<td><input type="text" id="selectName" name="selecteName" value="이름" /></td>
+				</tr>
+	
+				<tr>	
+					<th>부문</th>
+					<td><input type="text" id="selectBumun" name="selectBumun" /></td>
+				<tr>
+				<tr>	
+					<th>부서</th>
+					<td><input type="text" id="selectDepartment" name="selectDepartment" /></td>
+				</tr>
+			</table>
+			
+			<table id="empInfo2" class="table">
+				<tr>	
+					<th>이메일</th>
+					<td><input type="text" id="selectCpemail" name="selectCpemail" /></td>
+				</tr>
+				<tr>	
+					<th>휴대폰 번호</th>
+					<td><input type="text" id="selectMobile" name="selectMobile" /></td>
+				</tr>
+				<tr>	
+					<th>입사일자</th>
+					<td><input type="text" id="selectJoindate" name="selectJoindate" /></td>
+				</tr>
+				<tr>	
+					<th>생년월일</th>
+					<td><input type="text" id="selectBirth_date" name="selectBirth_date" /></td>
+				</tr>
+			</table>
+		</div>
 	</div>
 	
 	
