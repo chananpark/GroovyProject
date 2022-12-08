@@ -201,6 +201,13 @@
 		select '"'||department||' '||position||' '||name||'<![CDATA[<]]>'||cpemail||'<![CDATA[>]]>'||'"' as cpemail
 		from tbl_employee
 	</select>
+	
+	<!--  메일정보 가져오기 (답장용) -->
+	<select id="getreply" resultType="String" parameterType="String"> 
+		select '"'||department||' '||position||' '||name||'<![CDATA[<]]>'||cpemail||'<![CDATA[>]]>'||'"' as cpemail
+		from tbl_employee
+		where cpemail = lower(#{cpemail})
+	</select>
 		
 	<!--  메일 읽음 처리하기 -->
 	<update id="readMail" parameterType = "HashMap" >
