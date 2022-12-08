@@ -4,6 +4,7 @@ Spring MVC 모듈을 사용한 그룹웨어 팀프로젝트입니다.
 <h2>개발 환경</h2>
 <ul>
   <li>Java 8</li>
+  <li>Spring framework</li>
   <li>Oracle RDBMS</li>
   <li>Tomcat 9.0</li>
   <li>HTML</li>
