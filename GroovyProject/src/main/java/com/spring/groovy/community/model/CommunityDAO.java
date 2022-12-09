@@ -149,4 +149,22 @@ public class CommunityDAO implements InterCommunityDAO {
 		return sqlsession.delete("community.delTempPost", temp_post_no);
 	}
 
+	// 좋아요 목록 조회
+	@Override
+	public List<CommunityLikeVO> getLikeList(String post_no) {
+		return sqlsession.selectList("community.getLikeList", post_no);
+	}
+
+	// like 시퀀스 가져오기
+	@Override
+	public String getLikeNo() {
+		return sqlsession.selectOne("community.getLikeNo");
+	}
+
+	// 좋아요 누르기/취소하기
+	@Override
+	public int updateLike(CommunityLikeVO like) {
+		return sqlsession.update("community.updateLike", like);
+	}
+
 }

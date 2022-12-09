@@ -71,4 +71,13 @@ public interface InterCommunityDAO {
 	// 임시저장글 삭제
 	int delTempPost(String temp_post_no);
 
+	// 좋아요 목록 조회
+	List<CommunityLikeVO> getLikeList(String post_no);
+
+	// like 시퀀스 가져오기
+	String getLikeNo();
+
+	// 좋아요 누르기/취소하기
+	int updateLike(CommunityLikeVO like);
+
 }

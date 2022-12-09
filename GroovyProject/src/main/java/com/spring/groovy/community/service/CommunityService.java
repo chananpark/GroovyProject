@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.nhncorp.lucy.security.xss.XssPreventer;
 import com.spring.groovy.common.FileManager;
 import com.spring.groovy.community.model.CommunityCommentVO;
+import com.spring.groovy.community.model.CommunityLikeVO;
 import com.spring.groovy.community.model.CommunityPostFileVO;
 import com.spring.groovy.community.model.CommunityPostVO;
 import com.spring.groovy.community.model.InterCommunityDAO;
@@ -290,6 +291,28 @@ public class CommunityService implements InterCommunityService {
 		}
 		
 		return resultMapList;
+	}
+
+	// 좋아요 목록 조회
+	@Override
+	public List<CommunityLikeVO> getLikeList(String post_no) {
+		return dao.getLikeList(post_no);
+	}
+
+	// 좋아요 누르기/취소하기
+	@Override
+	public boolean updateLike(CommunityLikeVO like) {
+		
+		if(like.getLike_no() == null || "".equals(like.getLike_no())) {
+			// like 시퀀스 가져오기
+			String like_no = dao.getLikeNo();
+			like.setLike_no(like_no);
+		}
+		
+		// 좋아요 누르기/취소하기
+		int n = dao.updateLike(like);
+		
+		return (n==1)? true: false;
 	}
 
 }

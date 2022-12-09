@@ -597,3 +597,12 @@ as
 SELECT T.*,
 REGEXP_REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(POST_CONTENT, '&'||'lt;','<' ),'&'||'gt;','>'),'&amp;', '&'),'&nbsp;',' ') , '<[^>]*>' ,'' ) AS PLAIN_POST_CONTENT
 FROM TBL_COMMUNITY_POST_TEMP T;
+
+-- 좋아요 목록 조회 뷰 --
+create or replace view view_like_list
+as
+select L.*, name, empimg
+from TBL_COMMUNITY_LIKE L
+join tbl_employee E
+on L.fk_empno = empno
+;

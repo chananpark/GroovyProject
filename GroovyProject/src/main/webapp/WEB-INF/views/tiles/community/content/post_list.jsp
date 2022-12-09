@@ -154,11 +154,11 @@ const setSortOrder = () => {
 								<td class='col text-center'>${post.post_no}</td>
 								<td class='col col-4'><a href='<%=ctxPath%>/community/detail.on?post_no=${post.post_no}'>${post.post_subject}</a>
 								&nbsp;<i class="far fa-comment mx-2"></i>${post.commentCnt}
+								<c:if test="${post.likeCnt > 0}">
+								&nbsp;<i class="far fa-heart"></i>&nbsp;${post.likeCnt}
+								</c:if>
 								<c:if test="${post.fileCnt > 0}">
 								&nbsp;<i class="fas fa-paperclip"></i>&nbsp;${post.fileCnt}
-								</c:if>
-								<c:if test="${post.likeCnt > 0}">
-								&nbsp;<i class="fas fa-paperclip"></i>&nbsp;${post.likeCnt}
 								</c:if>
 								</td>
 	                            <td class='col text-center'>${post.name}</td>

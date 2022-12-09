@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.spring.groovy.community.model.CommunityCommentVO;
+import com.spring.groovy.community.model.CommunityLikeVO;
 import com.spring.groovy.community.model.CommunityPostFileVO;
 import com.spring.groovy.community.model.CommunityPostVO;
 
@@ -59,5 +60,11 @@ public interface InterCommunityService {
 
 	// 임시저장 목록 가져오기
 	List<Map<String, String>> getSavedPostList(String fk_empno);
+
+	// 좋아요 목록 조회
+	List<CommunityLikeVO> getLikeList(String post_no);
+
+	// 좋아요 누르기/취소하기
+	boolean updateLike(CommunityLikeVO like);
 
 }

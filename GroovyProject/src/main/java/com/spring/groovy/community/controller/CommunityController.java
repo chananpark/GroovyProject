@@ -30,11 +30,11 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.nhncorp.lucy.security.xss.XssPreventer;
-import com.spring.groovy.approval.model.DraftFileVO;
 import com.spring.groovy.common.FileManager;
 import com.spring.groovy.common.Myutil;
 import com.spring.groovy.common.Pagination;
 import com.spring.groovy.community.model.CommunityCommentVO;
+import com.spring.groovy.community.model.CommunityLikeVO;
 import com.spring.groovy.community.model.CommunityPostFileVO;
 import com.spring.groovy.community.model.CommunityPostVO;
 import com.spring.groovy.community.service.InterCommunityService;
@@ -531,6 +531,33 @@ public class CommunityController {
 				e1.printStackTrace();
 			}
 		}
+	}
+	
+	// 좋아요 목록 조회
+	@ResponseBody
+	@PostMapping(value = "/getLikeList.on", produces = "text/plain;charset=UTF-8")
+	public String getLikeList(@RequestParam("post_no") String post_no) {
+
+		// 좋아요 목록 조회
+		List<CommunityLikeVO> likeList = service.getLikeList(post_no);
+		
+		JSONArray jsonArr = new JSONArray(likeList);
+		
+		return String.valueOf(jsonArr);
+	}
+	
+	// 좋아요 누르기/취소하기
+	@ResponseBody
+	@PostMapping(value = "/updateLike.on", produces = "text/plain;charset=UTF-8")
+	public String updateLike(HttpServletRequest request, CommunityLikeVO like) {
+		
+		boolean result = service.updateLike(like);
+		
+		JSONObject jsonObj = new JSONObject();
+		jsonObj.put("result", result);
+		
+		return jsonObj.toString();
+		
 	}
 	
 	// 로그인 사용자 정보 가져오기
