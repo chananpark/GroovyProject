@@ -52,6 +52,19 @@ public class CommunityService implements InterCommunityService {
 		if (!result)
 			return false;
 		
+		// 임시저장했던 글이라면
+		String temp_post_no = (String) paraMap.get("temp_post_no");
+		if (temp_post_no != null && !"".equals(temp_post_no)) {
+			// 임시저장글 삭제
+			n = dao.delTempPost(temp_post_no);
+			
+			result = (n == 1)? true: false;
+			
+			// 임시저장글 삭제 실패 시 리턴
+			if (!result)
+				return false;
+		}
+		
 		// 첨부 파일 리스트
 		List<CommunityPostFileVO> fileList = (List<CommunityPostFileVO>) paraMap.get("fileList");
 		
@@ -240,6 +253,33 @@ public class CommunityService implements InterCommunityService {
 		int n = dao.addReComment(comment);
 		
 		return (n==1)? true: false;
+	}
+	
+	// 임시저장하기
+	@Override
+	public String savePost(Map<String, Object> paraMap) {
+		
+		String temp_post_no = (String) paraMap.get("temp_post_no");
+
+		// 기존에 임시저장되었던 글이 아니라면
+		if (temp_post_no == null || "".equals(temp_post_no)) {
+
+			// 임시저장 번호 시퀀스 가져오기
+			temp_post_no = dao.getTempPostNo();
+		}
+
+		paraMap.put("temp_post_no", temp_post_no);
+		
+		// 임시저장 테이블에 insert
+		int n = dao.savePost(paraMap);
+		
+		return (n==1)? temp_post_no: null;
+	}
+
+	// 임시저장 목록 가져오기
+	@Override
+	public List<Map<String, String>> getSavedPostList(String fk_empno) {
+		return dao.getSavedPostList(fk_empno);
 	}
 
 }

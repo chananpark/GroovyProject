@@ -4,7 +4,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.lang.reflect.InvocationTargetException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -144,6 +146,7 @@ public class CommunityController {
 		Map<String, Object> paraMap = new HashMap<>();
 		
 		paraMap.put("post", post);
+		paraMap.put("temp_post_no", mtfRequest.getParameter("temp_post_no"));
 		
 		// service로 넘길 파일정보가 담긴 리스트
 		List<CommunityPostFileVO> fileList = new ArrayList<CommunityPostFileVO>();
@@ -200,7 +203,56 @@ public class CommunityController {
 		return jsonObj.toString();
 		
 	}
+	
+	// 글 임시저장하기
+	@ResponseBody
+	@PostMapping(value = "/savePost.on", produces = "text/plain;charset=UTF-8")
+	public String savePost(MultipartHttpServletRequest mtfRequest, CommunityPostVO post) {
 		
+		MemberVO loginuser = getLoginUser(mtfRequest);
+		post.setFk_empno(loginuser.getEmpno());
+		
+		// 제목이 비어있다면
+		if (post.getPost_subject() == null || "".equals(post.getPost_subject())) {
+			Calendar currentDate = Calendar.getInstance(); // 현재날짜와 시간
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd a HH:mm:ss");
+			String currentTime = dateFormat.format(currentDate.getTime());
+			
+			post.setPost_subject(currentTime + "에 임시저장된 글");
+		}
+		
+		Map<String, Object> paraMap = new HashMap<>();
+		paraMap.put("post", post);
+		paraMap.put("temp_post_no", mtfRequest.getParameter("temp_post_no"));
+		
+		// 임시저장하기
+		String temp_post_no = service.savePost(paraMap);
+		
+		JSONObject jsonObj = new JSONObject();
+		jsonObj.put("temp_post_no", temp_post_no);
+		
+		return jsonObj.toString();
+		
+	}
+	
+	// 임시저장 글 불러오기 팝업창 요청
+	@RequestMapping(value = "/getSavedPost.on", produces = "text/plain;charset=UTF-8")
+	public ModelAndView getSavedPost(ModelAndView mav, HttpServletRequest request) {
+		
+		MemberVO loginuser = getLoginUser(request);
+		String fk_empno = loginuser.getEmpno();
+		
+		// 임시저장 목록 가져오기
+		List<Map<String, String>> savedPostList = service.getSavedPostList(fk_empno);
+	
+		JSONArray savedPostArray = new JSONArray(savedPostList);
+		mav.addObject("savedPostArray", String.valueOf(savedPostArray));
+
+		mav.setViewName("community/select_saved_post");
+
+		return mav;
+	}
+	
 	// 글 삭제하기
 	@ResponseBody
 	@PostMapping(value = "/deletePost.on", produces = "text/plain;charset=UTF-8")

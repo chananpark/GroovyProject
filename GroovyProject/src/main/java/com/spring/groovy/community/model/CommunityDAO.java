@@ -125,4 +125,28 @@ public class CommunityDAO implements InterCommunityDAO {
 		return sqlsession.insert("community.addReComment", comment);
 	}
 
+	// 임시저장 번호 시퀀스 가져오기
+	@Override
+	public String getTempPostNo() {
+		return sqlsession.selectOne("community.getTempPostNo");
+	}
+
+	// 임시저장 테이블에 insert or update
+	@Override
+	public int savePost(Map<String, Object> paraMap) {
+		return sqlsession.update("community.savePost", paraMap);
+	}
+
+	// 임시저장 목록 가져오기
+	@Override
+	public List<Map<String, String>> getSavedPostList(String fk_empno) {
+		return sqlsession.selectList("community.getSavedPostList", fk_empno);
+	}
+
+	// 임시저장글 삭제
+	@Override
+	public int delTempPost(String temp_post_no) {
+		return sqlsession.delete("community.delTempPost", temp_post_no);
+	}
+
 }

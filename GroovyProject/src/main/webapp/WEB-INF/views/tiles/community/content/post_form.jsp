@@ -90,6 +90,28 @@ $(() => {
 
 	});
 	
+	/* 임시저장 버튼 클릭 시 */
+	$("button#saveBtn").click(function(){
+		   
+		// 에디터에서 textarea에 대입
+		obj.getById["post_content"].exec("UPDATE_CONTENTS_FIELD", []);
+		
+		// 글내용 유효성검사
+	    var post_content = $("#post_content").val();
+
+	    if( post_content == ""  || post_content == null || post_content == '&nbsp;' || post_content == '<p>&nbsp;</p>')  {
+			swal("글내용을 입력하세요!")
+			.then(function (result) {
+				obj.getById["post_content"].exec("FOCUS"); //포커싱
+		      })
+			return;
+	    }
+	    
+	    // 폼 제출
+	    savePost();
+
+	});
+	
     /* 파일 드래그 & 드롭 */
 	// 파일 드롭 영역
 	const $drop = document.querySelector(".dropBox");
@@ -213,6 +235,61 @@ const getFiles = formData => {
 	}
 }
 
+// 임시저장
+const savePost = () =>{
+	// formData 가져오기
+	let formData = new FormData($("#postFrm")[0]);
+	
+	 $.ajax({
+	     url : "<%=ctxPath%>/community/savePost.on",
+	     data : formData,
+	     type:'POST',
+	     enctype:'multipart/form-data',
+	     processData:false,
+	     contentType:false,
+	     dataType:'json',
+	     cache:false,
+	     success:function(json){
+	     	if(json.temp_post_no != "" && json.temp_post_no !== undefined) {
+	     		swal("저장 완료", "게시글이 임시저장 되었습니다.", "success")
+	     		.then((value) => {
+	 	    		$("input[name='temp_post_no']").val(json.temp_post_no); // 임시저장 번호 대입
+	     		});
+	     	}
+	     	else
+	     		swal("저장 실패", "게시글 임시저장을 실패하였습니다.", "error");
+	     },
+	     error: function(request, status, error){
+			alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			}
+	 });
+}
+
+// 임시저장 목록 팝업창 띄우기
+const getSavedPost = () => {
+	const popupWidth = 800;
+	const popupHeight = 500;
+
+	const popupX = (window.screen.width / 2) - (popupWidth / 2);
+	const popupY= (window.screen.height / 2) - (popupHeight / 2);
+	
+	window.open('<%=ctxPath%>/community/getSavedPost.on','임시저장 불러오기','height=' + popupHeight  + ', width=' + popupWidth  + ', left='+ popupX + ', top='+ popupY);
+}
+
+// 임시저장 글, 내용 불러오기
+const receiveMessage = async (e) =>
+{	
+   	const json = e.data;
+	
+   	$("#post_subject").val(json.plain_post_subject);
+   	$("#post_content").val(json.plain_post_content);
+
+   	obj.getById["post_content"].exec("LOAD_CONTENTS_FIELD");
+	
+}
+
+window.addEventListener("message", receiveMessage, false);
+
 
 </script>
 
@@ -223,13 +300,14 @@ const getFiles = formData => {
 	</div>
 
 	<form id="postFrm">
+		<!-- 임시저장번호 --><input type="hidden" name="temp_post_no" value=""/>
 		<h5 class='text-left mb-3' style="margin-top: 80px">제목</h5>
 		<input type="text" name="post_subject" id="post_subject" placeholder='제목을 입력하세요' style='width: 100%; font-size: small;' />
 	
 		<div class='mb-3' style='margin-top: 30px'>
 			<h5 style='display: inline-block;'>내용</h5>
 			<button id='saveBtn' type="button" class="btn btn-sm btn-light" style='float: right'>임시저장</button>
-			<button id='getSavedPostBtn' type="button" class="btn btn-sm btn-light mr-2" style='float: right'>임시저장 불러오기</button>
+			<button id='getSavedPostBtn' type="button" class="btn btn-sm btn-light mr-2" style='float: right' onclick="getSavedPost()">임시저장 불러오기</button>
 		</div>
 		<textarea style="width: 100%; height: 612px;" name="post_content" id="post_content" placeholder='내용을 입력하세요'></textarea>
 	

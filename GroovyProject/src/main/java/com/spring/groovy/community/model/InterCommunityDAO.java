@@ -59,4 +59,16 @@ public interface InterCommunityDAO {
 	// 답댓글 작성
 	int addReComment(CommunityCommentVO comment);
 
+	// 임시저장 번호 시퀀스 가져오기
+	String getTempPostNo();
+
+	// 임시저장 테이블에 insert
+	int savePost(Map<String, Object> paraMap);
+
+	// 임시저장 목록 가져오기
+	List<Map<String, String>> getSavedPostList(String fk_empno);
+
+	// 임시저장글 삭제
+	int delTempPost(String temp_post_no);
+
 }

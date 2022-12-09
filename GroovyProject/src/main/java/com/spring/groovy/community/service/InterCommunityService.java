@@ -53,5 +53,11 @@ public interface InterCommunityService {
 
 	// 답댓글 작성
 	boolean addReComment(CommunityCommentVO comment);
+	
+	// 임시저장하기
+	String savePost(Map<String, Object> paraMap);
+
+	// 임시저장 목록 가져오기
+	List<Map<String, String>> getSavedPostList(String fk_empno);
 
 }
