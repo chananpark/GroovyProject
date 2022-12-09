@@ -140,6 +140,13 @@ public class MailDAO implements InterMailDAO {
 		int n = sqlsession.update("jinseok.tagCheckM",paraMap);
 		return n;
 	}
+
+	/** 답장시 완성되는 이메일 값 만들어서 반환 */
+	@Override
+	public String getreply(String cpemail) {
+		String reply = sqlsession.selectOne("jinseok.getreply",cpemail);
+		return reply;
+	}
 	
 	
 

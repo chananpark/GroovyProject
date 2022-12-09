@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="chanan">
+	
+	<!-- 팀 문서함 게시글 수 조회 -->
+	<select id="getTeamDraftCnt" resultType="int" parameterType="HashMap" >
+		SELECT COUNT(*) FROM VIEW_TEAM_DRAFT
+		WHERE DRAFT_DEPARTMENT = #{department}
+		<if test='searchType != "" and searchWord != "" '>
+		AND LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
+		</if>
+	</select>
+	
+	<!-- 팀 문서함 목록 조회 -->
+	<select id="getTeamDraftList" resultType="com.spring.groovy.approval.model.DraftVO" parameterType="HashMap" >
+		SELECT * 
+		FROM ( SELECT A.*, ROWNUM AS RNO
+		    FROM ( SELECT *
+		            FROM
+		            VIEW_TEAM_DRAFT
+		            <if test='searchType != "" and searchWord != "" '>
+		            WHERE LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
+		            </if>
+					ORDER BY ${sortType} ${sortOrder}
+		            )A )
+		WHERE RNO BETWEEN #{startRno} AND #{endRno}
+		AND DRAFT_DEPARTMENT = #{department}
+	</select>
+		
+	<!-- 개인 문서함-상신함 게시글 수 조회 -->
+	<select id="getSentDraftCnt" resultType="int" parameterType="HashMap" >
+		SELECT COUNT(*) FROM VIEW_DRAFT_SENT
+		WHERE FK_DRAFT_EMPNO = #{empno}
+		<if test='searchType != "" and searchWord != "" '>
+		AND LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
+		</if>
+		
+	</select>
+	
+	<!-- 개인문서함-상신함 목록 조회 -->
+	<select id="getSentDraftList" resultType="com.spring.groovy.approval.model.DraftVO" parameterType="HashMap" >
+		SELECT * 
+		FROM ( SELECT A.*, ROWNUM AS RNO
+		    FROM ( SELECT *
+		            FROM
+		            VIEW_DRAFT_SENT
+		            <if test='searchType != "" and searchWord != "" '>
+		            WHERE LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
+		            </if>
+		            ORDER BY ${sortType} ${sortOrder}
+		            )A )
+		WHERE RNO BETWEEN #{startRno} AND #{endRno}
+		AND FK_DRAFT_EMPNO = #{empno}
+	</select>
+		
+	<!-- 개인 문서함-결재함 게시글 수 조회 -->
+	<select id="getProcessedDraftCnt" resultType="int" parameterType="HashMap" >
+		SELECT COUNT(*) FROM VIEW_DRAFT_PROCESSED
+		WHERE FK_APPROVAL_EMPNO = #{empno}
+		<if test='searchType != "" and searchWord != "" '>
+		AND LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
+		</if>
+	</select>
+	
+	<!-- 개인문서함-결재함 목록 조회 -->
+	<select id="getProcessedDraftList" resultType="com.spring.groovy.approval.model.DraftVO" parameterType="HashMap" >
+		SELECT * 
+		FROM ( SELECT A.*, ROWNUM AS RNO
+		    FROM ( SELECT *
+		            FROM
+		            VIEW_DRAFT_PROCESSED
+		            <if test='searchType != "" and searchWord != "" '>
+		            WHERE LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
+		            </if>
+		            ORDER BY ${sortType} ${sortOrder}
+		            )A )
+		WHERE RNO BETWEEN #{startRno} AND #{endRno}
+		AND FK_APPROVAL_EMPNO = #{empno}
+	</select>
+		
+	<!-- 개인 문서함-임시저장함 게시글 수 조회 -->
+	<select id="getSavedDraftCnt" resultType="int" parameterType="HashMap" >
+		SELECT COUNT(*) FROM TBL_TEMP_DRAFT
+		WHERE FK_DRAFT_EMPNO = #{empno}
+		<if test='searchType != "" and searchWord != "" '>
+		AND LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
+		</if>
+	</select>
+	
+	<!-- 개인문서함-임시저장함 목록 조회 -->
+ 	<select id="getSavedDraftList" resultType="com.spring.groovy.approval.model.DraftVO" parameterType="HashMap" >
+		SELECT * 
+		FROM ( SELECT A.*, ROWNUM AS RNO
+		    FROM (SELECT DRAFT_TYPE, TEMP_DRAFT_NO AS DRAFT_NO, FK_DRAFT_EMPNO, DRAFT_DATE,
+					DRAFT_SUBJECT, NAME AS DRAFT_EMP_NAME
+					FROM TBL_TEMP_DRAFT JOIN
+					TBL_EMPLOYEE
+					ON EMPNO = FK_DRAFT_EMPNO
+					WHERE FK_DRAFT_EMPNO = #{empno}
+					<if test='searchType != "" and searchWord != "" '>
+					AND LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
+					</if>
+					ORDER BY ${sortType} ${sortOrder}
+					)A )
+		WHERE RNO BETWEEN #{startRno} AND #{endRno}
+	</select>
+	
+	<!-- 개인문서함-임시저장함 글 삭제 -->
+ 	<delete id="deleteDraftList" parameterType="map">
+		DELETE FROM TBL_TEMP_DRAFT
+		WHERE TEMP_DRAFT_NO IN
+		<foreach collection="array" item="seq" open="(" close=")" separator=",">
+				#{seq}
+		</foreach>
+	</delete>
+	
+	<!-- 홈 - 결재완료 문서 5개 조회 -->
+	<select id="getMyDraftProcessed" resultType="com.spring.groovy.approval.model.DraftVO" parameterType="String" >
+		SELECT * 
+		FROM ( SELECT A.*, ROWNUM AS RNO
+		    FROM ( SELECT *
+		            FROM
+		            VIEW_DRAFT_SENT
+		            WHERE DRAFT_STATUS != 0
+		            ORDER BY APPROVAL_DATE DESC
+		            )A )
+		WHERE RNO BETWEEN 1 AND 5
+		AND FK_DRAFT_EMPNO = #{empno}
+	</select>
+	
+	<!-- 내가 결재해야 할 문서의 문서번호-->
+	<select id="getRequestedDraftNo" resultType="String" parameterType="HashMap" >
+	SELECT FK_DRAFT_NO
+	FROM TBL_APPROVAL A
+	WHERE FK_APPROVAL_EMPNO = #{empno} AND APPROVAL_STATUS = 0
+	AND FK_DRAFT_NO IN (SELECT FK_DRAFT_NO
+	                    FROM TBL_APPROVAL
+  	                    WHERE (LEVELNO = (A.LEVELNO - 1) AND APPROVAL_STATUS = 1)
+                        OR A.LEVELNO = 1)
+	</select>
+			
+	<!-- 결재대기문서 게시글 수 조회 -->
+	<select id="getRequestedDraftCnt" resultType="int" parameterType="HashMap" >
+		SELECT COUNT(*)
+		FROM VIEW_DRAFT_APPROVAL
+		WHERE DRAFT_NO IN
+		<foreach collection="draftNoList" item="list" open="(" close=")" separator=",">
+			#{list}
+		</foreach>
+		AND FK_APPROVAL_EMPNO = #{empno}
+		<if test='searchType != "" and searchWord != "" '>
+		AND LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
+		</if>
+	</select>
+		
+	<!-- 결재대기문서 목록 조회 -->
+	<select id="getRequestedDraftList" resultType="com.spring.groovy.approval.model.DraftVO" parameterType="HashMap" >
+		SELECT * 
+		FROM ( SELECT A.*, ROWNUM AS RNO
+		    FROM ( SELECT *
+		            FROM VIEW_DRAFT_APPROVAL
+					WHERE DRAFT_NO IN
+					<foreach collection="draftNoList" item="list" open="(" close=")" separator=",">
+						#{list}
+					</foreach>
+					AND FK_APPROVAL_EMPNO = #{empno}
+		            <if test='searchType != "" and searchWord != "" '>
+		            AND LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
+		            </if>
+		            ORDER BY URGENT_STATUS DESC, ${sortType} ${sortOrder}
+		            )A )
+		WHERE RNO BETWEEN #{startRno} AND #{endRno}
+	</select>
+		
+	<!-- 사원 목록 조회 -->
+	<resultMap type="HashMap" id="empMap">
+		<result property="empno" column="empno" javaType="String"/>
+		<result property="department" column="department" javaType="String"/>
+		<result property="name" column="name" javaType="String"/>
+		<result property="position" column="position" javaType="String"/>
+		<result property="position_no" column="position_no" javaType="String"/>
+	</resultMap>
+	
+	<select id="getEmpList" resultMap="empMap" parameterType="com.spring.groovy.management.model.MemberVO">
+		SELECT EMPNO, DEPARTMENT, NAME, E.POSITION AS POSITION, POSITION_NO
+		FROM TBL_EMPLOYEE E JOIN TBL_POSITION P 
+		ON E.POSITION = P.POSITION
+		WHERE EMPNO != #{empno}
+		AND POSITION_NO > #{fk_position_no}
+	</select>
+
+	<!-- 부문 목록 조회 -->
+	<resultMap type="HashMap" id="bumunMap">
+		<result property="bumun_no" column="bumun_no" javaType="String"/>
+		<result property="bumun" column="bumun" javaType="String"/>
+	</resultMap>
+	
+	<select id="getBumunList" resultMap="bumunMap" parameterType="com.spring.groovy.management.model.MemberVO">
+		SELECT BUMUN_NO, BUMUN
+		FROM TBL_BUMUN
+		WHERE BUMUN = #{bumun} OR BUMUN = '이사실'
+		ORDER BY BUMUN_NO
+	</select>
+
+	<!-- 부서 목록 조회 -->
+	<resultMap type="HashMap" id="deptMap">
+		<result property="department_no" column="department_no" javaType="String"/>
+		<result property="department" column="department" javaType="String"/>
+		<result property="bumun_no" column="bumun_no" javaType="String"/>
+		<result property="bumun" column="bumun" javaType="String"/>
+	</resultMap>
+	
+	<select id="getDeptList" resultMap="deptMap" parameterType="com.spring.groovy.management.model.MemberVO">
+		SELECT DEPARTMENT_NO, DEPARTMENT, BUMUN_NO, BUMUN
+		FROM TBL_DEPARTMENT JOIN TBL_BUMUN
+		ON BUMUN_NO = FK_BUMUN_NO
+		WHERE DEPARTMENT = #{department} OR DEPARTMENT = '이사실'
+		ORDER BY DEPARTMENT_NO
+	</select>
+	
+	<!-- 결재라인 저장하기 -->
+	<insert id="saveApprovalLine" parameterType="com.spring.groovy.approval.model.SavedAprvLineVO">
+		INSERT INTO TBL_SAVED_APRV_LINE
+		VALUES (SEQ_APRV_LINE_NO.nextval, #{aprv_line_name}, #{fk_empno}, #{fk_approval_empno1}, #{fk_approval_empno2, jdbcType=INTEGER}, #{fk_approval_empno3, jdbcType=INTEGER}, #{fk_approval_empno4, jdbcType=INTEGER})
+	</insert>
+	
+	<!-- 저장된 결재라인 불러오기 -->
+	<select id="getSavedAprvLine" resultType="com.spring.groovy.approval.model.SavedAprvLineVO" parameterType="HashMap">
+		SELECT APRV_LINE_NO, APRV_LINE_NAME, FK_APPROVAL_EMPNO1, FK_APPROVAL_EMPNO2,
+		FK_APPROVAL_EMPNO3, FK_APPROVAL_EMPNO4
+		FROM TBL_SAVED_APRV_LINE
+		WHERE FK_EMPNO = #{empno}
+	</select>
+	
+	<!-- 저장된 결재라인 결재자 정보 불러오기 -->
+	<select id="getSavedAprvEmpInfo" resultType="com.spring.groovy.management.model.MemberVO" parameterType="java.util.List">
+		SELECT DEPARTMENT, A.POSITION, NAME, POSITION_NO, EMPNO
+		FROM TBL_EMPLOYEE A JOIN TBL_POSITION B
+		ON A.POSITION = B.POSITION
+		WHERE EMPNO IN
+		<foreach collection="list" item="list" open="(" close=")" separator=",">
+			#{list, jdbcType=CHAR}
+		</foreach>
+		ORDER BY POSITION_NO
+	</select>
+	
+	<!-- 기안문서 시퀀스번호 얻어오기 -->
+	<select id="getDraftNo" resultType="int">
+		SELECT SEQ_DRAFT_NO.NEXTVAL FROM DUAL
+	</select>
+	
+	<!-- 기안문서 등록하기 -->
+	<insert id="addDraft" parameterType="com.spring.groovy.approval.model.DraftVO">
+		INSERT INTO TBL_DRAFT (DRAFT_NO, FK_DRAFT_TYPE_NO, DRAFT_TYPE, FK_DRAFT_EMPNO,
+		DRAFT_SUBJECT, DRAFT_CONTENT, DRAFT_COMMENT, URGENT_STATUS)
+		values(#{draft_no}, #{fk_draft_type_no}, #{draft_type}, #{fk_draft_empno}, #{draft_subject},
+		#{draft_content}, #{draft_comment}, #{urgent_status})
+	</insert>
+	
+	<!-- 결재정보 등록하기 -->
+	<update id="addApproval" parameterType="java.util.List">
+		INSERT INTO TBL_APPROVAL (APPROVAL_NO, FK_DRAFT_NO, FK_APPROVAL_EMPNO, LEVELNO)
+		SELECT SEQ_APPROVAL_NO.NEXTVAL AS APPROVAL_NO, A.* 
+		FROM (
+		<foreach collection="list" item="apvo" index="index" separator="union all">
+			SELECT #{apvo.fk_draft_no} as FK_DRAFT_NO
+	        , #{apvo.fk_approval_empno} as FK_APPROVAL_EMPNO
+	        , (${index}+1) as LEVELNO
+	 		FROM DUAL
+       </foreach>) A
+	</update>
+	
+	<!-- 첨부파일 등록하기 -->
+	<update id="addFiles" parameterType="java.util.List">
+		INSERT INTO TBL_DRAFT_FILE (DRAFT_FILE_NO, FK_DRAFT_NO, ORIGINALFILENAME, FILENAME, FILESIZE)
+		SELECT SEQ_DRAFT_FILE_NO.NEXTVAL AS DRAFT_FILE_NO, A.* 
+		FROM (
+		<foreach collection="list" item="dfvo" separator="union all">
+			SELECT #{dfvo.fk_draft_no} AS FK_DRAFT_NO, #{dfvo.originalFilename} AS ORIGINALFILENAME,
+			#{dfvo.filename} AS FILENAME, #{dfvo.filesize} AS FILESIZE FROM DUAL
+		</foreach>) A
+	</update>
+	
+	<!-- 임시저장문서 시퀀스번호 얻어오기 -->
+	<select id="getTempDraftNo" resultType="int">
+		SELECT SEQ_TEMP_DRAFT_NO.NEXTVAL FROM DUAL
+	</select>
+	
+	<!-- 기안 임시저장하기 -->
+	<insert id="saveDraft" parameterType="com.spring.groovy.approval.model.DraftVO">
+		INSERT INTO TBL_TEMP_DRAFT
+		(TEMP_DRAFT_NO, FK_DRAFT_EMPNO, DRAFT_SUBJECT, DRAFT_CONTENT, DRAFT_TYPE, FK_DRAFT_TYPE_NO)
+		VALUES (#{draft_no}, #{fk_draft_empno}, #{draft_subject, jdbcType = VARCHAR}, #{draft_content, jdbcType = VARCHAR},
+		 #{draft_type, jdbcType = VARCHAR}, #{fk_draft_type_no, jdbcType = INTEGER})
+	</insert>
+	
+	<!-- 임시저장 결재정보 등록하기 -->
+	<update id="saveApproval" parameterType="java.util.List">
+		INSERT INTO TBL_TEMP_APPROVAL (TEMP_APPROVAL_NO, FK_TEMP_DRAFT_NO, FK_APPROVAL_EMPNO, LEVELNO)
+		SELECT SEQ_TEMP_APPROVAL_NO.NEXTVAL AS APPROVAL_NO, A.* 
+		FROM (
+		<foreach collection="list" item="apvo" index="index" separator="union all">
+			SELECT #{apvo.fk_draft_no} as FK_DRAFT_NO
+	        , #{apvo.fk_approval_empno} as FK_APPROVAL_EMPNO
+	        , (${index}+1) as LEVELNO
+	 		FROM DUAL
+       </foreach>) A
+	</update>
+
+</mapper>

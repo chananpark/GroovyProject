@@ -372,12 +372,24 @@
 	</select>
 	
 	
+	<!-- ============================================  설문조사  ========================================================= -->
 	
+	<!-- 관리자 - 설문작성(설문조사 번호 insert하기) -->
+	<insert id="getsurveyList" parameterType="com.spring.groovy.survey.model.SurveyVO">
+		INSERT INTO TBL_SURVEY(SURNO,FK_EMPNO,SURTITLE,SUREXPLAIN,SURCREATEDATE,SURSTART,SUREND,SURSTATUS,SUROPENSTATUS)
+		VALUES(SEQ_TBL_SURVEY.NEXTVAL,#{fk_empno},#{surtitle},#{surexplain},sysdate,#{surstart},#{surend},default, default)
+	</insert>
 	
+	<!-- 관리자 - 설문작성(설문번호 알아오기) -->
+	<select id="getsurveyNO" parameterType="com.spring.groovy.survey.model.SurveyVO" resultType="HashMap">
+		SELECT SEQ_TBL_SURVEY.CURRVAL FROM DUAL
+	</select>
 	
-	
-	
-	
+	<!-- 관리자 - 설문작성(한 문항씩 insert하기) -->
+	<insert id="getAskList" parameterType="HashMap">
+		INSERT INTO TBL_ASK(QUESTNO,FK_SURNO,QUESTION,OPTION1,OPTION2,OPTION3,,OPTION4,OPTION5)
+		VALUES(seq_tbl_ask.nextval,#{cur_surno},#{question}, #{option1},#{option2},#{option3},#{option4},#{option5})
+	</insert>
 	
 	
 	

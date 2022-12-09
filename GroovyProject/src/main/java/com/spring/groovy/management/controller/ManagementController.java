@@ -1,8 +1,6 @@
 package com.spring.groovy.management.controller;
 
 
-
-
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
 
 import java.io.File;
@@ -104,7 +102,7 @@ public class ManagementController {
            즉, 웹 요청 정보를 얻기 위한 getParameter()와 같은 메소드와 Multipart(파일처리) 관련 메소드를 모두 사용가능하다.  	
 */	
 		// 파일 업로드 경로 지정
-		String path = setFilePath(mtfRequest, "images" + File.separator + "empphoto");
+		String path = setFilePath(mtfRequest, "images" + File.separator + "profile");
 
 		MultipartFile empimg = mvo.getAttach();
 		

@@ -359,7 +359,7 @@
 					
 					$.each(json, function(index, item){
 						html += '<div class="side_vertical">';
-						html += '<input name="my_smcategChk" type="checkbox" id="teamCal'+item.smcatgono+'" value="'+item.smcatgono+'" class="calendar_checkbox checkbox_color mr-2 my_smcategChk" checked/><label class="pt-1 mb-0"  style="width:70px;" for="teamCal'+item.smcatgono+'">'+item.smcatgoname+'</label>'
+						html += '<input name="my_smcategChk" type="checkbox" id="myCal'+item.smcatgono+'" value="'+item.smcatgono+'" class="calendar_checkbox checkbox_color mr-2 my_smcategChk" checked/><label class="pt-1 mb-0"  style="width:70px;" for="myCal'+item.smcatgono+'">'+item.smcatgoname+'</label>'
 			      		html += '<span><i class="ml-2 far fa-edit text-secondary" onclick="editMyCalCateg('+item.smcatgono+',\''+item.smcatgoname+'\')"></i></span>';
 			      		html += '<span><i class="ml-1 fas fa-trash-alt text-secondary" onclick="delCalCateg('+item.smcatgono+',\''+item.smcatgoname+'\')"></i></span></div>';
 					 

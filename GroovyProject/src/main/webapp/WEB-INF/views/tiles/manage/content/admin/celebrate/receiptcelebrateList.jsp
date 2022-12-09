@@ -63,9 +63,6 @@
 		$('.subadmenu').show();
 		$('.eachmenu4').show();
 		
-		
-		
-		
 	}); // end of $(document).ready(function(){
 		
 		
