@@ -13,6 +13,7 @@ public class SurveyVO {
 	private String suropenstatus;   // 설문결과공개여부(0비공개, 1공개)  default 1
 	
 	
+	private String fk_department_no;// 조인
 	
 	
 	public String getSurno() {
@@ -69,11 +70,15 @@ public class SurveyVO {
 	public void setSuropenstatus(String suropenstatus) {
 		this.suropenstatus = suropenstatus;
 	}
+	public String getFk_department_no() {
+		return fk_department_no;
+	}
+	public void setFk_department_no(String fk_department_no) {
+		this.fk_department_no = fk_department_no;
+	}
 	
 	
-	
-	
-	
+
 	
 	
 	

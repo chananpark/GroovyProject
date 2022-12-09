@@ -57,7 +57,8 @@
 
 <script type="text/javascript">
 
-// let fk_surno =
+// 전역변수
+ let fk_surno = "";
 
 	$(document).ready(function(){
 		
@@ -67,33 +68,40 @@
 			const question = $("input[name='question']").val().trim();
 			if(question == "") {
 				alert("질문을 모두 작성해주세요");
+				return;
 			}
-			
+		/* 	
 		 	const option1 = $("input[name='option1']").val().trim();
 			if(option1 == "") {
 				alert("선택지 모두 작성해주세요");
+				return;
 			}
 			
 			const option2 = $("input[name='option2']").val().trim();
 			if(option1 == "") {
 				alert("선택지 모두 작성해주세요");
+				return;
 			}
 			
 			const option3 = $("input[name='option3']").val().trim();
 			if(option1 == "") {
 				alert("선택지 모두 작성해주세요");
+				return;
 			}
 			
 			const option4 = $("input[name='option4']").val().trim();
 			if(option1 == "") {
 				alert("선택지 모두 작성해주세요");
+				return;
 			}
 			
 			const option5 = $("input[name='option5']").val().trim();
 			if(option1 == "") {
 				alert("선택지 모두 작성해주세요");
-			}
+				return;
+			} */
 			
+			// 설문지를 저장해주는 함수
 			func_btn();
 			
 		}); // end of $("button#btn_submit").click(function(){ --------------------
@@ -108,7 +116,7 @@
 		// 설문번호 insert
 		const queryString = $("form[name='frm_writing']").serialize();
 		$.ajax({
-			uri:"<%=ctxPath%>/survey/surveyWritingFinish.on",
+			url:"<%=ctxPath%>/survey/surveyWritingNo.on",
 			data: queryString,
 			type:"POST",
 			dataType:"JSON",
@@ -128,14 +136,17 @@
 			  }
 		}); // end of 설문번호 insert $.ajax({
 		
+		// 초기값 설정
+		let i=0;
 		// 설문항목 insert
-		for(let i = 1; i <=5; i++){
-			const frm = $("#frm"+i).serialize();
+		for(i=1; i<=5; i++){
+			const frm = $("form[name='frm"+i+"']").serialize();
 		//	리텀값frm.fk_surno.value=fk_surno; 을 전역변수에 담아놔야한다.
+		
 	//		function(i) {  ==> 함수를 사용해서(i)를 사용하는데 여기서는 function이 중복되서 안되는것 같음
-				{	
+		//		{	
 					$.ajax({
-						uri:"<%=ctxPath%>/survey/surveyWritingFinish.on",
+						url:"<%=ctxPath%>/survey/surveyWritingFinish.on",
 						data: frm,
 						type:"POST",
 						dataType:"JSON",
@@ -143,6 +154,7 @@
 						success:function(json){
 							console.log(i);
 							console.log(json.p);
+							frm.fk_surno.value=fk_surno;
 							
 						/* 	if(json.p == 1) {
 								alert([i] +"질문 등록 완료하였습니다.");
@@ -157,7 +169,7 @@
 							  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
 						  }
 					});
-				}
+			//	}
 	//		}
 		} // end of for -------------------------
 	} // end of function func_btn(){ --------------------
@@ -173,14 +185,14 @@
 	<div id="surveyform" class="m-4">
 		
 	<form name="frm_writing">
-		<input type="hidden" value="${paramap.surtitle}">
-		<input type="hidden" value="${paramap.surexplain}">
-		<input type="hidden" value="${paramap.surstart}">
-		<input type="hidden" value="${paramap.surend}">
-		<input type="hidden" value="${paramap.surtarget}">
-		<input type="hidden" value="${paramap.department}">
-		<input type="hidden" value="${paramap.suropenstatus}">
-		</form>  
+		<input type="hidden" name="surtitle" value="${paramap.surtitle}">
+		<input type="hidden" name="surexplain" value="${paramap.surexplain}">
+		<input type="hidden" name="surstart" value="${paramap.surstart}">
+		<input type="hidden" name="surend" value="${paramap.surend}">
+		<input type="hidden" name="surtarget" value="${paramap.surtarget}">
+		<input type="hidden" name="department" value="${paramap.department}">
+		<input type="hidden" name="suropenstatus" value="${paramap.suropenstatus}">
+	</form>  
 		
 		<form name="frm1" id="frm1">
 		<section style="border-bottom:solid 1px #bfbfbf; border-top:solid 1px #bfbfbf;">
@@ -199,6 +211,7 @@
 		</section>
 		</form>
 		
+		<form name="frm2" id="frm2">
 		<section style="border-bottom:solid 1px #bfbfbf;">
 			<div class="my-4 mx-2">
 				<span class="mx-2">2.</span><input type="hidden" name="questno" value="2"/>
@@ -212,7 +225,9 @@
 				</div>
 			</div>	
 		</section>
+		</form>
 		
+		<form name="frm3" id="frm3">
 		<section style="border-bottom:solid 1px #bfbfbf;">
 			<div class="my-4 mx-2">
 				<span class="mx-2">3.</span><input type="hidden" name="questno" value="3"/>
@@ -226,7 +241,9 @@
 				</div>
 			</div>	
 		</section>
+		</form>
 		
+		<form name="frm4" id="frm4">
 		<section style="border-bottom:solid 1px #bfbfbf;">
 			<div class="my-4 mx-2">
 				<span class="mx-2">4.</span><input type="hidden" name="questno" value="4"/>
@@ -240,7 +257,9 @@
 				</div>
 			</div>	
 		</section>
+		</form>
 		
+		<form name="frm5" id="frm5">
 		<section style="border-bottom:solid 1px #bfbfbf;">
 			<div class="my-4 mx-2">
 				<span class="mx-2">5.</span><input type="hidden" name="questno" value="5"/>
@@ -254,7 +273,7 @@
 				</div>
 			</div>	
 		</section>
-	
+		</form>
 	</div>
 	
 	<div align="center" style="margin-top: 3%;">

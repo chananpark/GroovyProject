@@ -122,7 +122,7 @@ $("div#team").hide();
 	<div id="surveyform" class="m-4" >
 		<div>
 			<div class="mb-3">설문제목</div>
-			<input type="text" name="surtitle" style="width: 95%;"  placeholder="설문 제목을 입력해주세요."/>
+			<input type="text" name="surtitle" style="width: 95%;" placeholder="설문 제목을 입력해주세요."/>
 		</div>
 		
 		<div>
@@ -138,15 +138,15 @@ $("div#team").hide();
 		<div>
 			<div class="mb-3">설문대상</div>
 			<input type="checkbox" name="surtarget" value="1" onclick="checkOnlyOne(this)" style="margin-left: 1%;">&nbsp;전사원 </input> <br>
-			<input type="checkbox" name="surtarget" value="2" onclick="checkOnlyOne(this)" id="check_team" style="margin-left: 1%;">&nbsp;직접선택(팀)</input>   <!-- 여길 누르면 설문대상을  선택하는 창 띄우기 -->
+			<input type="checkbox" name="surtarget" value="0" onclick="checkOnlyOne(this)" id="check_team" style="margin-left: 1%;">&nbsp;직접선택(팀)</input>   <!-- 여길 누르면 설문대상을  선택하는 창 띄우기 -->
 			<div id="team">
-				<input type="checkbox" name="department" value="이사실" class="teamCheck"> 이사실</input> <br>
-				<input type="checkbox" name="department" value="인사총무팀"  class="teamCheck"> 인사총무팀</input> <br>
-				<input type="checkbox" name="department" value="개발팀"  class="teamCheck"> 개발팀</input> <br>
-				<input type="checkbox" name="department" value="기획팀"  class="teamCheck"> 기획팀</input> <br>
-				<input type="checkbox" name="department" value="영업팀"  class="teamCheck"> 영업팀</input> <br>
-				<input type="checkbox" name="department" value="마케팅"  class="teamCheck"> 마케팅</input> <br>
-				<input type="checkbox" name="department" value="재경팀"  class="teamCheck"> 재경팀</input>
+				<input type="checkbox" name="fk_department_no" value="1" class="teamCheck"> 이사실</input> <br>
+				<input type="checkbox" name="fk_department_no" value="2"  class="teamCheck"> 인사총무팀</input> <br>
+				<input type="checkbox" name="fk_department_no" value="3"  class="teamCheck"> 개발팀</input> <br>
+				<input type="checkbox" name="fk_department_no" value="4"  class="teamCheck"> 기획팀</input> <br>
+				<input type="checkbox" name="fk_department_no" value="5"  class="teamCheck"> 영업팀</input> <br>
+				<input type="checkbox" name="fk_department_no" value="6"  class="teamCheck"> 마케팅</input> <br>
+				<input type="checkbox" name="fk_department_no" value="7"  class="teamCheck"> 재경팀</input>
 				
 			</div>
 		</div>

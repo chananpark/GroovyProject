@@ -542,7 +542,7 @@ nocache;
 
 -- 설문조사대상테이블
 create table  tbl_target
-(surtarget     	number(1)   default 1  not null   -- 설문대상(1전직원, 0직접선택)
+(surtarget     	number(1)    not null   -- 설문대상(1전직원, 0직접선택)
 ,fk_surno		number(20)        	     not null   -- 설문번호
 ,constraint PK_tbl_target_surtarget primary key(surtarget)
 ,constraint CK_tbl_target_surtarget check(surtarget in('0','1') )
@@ -612,9 +612,14 @@ nocache;
 
 commit
 
+select seq from dual
+-- 시퀀스조회
+SELECT seq_tbl_survey.CURRVAL FROM DUAL;
 
+
+--- 설문테이블 insert
 insert into tbl_survey(surno,fk_empno,surtitle,surexplain,surcreatedate,surstart,surend,surstatus,suropenstatus)
-values(seq_tbl_survey.nextval,13,'안녕','설문조사만들기',sysdate,'2022-12-10','2022-12-20',default, default)
+values(seq_tbl_survey.nextval,13,'설문조사','확인해보기',sysdate,'2022-12-10','2022-12-20',default, default)
 
 select *
 from tbl_ask
@@ -640,3 +645,13 @@ create table  c
 drop table tbl_ask
 drop table tbl_joinsurvey
 drop table tbl_target
+
+
+
+
+select * from seq_tbl_survey
+delete from tbl_survey 
+where surno = 2
+commit
+
+
