@@ -279,7 +279,17 @@ public class CommunityService implements InterCommunityService {
 	// 임시저장 목록 가져오기
 	@Override
 	public List<Map<String, String>> getSavedPostList(String fk_empno) {
-		return dao.getSavedPostList(fk_empno);
+		
+		List<Map<String, String>> resultMapList = dao.getSavedPostList(fk_empno);
+		
+		// 글내용 태그 원복
+		for (Map<String, String> map : resultMapList) {
+			String content = XssPreventer.unescape(map.get("post_content"));
+			content = content.replaceAll("\"", "\\\\\""); // "를 \"로 치환
+			map.put("post_content", content);
+		}
+		
+		return resultMapList;
 	}
 
 }

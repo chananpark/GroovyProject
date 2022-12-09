@@ -542,7 +542,7 @@ SET DEFINE OFF;
 create or replace view view_post_list
 as
 select POST_NO, FK_EMPNO, 
-REGEXP_REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(POST_SUBJECT, '&'||'lt;','<' ),'&'||'gt;','>'),'&amp;', '&'),'&nbsp;',' ') , '<[^>]*>' ,'' ) AS POST_SUBJECT,
+REPLACE(REPLACE(REPLACE(REPLACE(POST_SUBJECT, '&'||'lt;','<' ),'&'||'gt;','>'),'&amp;', '&'),'&nbsp;',' ') AS POST_SUBJECT,
 REGEXP_REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(POST_CONTENT, '&'||'lt;','<' ),'&'||'gt;','>'),'&amp;', '&'),'&nbsp;',' ') , '<[^>]*>' ,'' ) AS POST_CONTENT,
 POST_DATE, POST_HIT, POST_STATUS, nvl(commentCnt,0) commentCnt, name, empimg, nvl(likeCnt,0) likeCnt, nvl(fileCnt,0) fileCnt
 from TBL_COMMUNITY_POST P
@@ -594,7 +594,6 @@ and POST_STATUS = 1
 -- 임시저장 글 조회 뷰 --
 create or replace view view_temp_post_list
 as
-SELECT T.*, 
-REGEXP_REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(POST_SUBJECT, '&'||'lt;','<' ),'&'||'gt;','>'),'&amp;', '&'),'&nbsp;',' ') , '<[^>]*>' ,'' ) AS PLAIN_POST_SUBJECT,
+SELECT T.*,
 REGEXP_REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(POST_CONTENT, '&'||'lt;','<' ),'&'||'gt;','>'),'&amp;', '&'),'&nbsp;',' ') , '<[^>]*>' ,'' ) AS PLAIN_POST_CONTENT
 FROM TBL_COMMUNITY_POST_TEMP T;

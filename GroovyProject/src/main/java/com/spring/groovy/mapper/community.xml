@@ -169,7 +169,6 @@
 		<result property="temp_post_no" column="temp_post_no" javaType="String"/>
 		<result property="post_subject" column="post_subject" javaType="String"/>
 		<result property="post_content" column="post_content" javaType="String"/>
-		<result property="plain_post_subject" column="plain_post_subject" javaType="String"/>
 		<result property="plain_post_content" column="plain_post_content" javaType="String"/>
 		<result property="post_date" column="post_date" javaType="String"/>
 	</resultMap>
@@ -178,6 +177,7 @@
 		SELECT *
 		FROM VIEW_TEMP_POST_LIST
 		WHERE FK_EMPNO = #{fk_empno}
+		ORDER BY TEMP_POST_NO DESC
 	</select>
 
 	<!-- 임시저장글 삭제하기 -->

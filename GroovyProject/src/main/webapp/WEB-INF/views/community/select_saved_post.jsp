@@ -50,7 +50,7 @@ window.onload = function(){
 	savedPostArray.forEach(el => {
 		body += "<div class='card small my-4'><div class='card-header'>"
 			 + "<input type='radio' id='"+el.temp_post_no+"' name='temp_post_no' value='"+el.temp_post_no+"'/>"
-			 + "<label for='"+el.temp_post_no+"'> " + el.plain_post_subject + "</span></div>"
+			 + "<label for='"+el.temp_post_no+"'> " + el.post_subject + "</span></div>"
 			 + "<div class='card-body'>";
 			 
 		if (el.plain_post_content.length > 10)
@@ -71,7 +71,7 @@ const submitAprvLine = () => {
 	// 선택된 임시저장 글번호
 	const selected_no = $("input[name='temp_post_no']:checked").val();
 	
-	// 선택된 번호에 해당하는 제목,내용
+	// 선택된 번호에 해당하는 정보
 	const selectedPostArray = savedPostArray.find(el => el.temp_post_no == selected_no);
 
  	window.opener.postMessage(selectedPostArray, '*');

@@ -215,7 +215,7 @@ public class CommunityController {
 		// 제목이 비어있다면
 		if (post.getPost_subject() == null || "".equals(post.getPost_subject())) {
 			Calendar currentDate = Calendar.getInstance(); // 현재날짜와 시간
-			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd a HH:mm:ss");
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
 			String currentTime = dateFormat.format(currentDate.getTime());
 			
 			post.setPost_subject(currentTime + "에 임시저장된 글");

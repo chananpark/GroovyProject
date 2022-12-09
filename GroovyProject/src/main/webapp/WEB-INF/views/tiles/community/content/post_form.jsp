@@ -281,8 +281,12 @@ const receiveMessage = async (e) =>
 {	
    	const json = e.data;
 	
-   	$("#post_subject").val(json.plain_post_subject);
-   	$("#post_content").val(json.plain_post_content);
+   	$("#post_subject").val(json.post_subject);
+   	
+   	const post_content =json.post_content; 
+   	$("#post_content").val(post_content);
+   	
+   	$("#temp_post_no").val(json.temp_post_no);
 
    	obj.getById["post_content"].exec("LOAD_CONTENTS_FIELD");
 	
@@ -300,7 +304,7 @@ window.addEventListener("message", receiveMessage, false);
 	</div>
 
 	<form id="postFrm">
-		<!-- 임시저장번호 --><input type="hidden" name="temp_post_no" value=""/>
+		<!-- 임시저장번호 --><input type="hidden" name="temp_post_no" id="temp_post_no" value=""/>
 		<h5 class='text-left mb-3' style="margin-top: 80px">제목</h5>
 		<input type="text" name="post_subject" id="post_subject" placeholder='제목을 입력하세요' style='width: 100%; font-size: small;' />
 	
