@@ -48,10 +48,6 @@ public class SurveyController {
 	// 관리자 - 설문작성1
 	@RequestMapping(value="/survey/surveyWriting.on")
 	public ModelAndView surveyWriting(ModelAndView mav, HttpServletRequest request,MemberVO mvo) {
-		HttpSession session =  request.getSession();
-		MemberVO loginuser = (MemberVO) session.getAttribute("loginuser");
-		
-		mav.addObject("loginuser",loginuser);
 		mav.setViewName("survey/admin/surveyWriting.tiles");
 		return mav;
 	}
@@ -60,8 +56,10 @@ public class SurveyController {
 	@RequestMapping(value="/survey/surveyWritingEnd.on")
 	public ModelAndView surveyWritingEnd(ModelAndView mav, HttpServletRequest request,SurveyVO svo, MemberVO mvo) {
 		
+		HttpSession session = request.getSession();
+		MemberVO loginuser = (MemberVO) session.getAttribute("loginuser");
+		String empno = loginuser.getEmpno();
 		
-		String empno = request.getParameter("empno");
 		String surtitle = request.getParameter("surtitle");
 		String surexplain = request.getParameter("surexplain");
 		String surstart = request.getParameter("surstart");
@@ -82,9 +80,14 @@ public class SurveyController {
 		System.out.println("*******************************************************************");
 		
 		Map<String,Object> paramap = new HashMap<>();
-		paramap.put("svo", svo);
-		paramap.put("mvo", mvo);
 		paramap.put("empno", empno);
+		paramap.put("surtitle", surtitle);
+		paramap.put("surexplain", surexplain);
+		paramap.put("surstart", surstart);
+		paramap.put("surend", surend);
+		paramap.put("surtarget", surtarget);
+		paramap.put("suropenstatus", suropenstatus);
+		paramap.put("fk_department_no", fk_department_no);
 		
 		mav.addObject("paramap", paramap);
 		
@@ -98,7 +101,7 @@ public class SurveyController {
 		@RequestMapping(value="/survey/surveyWritingNo.on")
 		public String surveyWritingNo( HttpServletRequest request,SurveyVO svo, MemberVO mvo) {
 		
-			String empno = request.getParameter("empno");
+			String fk_empno = request.getParameter("fk_empno");
 			String surno = request.getParameter("surno");
 			String surtitle = request.getParameter("surtitle");
 			String surexplain = request.getParameter("surexplain");
@@ -110,7 +113,8 @@ public class SurveyController {
 		
 			System.out.println("=============================================================================");
 			
-			System.out.println(empno);
+			System.out.println(fk_empno);
+			System.out.println(surno);
 			System.out.println(surtitle);
 			System.out.println(surexplain);
 			System.out.println(surstart);
@@ -121,7 +125,6 @@ public class SurveyController {
 			
 			// 관리자 - 설문작성(설문조사 번호 insert하기)
 			Map<String, Object>paramap = new HashMap<>();
-			paramap.put("empno", empno);
 			paramap.put("svo", svo);
 			
 			// 글번호를 알아오는 매소드(select)
@@ -144,7 +147,6 @@ public class SurveyController {
 		
 
 	// 관리자 - 설문작성(질문)
-/*
 	@ResponseBody
 	@RequestMapping(value="/survey/surveyWritingFinish.on")
 	public String surveyWritingFinish( HttpServletRequest request,SurveyVO svo, AskVO avo, MemberVO mvo) {
@@ -168,13 +170,10 @@ public class SurveyController {
 		System.out.println(option4);
 		System.out.println(option5);
 		
-		// 관리자 - 설문작성(설문번호 알아오기)
-		Map<String,Object> cur_surno = service.getsurveyNO(svo);
-		
+	
 		// 관리자 - 설문작성(한 문항씩 insert하기)
 		Map<String,Object> paramap = new HashMap<>();
 		paramap.put("avo", avo);
-		paramap.put("cur_surno", cur_surno);
 		
 		int p = service.getAskList(paramap);
 		
@@ -183,7 +182,6 @@ public class SurveyController {
 		
 		return json.toString();
 	}
-*/
 	
 	
 	

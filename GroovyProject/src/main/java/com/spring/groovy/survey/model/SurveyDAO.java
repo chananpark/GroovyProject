@@ -30,12 +30,10 @@ public class SurveyDAO implements InterSurveyDAO {
 	
 	
 	// 관리자 - 설문작성(한 문항씩 insert하기)
-	/*
 	@Override
 	public int getAskList(Map<String, Object> paramap) {
 		return sqlsession.insert("minsu.getAskList",paramap);
 	}
-*/
 
 	
 

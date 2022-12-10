@@ -656,7 +656,7 @@ drop table tbl_target
 
 
 
-select * from seq_tbl_survey
+select * from tbl_survey
 delete from tbl_survey 
 where surno = 2
 commit

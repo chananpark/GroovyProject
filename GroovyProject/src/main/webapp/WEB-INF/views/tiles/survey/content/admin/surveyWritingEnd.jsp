@@ -106,6 +106,7 @@
 			
 		}); // end of $("button#btn_submit").click(function(){ --------------------
 		
+		
 	}); // end of $(document).ready(function(){---------------------
 	/*	
 		console.log(surtitle);
@@ -113,27 +114,30 @@
 		console.log(surstart);
 		console.log(surtarget);
 	*/	
+	
+	
 	// >>> 완료버튼을 누르면 <<< //
 	function func_btn(){
 	
 		// 설문번호 insert
 		const queryString = $("form[name='frm_writing']").serialize();
+		
 		$.ajax({
 			url:"<%=ctxPath%>/survey/surveyWritingNo.on",
 			data: queryString,
-			async: true, // 반복문이기때문에 비동기방식이 아닌 동기방식으로 해야한다.
+			async: false, // 반복문이기때문에 비동기방식이 아닌 동기방식으로 해야한다.(동기- 요청을 보낸 후 응답결과를 받아야지만 다음 동작이 이루어지는 방식)
 			type:"POST",
 			dataType:"JSON",
 			success:function(json){
-				console.log(json.n);
+				console.log(json.result);
 				
 				if(json.n == 1) {
-					alert("신청현황 변경을 모두 완료하였습니다.");
+					alert("설문지 등록 성공하였습니다.");
 				}
 				else {
-					alert("신청현황 변경을 실패하였습니다.");
+					alert("설문지 등록 실패하였습니다.");
+					console.log(json.result+"ajax");
 				}
-				
 			},
 		  	 error: function(request, status, error){
 				  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
@@ -154,20 +158,19 @@
 						data: frm,
 						type:"POST",
 						dataType:"JSON",
-						async: true, // 반복문이기때문에 비동기방식이 아닌 동기방식으로 해야한다.
+						async: false, // 반복문이기때문에 비동기방식이 아닌 동기방식으로 해야한다.
 						success:function(json){
-							console.log(i);
-							console.log(json.p);
+							
 							frm.fk_surno.value=fk_surno;
 							
-						/* 	if(json.p == 1) {
+							if(json.p == 1) {
 								alert([i] +"질문 등록 완료하였습니다.");
 								frm.fk_surno.value=fk_surno;
 							}
 							else {
 								alert([i] +"질문 등록 실패하였습니다.");
+								console.log(json.p);
 							}
-							 */
 						},
 					  	 error: function(request, status, error){
 							  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
@@ -189,7 +192,7 @@
 	<div id="surveyform" class="m-4">
 		
 	<form name="frm_writing">
-		<input type="hidden" name="empno" value="${paramap.empno}"/>
+		<input type="hidden" name="fk_empno" value="${paramap.empno}"/>
 		<input type="hidden" name="surtitle" value="${paramap.surtitle}">
 		<input type="hidden" name="surexplain" value="${paramap.surexplain}">
 		<input type="hidden" name="surstart" value="${paramap.surstart}">

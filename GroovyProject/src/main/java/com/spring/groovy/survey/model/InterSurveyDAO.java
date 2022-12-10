@@ -13,7 +13,7 @@ public interface InterSurveyDAO {
 
 		
 	// 관리자 - 설문작성(한 문항씩 insert하기)
-	// int getAskList(Map<String, Object> paramap);
+	int getAskList(Map<String, Object> paramap);
 
 	
 

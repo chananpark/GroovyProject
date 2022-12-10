@@ -383,7 +383,7 @@
 	<!-- 관리자 - 설문작성(설문조사 번호 insert하기) -->
 	<insert id="getsurveyList" parameterType="com.spring.groovy.survey.model.SurveyVO">
 		INSERT INTO TBL_SURVEY(SURNO,FK_EMPNO,SURTITLE,SUREXPLAIN,SURCREATEDATE,SURSTART,SUREND,SURSTATUS,SUROPENSTATUS)
-		VALUES(#{surno},#{empno},#{surtitle},#{surexplain},sysdate,#{surstart},#{surend},default, default)
+		VALUES(#{surno},#{fk_empno},#{surtitle},#{surexplain},sysdate,#{surstart},#{surend},default, default)
 	</insert>
 	
 
@@ -391,7 +391,7 @@
 	<!-- 관리자 - 설문작성(한 문항씩 insert하기) -->
 	<insert id="getAskList" parameterType="HashMap">
 		INSERT INTO TBL_ASK(QUESTNO,FK_SURNO,QUESTION,OPTION1,OPTION2,OPTION3,OPTION4,OPTION5)
-		VALUES(seq_tbl_ask.nextval,#{cur_surno},#{question}, #{option1},#{option2},#{option3},#{option4},#{option5})
+		VALUES(seq_tbl_ask.nextval,#{fk_surno},#{question}, #{option1},#{option2},#{option3},#{option4},#{option5})
 	</insert>
 	
 	
