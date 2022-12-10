@@ -123,6 +123,7 @@ $("div#team").hide();
 		<div>
 			<div class="mb-3">설문제목</div>
 			<input type="text" name="surtitle" style="width: 95%;" placeholder="설문 제목을 입력해주세요."/>
+			<input type="hidden" name="empno" value="${requestScope.loginuser.empno}"/>
 		</div>
 		
 		<div>

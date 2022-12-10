@@ -612,10 +612,17 @@ nocache;
 
 commit
 
-select seq from dual
+
 -- 시퀀스조회
 SELECT seq_tbl_survey.CURRVAL FROM DUAL;
 
+SELECT seq_tbl_survey.NEXTVAL FROM DUAL;
+SELECT seq_tbl_survey.CURRVAL FROM DUAL
+where surno=1;
+
+SELECT surno from tbl_survey where surno = 1
+
+delete from tbl_survey where surno = 3
 
 --- 설문테이블 insert
 insert into tbl_survey(surno,fk_empno,surtitle,surexplain,surcreatedate,surstart,surend,surstatus,suropenstatus)

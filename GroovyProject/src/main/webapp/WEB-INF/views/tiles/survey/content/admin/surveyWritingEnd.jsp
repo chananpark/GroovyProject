@@ -107,9 +107,12 @@
 		}); // end of $("button#btn_submit").click(function(){ --------------------
 		
 	}); // end of $(document).ready(function(){---------------------
-		
-		
-		
+	/*	
+		console.log(surtitle);
+		console.log(surexplain);
+		console.log(surstart);
+		console.log(surtarget);
+	*/	
 	// >>> 완료버튼을 누르면 <<< //
 	function func_btn(){
 	
@@ -118,6 +121,7 @@
 		$.ajax({
 			url:"<%=ctxPath%>/survey/surveyWritingNo.on",
 			data: queryString,
+			async: true, // 반복문이기때문에 비동기방식이 아닌 동기방식으로 해야한다.
 			type:"POST",
 			dataType:"JSON",
 			success:function(json){
@@ -185,6 +189,7 @@
 	<div id="surveyform" class="m-4">
 		
 	<form name="frm_writing">
+		<input type="hidden" name="empno" value="${paramap.empno}"/>
 		<input type="hidden" name="surtitle" value="${paramap.surtitle}">
 		<input type="hidden" name="surexplain" value="${paramap.surexplain}">
 		<input type="hidden" name="surstart" value="${paramap.surstart}">

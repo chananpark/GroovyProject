@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -38,20 +40,28 @@ public class SurveyController {
 	@RequestMapping(value="/survey/surveyJoin.on")
 	public String surveyJoin(HttpServletRequest request) {
 		
+		
 		return "survey/public/surveyJoin.tiles";
 	}
 	
 	
 	// 관리자 - 설문작성1
 	@RequestMapping(value="/survey/surveyWriting.on")
-	public String surveyWriting(HttpServletRequest request,SurveyVO svo) {
-		return "survey/admin/surveyWriting.tiles";
+	public ModelAndView surveyWriting(ModelAndView mav, HttpServletRequest request,MemberVO mvo) {
+		HttpSession session =  request.getSession();
+		MemberVO loginuser = (MemberVO) session.getAttribute("loginuser");
+		
+		mav.addObject("loginuser",loginuser);
+		mav.setViewName("survey/admin/surveyWriting.tiles");
+		return mav;
 	}
 	
 	// 관리자 - 설문작성2
 	@RequestMapping(value="/survey/surveyWritingEnd.on")
 	public ModelAndView surveyWritingEnd(ModelAndView mav, HttpServletRequest request,SurveyVO svo, MemberVO mvo) {
 		
+		
+		String empno = request.getParameter("empno");
 		String surtitle = request.getParameter("surtitle");
 		String surexplain = request.getParameter("surexplain");
 		String surstart = request.getParameter("surstart");
@@ -61,7 +71,7 @@ public class SurveyController {
 		
 		String fk_department_no = request.getParameter("fk_department_no");
 		
-		
+		System.out.println(empno);
 		System.out.println(surtitle);
 		System.out.println(surexplain);
 		System.out.println(surstart);
@@ -74,6 +84,7 @@ public class SurveyController {
 		Map<String,Object> paramap = new HashMap<>();
 		paramap.put("svo", svo);
 		paramap.put("mvo", mvo);
+		paramap.put("empno", empno);
 		
 		mav.addObject("paramap", paramap);
 		
@@ -85,9 +96,10 @@ public class SurveyController {
 	// 관리자 - 설문작성(설문번호)
 		@ResponseBody
 		@RequestMapping(value="/survey/surveyWritingNo.on")
-		public String surveyWritingNo( HttpServletRequest request,SurveyVO svo, AskVO avo, MemberVO mvo) {
+		public String surveyWritingNo( HttpServletRequest request,SurveyVO svo, MemberVO mvo) {
 		
-			
+			String empno = request.getParameter("empno");
+			String surno = request.getParameter("surno");
 			String surtitle = request.getParameter("surtitle");
 			String surexplain = request.getParameter("surexplain");
 			String surstart = request.getParameter("surstart");
@@ -98,6 +110,7 @@ public class SurveyController {
 		
 			System.out.println("=============================================================================");
 			
+			System.out.println(empno);
 			System.out.println(surtitle);
 			System.out.println(surexplain);
 			System.out.println(surstart);
@@ -105,18 +118,33 @@ public class SurveyController {
 			System.out.println(surtarget);
 			System.out.println(fk_department_no);
 			System.out.println(suropenstatus);
-		
+			
 			// 관리자 - 설문작성(설문조사 번호 insert하기)
-			int n = service.getsurveyList(svo);
+			Map<String, Object>paramap = new HashMap<>();
+			paramap.put("empno", empno);
+			paramap.put("svo", svo);
+			
+			// 글번호를 알아오는 매소드(select)
+			// String sur_no = service.getsurno();
+			
+			// 설문지 insert하기
+			// int n = dao.getsurveyList(sur_no);// 알아온 번호 넣어주기
+			
+			// 관리자 - 설문작성(설문번호) 이곳에서 결과값이 true인지 아닌지 설정
+			boolean result = service.addSurvey(paramap);
+			
+			JSONObject jsonObj = new JSONObject();
+			jsonObj.put("result", result);
 		
 			JSONObject json = new JSONObject();
-			json.put("n", n);
+			json.put("result", result);
 			
 			return json.toString();
 		}
 		
 
 	// 관리자 - 설문작성(질문)
+/*
 	@ResponseBody
 	@RequestMapping(value="/survey/surveyWritingFinish.on")
 	public String surveyWritingFinish( HttpServletRequest request,SurveyVO svo, AskVO avo, MemberVO mvo) {
@@ -155,7 +183,7 @@ public class SurveyController {
 		
 		return json.toString();
 	}
-	
+*/
 	
 	
 	
@@ -187,8 +215,6 @@ public class SurveyController {
 		return "error";
 	}
 
-	
-	
-	
+
 	
 }
