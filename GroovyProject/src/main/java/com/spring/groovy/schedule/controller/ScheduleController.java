@@ -615,9 +615,11 @@ public class ScheduleController {
 		scheduleList = service.getScheduleList(paraMap);
 		mav.addObject("scheduleList", scheduleList);
 		
+		pagination.setQueryString("startdate="+startdate+"&enddate="+enddate+"&empno="+empno+"&cpemail="+cpemail+"&fk_lgcatgono="+fk_lgcatgono);
+		
 		// 페이지바
 		// 파라미터로 페이지 url을 넘긴다.
-		mav.addObject("pagebar", pagination.getPagebar(request.getContextPath()+"/schedule/searchSchedule.on?startdate="+startdate+"&enddate="+enddate+"&empno="+empno+"&cpemail="+cpemail+"&fk_lgcatgono="+fk_lgcatgono));
+		mav.addObject("pagebar", pagination.getPagebar(request.getContextPath()+"/schedule/searchSchedule.on"));
 		mav.addObject("paraMap", paraMap);
 		
 		String listgobackURL_schedule = Myutil.getCurrentURL(request);

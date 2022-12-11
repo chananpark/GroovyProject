@@ -30,79 +30,225 @@
 		align-self: center;
 	}
 
-
+	.alreadyReserv {
+		background-color: #e9ecef;
+	}
+	
+	.alreadyReserv:hover {
+		pointer-events: none;
+	}
+	
+	
+	
 </style>
 
 <script type="text/javascript">
 
 	$(document).ready(function(){
 		
-		
 		// 첫창에서 오늘 날짜 선택하게 만들기
 		var today_date = new Date().toISOString().substring(0, 10);
 	    $("input#reservStartDate").val(today_date);
 
 	    // insertReservation 에 넣어줄 변수인 클릭한 날짜 잡아오기
-	   	var selectDate = $("input#reservStartDate").val();
+	   	var selectDate =  $("input#reservStartDate").val();
 	    
+		// 화면 로딩될 때 처음으로 ajax를 불러오고 그 다음에 change 일 때 그에 따른 ajax를 다시 불러와야 해당하는 selectDate 가 변한다
+	    callReservationTable(selectDate);
+		
+		// input date 의 값이 변할 때
 	    $("input#reservStartDate").change(function(){
 	    	selectDate = $("input#reservStartDate").val();
-	    });
+	    	
+	    	// 이전 날짜 선택 막기
+	    	blockSelectDate(selectDate);
+	    	
+	    	// 타임테이블 불러오는 메소드
+	    	callReservationTable(selectDate);
+	    	
+	    	// 예약된 시간 보여주면서 예약 못하게 막아주는 메소드		
+		    reservTime(selectDate);
+	    	
+	    }); // end of  $("input#reservStartDate").change(function()
 	    
-	    // 타임테이블 만들기 시작
-	    var table_timeList = "<td>&nbsp;&nbsp;</td>";
-	    
-	    for(i=0; i<24; i++) {
-	    	if(i<10) {
-	    		table_timeList +=  "<td>"+'0'+i+"</td>";
-	    	} else {
-	    		table_timeList +=  "<td>"+i+"</td>";
-	    	}
-	    }; // end of for
-		    
-		$("tr#table_timeList").html(table_timeList);    
-	    
-	    // ----- 반복문 시작
-	    var three_meeting = "<td>3층 대회의실</td>";
-	    
-	    for(i=0; i<24; i++) { 
-	    	if(i<10) {
-		    	three_meeting +=  "<td class='time_hover' onclick='insertReservation("+selectDate+", 0"+i+");' value='0"+i+"')>&nbsp;&nbsp;</td>";
-	    	} else {
-		    	three_meeting +=  "<td class='time_hover' onclick='insertReservation();' value='"+i+"')>&nbsp;&nbsp;</td>";
-	    	}
-	    }; // end of for
-		    
-		$("tr#three_meeting").html(three_meeting);    
-	    
-		var five_meeting1 = "<td>5층 소회의실1</td>";
-		    
-			for(i=0; i<24; i++) {
-				five_meeting1 +=  "<td class='time_hover'>&nbsp;&nbsp;</td>";
-	   	}; // end of for
-		    
-		$("tr#five_meeting1").html(five_meeting1);    
-	    
-		var five_meeting2 = "<td>5층 소회의실2</td>";
-		    
-			for(i=0; i<24; i++) {
-				five_meeting2 +=  "<td class='time_hover'>&nbsp;&nbsp;</td>";
-		    }; // end of for
-			    
-		$("tr#five_meeting2").html(five_meeting2);    
-	    // ----- 반복문 끝
-	    
-	    // 타임테이블 만들기 끝
-	    
-	    
-	    
-	    
-	    
+	   
+		// 예약된 시간 보여주면서 예약 못하게 막아주는 메소드		
+	    reservTime(selectDate);
+	
 	}); // end of ready
-
-
 	
 	
+	// 예약된 시간 보여주면서 예약 못하게 막아주는 메소드
+	function reservTime(selectDate) {
+		
+		var str_selectDay = selectDate.substring(0,4).toString() + selectDate.substring(5,7).toString() + selectDate.substring(8,10).toString();
+		
+		$.ajax({
+			url:"<%= ctxPath%>/reservation/reservTime.on",
+			type:"get",
+			data:{"fk_lgcatgono":3,
+				  "selectDate":selectDate},
+			dataType:"json",
+			success:function(json){
+
+				// 선택한 날짜에 예약 목록이 있을 경우
+				if(json.length > 0){
+				
+					$.each(json, function(index, item){
+						
+						var str_startdate = item.startdate;
+						var str_enddate = item.enddate;
+						
+						var sub_startdate = str_startdate.substring(0,8);
+						var sub_enddate = str_enddate.substring(0,8);
+						var sub_starttime = str_startdate.substring(8,10);
+						var sub_endtime = str_enddate.substring(8,10);
+						
+						// 시작일자, 반납일자 모두 오늘일 경우
+						if(sub_startdate == str_selectDay && sub_enddate == str_selectDay) {
+							
+							for(i=sub_starttime; i<sub_endtime; i++) {
+								if(i < 10) {
+									var reservtimeClass = "revtime" + item.fk_smcatgono + "0" +i;
+									
+									$("."+reservtimeClass).addClass("alreadyReserv"); 
+									$("."+reservtimeClass).removeClass("time_hover");
+								} else {
+									var reservtimeClass = "revtime" + item.fk_smcatgono + i;
+									
+									$("."+reservtimeClass).addClass("alreadyReserv"); 
+									$("."+reservtimeClass).removeClass("time_hover");
+									
+								}
+							} // end of for
+							
+						// 시작일자는 오늘 이전이고 종료일자가 오늘일 경우	
+						} else if(Number(sub_startdate) < Number(str_selectDay) && Number(sub_enddate) == Number(str_selectDay)) {
+							
+							for(i=0; i<sub_endtime; i++) {
+								if(i < 10) {
+									var reservtimeClass = "revtime" + item.fk_smcatgono + "0" +i;
+									
+									$("."+reservtimeClass).addClass("alreadyReserv"); 
+									$("."+reservtimeClass).removeClass("time_hover");
+								} else {
+									var reservtimeClass = "revtime" + item.fk_smcatgono + i;
+									
+									$("."+reservtimeClass).addClass("alreadyReserv"); 
+									$("."+reservtimeClass).removeClass("time_hover");
+									
+								}
+							} // end of for
+							
+						// 시작일자는 오늘이전이고 종료일자가 오늘 이후일 경우	
+						} else if(Number(sub_startdate) < Number(str_selectDay) && Number(sub_enddate) > Number(str_selectDay)) {
+							
+							for(i=0; i<24; i++) {
+								
+								if(i < 10) {
+									var reservtimeClass = "revtime" + item.fk_smcatgono + "0" +i;
+									
+									$("."+reservtimeClass).addClass("alreadyReserv"); 
+									$("."+reservtimeClass).removeClass("time_hover");
+								} else {
+									var reservtimeClass = "revtime" + item.fk_smcatgono + i;
+									
+									$("."+reservtimeClass).addClass("alreadyReserv"); 
+									$("."+reservtimeClass).removeClass("time_hover");
+									
+								}
+							} // end of for
+							
+						// 시작날짜는 오늘이고 종료날짜는 오늘 이후일 경우	
+						} else if(Number(sub_startdate) == Number(str_selectDay) && Number(sub_enddate) > Number(str_selectDay)) {
+							
+							for(i=sub_endtime; i<24; i++) {
+								if(i < 10) {
+									var reservtimeClass = "revtime" + item.fk_smcatgono + "0" +i;
+									
+									$("."+reservtimeClass).addClass("alreadyReserv"); 
+									$("."+reservtimeClass).removeClass("time_hover");
+								} else {
+									var reservtimeClass = "revtime" + item.fk_smcatgono + i;
+									
+									$("."+reservtimeClass).addClass("alreadyReserv"); 
+									$("."+reservtimeClass).removeClass("time_hover");
+									
+								}
+							} // end of for
+						} // end of 시작날짜 ~ 종료날짜 addclass
+						
+						
+						
+					}); // end of each
+					
+				} // end of if
+				 
+			 },
+			 error: function(request, status, error){
+		            alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+		     }	 	
+		}); // end of ajax
+		
+		
+	} // end of function reservTime()
+	
+
+	// 타임테이블 불러오는 메소드
+	function callReservationTable(selectDate) {
+		
+		$.ajax({
+			url:"<%= ctxPath%>/reservation/reservationTable.on",
+			type:"get",
+			data:{"fk_lgcatgono":3},
+			dataType:"json",
+			success:function(json){
+				var html = "";
+				if(json.length > 0){
+					html += "<table class='table' style='border-left: none !important; border-right: none;'>";
+					html += "<tr>";
+					html += "<td>&nbsp;&nbsp;</td>";
+					for(i=0; i<24; i++) {
+				    	if(i<10) {
+				    		html +=  "<td>"+'0'+i+"</td>";
+				    	} else {
+				    		html +=  "<td>"+i+"</td>";
+				    	}
+				    }; // end of for
+					html += "</tr>";
+					
+					html += "<tr>";	 
+					 
+					$.each(json, function(index, item){
+						html += "<td>"+item.smcatgoname+"</td>";
+						for(i=0; i<24; i++) { 
+							if(i<10) {
+								html +=  "<td id='mtr"+item.smcatgono+"' class='time_hover time0"+i+" revtime"+item.smcatgono+"0"+i+"' onclick='insertReservation(\""+selectDate+"\", \"0"+i+"\", 3, \""+item.smcatgono+"\");' >&nbsp;&nbsp;</td>";
+					    	} else {
+					    		html +=  "<td id='mtr"+item.smcatgono+"' class='time_hover time"+i+" revtime"+item.smcatgono+i+"' onclick='insertReservation(\""+selectDate+"\", \""+i+"\", 3, \""+item.smcatgono+"\");' >&nbsp;&nbsp;</td>";
+					    	}
+						} // end of for
+						html += "</tr>";
+					}); // end of each
+					 
+					html += "</table>";
+					
+				} // end of if
+				$("div#selectTimeTable").html(html);
+				 
+			 },
+			 error: function(request, status, error){
+		            alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+		     }	 	
+		}); // end of ajax
+		
+	} // end of function callReservationTable() 
+
+	
+		
+			
+			
+			
 </script>
 
 
@@ -111,7 +257,7 @@
 	<h4 class="mt-2">차량 예약</h4>
 </div>
 
-<div class="hide" id="detail_search" style="width:95%; margin: 0 auto;">
+<div id="reservationFormat" style="width:95%; margin: 0 auto;">
 	<div class="jumbotron">
 	    <div class="container">
 			1. 사용 신청 이후 운영관리자에게 차키와 운행일지를 수령, 사용 후 반납
@@ -128,7 +274,7 @@
 	
 		
 	<%-- 오늘 날짜 선택 --%>
-	<div class="reservation_title">
+	<div class="reservation_title" id="reservSelectDate">
 		<span class="reservation_title_item mr-3" style="font-size: 15pt;" >예약일자</span>
 		<span class="reservation_title_item mb-1">
 			<input class="date_style" type="date" id="reservStartDate"/>
@@ -136,14 +282,8 @@
 	</div>
 
 	<%-- 시간 선택 --%>
-	<table class="table" style="border-left: none !important; border-right: none;">
-		<tr id="table_timeList"></tr>
-		<tr id="three_meeting"></tr>
-		<tr id="five_meeting1"></tr>
-		<tr id="five_meeting2"></tr>
-		<tr id="five_meeting3"></tr>
+	<div id="selectTimeTable"></div>
 	
-	</table>
 	
 </div>
 

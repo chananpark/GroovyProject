@@ -179,9 +179,9 @@
 			<tr class="text-center">
 				<th class="col-4">예약 일자</th>
 				<th class="col-3">예약 항목</th>
-				<th class="col-2">예약자</th>
-				<th class="col-1">승인여부</th>
+				<th class="col-1">예약자</th>
 				<th class="col-2">취소 및 반납</th>
+				<th class="col-2">승인여부</th>
 			</tr>
 		</thead>	
 		<tbody  >
@@ -237,10 +237,10 @@
 				 </td>
 				<td class="text-center" style="vertical-align: middle;">김일정</td> 
 				<td class="text-center" style="vertical-align: middle;">
-					승인
+					<button class="btn" style="color:white; background-color: #086BDE;">반납</button>
 				</td>
 				<td class="text-center" style="vertical-align: middle;">
-					<button class="btn" style="color:white; background-color: #086BDE;">반납</button>
+					승인
 				</td>
 				
 			</tr>
