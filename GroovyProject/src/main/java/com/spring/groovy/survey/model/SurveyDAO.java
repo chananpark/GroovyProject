@@ -13,7 +13,7 @@ public class SurveyDAO implements InterSurveyDAO {
 	@Resource
 	private SqlSessionTemplate sqlsession;
 
-	// 설문번호를 알아오는 메소드
+	// 다음설문번호를 알아오는 매소드
 	@Override
 	public String getsurno() {
 		return sqlsession.selectOne("minsu.getsurno");
@@ -27,14 +27,14 @@ public class SurveyDAO implements InterSurveyDAO {
 	}
 	
 	
-	
-	
 	// 관리자 - 설문작성(한 문항씩 insert하기)
 	@Override
 	public int getAskList(Map<String, Object> paramap) {
 		return sqlsession.insert("minsu.getAskList",paramap);
 	}
 
+
+	
 	
 
 

@@ -31,7 +31,7 @@ public class SurveyService implements InterSurveyService {
 		// rollbackFor : 특정 예외 발생 시 rollback한다.
 		// REQUIRED : 이미 진행중인 트랜잭션이 있다면 해당 트랜잭션 속성을 따르고, 진행중이 아니라면 새로운 트랜잭션을 생성한다.
 		// READ_COMMITED (level 1) : 커밋된 데이터에 대해 읽기 허용
-	public boolean addSurvey(Map<String, Object> paramap) {
+	public String addSurvey(Map<String, Object> paramap) {
 		
 		boolean result = false;
 		
@@ -43,17 +43,17 @@ public class SurveyService implements InterSurveyService {
 		
 		// 설문지 insert하기(surno에 알아온 설문지번호를넣은후 svo에 담는다.)
 		int n = dao.getsurveyList(svo);
-		System.out.println(surno+"service");
+		System.out.println(surno+" 서비스service");
 		System.out.println(n+"service");
 		
 		result = (n == 1)? true: false;
 		// bool 변수 = 변수 ? true : false ;
 		// A ? B : C ; 라고 생각했을 때 A가 참이면 B를 리턴, 거짓이면 C를 리턴한다.
 		
-		// 글 작성 실패 시 리턴
-		if (!result) // n이 1이 아니라면
-			return false;
-		return result;
+		if(!result) // n이 1이 아니라면
+		return null;
+		
+		return surno;
 	}
 
 		

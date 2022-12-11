@@ -127,29 +127,20 @@ public class SurveyController {
 			Map<String, Object>paramap = new HashMap<>();
 			paramap.put("svo", svo);
 			
-			// 글번호를 알아오는 매소드(select)
-			// String sur_no = service.getsurno();
-			
-			// 설문지 insert하기
-			// int n = dao.getsurveyList(sur_no);// 알아온 번호 넣어주기
-			
 			// 관리자 - 설문작성(설문번호) 이곳에서 결과값이 true인지 아닌지 설정
-			boolean result = service.addSurvey(paramap);
+			String fk_surno = service.addSurvey(paramap);
 			
-			JSONObject jsonObj = new JSONObject();
-			jsonObj.put("result", result);
-		
 			JSONObject json = new JSONObject();
-			json.put("result", result);
+			json.put("fk_surno", fk_surno);
 			
 			return json.toString();
 		}
 		
 
-	// 관리자 - 설문작성(질문)
+	// 관리자 - 설문작성(질문번호)
 	@ResponseBody
 	@RequestMapping(value="/survey/surveyWritingFinish.on")
-	public String surveyWritingFinish( HttpServletRequest request,SurveyVO svo, AskVO avo, MemberVO mvo) {
+	public String surveyWritingFinish( HttpServletRequest request, AskVO avo, MemberVO mvo) {
 		
 		String questno = request.getParameter("questno");
 		String fk_surno = request.getParameter("fk_surno");
@@ -170,16 +161,16 @@ public class SurveyController {
 		System.out.println(option4);
 		System.out.println(option5);
 		
-	
 		// 관리자 - 설문작성(한 문항씩 insert하기)
 		Map<String,Object> paramap = new HashMap<>();
 		paramap.put("avo", avo);
-		
-		int p = service.getAskList(paramap);
+				
+		// 관리자 - 설문작성(한 문항씩 insert하기)
+		int n = service.getAskList(paramap);
 		
 		JSONObject json = new JSONObject();
-		json.put("p", p);
-		
+		json.put("n", n);
+	
 		return json.toString();
 	}
 	

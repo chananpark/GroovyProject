@@ -620,6 +620,7 @@ SELECT seq_tbl_survey.NEXTVAL FROM DUAL;
 SELECT seq_tbl_survey.CURRVAL FROM DUAL
 where surno=1;
 
+
 SELECT surno from tbl_survey where surno = 1
 
 delete from tbl_survey where surno = 3
@@ -633,20 +634,11 @@ from tbl_ask
 
 select *
 from tbl_survey
+order by surno desc
 
 
 insert into tbl_ask(questno,fk_surno,question,option1)
 values(seq_tbl_ask.nextval,2,'팀플설문조사 많이 어려운가요?', 1)
-
-create table  c
-(questno 	    number(20)        	not null       -- 문항번호
-,fk_surno		number(20)        	not null       -- 설문번호
-,question		varchar2(300)   	not null       -- 설문질문
-,option1		number(1)        	not null       -- 선택지1
-,option2		number(1)        	not null       -- 선택지2
-,option3		number(1)        	not null       -- 선택지3
-,option4		number(1)        	not null       -- 선택지4
-,option5
 
 
 drop table tbl_ask

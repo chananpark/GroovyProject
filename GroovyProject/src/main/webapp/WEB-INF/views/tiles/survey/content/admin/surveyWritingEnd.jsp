@@ -57,8 +57,6 @@
 
 <script type="text/javascript">
 
-// 전역변수
- let fk_surno = "";
 
 	$(document).ready(function(){
 		
@@ -115,7 +113,9 @@
 		console.log(surtarget);
 	*/	
 	
-	
+
+	// 설문지번호 전역변수 선언
+	let fk_surno;
 	// >>> 완료버튼을 누르면 <<< //
 	function func_btn(){
 	
@@ -125,18 +125,20 @@
 		$.ajax({
 			url:"<%=ctxPath%>/survey/surveyWritingNo.on",
 			data: queryString,
-			async: false, // 반복문이기때문에 비동기방식이 아닌 동기방식으로 해야한다.(동기- 요청을 보낸 후 응답결과를 받아야지만 다음 동작이 이루어지는 방식)
+			async: false, // 전역변수에 결과값을 담기위해서 방식을 동기방식으로 바꿔야한다.(아래의 ajax를 사용하기 위해서도 해야함.)
 			type:"POST",
 			dataType:"JSON",
 			success:function(json){
-				console.log(json.result);
 				
-				if(json.n == 1) {
+				console.log(json.fk_surno+"success:function");
+				
+				if(json.fk_surno != "") {
 					alert("설문지 등록 성공하였습니다.");
+					console.log(json.fk_surno+"jsp");
+					fk_surno = json.fk_surno;
 				}
 				else {
 					alert("설문지 등록 실패하였습니다.");
-					console.log(json.result+"ajax");
 				}
 			},
 		  	 error: function(request, status, error){
@@ -144,41 +146,36 @@
 			  }
 		}); // end of 설문번호 insert $.ajax({
 		
+			
+		// 설문항목 insert
 		// 초기값 설정
 		let i=0;
-		// 설문항목 insert
-		for(i=1; i<=5; i++){
+		for(i=1; i<=5; i++){ 
 			const frm = $("form[name='frm"+i+"']").serialize();
 		//	리텀값frm.fk_surno.value=fk_surno; 을 전역변수에 담아놔야한다.
 		
-	//		function(i) {  ==> 함수를 사용해서(i)를 사용하는데 여기서는 function이 중복되서 안되는것 같음
-		//		{	
-					$.ajax({
-						url:"<%=ctxPath%>/survey/surveyWritingFinish.on",
-						data: frm,
-						type:"POST",
-						dataType:"JSON",
-						async: false, // 반복문이기때문에 비동기방식이 아닌 동기방식으로 해야한다.
-						success:function(json){
-							
-							frm.fk_surno.value=fk_surno;
-							
-							if(json.p == 1) {
-								alert([i] +"질문 등록 완료하였습니다.");
-								frm.fk_surno.value=fk_surno;
-							}
-							else {
-								alert([i] +"질문 등록 실패하였습니다.");
-								console.log(json.p);
-							}
-						},
-					  	 error: function(request, status, error){
-							  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-						  }
-					});
-			//	}
-	//		}
+			$.ajax({
+				url:"<%=ctxPath%>/survey/surveyWritingFinish.on",
+				data: frm,
+				type:"POST",
+				dataType:"JSON",
+				async: false, // 반복문이기때문에 비동기방식이 아닌 동기방식으로 해야한다.
+				success:function(json){
+					
+					if(json.n == 1) {
+						alert([i] +"질문 등록 완료하였습니다.");
+					}
+					else {
+						alert([i] +"질문 등록 실패하였습니다.");
+						console.log(json.result);
+					}
+				},
+			  	 error: function(request, status, error){
+					  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+				  }
+			});
 		} // end of for -------------------------
+		
 	} // end of function func_btn(){ --------------------
 
 </script>
@@ -206,7 +203,7 @@
 		<section style="border-bottom:solid 1px #bfbfbf; border-top:solid 1px #bfbfbf;">
 			<div class="my-4 mx-2">
 				<span class="mx-2">1.</span><input type="hidden" name="questno" value="1"/>
-				 <input type="hidden" name="fk_surno" value=""/>
+				 <input type="hidden" name="fk_surno"/>
 				<input type="text" name="question" placeholder="질문을 등록해주세요" style="width: 80%;" required /> 
 				<div class="radio input1">
 					º<input type="text" name="option1"/><br>
