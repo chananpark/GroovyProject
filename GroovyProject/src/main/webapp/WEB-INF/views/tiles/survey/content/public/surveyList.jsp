@@ -2,6 +2,7 @@
     pageEncoding="UTF-8"%>
     
  <% String ctxPath = request.getContextPath(); %>
+ <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <style>
 
@@ -90,6 +91,7 @@
 				</thead>
 				
 				<tbody align="center">
+				<c:forEach var="survey" items="${requestScope.surveyList}" varStatus="status"> 
 					<tr>
 						<td>
 							<!-- 설문조사가 진행중인경우 -->
@@ -109,6 +111,7 @@
 						</td>  
 						<td></td>
 					</tr>
+					</c:forEach>
 					
 					<tr>
 						<td><div style="background-color: #F9F9F9; width: 70px; border: none;"><span style="width: 200px;">종료</span></div></td>
@@ -118,6 +121,7 @@
 						<td><button onclick="go_surveyResult()" style="background-color:#F9F9F9; width: 70px; border: none;"><span style="font-size: 14px;">참여</span></button></td>   <!-- 미참여일 경우 배경색 하늘색, 참여한 경우 파란색에 글씨  흰색 -->
 						<td>2022-11-29</td>
 					</tr>
+					
 				</tbody>
 				
 				<div id="pagebar"></div>

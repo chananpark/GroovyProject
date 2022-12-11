@@ -374,6 +374,12 @@
 	
 	<!-- ============================================  설문조사  ========================================================= -->
 	
+	<!-- 설문리스트 목록 -->
+	<select id="surveyList" parameterType="HashMap" resultType="com.spring.groovy.survey.model.JoinSurveyVO">
+		SELECT SURNO, FK_EMPNO, SURTITLE, SUREXPLAIN, SURCREATEDATE,SURSTART,SUREND,SURSTATUS,SUROPENSTATUS
+		FROM TBL_SURVEY
+	</select>
+	
 	<!-- 다음설문번호를 알아오는 매소드  -->
 	<select id="getsurno" resultType="String" >
 		SELECT SEQ_TBL_SURVEY.NEXTVAL FROM DUAL

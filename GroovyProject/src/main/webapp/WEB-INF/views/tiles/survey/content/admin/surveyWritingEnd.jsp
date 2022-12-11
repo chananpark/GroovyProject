@@ -68,7 +68,6 @@
 				alert("질문을 모두 작성해주세요");
 				return;
 			}
-		/* 	
 		 	const option1 = $("input[name='option1']").val().trim();
 			if(option1 == "") {
 				alert("선택지 모두 작성해주세요");
@@ -97,7 +96,7 @@
 			if(option1 == "") {
 				alert("선택지 모두 작성해주세요");
 				return;
-			} */
+			} 
 			
 			// 설문지를 저장해주는 함수
 			func_btn();
@@ -106,14 +105,8 @@
 		
 		
 	}); // end of $(document).ready(function(){---------------------
-	/*	
-		console.log(surtitle);
-		console.log(surexplain);
-		console.log(surstart);
-		console.log(surtarget);
-	*/	
-	
 
+		
 	// 설문지번호 전역변수 선언
 	let fk_surno;
 	// >>> 완료버튼을 누르면 <<< //
@@ -143,7 +136,6 @@
 					for(i=1; i<=5; i++){ 
 						const questno = $("#questno"+i).val();
 						const question = $("#question"+i).val();
-								console.log(question);
 						const option1 = $("#option1"+i).val();
 						const option2 = $("#option2"+i).val();
 						const option3 = $("#option3"+i).val();
@@ -191,9 +183,6 @@
 				  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
 			  }
 		}); // end of 설문번호 insert $.ajax({
-		
-			
-	
 		
 	} // end of function func_btn(){ --------------------
 

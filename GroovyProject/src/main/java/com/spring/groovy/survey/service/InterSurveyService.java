@@ -1,9 +1,10 @@
 package com.spring.groovy.survey.service;
 
+import java.util.List;
 import java.util.Map;
 
-import com.spring.groovy.survey.model.AskVO;
 import com.spring.groovy.survey.model.SurveyVO;
+
 
 public interface InterSurveyService {
 	
@@ -13,6 +14,9 @@ public interface InterSurveyService {
 
 	// 관리자 - 설문작성(한 문항씩 insert하기)
 	int getAskList(Map<String, Object> paramap);
+
+	// 설문리스트 목록
+	List<SurveyVO> surveyList(Map<String, Object> paramap);
 
 
 

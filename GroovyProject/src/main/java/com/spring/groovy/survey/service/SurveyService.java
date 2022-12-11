@@ -2,6 +2,7 @@ package com.spring.groovy.survey.service;
 
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +21,15 @@ public class SurveyService implements InterSurveyService {
 	@Autowired
 	private InterSurveyDAO dao;
 	
+	
+	// 설문리스트 목록
+	@Override
+	public List<SurveyVO> surveyList(Map<String, Object> paramap) {
+		return dao.surveyList(paramap);
+	}
+		
+		
+		
 	// 관리자 - 설문작성(설문번호) 이곳에서 결과값이 true인지 아닌지 설정
 	@Override
 	@SuppressWarnings("unchecked")  // => 경고를 나태나는 노란줄을 안보이게 설정 (unchecked - 검증되지 않은 연산자 관련 경고 )
@@ -57,22 +67,11 @@ public class SurveyService implements InterSurveyService {
 	}
 
 		
-		
-
-
 	// 관리자 - 설문작성(한 문항씩 insert하기)
 	@Override
 	public int getAskList(Map<String, Object> paramap) {
-		
-		String ajax_fk_surno = (String) paramap.get("ajax_fk_surno");
-		String question = (String) paramap.get("question");
-		AskVO option1 = (AskVO) paramap.get("option1");
-		
-		System.out.println(ajax_fk_surno+"서비스단 ajax_fk_surno");
-		System.out.println(question+"서비스단 question");
-		System.out.println(option1+"서비스단 option1");
-		
 		return dao.getAskList(paramap);
 	}
+	
 	
 }

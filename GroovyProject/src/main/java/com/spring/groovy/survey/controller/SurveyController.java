@@ -1,6 +1,7 @@
 package com.spring.groovy.survey.controller;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -10,15 +11,13 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.google.gson.JsonObject;
 import com.spring.groovy.management.model.MemberVO;
 import com.spring.groovy.survey.model.AskVO;
+import com.spring.groovy.survey.model.JoinSurveyVO;
 import com.spring.groovy.survey.model.SurveyVO;
 import com.spring.groovy.survey.service.InterSurveyService;
 
@@ -31,9 +30,16 @@ public class SurveyController {
 	
 	// 설문리스트 목록
 	@RequestMapping(value="/survey/surveyList.on")
-	public String surveyList(HttpServletRequest request) {
+	public ModelAndView surveyList(ModelAndView mav, HttpServletRequest request, JoinSurveyVO jvo) {
 		
-		return "survey/public/surveyList.tiles";
+		Map<String,Object> paramap = new HashMap<>();
+		paramap.put("jvo",jvo);
+		
+		List<SurveyVO> surveyList = service.surveyList(paramap);
+		mav.addObject("surveyList", surveyList);
+		
+		mav.setViewName("survey/public/surveyList.tiles");
+		return mav;
 	}
 	
 	// 설문리스트 - 설문참여
@@ -66,19 +72,8 @@ public class SurveyController {
 		String surend = request.getParameter("surend");
 		String surtarget = request.getParameter("surtarget");
 		String suropenstatus = request.getParameter("suropenstatus");
-		
 		String fk_department_no = request.getParameter("fk_department_no");
-		
-		System.out.println(empno);
-		System.out.println(surtitle);
-		System.out.println(surexplain);
-		System.out.println(surstart);
-		System.out.println(surend);
-		System.out.println(surtarget);
-		System.out.println(fk_department_no);
-		System.out.println(suropenstatus);
-		System.out.println("*******************************************************************");
-		
+	
 		Map<String,Object> paramap = new HashMap<>();
 		paramap.put("empno", empno);
 		paramap.put("surtitle", surtitle);
@@ -90,7 +85,6 @@ public class SurveyController {
 		paramap.put("fk_department_no", fk_department_no);
 		
 		mav.addObject("paramap", paramap);
-		
 		mav.setViewName("survey/admin/surveyWritingEnd.tiles");
 		
 		return mav;
@@ -100,29 +94,7 @@ public class SurveyController {
 		@ResponseBody
 		@RequestMapping(value="/survey/surveyWritingNo.on")
 		public String surveyWritingNo( HttpServletRequest request,SurveyVO svo, MemberVO mvo) {
-		
-			String fk_empno = request.getParameter("fk_empno");
-			String surno = request.getParameter("surno");
-			String surtitle = request.getParameter("surtitle");
-			String surexplain = request.getParameter("surexplain");
-			String surstart = request.getParameter("surstart");
-			String surend = request.getParameter("surend");
-			String surtarget = request.getParameter("surtarget");
-			String suropenstatus = request.getParameter("suropenstatus");
-			String fk_department_no = request.getParameter("fk_department_no");
-		
-			System.out.println("=============================================================================");
-			
-			System.out.println(fk_empno);
-			System.out.println(surno);
-			System.out.println(surtitle);
-			System.out.println(surexplain);
-			System.out.println(surstart);
-			System.out.println(surend);
-			System.out.println(surtarget);
-			System.out.println(fk_department_no);
-			System.out.println(suropenstatus);
-			
+	
 			// 관리자 - 설문작성(설문조사 번호 insert하기)
 			Map<String, Object>paramap = new HashMap<>();
 			paramap.put("svo", svo);
@@ -142,24 +114,9 @@ public class SurveyController {
 	@RequestMapping(value="/survey/surveyWritingFinish.on")
 	public String surveyWritingFinish( HttpServletRequest request, AskVO avo) {
 		
-		String questno = request.getParameter("questno");
 		String ajax_fk_surno = request.getParameter("ajax_fk_surno");
-		String question = request.getParameter("question");
-		String option1 = request.getParameter("option1");
-		String option2 = request.getParameter("option2");
-		String option3 = request.getParameter("option3");
-		String option4 = request.getParameter("option4");
-		String option5 = request.getParameter("option5");
-		System.out.println("------------------------------------------------------------------------");
 	
-		System.out.println(questno);
 		System.out.println(ajax_fk_surno);
-		System.out.println(question);
-		System.out.println(option1);
-		System.out.println(option2);
-		System.out.println(option3);
-		System.out.println(option4);
-		System.out.println(option5);
 		
 		// 관리자 - 설문작성(한 문항씩 insert하기)
 		Map<String,Object> paramap = new HashMap<>();

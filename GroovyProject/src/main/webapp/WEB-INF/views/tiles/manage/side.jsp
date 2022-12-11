@@ -78,9 +78,10 @@
 <nav class="navbar bg-light">
 
   <!-- 공용 Links -->
-  <ul class="menus navbar-nav text-left " style='width:100%'>
+    <!-- 공용 Links -->
+  <ul class="navbar-nav" style='width:100%;'>
     <li class="nav-item">
-      <h1 >사원관리</h1>
+      <h4 class='mb-4'>사원관리</h4>
     </li>
     
     <li class="menu topMenu nav-item">

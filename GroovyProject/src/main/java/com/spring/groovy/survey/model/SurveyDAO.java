@@ -1,5 +1,6 @@
 package com.spring.groovy.survey.model;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -13,6 +14,13 @@ public class SurveyDAO implements InterSurveyDAO {
 	@Resource
 	private SqlSessionTemplate sqlsession;
 
+	
+	// 설문리스트 목록
+	@Override
+	public List<SurveyVO> surveyList(Map<String, Object> paramap) {
+		return sqlsession.selectList("minsu.surveyList", paramap);
+	}
+		
 	// 다음설문번호를 알아오는 매소드
 	@Override
 	public String getsurno() {
@@ -32,6 +40,8 @@ public class SurveyDAO implements InterSurveyDAO {
 	public int getAskList(Map<String, Object> paramap) {
 		return sqlsession.insert("minsu.getAskList",paramap);
 	}
+
+	
 
 
 	

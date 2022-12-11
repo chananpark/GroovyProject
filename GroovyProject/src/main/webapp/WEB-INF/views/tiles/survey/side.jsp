@@ -4,17 +4,20 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <style>
-	.menu {
+	/* .menu {
 		margin: 2% 0;
 	}
-
+ */
 	li:hover {
 		cursor: pointer;
 	}
 	
-	div#manage_menu {
-		border-top: solid 1px blue;
+	#insertBtn:hover{
+		border: 1px solid #086BDE;
+		color: white;
+		background-color: #086BDE;
 	}
+	
 
 </style>
 
@@ -36,12 +39,14 @@
 	           $(target).slideToggle("fast");
 	        }
 	    }); // end of  $(".topMenu").click(function(e) {-------------------
-	    	
-	    //	console.log("${loginuser.empno}");
+	 
+	 });
 	    
-	    //	console.log("${loginuser}");
 	    
-	    });
+	// >>> 설문작성 버튼을 누르면 <<<     
+	function surveyWriting() {
+		location.href="<%=ctxPath %>/survey/surveyWriting.on";
+	  }
 
 </script>
 
@@ -52,25 +57,34 @@
 <nav class="navbar bg-light">
 
   <!-- 공용 Links -->
-  <ul class="menus navbar-nav text-left " style='width:100%'>
-    <li class="nav-item">
-      <h1 >설문조사</h1>
-    </li>
+  <ul class="navbar-nav" style='width:100%;'>
+	   <!-- 관리자 Links -->
+	    <c:if test="${sessionScope.loginuser != null && loginuser.department ==  '인사총무팀'}">
+		    <li class="nav-item">
+		      <h4 class='mb-4'>설문조사</h4>
+		    </li>
+	    </c:if> 
+    
+    <li class="nav-item mb-4">
+      	<button id="insertBtn" type="button" style='width:100%;' class="btn btn-outline-dark" onclick="surveyWriting();">설문작성</button>
+   	</li>
     
     <li class="menu topMenu nav-item">
       <a class="nav-link" href="<%= ctxPath%>/survey/surveyList.on">설문리스트</a>
     </li>
     
     <!-- 관리자 Links -->
-    <%-- <c:if test="${sessionScope.loginuser != null && loginuser.department ==  '인사총무팀'}">  --%>
-	    <li class="menu topMenu nav-item">
-	      <a class="nav-link" href="<%= ctxPath%>/survey/surveyWriting.on">설문작성</a>
-	    </li>
+    <c:if test="${sessionScope.loginuser != null && loginuser.department ==  '인사총무팀'}">
+		  <%--  
+		   <li class="menu topMenu nav-item">
+		      <a class="nav-link" href="<%= ctxPath%>/survey/surveyWriting.on">설문작성</a>
+		    </li> 
+		    --%>
 	    
 	    <li class="menu topMenu nav-item">
 	      <a class="nav-link" href="<%= ctxPath%>/survey/surveyManage.on">설문관리</a>
 	    </li>
-   <%--  </c:if> --%>
+     </c:if> 
      </ul> 
 
 </nav>

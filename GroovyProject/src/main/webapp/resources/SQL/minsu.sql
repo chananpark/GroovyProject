@@ -652,5 +652,28 @@ select * from tbl_survey
 delete from tbl_survey 
 where surno = 2
 commit
+--
 
+select count(*),surstart,surend,surtitle,sursubdate
+from tbl_survey S left join tbl_joinsurvey J
+on S.surno = J.fk_surno
+where J.fk_empno = '13'
+
+(surno		    number(20)        		not null   -- 설문번호
+,fk_empno	    number   		        not null   -- 사원번호
+,surtitle  	   	Nvarchar2(30)  		    not null   -- 설문제목
+,surexplain    	Nvarchar2(30)         		       -- 설문설명
+,surcreatedate 	date  default sysdate   not null   -- 설문생성일
+,surstart 	    date  			        not null   -- 설문시작일
+,surend	   	    date  			        not null   -- 설문종료일
+,surstatus    	number(1)   default 1  	not null   -- 상태(0 임시저장, 1 저장)
+,suropenstatus  number(1)   default 1   not null   -- 설문결과공개여부(0비공개, 1공개)
+
+
+(joinsurno 	number(20)        not null       -- 설문참여번호
+,fk_empno	number            not null   	 -- 사원번호
+,fk_surno   number(20)        not null       -- 설문번호
+,fk_questno	number(20)        not null       -- 문항번호
+,answer		number(20)        not null       -- 답변
+,sursubdate date  default sysdate  not null  -- 답변제출일
 
