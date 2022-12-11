@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.spring.groovy.common.Pagination;
 import com.spring.groovy.management.model.MemberVO;
 import com.spring.groovy.survey.model.AskVO;
 import com.spring.groovy.survey.model.JoinSurveyVO;
@@ -30,13 +31,31 @@ public class SurveyController {
 	
 	// 설문리스트 목록
 	@RequestMapping(value="/survey/surveyList.on")
-	public ModelAndView surveyList(ModelAndView mav, HttpServletRequest request, JoinSurveyVO jvo) {
+	public ModelAndView surveyList(ModelAndView mav, HttpServletRequest request,SurveyVO svo,Pagination pagination) {
+		
+		HttpSession session = request.getSession();
+		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
+		String empno = loginuser.getEmpno();
 		
 		Map<String,Object> paramap = new HashMap<>();
-		paramap.put("jvo",jvo);
+		paramap.put("svo",svo);
+		paramap.put("empno",empno);
 		
 		List<SurveyVO> surveyList = service.surveyList(paramap);
 		mav.addObject("surveyList", surveyList);
+		
+		 // 설문리스트 목록 - 전체 글 개수 구하기(페이징) 
+		int listCnt = service.getcountSurveyList(pagination);
+		
+		// 페이지수 알아오기
+		Map<String, Object> paraMap = pagination.getPageRange(listCnt);// startRno, endRno
+		mav.addObject("listCnt", listCnt);
+	
+		// 설문리스트 목록 - 한 페이지에 표시할 글 목록  (페이징 페이지수를 알아온다음에 10개씩보여줌) (페이징)
+		mav.addObject("pageCnt", service.getSurveyCnt(paraMap));
+		
+		 // 페이지바
+		mav.addObject("pagebar",pagination.getPagebar(request.getContextPath()+"/survey/surveyList.on"));
 		
 		mav.setViewName("survey/public/surveyList.tiles");
 		return mav;
@@ -44,10 +63,25 @@ public class SurveyController {
 	
 	// 설문리스트 - 설문참여
 	@RequestMapping(value="/survey/surveyJoin.on")
-	public String surveyJoin(HttpServletRequest request) {
+	public ModelAndView surveyJoin(ModelAndView mav,HttpServletRequest request,AskVO avo) {
+		
+		String fk_empno = request.getParameter("fk_empno");
+		String surno = request.getParameter("surno");
+		mav.addObject("surno", surno);
+		
+		Map<String,Object> paramap = new HashMap<>();
+		paramap.put("fk_empno", fk_empno);
+		paramap.put("surno", surno);
+		paramap.put("avo", avo);
+		
+		List<JoinSurveyVO> surveyAskList = service.surveyJoin(paramap);
+		mav.addObject("surveyAskList", surveyAskList);
+		mav.setViewName("survey/public/surveyJoin.tiles");
+		
+		System.out.println(surveyAskList);
 		
 		
-		return "survey/public/surveyJoin.tiles";
+		return mav;
 	}
 	
 	

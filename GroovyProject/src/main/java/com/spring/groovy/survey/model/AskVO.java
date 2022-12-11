@@ -13,6 +13,9 @@ public class AskVO {
 	private String option4;		// 선택지4
 	private String option5;		// 선택지5
 	
+	private String surtitle;	// 조인
+	private String surexplain;	// 조인
+	
 	
 	
 	public String getQuestno() {
@@ -65,6 +68,19 @@ public class AskVO {
 	}
 	
 
+	public String getSurtitle() {
+		return surtitle;
+	}
+	public void setSurtitle(String surtitle) {
+		this.surtitle = surtitle;
+	}
+	public String getSurexplain() {
+		return surexplain;
+	}
+	public void setSurexplain(String surexplain) {
+		this.surexplain = surexplain;
+	}
+	
 	
 	
 	

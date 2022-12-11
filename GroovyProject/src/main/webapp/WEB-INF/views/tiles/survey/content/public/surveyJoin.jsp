@@ -66,13 +66,14 @@
 
 
 <div style='margin: 1% 0 5% 1%' >
-	<input type="text" name="" value="구성원만족도 조사" style="font-size: 24px; font-weight: bold; border:none;" readonly/><br>
-	<input type="text" name="" value="구성원에 대한 만족도 조사입니다." style="border:none;" readonly/>
+	<input type="hidden" name="" value="${requestScope.surno}"/><br>
+	<input type="text" name="" value="${surveyAskList.surtitle}" style="font-size: 24px; font-weight: bold; border:none;" readonly/><br>
+	<input type="text" name="" value="${surveyAskList.surexplain}" style="border:none;" readonly/>
 </div>
 
 
 	
-	<div id="contents" >
+	<div id="contents">
 		<input type="text" name=""  value="1.~~~~~~~~" style="border: none;"/><br>
 		<input class="answer" type="text" name="" value="" placeholder="답변을 입력해주세요"/>
 	</div>

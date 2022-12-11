@@ -14,6 +14,9 @@ public class SurveyVO {
 	
 	
 	private String fk_department_no;// 조인
+	private String sursubdate;      // 조인
+	
+	
 	
 	
 	public String getSurno() {
@@ -77,7 +80,12 @@ public class SurveyVO {
 		this.fk_department_no = fk_department_no;
 	}
 	
-	
+	public String getSursubdate() {
+		return sursubdate;
+	}
+	public void setSursubdate(String sursubdate) {
+		this.sursubdate = sursubdate;
+	}
 
 	
 	

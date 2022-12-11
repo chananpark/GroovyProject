@@ -11,8 +11,10 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.spring.groovy.common.Pagination;
 import com.spring.groovy.survey.model.AskVO;
 import com.spring.groovy.survey.model.InterSurveyDAO;
+import com.spring.groovy.survey.model.JoinSurveyVO;
 import com.spring.groovy.survey.model.SurveyVO;
 
 @Service
@@ -27,6 +29,20 @@ public class SurveyService implements InterSurveyService {
 	public List<SurveyVO> surveyList(Map<String, Object> paramap) {
 		return dao.surveyList(paramap);
 	}
+	
+
+	 // 설문리스트 목록 - 전체 글 개수 구하기(페이징) 
+	@Override
+	public int getcountSurveyList(Pagination pagination) {
+		return dao.getcountSurveyList(pagination);
+	}
+
+	// 설문리스트 목록 - 한 페이지에 표시할 글 목록  (페이징 페이지수를 알아온다음에 10개씩보여줌) (페이징)
+	@Override
+	public Object getSurveyCnt(Map<String, Object> paraMap) {
+		return dao.getSurveyCnt(paraMap);
+	}
+
 		
 		
 		
@@ -72,6 +88,16 @@ public class SurveyService implements InterSurveyService {
 	public int getAskList(Map<String, Object> paramap) {
 		return dao.getAskList(paramap);
 	}
+
+	// 설문리스트 - 설문참여
+	@Override
+	public List<JoinSurveyVO> surveyJoin(Map<String, Object> paramap) {
+		return dao.surveyJoin(paramap);
+	}
+
+	
+	
+
 	
 	
 }

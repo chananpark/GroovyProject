@@ -654,26 +654,27 @@ where surno = 2
 commit
 --
 
-select count(*),surstart,surend,surtitle,sursubdate
+select surstart,surend,surtitle,sursubdate,
+        surno,surexplain,
 from tbl_survey S left join tbl_joinsurvey J
 on S.surno = J.fk_surno
 where J.fk_empno = '13'
 
-(surno		    number(20)        		not null   -- 설문번호
-,fk_empno	    number   		        not null   -- 사원번호
-,surtitle  	   	Nvarchar2(30)  		    not null   -- 설문제목
-,surexplain    	Nvarchar2(30)         		       -- 설문설명
-,surcreatedate 	date  default sysdate   not null   -- 설문생성일
-,surstart 	    date  			        not null   -- 설문시작일
-,surend	   	    date  			        not null   -- 설문종료일
-,surstatus    	number(1)   default 1  	not null   -- 상태(0 임시저장, 1 저장)
-,suropenstatus  number(1)   default 1   not null   -- 설문결과공개여부(0비공개, 1공개)
+select sursubdate
+from tbl_joinsurvey 
+where joinsurno = 13
 
+-- 설문리스트 조회
+SELECT SURTITLE, SURNO, TO_CHAR(SURSTART, 'yyyy-mm-dd')SURSTART,TO_CHAR(SUREND, 'yyyy-mm-dd')SUREND,TO_CHAR(SURSUBDATE, 'yyyy-mm-dd') SURSUBDATE
+FROM TBL_SURVEY S LEFT JOIN TBL_JOINSURVEY J
+ON S.SURNO = J.FK_SURNO
 
-(joinsurno 	number(20)        not null       -- 설문참여번호
-,fk_empno	number            not null   	 -- 사원번호
-,fk_surno   number(20)        not null       -- 설문번호
-,fk_questno	number(20)        not null       -- 문항번호
-,answer		number(20)        not null       -- 답변
-,sursubdate date  default sysdate  not null  -- 답변제출일
+-- 설문내용 조회
+SELECT QUESTNO,FK_SURNO,QUESTION,OPTION1,OPTION2,OPTION3,OPTION4,OPTION5
+      ,SURTITLE, surexplain
+FROM TBL_ASK A left JOIN TBL_SURVEY S
+ON A.FK_SURNO = S.SURNO 
+where FK_SURNO = 54 and fk_empno = 13
+        
 
+        

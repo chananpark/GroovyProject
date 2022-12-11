@@ -375,10 +375,53 @@
 	<!-- ============================================  설문조사  ========================================================= -->
 	
 	<!-- 설문리스트 목록 -->
-	<select id="surveyList" parameterType="HashMap" resultType="com.spring.groovy.survey.model.JoinSurveyVO">
-		SELECT SURNO, FK_EMPNO, SURTITLE, SUREXPLAIN, SURCREATEDATE,SURSTART,SUREND,SURSTATUS,SUROPENSTATUS
-		FROM TBL_SURVEY
+	<select id="surveyList" parameterType="HashMap" resultType="com.spring.groovy.survey.model.SurveyVO">
+		SELECT SURTITLE, SURNO, TO_CHAR(SURSTART, 'YYYY-MM-DD')SURSTART, TO_CHAR(SUREND, 'YYYY-MM-DD')SUREND, TO_CHAR(SURSUBDATE, 'YYYY-MM-DD') SURSUBDATE
+		FROM TBL_SURVEY S LEFT JOIN TBL_JOINSURVEY J
+		ON S.SURNO = J.FK_SURNO
+		WHERE S.FK_EMPNO = #{empno}
 	</select>
+	
+	<!-- 설문리스트 목록 - 전체 글 개수 구하기(페이징)  -->
+	<select id="getcountSurveyList" parameterType="com.spring.groovy.common.Pagination" resultType="int" >
+		SELECT COUNT(*) AS CNT FROM TBL_SURVEY
+		<if test='searchType != "" and searchWord != "" '>
+		WHERE LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
+		</if>
+	</select>
+	
+	<!-- 설문리스트 목록 - 한 페이지에 표시할 글 목록  (페이징 페이지수를 알아온다음에 10개씩보여줌) (페이징) -->
+	<select id="getSurveyCnt" parameterType="HashMap" resultType="com.spring.groovy.survey.model.SurveyVO">
+		SELECT *
+		FROM (SELECT ROWNUM AS RNO, V.*
+			FROM( 
+			    SELECT *
+			    FROM TBL_SURVEY
+			     <if test='searchType != "" and searchWord != "" '>
+		            WHERE LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
+	            </if>
+	            ORDER BY SURNO DESC
+			)V)
+		WHERE RNO BETWEEN #{startRno} AND #{endRno}
+	</select>
+	
+	<!-- 설문리스트 - 설문참여 -->
+	<select id="surveyJoin" parameterType="HashMap" resultType="com.spring.groovy.survey.model.AskVO">
+		SELECT QUESTNO,FK_SURNO,QUESTION,OPTION1,OPTION2,OPTION3,OPTION4,OPTION5
+		      ,SURTITLE, SUREXPLAIN
+		FROM TBL_ASK A left JOIN TBL_SURVEY S
+		ON A.FK_SURNO = S.SURNO 
+		WHERE FK_SURNO = #{surno} AND FK_EMPNO = #{fk_empno}
+	</select>
+	
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	<!-- 다음설문번호를 알아오는 매소드  -->
 	<select id="getsurno" resultType="String" >

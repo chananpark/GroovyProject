@@ -8,6 +8,8 @@ import javax.annotation.Resource;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Repository;
 
+import com.spring.groovy.common.Pagination;
+
 @Repository
 public class SurveyDAO implements InterSurveyDAO {
 
@@ -20,6 +22,26 @@ public class SurveyDAO implements InterSurveyDAO {
 	public List<SurveyVO> surveyList(Map<String, Object> paramap) {
 		return sqlsession.selectList("minsu.surveyList", paramap);
 	}
+	
+
+	// 설문리스트 목록 - 전체 글 개수 구하기(페이징) 
+	@Override
+	public int getcountSurveyList(Pagination pagination) {
+		return sqlsession.selectOne("minsu.getcountSurveyList", pagination);
+	}
+			
+	// 설문리스트 목록 - 한 페이지에 표시할 글 목록  (페이징 페이지수를 알아온다음에 10개씩보여줌) (페이징)
+	@Override
+	public Object getSurveyCnt(Map<String, Object> paraMap) {
+		return sqlsession.selectList("minsu.getSurveyCnt", paraMap);
+	}
+	
+	
+
+
+
+
+		
 		
 	// 다음설문번호를 알아오는 매소드
 	@Override
@@ -41,12 +63,12 @@ public class SurveyDAO implements InterSurveyDAO {
 		return sqlsession.insert("minsu.getAskList",paramap);
 	}
 
+	// 설문리스트 - 설문참여
+	@Override
+	public List<JoinSurveyVO> surveyJoin(Map<String, Object> paramap) {
+		return sqlsession.selectList("minsu.surveyJoin", paramap);
+	}
 	
-
-
-	
-	
-
 
 	
 	
