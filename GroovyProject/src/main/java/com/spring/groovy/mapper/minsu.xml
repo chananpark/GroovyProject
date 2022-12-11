@@ -389,7 +389,7 @@
 	<!-- 관리자 - 설문작성(한 문항씩 insert하기) -->
 	<insert id="getAskList" parameterType="HashMap" >
 		INSERT INTO TBL_ASK(QUESTNO,FK_SURNO,QUESTION,OPTION1,OPTION2,OPTION3,OPTION4,OPTION5)
-		VALUES(seq_tbl_ask.nextval,#{fk_surno},#{question}, #{option1},#{option2},#{option3},#{option4},#{option5})
+		VALUES(seq_tbl_ask.nextval,#{ajax_fk_surno},#{avo.question}, #{avo.option1},#{avo.option2},#{avo.option3},#{avo.option4},#{avo.option5})
 	</insert>
 	
 	

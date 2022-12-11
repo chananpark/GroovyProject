@@ -136,6 +136,52 @@
 					alert("설문지 등록 성공하였습니다.");
 					console.log(json.fk_surno+"jsp");
 					fk_surno = json.fk_surno;
+					
+					// 설문항목 insert
+					// 초기값 설정
+					let i=0;
+					for(i=1; i<=5; i++){ 
+						const questno = $("#questno"+i).val();
+						const question = $("#question"+i).val();
+								console.log(question);
+						const option1 = $("#option1"+i).val();
+						const option2 = $("#option2"+i).val();
+						const option3 = $("#option3"+i).val();
+						const option4 = $("#option4"+i).val();
+						const option5 = $("#option5"+i).val();
+						
+					//	const frm = $("form[name='frm"+i+"']").serialize();
+					//	리텀값frm.fk_surno.value=fk_surno; 을 전역변수에 담아놔야한다.
+					
+						$.ajax({
+							url:"<%=ctxPath%>/survey/surveyWritingFinish.on",
+							data: {"questno":questno,
+									"ajax_fk_surno":json.fk_surno,
+									"question":question,
+									"option1":option1,
+									"option2":option2,
+									"option3":option3,
+									"option4":option4,
+									"option5":option5},
+							type:"POST",
+							dataType:"JSON",
+							async: false, // 반복문이기때문에 비동기방식이 아닌 동기방식으로 해야한다.
+							success:function(json){
+								
+								if(json.n == 1) {
+									alert([i] +"질문 등록 완료하였습니다.");
+								}
+								else {
+									alert([i] +"질문 등록 실패하였습니다.");
+								}
+							},
+						  	 error: function(request, status, error){
+								  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+							  }
+						});
+					} // end of for -------------------------
+					
+					
 				}
 				else {
 					alert("설문지 등록 실패하였습니다.");
@@ -147,34 +193,7 @@
 		}); // end of 설문번호 insert $.ajax({
 		
 			
-		// 설문항목 insert
-		// 초기값 설정
-		let i=0;
-		for(i=1; i<=5; i++){ 
-			const frm = $("form[name='frm"+i+"']").serialize();
-		//	리텀값frm.fk_surno.value=fk_surno; 을 전역변수에 담아놔야한다.
-		
-			$.ajax({
-				url:"<%=ctxPath%>/survey/surveyWritingFinish.on",
-				data: frm,
-				type:"POST",
-				dataType:"JSON",
-				async: false, // 반복문이기때문에 비동기방식이 아닌 동기방식으로 해야한다.
-				success:function(json){
-					
-					if(json.n == 1) {
-						alert([i] +"질문 등록 완료하였습니다.");
-					}
-					else {
-						alert([i] +"질문 등록 실패하였습니다.");
-						console.log(json.result);
-					}
-				},
-			  	 error: function(request, status, error){
-					  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-				  }
-			});
-		} // end of for -------------------------
+	
 		
 	} // end of function func_btn(){ --------------------
 
@@ -202,15 +221,15 @@
 		<form name="frm1" id="frm1">
 		<section style="border-bottom:solid 1px #bfbfbf; border-top:solid 1px #bfbfbf;">
 			<div class="my-4 mx-2">
-				<span class="mx-2">1.</span><input type="hidden" name="questno" value="1"/>
+				<span class="mx-2">1.</span><input type="hidden" name="questno" id="questno1" value="1"/>
 				 <input type="hidden" name="fk_surno"/>
-				<input type="text" name="question" placeholder="질문을 등록해주세요" style="width: 80%;" required /> 
+				<input type="text" name="question" id="question1" placeholder="질문을 등록해주세요" style="width: 80%;" required /> 
 				<div class="radio input1">
-					º<input type="text" name="option1"/><br>
-					º<input type="text" name="option2"/><br>
-					º<input type="text" name="option3"/><br>
-					º<input type="text" name="option4"/><br>
-					º<input type="text" name="option5"/><br>
+					º<input type="text" name="option1" id="option11"/><br>
+					º<input type="text" name="option2" id="option21"/><br>
+					º<input type="text" name="option3" id="option31"/><br>
+					º<input type="text" name="option4" id="option41"/><br>
+					º<input type="text" name="option5" id="option51"/><br>
 				</div>
 			</div>	
 		</section>
@@ -219,14 +238,15 @@
 		<form name="frm2" id="frm2">
 		<section style="border-bottom:solid 1px #bfbfbf;">
 			<div class="my-4 mx-2">
-				<span class="mx-2">2.</span><input type="hidden" name="questno" value="2"/>
-				 <input type="text" name="question" placeholder="질문을 등록해주세요" style="width: 80%;" required/> 
+				<span class="mx-2">2.</span><input type="hidden" name="questno" id="questno2" value="2"/>
+				 <input type="hidden" name="fk_surno"/>
+				 <input type="text" name="question" id="question2" placeholder="질문을 등록해주세요" style="width: 80%;" required/> 
 				<div class="radio input2">
-					º<input type="text" name="option1"/><br>
-					º<input type="text" name="option2"/><br>
-					º<input type="text" name="option3"/><br>
-					º<input type="text" name="option4"/><br>
-					º<input type="text" name="option5"/><br>
+					º<input type="text" name="option1" id="option12"/><br>
+					º<input type="text" name="option2" id="option22"/><br>
+					º<input type="text" name="option3" id="option32"/><br>
+					º<input type="text" name="option4" id="option42"/><br>
+					º<input type="text" name="option5" id="option52"/><br>
 				</div>
 			</div>	
 		</section>
@@ -235,14 +255,15 @@
 		<form name="frm3" id="frm3">
 		<section style="border-bottom:solid 1px #bfbfbf;">
 			<div class="my-4 mx-2">
-				<span class="mx-2">3.</span><input type="hidden" name="questno" value="3"/>
-				 <input type="text" name="question" placeholder="질문을 등록해주세요" style="width: 80%;" required/> 
+				<span class="mx-2">3.</span><input type="hidden" name="questno" id="questno3" value="3"/>
+				 <input type="hidden" name="fk_surno"/>
+				 <input type="text" name="question" id="question3" placeholder="질문을 등록해주세요" style="width: 80%;" required/> 
 				<div class="radio input3">
-					º<input type="text" name="option1"/><br>
-					º<input type="text" name="option2"/><br>
-					º<input type="text" name="option3"/><br>
-					º<input type="text" name="option4"/><br>
-					º<input type="text" name="option5"/><br>
+					º<input type="text" name="option1" id="option13"/><br>
+					º<input type="text" name="option2" id="option23"/><br>
+					º<input type="text" name="option3" id="option33"/><br>
+					º<input type="text" name="option4" id="option43"/><br>
+					º<input type="text" name="option5" id="option53"/><br>
 				</div>
 			</div>	
 		</section>
@@ -251,14 +272,15 @@
 		<form name="frm4" id="frm4">
 		<section style="border-bottom:solid 1px #bfbfbf;">
 			<div class="my-4 mx-2">
-				<span class="mx-2">4.</span><input type="hidden" name="questno" value="4"/>
-				  <input type="text" name="question" placeholder="질문을 등록해주세요" style="width: 80%;" required/>
+				<span class="mx-2">4.</span><input type="hidden" name="questno" id="questno4" value="4"/>
+				 <input type="hidden" name="fk_surno"/>
+				  <input type="text" name="question"  id="question4" placeholder="질문을 등록해주세요" style="width: 80%;" required/>
 				<div class="radio input4">
-					º<input type="text" name="option1"/><br>
-					º<input type="text" name="option2"/><br>
-					º<input type="text" name="option3"/><br>
-					º<input type="text" name="option4"/><br>
-					º<input type="text" name="option5"/><br>
+					º<input type="text" name="option1" id="option14"/><br>
+					º<input type="text" name="option2" id="option24"/><br>
+					º<input type="text" name="option3" id="option34"/><br>
+					º<input type="text" name="option4" id="option44"/><br>
+					º<input type="text" name="option5" id="option54"/><br>
 				</div>
 			</div>	
 		</section>
@@ -267,14 +289,15 @@
 		<form name="frm5" id="frm5">
 		<section style="border-bottom:solid 1px #bfbfbf;">
 			<div class="my-4 mx-2">
-				<span class="mx-2">5.</span><input type="hidden" name="questno" value="5"/>
-				 <input type="text" name="question" placeholder="질문을 등록해주세요" style="width: 80%;" required/>
+				<span class="mx-2">5.</span><input type="hidden" name="questno" id="questno5" value="5"/>
+				 <input type="hidden" name="fk_surno"/>
+				 <input type="text" name="question" id="question5" placeholder="질문을 등록해주세요" style="width: 80%;" required/>
 				<div class="radio input5">
-					º<input type="text" name="option1"/><br>
-					º<input type="text" name="option2"/><br>
-					º<input type="text" name="option3"/><br>
-					º<input type="text" name="option4"/><br>
-					º<input type="text" name="option5"/><br>
+					º<input type="text" name="option1" id="option15"/><br>
+					º<input type="text" name="option2" id="option25"/><br>
+					º<input type="text" name="option3" id="option35"/><br>
+					º<input type="text" name="option4" id="option45"/><br>
+					º<input type="text" name="option5" id="option55"/><br>
 				</div>
 			</div>	
 		</section>

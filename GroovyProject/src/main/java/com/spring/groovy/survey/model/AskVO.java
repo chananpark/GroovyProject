@@ -64,10 +64,7 @@ public class AskVO {
 		this.option5 = option5;
 	}
 	
-	
-	
-	
-	
+
 	
 	
 	

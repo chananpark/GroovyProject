@@ -63,6 +63,15 @@ public class SurveyService implements InterSurveyService {
 	// 관리자 - 설문작성(한 문항씩 insert하기)
 	@Override
 	public int getAskList(Map<String, Object> paramap) {
+		
+		String ajax_fk_surno = (String) paramap.get("ajax_fk_surno");
+		String question = (String) paramap.get("question");
+		AskVO option1 = (AskVO) paramap.get("option1");
+		
+		System.out.println(ajax_fk_surno+"서비스단 ajax_fk_surno");
+		System.out.println(question+"서비스단 question");
+		System.out.println(option1+"서비스단 option1");
+		
 		return dao.getAskList(paramap);
 	}
 	

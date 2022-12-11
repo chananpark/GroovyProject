@@ -140,10 +140,10 @@ public class SurveyController {
 	// 관리자 - 설문작성(질문번호)
 	@ResponseBody
 	@RequestMapping(value="/survey/surveyWritingFinish.on")
-	public String surveyWritingFinish( HttpServletRequest request, AskVO avo, MemberVO mvo) {
+	public String surveyWritingFinish( HttpServletRequest request, AskVO avo) {
 		
 		String questno = request.getParameter("questno");
-		String fk_surno = request.getParameter("fk_surno");
+		String ajax_fk_surno = request.getParameter("ajax_fk_surno");
 		String question = request.getParameter("question");
 		String option1 = request.getParameter("option1");
 		String option2 = request.getParameter("option2");
@@ -153,7 +153,7 @@ public class SurveyController {
 		System.out.println("------------------------------------------------------------------------");
 	
 		System.out.println(questno);
-		System.out.println(fk_surno);
+		System.out.println(ajax_fk_surno);
 		System.out.println(question);
 		System.out.println(option1);
 		System.out.println(option2);
@@ -164,12 +164,13 @@ public class SurveyController {
 		// 관리자 - 설문작성(한 문항씩 insert하기)
 		Map<String,Object> paramap = new HashMap<>();
 		paramap.put("avo", avo);
+		paramap.put("ajax_fk_surno", ajax_fk_surno);
 				
 		// 관리자 - 설문작성(한 문항씩 insert하기)
-		int n = service.getAskList(paramap);
+		int p = service.getAskList(paramap);
 		
 		JSONObject json = new JSONObject();
-		json.put("n", n);
+		json.put("p", p);
 	
 		return json.toString();
 	}
