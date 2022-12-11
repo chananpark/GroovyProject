@@ -665,25 +665,194 @@
 	</select>
 		
 		
+	<!-- 예약 내역 전체 개수 구하기 -->	
+	<select id="getResrvAdminSearchCnt" parameterType="HashMap" resultType="int">
+	
+		select count(*)
+		from 
+		(
+		    select row_number() over(order by reservationno desc) as rno,
+		           reservationno, to_char(startdate, 'yyyymmddhh24') as startdate, to_char(enddate, 'yyyymmddhh24') as enddate, 
+		           realuser, fk_smcatgono, fk_lgcatgono, 
+		           to_char(reservdate, 'yyyymmddhh24') as reservdate, 
+		           confirm,  status, return_time,
+		           name, fk_empno, department
+		    from tbl_reservation R
+		    join tbl_employee E
+		    ON  R.fk_empno = E.empno
+		
+			<choose>
+				<when test='startdate == "" and enddate == ""'></when>
+				
+				<otherwise>
+					where (( to_char(startdate,'YYYY-MM-DD') between #{startdate} and #{enddate} )
+					or  ( to_char(enddate,'YYYY-MM-DD') between #{startdate} and #{enddate} ) )					
+				
+					<!-- 검색타입과 검색어가 없는 경우 -->
+					<if test='pagination.searchType == "" and pagination.searchWord == ""'></if>
+					
+					<!-- 검색 타입은 있고 검색어가 없는 경우 -->
+					<if test='pagination.searchType != "" and pagination.searchWord == ""'>
+						and R.fk_lgcatgono = #{pagination.searchType}
+					</if>
+					
+					<!--  검색 타입은 없고 검색어가 있는 경우 -->
+					<if test='pagination.searchType == "" and pagination.searchWord != ""'>
+						and (lower(realuser) like '%'||lower(#{pagination.searchWord})||'%' or  lower(name) like '%'||lower(#{pagination.searchWord})||'%')
+					</if>
+					
+					<!-- 검색 타입과 검색어가 모두 있는 경우 -->
+					<if test='pagination.searchType != "" and pagination.searchWord != ""'>
+						and R.fk_lgcatgono = #{pagination.searchType}
+						and (lower(realuser) like '%'||lower(#{pagination.searchWord})||'%' or lower(name) like '%'||lower(#{pagination.searchWord})||'%')
+					</if>
+				
+				</otherwise>	
+			</choose>
+		)
+	</select>
+	
+	
+	<!-- 한 페이지에 표시할 관리자 예약 내역 글 목록 -->
+	<resultMap type="HashMap" id="getResrvAdminMap">
+		<result property="reservationno" 	column="reservationno" 	javaType="String" />
+		<result property="startdate" 		column="startdate" 		javaType="String" />
+		<result property="enddate" 			column="enddate" 		javaType="String" />
+		<result property="realuser" 		column="realuser" 		javaType="String" />
+		<result property="fk_smcatgono" 	column="fk_smcatgono" 	javaType="String" />
+		<result property="fk_lgcatgono" 	column="fk_lgcatgono" 	javaType="String" />
+		<result property="reservdate" 		column="reservdate" 	javaType="String" />
+		<result property="confirm" 			column="confirm" 		javaType="String" />
+		<result property="status" 			column="status" 		javaType="String" />
+		<result property="return_time" 		column="return_time" 	javaType="String" />
+		<result property="name" 			column="name" 			javaType="String" />
+		<result property="fk_empno" 		column="fk_empno" 		javaType="String" />
+		<result property="department" 		column="department" 	javaType="String" />
+		<result property="smcatgoname" 		column="smcatgoname" 	javaType="String" />
+		<result property="startdate_view" 	column="startdate_view" javaType="String" />
+		<result property="enddate_view" 	column="enddate_view" 	javaType="String" />
+	</resultMap>
+	<select id="getResrvAdminList" parameterType="HashMap" resultMap="getResrvAdminMap">
+		select reservationno, startdate, enddate, realuser, fk_smcatgono, fk_lgcatgono, reservdate, confirm, status, return_time,
+		       name, fk_empno, department, smcatgoname, startdate_view, enddate_view
+		from 
+		(
+		    select row_number() over(order by reservationno desc) as rno,
+			reservationno, 
+			to_char(startdate, 'yyyymmddhh24') as startdate, to_char(enddate, 'yyyymmddhh24') as enddate, 
+			to_char(startdate, 'yyyy-mm-dd hh24:mi') as startdate_view, to_char(enddate, 'yyyy-mm-dd hh24:mi') as enddate_view,
+			realuser, R.fk_smcatgono, R.fk_lgcatgono, smcatgoname,
+			to_char(reservdate, 'yyyymmddhh24') as reservdate, 
+			confirm,  status, return_time,
+			E.name, R.fk_empno, department
+		    from tbl_reservation R
+		    join tbl_employee E
+		    ON  R.fk_empno = E.empno
+		    join tbl_reservation_small_category C
+		    ON R.fk_smcatgono = C.smcatgono
+		
+			<choose>
+				<when test='startdate == "" and enddate == ""'></when>
+				
+				<otherwise>
+					where (( to_char(startdate,'YYYY-MM-DD') between #{startdate} and #{enddate} )
+					or  ( to_char(enddate,'YYYY-MM-DD') between #{startdate} and #{enddate} ) )					
+				
+					<!-- 검색타입과 검색어가 없는 경우 -->
+					<if test='pagination.searchType == "" and pagination.searchWord == ""'></if>
+					
+					<!-- 검색 타입은 있고 검색어가 없는 경우 -->
+					<if test='pagination.searchType != "" and pagination.searchWord == ""'>
+						and R.fk_lgcatgono = #{pagination.searchType}
+					</if>
+					
+					<!--  검색 타입은 없고 검색어가 있는 경우 -->
+					<if test='pagination.searchType == "" and pagination.searchWord != ""'>
+						and (lower(realuser) like '%'||lower(#{pagination.searchWord})||'%'  or lower(name) like '%'||lower(#{pagination.searchWord})||'%')
+					</if>
+					
+					<!-- 검색 타입과 검색어가 모두 있는 경우 -->
+					<if test='pagination.searchType != "" and pagination.searchWord != ""'>
+						and R.fk_lgcatgono = #{pagination.searchType}
+						and (lower(realuser) like '%'||lower(#{pagination.searchWord})||'%' or lower(name) like '%'||lower(#{pagination.searchWord})||'%')
+					</if>
+				
+				</otherwise>	
+			</choose>
+		)
+		where rno between #{pagination.startRno} and #{pagination.endRno}
+	</select>
 		
 		
+	<!-- 관리자 예약 내역 확인에서 예약 상태 가져오기 -->
+	<select id="statusButton" resultType="com.spring.groovy.reservation.model.ReservationVO">
+		select reservationno, status, confirm, to_char(startdate, 'yyyymmddhh24mi') as startdate, to_char(enddate, 'yyyymmddhh24mi') as enddate
+		from tbl_reservation
+	</select>
 		
 		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
+	<!-- 자원 예약 승인 메소드 -->	
+	<update id="reservConfirm" parameterType="HashMap">
+	 	UPDATE tbl_reservation SET confirm=1 WHERE reservationno = #{reservationno}
+	</update>		
 		
 	
+	<!-- 자원 예약 취소 메소드 -->
+	<update id="reservCancle" parameterType="HashMap">
+		UPDATE tbl_reservation SET status = 1 WHERE reservationno = #{reservationno}
+	</update>	
 		
+	
+	<!-- 자원 반납 메소드 -->	
+	<update id="reservReturn" parameterType="HashMap">
+		UPDATE tbl_reservation SET status = 2, return_time = sysdate, enddate = to_date(#{enddate}, 'yyyymmddhh24miss') WHERE reservationno = #{reservationno}
+	</update>
+		
+		
+	<!-- 예약 내역 상세보기 -->
+	<resultMap type="HashMap" id="viewReservationMap">
+		<result property="reservationno" 	column="reservationno" 	javaType="String" />
+		<result property="startdate" 		column="startdate" 		javaType="String" />
+		<result property="enddate" 			column="enddate" 		javaType="String" />
+		<result property="smcatgoname" 		column="smcatgoname" 	javaType="String" />
+		<result property="lgcatgoname" 		column="lgcatgoname" 	javaType="String" />
+		<result property="realuser" 		column="realuser" 		javaType="String" />
+		<result property="empno" 			column="empno" 			javaType="String" />
+		<result property="cpemail" 			column="cpemail" 	javaType="String" />
+		<result property="name" 			column="name" 			javaType="String" />
+		<result property="status" 			column="status" 		javaType="String" />
+		<result property="confirm" 			column="confirm" 		javaType="String" />
+	</resultMap>
+	<select id="viewReservation" parameterType="HashMap" resultMap="viewReservationMap">
+		select reservationno, to_char(startdate,'YYYY-MM-DD hh24:mi') as startdate, to_char(enddate,'YYYY-MM-DD hh24:mi') as enddate,
+		       C.smcatgoname, L.lgcatgoname, 
+		       nvl(R.realuser, E.name||'('||E.cpemail||')') as realuser, 
+		       E.empno, E.cpemail, E.name, R.status, R.confirm
+		from tbl_reservation R
+		join tbl_employee E
+		ON  R.fk_empno = E.empno
+		join tbl_reservation_small_category C
+		ON R.fk_smcatgono = C.smcatgono
+		join tbl_reservation_large_category L
+		ON C.fk_lgcatgono = L.lgcatgono
+		where R.reservationno = #{reservationno}
+	</select>	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 		
 		
 		
