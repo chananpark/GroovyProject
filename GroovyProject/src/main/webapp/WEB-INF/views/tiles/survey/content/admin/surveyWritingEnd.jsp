@@ -39,6 +39,7 @@
 	
 	div.radio > input{
 		margin:1%;
+		width: 70%;
 	}
 	
 	
@@ -160,11 +161,13 @@
 							async: false, // 반복문이기때문에 비동기방식이 아닌 동기방식으로 해야한다.
 							success:function(json){
 								
-								if(json.n == 1) {
+								if(json.p == 1) {
 									alert([i] +"질문 등록 완료하였습니다.");
+									loction.href="<%=ctxPath%>/survey/surveyList.on"
 								}
 								else {
 									alert([i] +"질문 등록 실패하였습니다.");
+									return;
 								}
 							},
 						  	 error: function(request, status, error){
@@ -177,6 +180,7 @@
 				}
 				else {
 					alert("설문지 등록 실패하였습니다.");
+					return;
 				}
 			},
 		  	 error: function(request, status, error){
@@ -212,7 +216,7 @@
 			<div class="my-4 mx-2">
 				<span class="mx-2">1.</span><input type="hidden" name="questno" id="questno1" value="1"/>
 				 <input type="hidden" name="fk_surno"/>
-				<input type="text" name="question" id="question1" placeholder="질문을 등록해주세요" style="width: 80%;" required /> 
+				<input type="text" name="question" id="question1" placeholder="질문을 등록해주세요" style="width: 95%;" required /> 
 				<div class="radio input1">
 					º<input type="text" name="option1" id="option11"/><br>
 					º<input type="text" name="option2" id="option21"/><br>
@@ -229,7 +233,7 @@
 			<div class="my-4 mx-2">
 				<span class="mx-2">2.</span><input type="hidden" name="questno" id="questno2" value="2"/>
 				 <input type="hidden" name="fk_surno"/>
-				 <input type="text" name="question" id="question2" placeholder="질문을 등록해주세요" style="width: 80%;" required/> 
+				 <input type="text" name="question" id="question2" placeholder="질문을 등록해주세요" style="width: 95%;" required/> 
 				<div class="radio input2">
 					º<input type="text" name="option1" id="option12"/><br>
 					º<input type="text" name="option2" id="option22"/><br>
@@ -246,7 +250,7 @@
 			<div class="my-4 mx-2">
 				<span class="mx-2">3.</span><input type="hidden" name="questno" id="questno3" value="3"/>
 				 <input type="hidden" name="fk_surno"/>
-				 <input type="text" name="question" id="question3" placeholder="질문을 등록해주세요" style="width: 80%;" required/> 
+				 <input type="text" name="question" id="question3" placeholder="질문을 등록해주세요" style="width: 95%;" required/> 
 				<div class="radio input3">
 					º<input type="text" name="option1" id="option13"/><br>
 					º<input type="text" name="option2" id="option23"/><br>
@@ -263,7 +267,7 @@
 			<div class="my-4 mx-2">
 				<span class="mx-2">4.</span><input type="hidden" name="questno" id="questno4" value="4"/>
 				 <input type="hidden" name="fk_surno"/>
-				  <input type="text" name="question"  id="question4" placeholder="질문을 등록해주세요" style="width: 80%;" required/>
+				  <input type="text" name="question"  id="question4" placeholder="질문을 등록해주세요" style="width: 95%;" required/>
 				<div class="radio input4">
 					º<input type="text" name="option1" id="option14"/><br>
 					º<input type="text" name="option2" id="option24"/><br>
@@ -280,7 +284,7 @@
 			<div class="my-4 mx-2">
 				<span class="mx-2">5.</span><input type="hidden" name="questno" id="questno5" value="5"/>
 				 <input type="hidden" name="fk_surno"/>
-				 <input type="text" name="question" id="question5" placeholder="질문을 등록해주세요" style="width: 80%;" required/>
+				 <input type="text" name="question" id="question5" placeholder="질문을 등록해주세요" style="width: 95%;" required/>
 				<div class="radio input5">
 					º<input type="text" name="option1" id="option15"/><br>
 					º<input type="text" name="option2" id="option25"/><br>

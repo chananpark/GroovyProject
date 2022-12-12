@@ -127,7 +127,7 @@ $("div#team").hide();
 		
 		<div>
 			<div class="mb-3">설명(선택사항)</div>
-			<input type="text" name="surexplain" style="width: 95%; height: 100px;" placeholder="설문에대한 설명을 입력해주세요." />
+			<input type="text" name="surexplain" size="300px;"  style="width: 95%; height: 100px;" placeholder="설문에대한 설명을 입력해주세요." />
 		</div>
 		
 		<div>

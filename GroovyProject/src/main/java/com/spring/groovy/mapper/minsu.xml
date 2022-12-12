@@ -394,7 +394,7 @@
                <if test='searchType != "" and searchWord != "" '> 
 	              WHERE AND LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
 	           </if>
-	            ORDER BY SURNO DESC
+	            ORDER BY SURNO DESC AND SURSTART
 			)V)
 		WHERE RNO BETWEEN #{startRno} AND #{endRno}
 	</select>
@@ -410,7 +410,7 @@
 	
 	<!--  답변한 설문지 insert -->
 	<insert id="surveyJoinEnd" parameterType="com.spring.groovy.survey.model.JoinSurveyVO">
-	
+		
 	
 	</insert>
 	

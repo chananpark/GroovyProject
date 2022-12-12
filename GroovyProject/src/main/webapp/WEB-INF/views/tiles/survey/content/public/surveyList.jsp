@@ -126,7 +126,7 @@
 					<th>답변제출일</th>
 				</thead>
 				
-				<tbody align="center">
+				<tbody align="center" class="table ">
 				<c:forEach var="survey" items="${requestScope.pageCnt}" varStatus="status"> 
 					<tr>
 						<td><input type="hidden" name="surno" id="surno" value="${survey.surno}"/>${survey.surno}</td>
@@ -159,10 +159,7 @@
 								<div id="input_join">참여</div>
 							</c:if>
 						</td>  
-						<td>${survey.sursubdate}
-							<input type="text" name="fk_empno" value="${survey.fk_empno}">
-							<input type="text" name="surno" value="${survey.surno}">
-							</td>
+						<td>${survey.sursubdate}</td>
 					</tr>
 					</c:forEach>
 					

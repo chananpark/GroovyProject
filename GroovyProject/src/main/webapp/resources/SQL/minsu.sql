@@ -518,7 +518,7 @@ create table  tbl_survey
 (surno		    number(20)        		not null   -- 설문번호
 ,fk_empno	    number   		        not null   -- 사원번호
 ,surtitle  	   	Nvarchar2(30)  		    not null   -- 설문제목
-,surexplain    	Nvarchar2(30)         		       -- 설문설명
+,surexplain    	Nvarchar2(200)        		       -- 설문설명
 ,surcreatedate 	date  default sysdate   not null   -- 설문생성일
 ,surstart 	    date  			        not null   -- 설문시작일
 ,surend	   	    date  			        not null   -- 설문종료일
@@ -566,15 +566,24 @@ create table  tbl_ask
 (questno 	    number(20)      not null       -- 문항번호
 ,fk_surno		number(20)      not null       -- 설문번호
 ,question		varchar2(300)   not null       -- 설문질문
-,option1		number(1)                      -- 선택지1
-,option2		number(1)        	           -- 선택지2
-,option3		number(1)        	           -- 선택지3
-,option4		number(1)        	           -- 선택지4
-,option5		number(1)        	           -- 선택지5
+,option1		varchar2(100)                  -- 선택지1
+,option2		varchar2(100)         	       -- 선택지2
+,option3		varchar2(100)        	       -- 선택지3
+,option4		varchar2(100)         	       -- 선택지4
+,option5		varchar2(100)         	       -- 선택지5
 ,constraint PK_tbl_ask_questno   primary key(questno)
 ,constraint FK_tbl_ask_fk_surno foreign key(fk_surno) references tbl_survey(surno)ON DELETE CASCADE
 );
 
+-- 칼럼 변경
+alter table tbl_ask modify option1 varchar2(100) 
+alter table tbl_ask modify option2 varchar2(100) 
+alter table tbl_ask modify option3 varchar2(100) 
+alter table tbl_ask modify option4 varchar2(100) 
+alter table tbl_ask modify option5 varchar2(100) 
+delete from tbl_ask
+commit
+drop table tbl_ask
 
 -- 설문조사문항테이블 시퀀스
 create sequence seq_tbl_ask
@@ -695,11 +704,22 @@ WHERE RNO BETWEEN #{startRno} AND #{endRno}
 		      ,SURTITLE, SUREXPLAIN
 		FROM TBL_ASK A left JOIN TBL_SURVEY S
 		ON A.FK_SURNO = S.SURNO 
-		WHERE FK_SURNO = 54
+		WHERE FK_SURNO = 19
         
         
-        
-        
+select *
+from TBL_SURVEY 
+where joinsurno = 13
+
+insert into tbl_joinsurvey(joinsurno,fk_empno,fk_surno,fk_questno,answer)
+                    values(seq_tbl_joinsurvey.nextval,13,11,13,3)
+    select          
+     from TBL_SURVEY               
+        (joinsurno 	number(20)        not null       -- 설문참여번호
+,fk_empno	number            not null   	 -- 사원번호
+,fk_surno   number(20)        not null       -- 설문번호
+,fk_questno	number(20)        not null       -- 문항번호
+,answer		number(20)        not null       -- 답변
         
         
         

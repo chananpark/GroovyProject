@@ -137,6 +137,7 @@
 			<span class="askinput"><input type="radio" name="jvoList[${status.index}].answer" value="3" class="mr-2" />${askno.option1}</span>
 			<span class="askinput"><input type="radio" name="jvoList[${status.index}].answer" value="4" class="mr-2" />${askno.option1}</span>
 			<span class="askinput"><input type="radio" name="jvoList[${status.index}].answer" value="5" class="mr-2" />${askno.option1}</span>
+											<%-- 리스트로 VO를 담는다. 하나하나 담은 행은 한줄로 insert되야하기때문에 fk_empno에도index를 넣어줘야한다.--%>
 		</div>
 	</c:forEach>
 	
