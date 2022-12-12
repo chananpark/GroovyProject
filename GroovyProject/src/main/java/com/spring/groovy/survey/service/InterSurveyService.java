@@ -4,15 +4,13 @@ import java.util.List;
 import java.util.Map;
 
 import com.spring.groovy.common.Pagination;
+import com.spring.groovy.survey.model.AskVO;
 import com.spring.groovy.survey.model.JoinSurveyVO;
 import com.spring.groovy.survey.model.SurveyVO;
 
 
 public interface InterSurveyService {
 	
-
-	// 설문리스트 목록
-	List<SurveyVO> surveyList(Map<String, Object> paramap);
 
 	 // 설문리스트 목록 - 전체 글 개수 구하기(페이징) 
 	int getcountSurveyList(Pagination pagination);
@@ -28,7 +26,10 @@ public interface InterSurveyService {
 	int getAskList(Map<String, Object> paramap);
 
 	// 설문리스트 - 설문참여
-	List<JoinSurveyVO> surveyJoin(Map<String, Object> paramap);
+	List<AskVO> surveyJoin(Map<String, Object> paramap);
+
+	//  답변한 설문지 insert
+	int surveyJoinEnd(Map<String, Object> paramap);
 
 	
 

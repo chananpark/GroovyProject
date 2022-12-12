@@ -58,17 +58,17 @@
 
   <!-- 공용 Links -->
   <ul class="navbar-nav" style='width:100%;'>
-	   <!-- 관리자 Links -->
-	    <c:if test="${sessionScope.loginuser != null && loginuser.department ==  '인사총무팀'}">
-		    <li class="nav-item">
-		      <h4 class='mb-4'>설문조사</h4>
-		    </li>
-	    </c:if> 
-    
-    <li class="nav-item mb-4">
+   
+	    <li class="nav-item">
+	      <h4 class='mb-4'>설문조사</h4>
+	    </li>
+	    
+	    <!-- 관리자 Links -->
+     <c:if test="${sessionScope.loginuser != null && loginuser.department ==  '인사총무팀'}">
+     <li class="nav-item mb-4">
       	<button id="insertBtn" type="button" style='width:100%;' class="btn btn-outline-dark" onclick="surveyWriting();">설문작성</button>
-   	</li>
-    
+    	</li>
+     </c:if> 
     <li class="menu topMenu nav-item">
       <a class="nav-link" href="<%= ctxPath%>/survey/surveyList.on">설문리스트</a>
     </li>

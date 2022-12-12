@@ -1,7 +1,5 @@
 package com.spring.groovy.survey.service;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
-
 import java.util.List;
 import java.util.Map;
 
@@ -22,13 +20,6 @@ public class SurveyService implements InterSurveyService {
 
 	@Autowired
 	private InterSurveyDAO dao;
-	
-	
-	// 설문리스트 목록
-	@Override
-	public List<SurveyVO> surveyList(Map<String, Object> paramap) {
-		return dao.surveyList(paramap);
-	}
 	
 
 	 // 설문리스트 목록 - 전체 글 개수 구하기(페이징) 
@@ -91,8 +82,14 @@ public class SurveyService implements InterSurveyService {
 
 	// 설문리스트 - 설문참여
 	@Override
-	public List<JoinSurveyVO> surveyJoin(Map<String, Object> paramap) {
+	public List<AskVO> surveyJoin(Map<String, Object> paramap) {
 		return dao.surveyJoin(paramap);
+	}
+
+	//  답변한 설문지 insert
+	@Override
+	public int surveyJoinEnd(Map<String, Object> paramap) {
+		return dao.surveyJoinEnd(paramap);
 	}
 
 	

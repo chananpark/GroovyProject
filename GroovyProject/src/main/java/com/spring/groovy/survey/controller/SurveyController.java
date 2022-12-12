@@ -37,20 +37,16 @@ public class SurveyController {
 		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
 		String empno = loginuser.getEmpno();
 		
-		Map<String,Object> paramap = new HashMap<>();
-		paramap.put("svo",svo);
-		paramap.put("empno",empno);
-		
-		List<SurveyVO> surveyList = service.surveyList(paramap);
-		mav.addObject("surveyList", surveyList);
-		
 		 // 설문리스트 목록 - 전체 글 개수 구하기(페이징) 
 		int listCnt = service.getcountSurveyList(pagination);
 		
 		// 페이지수 알아오기
 		Map<String, Object> paraMap = pagination.getPageRange(listCnt);// startRno, endRno
+		paraMap.put("svo",svo);
+		paraMap.put("empno",empno);
+		
 		mav.addObject("listCnt", listCnt);
-	
+		
 		// 설문리스트 목록 - 한 페이지에 표시할 글 목록  (페이징 페이지수를 알아온다음에 10개씩보여줌) (페이징)
 		mav.addObject("pageCnt", service.getSurveyCnt(paraMap));
 		
@@ -65,23 +61,47 @@ public class SurveyController {
 	@RequestMapping(value="/survey/surveyJoin.on")
 	public ModelAndView surveyJoin(ModelAndView mav,HttpServletRequest request,AskVO avo) {
 		
-		String fk_empno = request.getParameter("fk_empno");
+		HttpSession session = request.getSession();
+		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
+		mav.addObject("loginuser",loginuser);
+		
 		String surno = request.getParameter("surno");
+		
+		System.out.println(surno);
+		
 		mav.addObject("surno", surno);
 		
+	
 		Map<String,Object> paramap = new HashMap<>();
-		paramap.put("fk_empno", fk_empno);
-		paramap.put("surno", surno);
 		paramap.put("avo", avo);
-		
-		List<JoinSurveyVO> surveyAskList = service.surveyJoin(paramap);
+		paramap.put("surno", surno);
+	
+		List<AskVO> surveyAskList = service.surveyJoin(paramap);
 		mav.addObject("surveyAskList", surveyAskList);
 		mav.setViewName("survey/public/surveyJoin.tiles");
 		
 		System.out.println(surveyAskList);
 		
-		
 		return mav;
+	}
+	
+	
+	// 답변한 설문지 insert
+	@ResponseBody
+	@RequestMapping(value="/survey/surveyJoinEnd.on")
+	public String surveyJoinEnd( HttpServletRequest request,JoinSurveyVO jvo) {
+
+		// 관리자 - 설문작성(설문조사 번호 insert하기)
+		Map<String, Object>paramap = new HashMap<>();
+		paramap.put("jvoList", jvo.getJvoList());
+		
+		//  답변한 설문지 insert
+		int n = service.surveyJoinEnd(paramap);
+		
+		JSONObject json = new JSONObject();
+		json.put("n", n);
+		
+		return json.toString();
 	}
 	
 	
@@ -125,22 +145,22 @@ public class SurveyController {
 	}
 	
 	// 관리자 - 설문작성(설문번호)
-		@ResponseBody
-		@RequestMapping(value="/survey/surveyWritingNo.on")
-		public String surveyWritingNo( HttpServletRequest request,SurveyVO svo, MemberVO mvo) {
-	
-			// 관리자 - 설문작성(설문조사 번호 insert하기)
-			Map<String, Object>paramap = new HashMap<>();
-			paramap.put("svo", svo);
-			
-			// 관리자 - 설문작성(설문번호) 이곳에서 결과값이 true인지 아닌지 설정
-			String fk_surno = service.addSurvey(paramap);
-			
-			JSONObject json = new JSONObject();
-			json.put("fk_surno", fk_surno);
-			
-			return json.toString();
-		}
+	@ResponseBody
+	@RequestMapping(value="/survey/surveyWritingNo.on")
+	public String surveyWritingNo( HttpServletRequest request,SurveyVO svo, MemberVO mvo) {
+
+		// 관리자 - 설문작성(설문조사 번호 insert하기)
+		Map<String, Object>paramap = new HashMap<>();
+		paramap.put("svo", svo);
+		
+		// 관리자 - 설문작성(설문번호) 이곳에서 결과값이 true인지 아닌지 설정
+		String fk_surno = service.addSurvey(paramap);
+		
+		JSONObject json = new JSONObject();
+		json.put("fk_surno", fk_surno);
+		
+		return json.toString();
+	}
 		
 
 	// 관리자 - 설문작성(질문번호)

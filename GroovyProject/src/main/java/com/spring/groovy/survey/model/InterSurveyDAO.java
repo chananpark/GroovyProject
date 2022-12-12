@@ -7,9 +7,6 @@ import com.spring.groovy.common.Pagination;
 
 public interface InterSurveyDAO {
 
-	// 설문리스트 목록
-	List<SurveyVO> surveyList(Map<String, Object> paramap);
-
 	// 설문리스트 목록 - 전체 글 개수 구하기(페이징) 
 	int getcountSurveyList(Pagination pagination);
 		
@@ -28,7 +25,11 @@ public interface InterSurveyDAO {
 	Object getSurveyCnt(Map<String, Object> paraMap);
 
 	// 설문리스트 - 설문참여
-	List<JoinSurveyVO> surveyJoin(Map<String, Object> paramap);
+	List<AskVO> surveyJoin(Map<String, Object> paramap);
+
+
+	//  답변한 설문지 insert
+	int surveyJoinEnd(Map<String, Object> paramap);
 	
 
 	

@@ -53,11 +53,25 @@
 
 <script type="text/javascript">
 
+
+	$(document).ready(function(){
+		
+		// === 설문지제목을 누르면 === //
+		$("input#surtitle").click(function(){
+			const surno = $("input#surno").val();
+			go_survey(surno);
+		}); // end of $("input#surtitle").click(function(){ -------------------------
+		
+		
+	}); // end of document.ready(function(){----------------------------
+
+
 	//>>> 설문지 제목버튼을 누르면 <<<
 	function go_survey(surno) {
+		
 		const frm = document.frm_surveyList;
 		frm.action="<%=ctxPath%>/survey/surveyJoin.on";
-		frm.method="POST";
+		frm.method="GET";
 		frm.submit();
 	}
 
@@ -73,8 +87,6 @@
 	</div>
 	
 	<!-- 제목을 클릭하면 정보를 넘길 수 있도록 hidden으로 값 받아오기 -->
-	<input type="hidden" name="fk_empno" value="${requestScope.empno}">
-	<input type="hidden" name="surno" value="${requestScope.surno}">
 	
 	<div align="right">
 		<span>
@@ -115,9 +127,9 @@
 				</thead>
 				
 				<tbody align="center">
-				<c:forEach var="survey" items="${requestScope.surveyList}" varStatus="status"> 
+				<c:forEach var="survey" items="${requestScope.pageCnt}" varStatus="status"> 
 					<tr>
-						<td>${status.count}</td>
+						<td><input type="hidden" name="surno" id="surno" value="${survey.surno}"/>${survey.surno}</td>
 						<td>
 							<!-- 설문조사가 진행중인경우 -->
 							<c:if test="${survey.surstart <= survey.surend}">
@@ -130,8 +142,8 @@
 							</c:if>
 						</td>
 						<%-- <td><a href="<%= ctxPath%>/survey/surveyJoin.on" style="color:black;">${survey.surtitle}</a></td> --%>
-						<td><input type="button" name="surtitle" value="${survey.surtitle}" onclick="go_survey(surno)" style="background-color: white;"/>
-							<input type="hidden" name="surno" ${survey.surno}/>
+						<td><input type="button" name="surtitle" id="surtitle" value="${survey.surtitle}"  style="background-color: white;"/>
+								<!-- onclick="go_survey()" -->
 						</td>
 						<td>${survey.surstart}~${survey.surend}</td>
 						
@@ -147,7 +159,10 @@
 								<div id="input_join">참여</div>
 							</c:if>
 						</td>  
-						<td>${survey.sursubdate}</td>
+						<td>${survey.sursubdate}
+							<input type="text" name="fk_empno" value="${survey.fk_empno}">
+							<input type="text" name="surno" value="${survey.surno}">
+							</td>
 					</tr>
 					</c:forEach>
 					

@@ -17,11 +17,6 @@ public class SurveyDAO implements InterSurveyDAO {
 	private SqlSessionTemplate sqlsession;
 
 	
-	// 설문리스트 목록
-	@Override
-	public List<SurveyVO> surveyList(Map<String, Object> paramap) {
-		return sqlsession.selectList("minsu.surveyList", paramap);
-	}
 	
 
 	// 설문리스트 목록 - 전체 글 개수 구하기(페이징) 
@@ -65,8 +60,14 @@ public class SurveyDAO implements InterSurveyDAO {
 
 	// 설문리스트 - 설문참여
 	@Override
-	public List<JoinSurveyVO> surveyJoin(Map<String, Object> paramap) {
+	public List<AskVO> surveyJoin(Map<String, Object> paramap) {
 		return sqlsession.selectList("minsu.surveyJoin", paramap);
+	}
+
+	//  답변한 설문지 insert
+	@Override
+	public int surveyJoinEnd(Map<String, Object> paramap) {
+		return sqlsession.insert("minsu.surveyJoinEnd", paramap);
 	}
 	
 

@@ -1,5 +1,7 @@
 package com.spring.groovy.survey.model;
 
+import java.util.List;
+
 public class JoinSurveyVO {
 
 	
@@ -11,7 +13,7 @@ public class JoinSurveyVO {
 	private String answer;		    // 답변
 	private String sursubdate;      // 답변제출일 sysdate
 	
-	
+	private List<JoinSurveyVO> jvoList;
 	
 	public String getJoinsurno() {
 		return joinsurno;
@@ -48,6 +50,12 @@ public class JoinSurveyVO {
 	}
 	public void setSursubdate(String sursubdate) {
 		this.sursubdate = sursubdate;
+	}
+	public List<JoinSurveyVO> getJvoList() {
+		return jvoList;
+	}
+	public void setJvoList(List<JoinSurveyVO> jvoList) {
+		this.jvoList = jvoList;
 	}
 
 	

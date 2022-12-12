@@ -601,6 +601,8 @@ create table  tbl_joinsurvey
 ,constraint FK_tbl_joinsurvey_fk_questno foreign key(fk_empno) references tbl_ask(questno)ON DELETE CASCADE
 );
 
+select *
+from tbl_joinsurvey
 -- 설문참여테이블 시퀀스
 create sequence seq_tbl_joinsurvey
 start with 1
@@ -675,6 +677,29 @@ SELECT QUESTNO,FK_SURNO,QUESTION,OPTION1,OPTION2,OPTION3,OPTION4,OPTION5
 FROM TBL_ASK A left JOIN TBL_SURVEY S
 ON A.FK_SURNO = S.SURNO 
 where FK_SURNO = 54 and fk_empno = 13
-        
 
+
+-- 설문 조회 및 페이지네이션
+SELECT *
+FROM (SELECT ROWNUM AS RNO, v.*
+    FROM( 
+        SELECT SURTITLE, SURNO, S.FK_EMPNO, TO_CHAR(SURSTART, 'yyyy-mm-dd')SURSTART,TO_CHAR(SUREND, 'yyyy-mm-dd')SUREND,TO_CHAR(SURSUBDATE, 'yyyy-mm-dd') SURSUBDATE
+        FROM TBL_SURVEY S LEFT JOIN TBL_JOINSURVEY J
+        ON S.SURNO = J.FK_SURNO
+        where S.FK_EMPNO = 13 
+        ORDER BY SURNO DESC
+    )V)
+WHERE RNO BETWEEN #{startRno} AND #{endRno}
+
+      SELECT QUESTNO,FK_SURNO,QUESTION,OPTION1,OPTION2,OPTION3,OPTION4,OPTION5
+		      ,SURTITLE, SUREXPLAIN
+		FROM TBL_ASK A left JOIN TBL_SURVEY S
+		ON A.FK_SURNO = S.SURNO 
+		WHERE FK_SURNO = 54
+        
+        
+        
+        
+        
+        
         
