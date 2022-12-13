@@ -197,7 +197,7 @@ const deleteDraft = () => {
 							<td class='col col-2'>${temp.draft_date}</td>
 							<td class='col col-2'>${temp.draft_type}</td>
 							<td class='col'>
-							<a href='<%=ctxPath%>/approval/draftDetail.on?draft_no=${temp.draft_no}&fk_draft_type_no=${temp.fk_draft_type_no}'>
+							<a href='<%=ctxPath%>/approval/tempDraftDetail.on?draft_no=${temp.draft_no}&fk_draft_type_no=${temp.fk_draft_type_no}'>
 							${temp.draft_subject}
 							</a>
 							</td>

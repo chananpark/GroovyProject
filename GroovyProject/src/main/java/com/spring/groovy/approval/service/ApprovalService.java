@@ -199,6 +199,16 @@ public class ApprovalService implements InterApprovalService {
 		
 		int n = 0;
 		boolean result = false;
+		
+		// 임시저장 번호가 있을 경우
+		String temp_draft_no = (String) paraMap.get("temp_draft_no");
+		if (temp_draft_no != null && !"".equals(temp_draft_no)) {
+			// 임시저장 문서 삭제
+			n = dao.deleteTempDraft(temp_draft_no);
+			
+			if (n != 1)
+				return result;
+		}
 
 		// 기안문서 번호 생성
 		String draft_no = getDraftNo();
@@ -300,37 +310,84 @@ public class ApprovalService implements InterApprovalService {
 	@SuppressWarnings("unchecked")
 	@Override
 	@Transactional(propagation=Propagation.REQUIRED, isolation=Isolation.READ_COMMITTED, rollbackFor= {Throwable.class})
-	public boolean saveWorkDraft(Map<String, Object> paraMap) {
+	public String saveTempDraft(Map<String, Object> paraMap) {
 
 		int n = 0;
 		boolean result = false;
 		
-		// 시퀀스 얻어오기
-		int temp_draft_no = dao.getTempDraftNo();
-		
 		DraftVO dvo = (DraftVO)paraMap.get("dvo");
-		dvo.setDraft_no(String.valueOf(temp_draft_no));// 생성된 임시저장번호 set
+		String temp_draft_no = dvo.getDraft_no();
 		
-		// 기안 임시저장 테이블 insert
-		n = dao.saveDraft(dvo);
+		// 기존에 임시저장되었던 글이 아니라면
+		if (temp_draft_no == null || "".equals(temp_draft_no)) {
+
+			// 임시저장 번호 시퀀스 가져오기
+			temp_draft_no = dao.getTempDraftNo();
+			dvo.setDraft_no(temp_draft_no);
+		}
+		
+		// 기안 문서 임시저장
+		n = dao.addTempDraft(dvo);
 		result = (n == 1)? true : false;
 		
 		// 결재 정보 리스트
 		List<ApprovalVO> apvoList = (List<ApprovalVO>) paraMap.get("apvoList");
-		
-		if (!result || apvoList.size() == 0) {
-			return result;
-		}
 
 		// 결재 정보가 있다면
-		for (ApprovalVO apvo : apvoList)
-			apvo.setFk_draft_no(String.valueOf(temp_draft_no)); // 기안번호 set하기
+		if (result && apvoList != null) {
+			for (ApprovalVO apvo : apvoList)
+				apvo.setFk_draft_no(temp_draft_no); // 기안번호 set하기
+			
+			// 기존에 저장된 결재정보 조회
+			List<ApprovalVO> preApvoList = dao.getTempApprovalInfo(dvo);
+			if (preApvoList != null && preApvoList.size() > 0) {
+				// 기존 결재정보 삭제
+				n = dao.deleteAprvList(temp_draft_no);
+				
+				result = (n == preApvoList.size())? true : false;
+			}
+			
+			if (result) {
+				// 결재 테이블 insert
+				n = dao.addTempApproval(apvoList);
+				result = (n == apvoList.size())? true : false;
+			}
+		}
 		
-		// 결재 테이블 insert
-		n = dao.saveApproval(apvoList);
-		result = (n == apvoList.size())? true : false;
+		// 지출내역 리스트
+		List<ExpenseListVO> evoList = (List<ExpenseListVO>) paraMap.get("evoList");
 		
-		return result;
+		// 지출내역이  있다면
+		if (result && evoList != null) {
+			for (ExpenseListVO evo : evoList) {
+				evo.setFk_draft_no(temp_draft_no); // 임시기안번호 set하기
+			}
+			
+			// 기존에 저장된 지출내역 조회
+			List<ExpenseListVO> preEvoList = dao.getTempExpenseListInfo(dvo);
+			if (preEvoList != null && preEvoList.size() > 0) {
+				// 기존 지출내역 삭제
+				n = dao.deleteEvoList(temp_draft_no);
+				
+				result = (n == preEvoList.size())? true : false;
+			}
+			
+			// 지출내역 insert
+			n = dao.addTempExpenseList(evoList);
+			result = (n == evoList.size())? true : false;
+		}
+		
+		// 출장보고서라면
+		BiztripReportVO brvo = (BiztripReportVO)paraMap.get("brvo");
+		if (result && dvo.getFk_draft_type_no() == 3) {
+			brvo.setFk_draft_no(temp_draft_no); // 임시기안번호 set하기
+			
+			// 출장보고 insert
+			n = dao.addTempBiztripReport(brvo);
+			result = (n == 1)? true : false;
+		}
+		
+		return (result)? temp_draft_no: null;
 	}
 	
 	// 30일 지난 임시저장 글 삭제하기
@@ -434,6 +491,56 @@ public class ApprovalService implements InterApprovalService {
 	@Override
 	public int updateSignature(Map<String, String> paraMap) {
 		return dao.updateSignature(paraMap);
+	}
+
+	// 임시저장 문서 조회
+	@Override
+	public Map<String, Object> getTempDraftDetail(DraftVO dvo) {
+				
+		Map<String, Object> draftMap = new HashMap<String, Object>();
+		
+		// temp_draft에서 select
+		dvo = dao.getTempDraftInfo(dvo);
+		
+		// 에디터로 작성한 내용은 태그를 되돌린다.
+		String unescapedContent = XssPreventer.unescape(dvo.getDraft_content());
+		dvo.setDraft_content(unescapedContent);
+		draftMap.put("dvo", dvo);
+		
+		// approval에서 select
+		List<ApprovalVO> avoList = dao.getTempApprovalInfo(dvo);
+		draftMap.put("avoList", avoList);
+		
+		// 결재자 정보가 저장되어 있다면
+		if (avoList.size() > 0) {
+			// 내부 결재자 리스트
+			List<ApprovalVO> internalList = new ArrayList<ApprovalVO>();
+			
+			// 외부 결재자 리스트
+			List<ApprovalVO> externalList = new ArrayList<ApprovalVO>();
+			
+			for(ApprovalVO avo : avoList) {
+				if (avo.getExternal() == 0)
+					internalList.add(avo);
+				else externalList.add(avo);
+			}
+			draftMap.put("internalList", internalList);
+			draftMap.put("externalList", externalList);
+		}
+		
+		// 지출결의서라면
+		if (dvo.getFk_draft_type_no() == 2) {
+			List<ExpenseListVO> evoList = dao.getTempExpenseListInfo(dvo);
+			draftMap.put("evoList", evoList);
+		}
+		
+		// 출장보고서라면
+		if (dvo.getFk_draft_type_no() == 3) {
+			BiztripReportVO brvo = dao.getTempBiztripReportInfo(dvo);
+			draftMap.put("brvo", brvo);
+		}
+		
+		return draftMap;
 	}
 
 }

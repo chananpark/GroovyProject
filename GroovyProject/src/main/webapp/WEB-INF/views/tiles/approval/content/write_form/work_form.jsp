@@ -175,12 +175,16 @@ $(() => {
 		// 에디터에서 textarea에 대입
 		obj.getById["draft_content"].exec("UPDATE_CONTENTS_FIELD", []);
 		
-		// 글제목 유효성 검사
-		const draft_subject = $("input#draft_subject").val().trim();
-		if(draft_subject == "") {
-			swal("글제목을 입력하세요!");
-    		return;
-		}
+		// 글내용 유효성검사
+	    var draft_content = $("#draft_content").val();
+
+	    if( draft_content == ""  || draft_content == null || draft_content == '&nbsp;' || draft_content == '<p>&nbsp;</p>')  {
+			swal("글내용을 입력하세요!")
+			.then(function (result) {
+				obj.getById["draft_content"].exec("FOCUS"); //포커싱
+		      })
+			return;
+	    }
 		
 		saveTemp();
 		
@@ -261,6 +265,17 @@ $(() => {
    	 $(this).parent().remove();
    	 
 	});
+	
+	// 임시저장 제목, 내용 표시하기
+	const tempSubject = "${draftMap.dvo.draft_subject}";
+	
+	if(tempSubject != null && tempSubject != "" && tempSubject !== undefined)
+		$("#draft_subject").val("${draftMap.dvo.draft_subject}");	
+	
+	const tempContent = "${draftMap.dvo.draft_content}";
+	
+	if(tempContent != null && tempContent != "" && tempContent !== undefined)
+		$("#draft_content").val("${draftMap.dvo.draft_content}");	
 });
 
 
@@ -342,10 +357,7 @@ const submitDraft = () => {
 const saveTemp = () => {
 	
     let formData = new FormData($("#draftForm")[0]);
-
-	// 첨부파일 가져오기
-	getFiles(formData);
-	
+    
     $.ajax({
         url : "<%=ctxPath%>/approval/saveDraft.on",
         data : formData,
@@ -356,11 +368,11 @@ const saveTemp = () => {
         dataType:'json',
         cache:false,
         success:function(json){
-        	if(json.result == true) {
-    	    	swal("저장 완료", "임시저장되었습니다.", "success")
-    	    	.then((value) => {
-	    	    	location.href = "<%=ctxPath%>/approval/personal/saved.on";
-   	    		});
+   	     	if(json.temp_draft_no != "" && json.temp_draft_no !== undefined) {
+   	     		swal("저장 완료", "임시저장 되었습니다.", "success")
+   	     		.then((value) => {
+   	 	    		$("input[name='temp_draft_no']").val(json.temp_draft_no); // 임시저장 번호 대입
+   	     		});
         	}
         	else
         		swal("저장 실패", "임시저장 실패하였습니다.", "error");
@@ -513,10 +525,11 @@ const emptyApprovalLine = () => {
 			</div>
 			<div class="card-body text-center p-4">
 			
-				<!-- 기안문서 폼 -->
+			<!-- 기안문서 폼 -->
 			<form id="draftForm" enctype="multipart/form-data">
 				<input type='hidden' name='fk_draft_empno' value='${loginuser.empno}'/>
 				<input type='hidden' name='fk_draft_type_no' value='1'/>
+				<input type='hidden' name='temp_draft_no' value='${draftMap.dvo.draft_no}'/>
 				
 				<!-- 문서정보 -->
 				<div class='draftInfo' style='width: 20%'>
@@ -559,12 +572,27 @@ const emptyApprovalLine = () => {
 					      </tr>
 					    </thead>
 					    <tbody id="aprvTblBody">
+					    <c:if test="${not empty draftMap.internalList}">
+						    <c:forEach items="${draftMap.internalList}" var="emp" varStatus="sts">
+						    <tr>
+						    	<td>${emp.levelno}
+						    	<input type='hidden' name='avoList[${sts.index}].levelno' value='${emp.levelno}'/>
+						    	<input type='hidden' name='avoList[${sts.index}].fk_approval_empno' value='${emp.fk_approval_empno}'/>
+						    	<input type='hidden' name='avoList[${sts.index}].external' value='0'>
+						    	</td>
+						    	<td>${emp.department}</td>
+						    	<td>${emp.position}</td>
+						    	<td>${emp.name}</td>
+						    	
+						    </tr>
+						    </c:forEach>
+					    </c:if>
 					    </tbody>
 					</table>
 				</div>
 				
 				<script>
-					const aprvTblBody = $('#aprvTblBody');
+				const aprvTblBody = $('#aprvTblBody');
 				</script>
 				
 				
@@ -608,14 +636,15 @@ const emptyApprovalLine = () => {
 	
 				<!-- 기안내용 -->
 				<h5 class='text-left mb-3'>제목</h5>
-				<input type="text" name="draft_subject" id="draft_subject" placeholder='제목을 입력하세요' style='width: 100%; font-size: small;' />
+				<input type="text" name="draft_subject" id="draft_subject" placeholder='제목을 입력하세요' 
+				style='width: 100%; font-size: small;' value='${draftMap.dvo.draft_subject}'/>
 	
 				<div class='mb-3' style='margin-top: 30px; display: flex'>
 					<h5 style='display: inline-block;'>내용</h5>
 					<button id='saveBtn' type="button" class="btn btn-sm btn-light" style='display: inline-block; margin-left: auto;'>임시저장</button>
 				</div>
-				<textarea style="width: 100%; height: 612px;" name="draft_content" id="draft_content" placeholder='내용을 입력하세요'></textarea>
-				
+				<textarea style="width: 100%; height: 612px;" name="draft_content" id="draft_content" placeholder='내용을 입력하세요'>
+				${draftMap.dvo.draft_content}</textarea>
 				
 				<!-- 결재의견 및 긴급여부 체크 모달 -->
 				<div class="modal text-left" id="myModal">

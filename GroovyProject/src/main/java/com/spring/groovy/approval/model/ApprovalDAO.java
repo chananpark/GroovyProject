@@ -203,30 +203,6 @@ public class ApprovalDAO implements InterApprovalDAO {
 		return sqlsession.insert("approval.delApprovalLine", sapVO);
 	}
 
-	// 임시저장 시퀀스 얻어오기
-	@Override
-	public int getTempDraftNo() {
-		return sqlsession.selectOne("approval.getTempDraftNo");
-	}
-
-	// 기안 임시저장하기
-	@Override
-	public int saveDraft(DraftVO dvo) {
-		return sqlsession.insert("approval.saveDraft", dvo);
-	}
-
-	// 결재정보 임시저장하기
-	@Override
-	public int saveApproval(List<ApprovalVO> apvoList) {
-		return sqlsession.update("approval.saveApproval", apvoList);
-	}
-	
-	// 30일 지난 임시저장 글 삭제하기
-	@Override
-	public void autoDeleteSavedDraft() {
-		sqlsession.delete("approval.autoDeleteSavedDraft");
-	}
-
 	// 공통 결재라인 불러오기
 	@Override
 	public List<Map<String, String>> getOfficialAprvList() {
@@ -302,6 +278,84 @@ public class ApprovalDAO implements InterApprovalDAO {
 	@Override
 	public int updateSignature(Map<String, String> paraMap) {
 		return sqlsession.update("approval.updateSignature", paraMap);
+	}
+
+	// 임시저장 시퀀스 얻어오기
+	@Override
+	public String getTempDraftNo() {
+		return sqlsession.selectOne("approval.getTempDraftNo");
+	}
+
+	// 기안 임시저장하기
+	@Override
+	public int addTempDraft(DraftVO dvo) {
+		return sqlsession.update("approval.addTempDraft", dvo);
+	}
+
+	// 결재정보 임시저장하기
+	@Override
+	public int addTempApproval(List<ApprovalVO> apvoList) {
+		return sqlsession.update("approval.addTempApproval", apvoList);
+	}
+
+	// 임시 지출내역 insert
+	@Override
+	public int addTempExpenseList(List<ExpenseListVO> evoList) {
+		return sqlsession.update("approval.addTempExpenseList", evoList);
+	}
+
+	// 임시 출장보고 insert
+	@Override
+	public int addTempBiztripReport(BiztripReportVO brvo) {
+		return sqlsession.insert("approval.addTempBiztripReport", brvo);
+	}
+	
+	// 30일 지난 임시저장 글 삭제하기
+	@Override
+	public void autoDeleteSavedDraft() {
+		sqlsession.delete("approval.autoDeleteSavedDraft");
+	}
+
+	// temp_draft에서 select
+	@Override
+	public DraftVO getTempDraftInfo(DraftVO dvo) {
+		return sqlsession.selectOne("approval.getTempDraftInfo", dvo);
+	}
+	
+	// temp_approval에서 select
+	@Override
+	public List<ApprovalVO> getTempApprovalInfo(DraftVO dvo) {
+		return sqlsession.selectList("approval.getTempApprovalInfo", dvo);
+	}
+
+	// temp 지출내역 select
+	@Override
+	public List<ExpenseListVO> getTempExpenseListInfo(DraftVO dvo) {
+		return sqlsession.selectList("approval.getTempExpenseListInfo", dvo);
+	}
+	
+	// temp 출장보고 select
+	@Override
+	public BiztripReportVO getTempBiztripReportInfo(DraftVO dvo) {
+		return sqlsession.selectOne("approval.getTempBiztripReportInfo", dvo);
+	}
+
+	// 임시저장된 결재목록 삭제
+	@Override
+	public int deleteAprvList(String temp_draft_no) {
+		return sqlsession.delete("approval.deleteAprvList", temp_draft_no);
+	}
+
+	// 임시저장된 지출내역 삭제
+	@Override
+	public int deleteEvoList(String temp_draft_no) {
+		return sqlsession.delete("approval.deleteEvoList", temp_draft_no);
+	}
+
+	// 임시저장 문서 삭제
+	@Override
+	public int deleteTempDraft(String temp_draft_no) {
+		return sqlsession.delete("approval.deleteTempDraft", temp_draft_no);
 	}
 
 }

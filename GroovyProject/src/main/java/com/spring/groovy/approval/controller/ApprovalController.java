@@ -3,7 +3,9 @@ package com.spring.groovy.approval.controller;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -141,6 +143,49 @@ public class ApprovalController {
 			mav.setViewName("approval/draft_detail/business_trip_detail.tiles");
 			break;
 
+		default:
+			mav.setViewName("error");
+			break;
+		}
+		
+		// 전체 결재자 정보 리스트
+		JSONArray avoList = new JSONArray((List<ApprovalVO>)draftMap.get("avoList"));		
+		
+		// 내부 결재자 정보 리스트
+		JSONArray internalList = new JSONArray((List<ApprovalVO>)draftMap.get("internalList"));
+		
+		// 외부 결재자 정보 리스트
+		JSONArray externalList = new JSONArray((List<ApprovalVO>)draftMap.get("externalList"));
+		
+		mav.addObject("avoList", String.valueOf(avoList));
+		mav.addObject("internalList", String.valueOf(internalList));
+		mav.addObject("externalList", String.valueOf(externalList));
+		return mav;
+	}
+	
+	// 임시저장 문서 조회
+	@SuppressWarnings("unchecked")
+	@RequestMapping(value = "/tempDraftDetail.on")
+	public ModelAndView getTempDraftDetail(ModelAndView mav, HttpServletRequest request, DraftVO dvo) {
+		
+		Map<String, Object> draftMap = service.getTempDraftDetail(dvo);
+		mav.addObject("draftMap", draftMap);
+		
+		String fk_draft_type_no = request.getParameter("fk_draft_type_no");
+		
+		switch (fk_draft_type_no) {
+		case "1":
+			mav.setViewName("approval/draft_detail/temp_work_detail.tiles");
+			break;
+			
+		case "2":
+			mav.setViewName("approval/draft_detail/temp_expense_detail.tiles");
+			break;
+			
+		case "3":
+			mav.setViewName("approval/draft_detail/temp_business_trip_detail.tiles");
+			break;
+			
 		default:
 			mav.setViewName("error");
 			break;
@@ -476,6 +521,10 @@ public class ApprovalController {
 	public String addDraft(MultipartHttpServletRequest mtfRequest, DraftVO dvo, ApprovalVO avo, ExpenseListVO evo, BiztripReportVO brvo) {
 
 		Map<String, Object> paraMap = new HashMap<>();
+		// 임시저장번호
+		String temp_draft_no = mtfRequest.getParameter("temp_draft_no");
+		
+		paraMap.put("temp_draft_no", temp_draft_no);
 		
 		// 기안 정보
 		paraMap.put("dvo", dvo);
@@ -543,7 +592,7 @@ public class ApprovalController {
 		JSONObject jsonObj = new JSONObject();
 		jsonObj.put("result", result);
 
-		return jsonObj.toString();
+		return String.valueOf(jsonObj);
 	}
 
 	// 파일 업로드 경로 지정
@@ -558,36 +607,75 @@ public class ApprovalController {
 	// 기안 임시저장하기
 	@ResponseBody
 	@PostMapping(value = "/saveDraft.on", produces = "text/plain;charset=UTF-8")
-	public String saveTemp(HttpServletRequest request, DraftVO dvo, ApprovalVO avo) {
+	public String saveTemp(HttpServletRequest request, DraftVO dvo, ApprovalVO avo, ExpenseListVO evo, BiztripReportVO brvo) {
 		
 		Map<String, Object> paraMap = new HashMap<>();
 
 		// 기안 정보
+		dvo.setDraft_no(request.getParameter("temp_draft_no")); // 임시저장 번호 set
 		paraMap.put("dvo", dvo);
-
-		// 결재자 목록 리스트
-		List<ApprovalVO> apvoList = new ArrayList<ApprovalVO>();
-
-		String[] empnoArr = request.getParameterValues("fk_approval_empno");
 		
-		if (empnoArr != null) {
-			for (String empno : empnoArr) {
-				ApprovalVO apvo = new ApprovalVO();
-				apvo.setFk_approval_empno(Integer.parseInt(empno));
-	
-				apvoList.add(apvo);
-			}
+		// 제목이 비어있다면
+		if (dvo.getDraft_subject() == null || "".equals(dvo.getDraft_subject())) {
+			Calendar currentDate = Calendar.getInstance(); // 현재날짜와 시간
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
+			String currentTime = dateFormat.format(currentDate.getTime());
+			
+			dvo.setDraft_subject((currentTime + "에 임시저장된 문서"));
 		}
+		
+		// 결재자 목록 리스트
+		List<ApprovalVO> apvoList = avo.getAvoList();
 		paraMap.put("apvoList", apvoList);
 		
-		boolean result = service.saveWorkDraft(paraMap);
+		// 지출내역 리스트
+		List<ExpenseListVO> evoList = evo.getEvoList();
+		paraMap.put("evoList", evoList);
+		
+		// 출장보고 정보
+		paraMap.put("brvo", brvo);
+		String temp_draft_no = service.saveTempDraft(paraMap);
 
 		JSONObject jsonObj = new JSONObject();
-		jsonObj.put("result", result);
+		jsonObj.put("temp_draft_no", temp_draft_no);
 
-		return jsonObj.toString();
+		return String.valueOf(jsonObj);
 	}
 	
+	// 임시저장 기안 재상신(편집) 페이지요청
+	@GetMapping(value = "/edit.on")
+	public ModelAndView showDraftEditForm(ModelAndView mav, @RequestParam("fk_draft_type_no") String fk_draft_type_no, DraftVO dvo) {
+		
+		// 공통 결재라인 가져오기
+		List<MemberVO> recipientList = service.getRecipientList(fk_draft_type_no);
+		JSONArray recipientArr = new JSONArray(recipientList);
+		
+		mav.addObject("recipientArr", String.valueOf(recipientArr));
+		
+		// 임시저장 문서 정보 가져오기
+		Map<String, Object> draftMap = service.getTempDraftDetail(dvo);
+		mav.addObject("draftMap", draftMap);
+		
+		switch (fk_draft_type_no) {
+		
+		case "1":
+			mav.setViewName("approval/write_form/work_form.tiles");
+			return mav;
+
+		case "2":
+			mav.setViewName("approval/write_form/expense_form.tiles");
+			return mav;
+		
+		case "3":
+			mav.setViewName("approval/write_form/business_trip_form.tiles");
+			return mav;
+
+		default:
+			mav.setViewName("error");
+			return mav;
+		}
+		
+	}
 
 	// 결재라인 선택 팝업창 요청
 	@RequestMapping(value = "/selectApprovalLine.on")
