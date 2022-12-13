@@ -65,6 +65,9 @@ $(()=>{
 	$("select#sortOrder").val("${paraMap.sortOrder}");
 
 	setSortOrder();
+	
+	// communityBackUrl 스토리지에 저장하기
+	sessionStorage.setItem("communityBackUrl", "${communityBackUrl}");
 });
 
 const addPost = () =>{

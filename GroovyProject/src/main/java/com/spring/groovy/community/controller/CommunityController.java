@@ -81,8 +81,7 @@ public class CommunityController {
 		
 		// 현재 url 저장
 		String communityBackUrl = Myutil.getCurrentURL(request);
-		HttpSession session = request.getSession();
-		session.setAttribute("communityBackUrl", request.getContextPath() + communityBackUrl);
+		request.setAttribute("communityBackUrl", request.getContextPath() + communityBackUrl);
 		
 		mav.setViewName("community/post_list.tiles2");
 		return mav;

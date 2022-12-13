@@ -646,8 +646,7 @@ const emptyApprovalLine = () => {
 				</tr>
 				<tr>
 					<th>출장목적</th>
-					<td><textarea style="width: 100%; height: 50px;" name="trip_purpose" id="trip_purpose" placeholder='내용을 입력하세요'>
-					${draftMap.brvo.trip_purpose}</textarea></td>
+					<td><textarea style="width: 100%; height: 50px;" name="trip_purpose" id="trip_purpose" placeholder='내용을 입력하세요'>${draftMap.brvo.trip_purpose}</textarea></td>
 				</tr>
 				<tr>
 					<th>출장기간</th>

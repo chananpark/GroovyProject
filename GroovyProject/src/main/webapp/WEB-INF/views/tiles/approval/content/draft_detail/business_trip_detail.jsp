@@ -86,6 +86,11 @@
 a {
 	color: black;
 }
+
+#showListBtn {
+	margin-top: 10px;
+	float: right;
+}
 </style>
 
 <script>
@@ -218,6 +223,19 @@ const updateApproval = approval_status => {
  });
 }
 
+//목록보기 버튼 클릭
+const showList = () => {
+	
+	// approvalBackUrl 스토리지에서 꺼내기
+	const approvalBackUrl = sessionStorage.getItem("approvalBackUrl");
+	
+	if (approvalBackUrl != null && approvalBackUrl != "" && approvalBackUrl !== undefined){
+		location.href=approvalBackUrl;
+		sessionStorage.removeItem("approvalBackUrl");		
+	}
+	else
+		location.href="javascript:history.go(-1)";
+}
 </script>
 
 <div class="container">
@@ -396,6 +414,7 @@ const updateApproval = approval_status => {
 			</table>
 			</c:if>
 			<!-- 첨부파일 끝 -->
+			<button type="button" id="showListBtn" class="btn-secondary listView rounded" onclick="showList()">목록보기</button>
 			
 			<div style="clear:both; padding-top: 8px; margin-bottom: 30px;">
 			</div>

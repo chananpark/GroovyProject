@@ -260,7 +260,7 @@ public class ApprovalController {
 	// 개인문서함-상신함 페이지요청
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/personal/sent.on")
-	public ModelAndView sentDraftList(ModelAndView mav, Pagination pagination, HttpServletRequest request) throws Exception {
+	public ModelAndView sentDraftList(HttpServletRequest request, ModelAndView mav, Pagination pagination) throws Exception {
 
 		MemberVO loginuser = getLoginUser(request);
 
@@ -283,7 +283,7 @@ public class ApprovalController {
 		pagination.setQueryString("&sortType="+paraMap.get("sortType")+"&sortOrder="+paraMap.get("sortOrder"));
 		mav.addObject("pagebar", pagination.getPagebar(url));
 		mav.addObject("paraMap", paraMap);
-
+		
 		mav.setViewName("approval/my_draft/sent.tiles");
 		return mav;
 	}
@@ -291,7 +291,7 @@ public class ApprovalController {
 	// 개인문서함-결재함 페이지요청
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/personal/processed.on")
-	public ModelAndView processdDraftList(ModelAndView mav, Pagination pagination, HttpServletRequest request)
+	public ModelAndView processdDraftList(HttpServletRequest request, ModelAndView mav, Pagination pagination)
 			throws Exception {
 
 		MemberVO loginuser = getLoginUser(request);
@@ -323,7 +323,7 @@ public class ApprovalController {
 	// 개인문서함-임시저장함 페이지요청
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/personal/saved.on")
-	public ModelAndView savedDraftList(ModelAndView mav, Pagination pagination, HttpServletRequest request) throws Exception {
+	public ModelAndView savedDraftList(HttpServletRequest request, ModelAndView mav, Pagination pagination) throws Exception {
 
 		MemberVO loginuser = getLoginUser(request);
 
@@ -355,7 +355,7 @@ public class ApprovalController {
 	// 개인문서함-임시저장함 글삭제
 	@ResponseBody
 	@PostMapping(value = "/delete.on", produces = "text/plain;charset=UTF-8")
-	public String deleteDraftList(ModelAndView mav, HttpServletRequest request) {
+	public String deleteTempDraft(ModelAndView mav, HttpServletRequest request) {
 
 		// 지울 파일 목록
 		String deleteList = request.getParameter("deleteList");
@@ -373,7 +373,7 @@ public class ApprovalController {
 	// 팀문서함 페이지요청
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/team.on")
-	public ModelAndView teamDraftList(ModelAndView mav, Pagination pagination, HttpServletRequest request)
+	public ModelAndView teamDraftList(HttpServletRequest request, ModelAndView mav, Pagination pagination)
 			throws Exception {
 
 		MemberVO loginuser = getLoginUser(request);
@@ -405,7 +405,7 @@ public class ApprovalController {
 	// 결재하기-결재대기문서 페이지요청
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/requested.on")
-	public ModelAndView requestedDraftList(ModelAndView mav, Pagination pagination, HttpServletRequest request)
+	public ModelAndView requestedDraftList(HttpServletRequest request, ModelAndView mav, Pagination pagination)
 			throws Exception {
 		MemberVO loginuser = getLoginUser(request);
 
@@ -446,7 +446,7 @@ public class ApprovalController {
 	// 결재하기-결재예정문서 페이지요청
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/upcoming.on")
-	public ModelAndView upcomingDraftList(ModelAndView mav, Pagination pagination, HttpServletRequest request) throws Exception {
+	public ModelAndView upcomingDraftList(HttpServletRequest request, ModelAndView mav, Pagination pagination) throws Exception {
 		MemberVO loginuser = getLoginUser(request);
 		
 		Map<String, Object> paraMap = BeanUtils.describe(pagination); // pagination을 Map으로
