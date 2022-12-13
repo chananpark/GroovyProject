@@ -193,7 +193,7 @@ public class SurveyController {
 	
 	// 관리자 - 설문관리
 	@RequestMapping(value="/survey/surveyManage.on")
-	public ModelAndView surveyManage(ModelAndView mav, HttpServletRequest request,SurveyVO svo,TargetVO tvo,JoinSurveyVO jvo ,Pagination pagination) {
+	public ModelAndView surveyManage(ModelAndView mav, HttpServletRequest request,SurveyVO svo,TargetVO tvo,MemberVO mvo,JoinSurveyVO jvo ,Pagination pagination) {
 	
 		 // 설문리스트 목록 - 전체 글 개수 구하기(페이징) 
 		int listCnt = service.getcountSurveyList(pagination);
@@ -201,6 +201,8 @@ public class SurveyController {
 		
 		//  설문리스트 목록  -설문 참여자 수 구하기(페이징) 
 		mav.addObject("joinempcnt",service.getJoinEmpCnt(jvo));
+		//  설문리스트 목록  -설문 참여자 수 구하기(페이징) 
+		mav.addObject("empCnt",service.getEmpCnt(mvo));
 		
 		// 페이지수 알아오기
 		Map<String, Object> paraMap = pagination.getPageRange(listCnt);// startRno, endRno

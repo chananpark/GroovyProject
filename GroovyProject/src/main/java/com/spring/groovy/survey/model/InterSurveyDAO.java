@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.spring.groovy.common.Pagination;
+import com.spring.groovy.management.model.MemberVO;
 
 public interface InterSurveyDAO {
 
@@ -38,6 +39,10 @@ public interface InterSurveyDAO {
 
 	//  설문리스트 목록  -설문 참여자 수 구하기(페이징) 
 	int getJoinEmpCnt(JoinSurveyVO jvo);
+
+
+	//  설문리스트 목록  -설문 참여자 수 구하기(페이징) 
+	int getEmpCnt(MemberVO mvo);
 	
 
 	

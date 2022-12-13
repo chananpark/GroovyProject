@@ -9,6 +9,7 @@ import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Repository;
 
 import com.spring.groovy.common.Pagination;
+import com.spring.groovy.management.model.MemberVO;
 
 @Repository
 public class SurveyDAO implements InterSurveyDAO {
@@ -73,6 +74,12 @@ public class SurveyDAO implements InterSurveyDAO {
 	@Override
 	public int getJoinEmpCnt(JoinSurveyVO jvo) {
 		return sqlsession.selectOne("minsu.getJoinEmpCnt", jvo);
+	}
+
+	//  설문리스트 목록  -설문 참여자 수 구하기(페이징) 
+	@Override
+	public int getEmpCnt(MemberVO mvo) {
+		return sqlsession.selectOne("minsu.getEmpCnt", mvo);
 	}
 	
 

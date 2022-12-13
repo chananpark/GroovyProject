@@ -72,7 +72,7 @@
 		
 		
 		<div align="center">
-			<button class="btn btn-sm" onclick="javascript:location.href='<%= ctxPath%>/survey/surveyManage.on'"style="background-color:#086BDE; color:white; width: 80px;">뒤로</button>
+			<button class="btn btn-sm" onclick="javascript:history.back()" style="background-color:#086BDE; color:white; width: 80px;">뒤로</button>
 		</div>
 		
 	</div>
