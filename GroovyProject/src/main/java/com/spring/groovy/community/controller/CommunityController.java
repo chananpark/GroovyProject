@@ -394,7 +394,7 @@ public class CommunityController {
 		Map<String, String> paraMap = new HashMap<>();
 		paraMap.put("post_file_no", post_file_no); // 삭제하려는 파일번호
 		
-		// 파일 테이블에서 파일삭제
+		// 파일삭제
 		boolean result = service.deleteFile(post_file_no, setFilePath(request, "files"));
 
 		JSONObject json = new JSONObject();

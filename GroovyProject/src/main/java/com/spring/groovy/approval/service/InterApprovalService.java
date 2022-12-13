@@ -90,7 +90,7 @@ public interface InterApprovalService {
 	List<MemberVO> getOneAprvLine(String aprv_line_no);
 
 	// 업무기안 임시저장하기
-	boolean saveWorkDraft(Map<String, Object> paraMap);
+	String saveTempDraft(Map<String, Object> paraMap);
 	
 	// 30일 지난 임시저장 글 삭제하기
 	void autoDeleteSavedDraft();
@@ -125,5 +125,7 @@ public interface InterApprovalService {
 	// 환경설정-서명이미지 수정
 	int updateSignature(Map<String, String> paraMap);
 
+	// 임시저장 문서 조회
+	Map<String, Object> getTempDraftDetail(DraftVO dvo);
 
 }
