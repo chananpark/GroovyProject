@@ -107,7 +107,7 @@
 		</div>
 		
 		<div class="table table-sm" style='margin: 1% 0 3% 1%' >
-			<table style="width: 95%;">
+			<table style="width: 100%;">
 			  <colgroup align="center">
 			  	<col width=10%>
 	            <col width=10%>

@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.spring.groovy.common.Pagination;
+import com.spring.groovy.management.model.MemberVO;
 import com.spring.groovy.survey.model.AskVO;
 import com.spring.groovy.survey.model.InterSurveyDAO;
 import com.spring.groovy.survey.model.JoinSurveyVO;
@@ -103,6 +104,12 @@ public class SurveyService implements InterSurveyService {
 	@Override
 	public int getJoinEmpCnt(JoinSurveyVO jvo) {
 		return dao.getJoinEmpCnt(jvo);
+	}
+
+	//  설문리스트 목록  -설문 참여자 수 구하기(페이징) 
+	@Override
+	public int getEmpCnt(MemberVO mvo) {
+		return dao.getEmpCnt(mvo);
 	}
 
 	

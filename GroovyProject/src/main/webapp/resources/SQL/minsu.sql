@@ -757,7 +757,15 @@ from tbl_employee
 
 select count(surjoindate)from tbl_joinsurvey
 
+SELECT COUNT(fk_empno)FROM TBL_JOINSURVEY
+where fk_surno = 57
 
+SELECT COUNT(empno)FROM tbl_employee
 
+SELECT PWD
+FROM tbl_employee
+WHERE NAME ='김민수'
 
+	SELECT COUNT(surjoindate)FROM TBL_JOINSURVEY
+    WHERE FK_SURNO = 13
         

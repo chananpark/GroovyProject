@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.spring.groovy.common.Pagination;
+import com.spring.groovy.management.model.MemberVO;
 import com.spring.groovy.survey.model.AskVO;
 import com.spring.groovy.survey.model.JoinSurveyVO;
 import com.spring.groovy.survey.model.SurveyVO;
@@ -35,6 +36,9 @@ public interface InterSurveyService {
 
 	//  설문리스트 목록  -설문 참여자 수 구하기(페이징) 
 	int getJoinEmpCnt(JoinSurveyVO jvo);
+	
+	//  설문리스트 목록  -설문 참여자 수 구하기(페이징) 
+	int getEmpCnt(MemberVO mvo);
 
 	
 

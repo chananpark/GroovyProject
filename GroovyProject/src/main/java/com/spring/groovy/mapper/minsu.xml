@@ -422,8 +422,8 @@
 	
 	<!-- 관리자 - 설문작성(설문조사 번호 insert하기) -->
 	<insert id="getsurveyList" parameterType="com.spring.groovy.survey.model.SurveyVO">
-		INSERT INTO TBL_SURVEY(SURNO,FK_EMPNO,SURTITLE,SUREXPLAIN,SURCREATEDATE,SURSTART,SUREND,SURSTATUS,SUROPENSTATUS)
-		VALUES(#{surno},#{fk_empno},#{surtitle},#{surexplain},sysdate,#{surstart},#{surend},default, default)
+		INSERT INTO TBL_SURVEY(SURNO,FK_EMPNO,SURTITLE,SUREXPLAIN,SURCREATEDATE,SURSTART,SUREND,SURSTATUS,SUROPENSTATUS, SURTARGET)
+		VALUES(#{surno},#{fk_empno},#{surtitle},#{surexplain},sysdate,#{surstart},#{surend},default, default,#{surtarget})
 	</insert>
 	
 	
@@ -436,18 +436,25 @@
 		
 	<!-- 설문리스트 목록  -설문 참여자 수 구하기(페이징)  -->
 	<select id="getJoinEmpCnt" parameterType="com.spring.groovy.survey.model.JoinSurveyVO" resultType="int">
-		SELECT COUNT(SURJOINDATE)FROM TBL_JOINSURVEY
+		SELECT COUNT(fk_empno)FROM TBL_JOINSURVEY
+		WHERE FK_SURNO = #{fk_surno}
 	</select>
+	
+	<!-- 설문리스트 목록  -설문 참여자 수 구하기(페이징)  -->
+	<select id="getEmpCnt" parameterType="com.spring.groovy.management.model.MemberVO" resultType="int">
+		SELECT COUNT(EMPNO) FROM TBL_EMPLOYEE
+	</select>
+	
 	
 	<!-- 관리자 설문리스트 목록 - 한 페이지에 표시할 글 목록  (페이징 페이지수를 알아온다음에 10개씩보여줌) (페이징)-->
 	<select id="surveyManage"  parameterType="HashMap" resultType="com.spring.groovy.survey.model.SurveyVO">
-		SELECT *
+	    SELECT *
 	    FROM (SELECT ROWNUM AS RNO, V.*
 	        FROM( 
-	            SELECT SURNO,SURTITLE,SUREXPLAIN,SURCREATEDATE,SURSTART,SUREND,SURSTATUS,SURTARGET
+	            SELECT SURNO,SURTITLE,SUREXPLAIN,TO_CHAR(SURCREATEDATE, 'YYYY-MM-DD')SURCREATEDATE,SURSTART,SUREND,SURSTATUS,SURTARGET
 	            FROM TBL_SURVEY S LEFT JOIN TBL_TARGET T
 	            ON S.SURNO = T.FK_SURNO
-	            <if test='searchType != "" and searchWord != "" '> 
+	         	 <if test='searchType != "" and searchWord != "" '> 
 		              WHERE AND LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
 		          </if>
 	            ORDER BY SURNO DESC
