@@ -61,6 +61,9 @@ public interface InterCommunityService {
 	// 임시저장 목록 가져오기
 	List<Map<String, String>> getSavedPostList(String fk_empno);
 
+	// 30일 지난 임시저장 글 삭제하기
+	void autoDeleteTempPost();
+	
 	// 좋아요 목록 조회
 	List<CommunityLikeVO> getLikeList(String post_no);
 

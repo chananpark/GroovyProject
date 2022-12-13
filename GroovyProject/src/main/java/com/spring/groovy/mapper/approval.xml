@@ -584,7 +584,7 @@
 	
 	<!-- 30일 지난 임시저장 글 삭제하기 -->
 	<delete id="autoDeleteSavedDraft" >
-		DELETE TBL_TEMP_DRAFT
+		DELETE FROM TBL_TEMP_DRAFT
 		WHERE to_date(DRAFT_DATE, 'yyyy-mm-dd') lte to_date(ADD_MONTHS(sysdate, -1),'yyyy-mm-dd')
 	</delete>
 	
