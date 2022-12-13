@@ -96,6 +96,10 @@ label:hover {
 .dropBox.active {
 	background-color: #E3F2FD;
 }
+
+.removeFile {
+	font-size: small;
+}
 </style>
 
 <script>
