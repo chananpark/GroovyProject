@@ -5,7 +5,14 @@
 <!-- 루트 엘리먼트 & 네임스페이스 설정(프로젝트 전체 내에서 유일해야 함, 주로 파일명) -->
 <mapper namespace="minsu">
 	<!-- 이 안에 sql문을 적는다 -->
-	
+	 <!-- #### 중요 #### 
+			 HashMap 타입으로 매개변수를 받아온 것을 꺼내서 사용할때 
+			 1. 데이터로 사용할때는 #{key명} 이고,
+			 2. 식별자(테이블명, 컬럼명)로 사용할때는 ${key명} 이고,
+			 3. myBatis 에서 제공하는 if 엘리먼트나 choose 엘리먼트 안에서 사용할때는 
+			       그냥 <if test="key명"> <when test="key명"> 으로 사용한다. 
+	-->
+			
 	<select id="getLogin" resultType="com.spring.groovy.management.model.MemberVO" parameterType="String" >
 		SELECT CPEMAIL
 		FROM TBL_EMPLOYEE
@@ -463,6 +470,38 @@
 	</select>
 
 
-		
+	<!-- 설문결과를 조회하는 select -->
+	<select id="resultView"  parameterType="HashMap" resultType="com.spring.groovy.survey.model.SurveyVO">
+        SELECT SURNO, SURTITLE, SUREXPLAIN, TO_CHAR(SURCREATEDATE,'YYYY-MM-DD')SURCREATEDATE
+        	  ,TO_CHAR(SURSTART,'YYYY-MM-DD') SURSTART,TO_CHAR(SUREND,'YYYY-MM-DD')SUREND, SURSTATUS,SURTARGET
+        FROM TBL_SURVEY S LEFT JOIN TBL_TARGET T
+        ON S.SURNO = T.FK_SURNO
+        WHERE SURNO = #{surno}
+	</select>
+	
+
+	
+	<!-- 설문지를 삭제 delete -->
+	<delete id="surveyDelete" parameterType="HashMap">
+		DELETE FROM TBL_SURVEY
+		WHERE SURNO = #{surno}
+	</delete>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 		
 </mapper>

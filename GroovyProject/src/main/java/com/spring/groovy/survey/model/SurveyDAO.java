@@ -81,6 +81,18 @@ public class SurveyDAO implements InterSurveyDAO {
 	public int getEmpCnt(MemberVO mvo) {
 		return sqlsession.selectOne("minsu.getEmpCnt", mvo);
 	}
+
+	// 설문결과를 조회하는 select
+	@Override
+	public List<SurveyVO> resultView(Map<String, Object> paraMap) {
+		return sqlsession.selectList("minsu.resultView", paraMap);
+	}
+
+	// 설문지를 삭제 delete
+	@Override
+	public int surveyDelete(Map<String, Object> paraMap) {
+		return sqlsession.delete("minsu.surveyDelete", paraMap);
+	}
 	
 
 	

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.google.gson.JsonObject;
 import com.spring.groovy.common.Pagination;
 import com.spring.groovy.management.model.MemberVO;
 import com.spring.groovy.survey.model.AskVO;
@@ -189,15 +190,12 @@ public class SurveyController {
 	
 	
 	
-	
-	
 	// 관리자 - 설문관리
 	@RequestMapping(value="/survey/surveyManage.on")
 	public ModelAndView surveyManage(ModelAndView mav, HttpServletRequest request,SurveyVO svo,TargetVO tvo,MemberVO mvo,JoinSurveyVO jvo ,Pagination pagination) {
 	
 		 // 설문리스트 목록 - 전체 글 개수 구하기(페이징) 
 		int listCnt = service.getcountSurveyList(pagination);
-		
 		
 		//  설문리스트 목록  -설문 참여자 수 구하기(페이징) 
 		mav.addObject("joinempcnt",service.getJoinEmpCnt(jvo));
@@ -222,12 +220,64 @@ public class SurveyController {
 		return mav;
 	}
 	
-	// 관리자 - 설문관리
+	// 관리자 - 설문관리(결과)
 	@RequestMapping(value="/survey/surveyManageView.on")
-	public String surveyManageView(HttpServletRequest request) {
+	public ModelAndView surveyManageView(ModelAndView mav,HttpServletRequest request,SurveyVO svo,MemberVO mvo,JoinSurveyVO jvo,AskVO avo) {
 		
-		return "survey/admin/surveyManageView.tiles";
+		String surno = request.getParameter("surno");
+		System.out.println(surno);
+		mav.addObject("surno",surno);
+		
+		Map<String,Object> paraMap = new HashMap<>();
+		paraMap.put("svo", svo);
+		paraMap.put("surno",surno);
+		
+		// 설문내용 조회하는 select
+		List<SurveyVO> resultViewList = service.resultView(paraMap);
+		mav.addObject("resultViewList", resultViewList);
+		
+		// 설문 참여자 수 구하기
+		mav.addObject("joinempcnt",service.getJoinEmpCnt(jvo));
+		// 설문 참여자 수 구하기 
+		mav.addObject("empCnt",service.getEmpCnt(mvo));
+		
+		// 설문지의 질문내용을 조회하는 select
+		List<AskVO> surveyAskList = service.surveyJoin(paraMap);
+		mav.addObject("surveyAskList", surveyAskList);
+		
+		
+		mav.setViewName("survey/admin/surveyManageView.tiles");
+		
+		return mav;
 	}
+	
+	
+	// 관리자 - 설문삭제하기 
+	@ResponseBody
+	@RequestMapping(value="/survey/surveyDelete.on")
+	public String surveyDelete(HttpServletRequest request,SurveyVO svo) {
+		
+		String surno = request.getParameter("surno");
+		System.out.println(surno);
+		//mav.addObject("surno",surno);
+		
+		Map<String,Object> paraMap = new HashMap<>();
+		paraMap.put("svo", svo);
+		paraMap.put("surno",surno);
+		
+		// 설문지를 삭제 delete
+		int n = service.surveyDelete(paraMap);
+		
+		JSONObject json = new JSONObject();
+		json.put("n", n);
+	
+		return json.toString();
+	}
+	
+	
+	
+	
+	
 	
 	
 	// ================================================================================= //

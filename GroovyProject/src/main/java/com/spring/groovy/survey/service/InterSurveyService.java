@@ -40,6 +40,13 @@ public interface InterSurveyService {
 	//  설문리스트 목록  -설문 참여자 수 구하기(페이징) 
 	int getEmpCnt(MemberVO mvo);
 
+	// 설문결과를 조회하는 select
+	List<SurveyVO> resultView(Map<String, Object> paraMap);
+
+	// 설문지를 삭제 delete
+	int surveyDelete(Map<String, Object> paraMap);
+
+	
 	
 
 

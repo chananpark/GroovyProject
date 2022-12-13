@@ -112,6 +112,21 @@ public class SurveyService implements InterSurveyService {
 		return dao.getEmpCnt(mvo);
 	}
 
+	// 설문결과를 조회하는 select
+	@Override
+	public List<SurveyVO> resultView(Map<String, Object> paraMap) {
+		String surno = (String) paraMap.get("surno");
+		System.out.println(surno+"service");
+		return dao.resultView(paraMap);
+	}
+
+	
+	// 설문지를 삭제 delete
+	@Override
+	public int surveyDelete(Map<String, Object> paraMap) {
+		return dao.surveyDelete(paraMap);
+	}
+
 	
 	
 
