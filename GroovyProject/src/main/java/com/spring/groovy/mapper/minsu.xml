@@ -385,16 +385,16 @@
 	
 	<!-- 설문리스트 목록 - 한 페이지에 표시할 글 목록  (페이징 페이지수를 알아온다음에 10개씩보여줌) (페이징) -->
 	<select id="getSurveyCnt" parameterType="HashMap" resultType="com.spring.groovy.survey.model.SurveyVO">
-	   SELECT *
-		FROM (SELECT ROWNUM AS RNO, v.*
+	    SELECT *
+		FROM (SELECT ROWNUM AS RNO, V.*
 			FROM( 
-			    SELECT SURTITLE, SURNO, J.FK_EMPNO, TO_CHAR(SURSTART, 'YYYY-MM-DD')SURSTART,TO_CHAR(SUREND, 'YYYY-MM-DD')SUREND,TO_CHAR(SURSUBDATE, 'YYYY-MM-DD') SURSUBDATE
+			    SELECT SURTITLE, SURNO, J.FK_EMPNO, TO_CHAR(SURSTART, 'YYYY-MM-DD')SURSTART,TO_CHAR(SUREND, 'YYYY-MM-DD')SUREND,TO_CHAR(SURJOINDATE, 'YYYY-MM-DD') SURJOINDATE
 			    FROM TBL_SURVEY S LEFT JOIN TBL_JOINSURVEY J
                 ON S.SURNO = J.FK_SURNO
                <if test='searchType != "" and searchWord != "" '> 
 	              WHERE AND LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
 	           </if>
-	            ORDER BY SURNO DESC AND SURSTART
+	            ORDER BY SURNO DESC
 			)V)
 		WHERE RNO BETWEEN #{startRno} AND #{endRno}
 	</select>
@@ -410,13 +410,9 @@
 	
 	<!--  답변한 설문지 insert -->
 	<insert id="surveyJoinEnd" parameterType="com.spring.groovy.survey.model.JoinSurveyVO">
-		
-	
+		INSERT INTO TBL_JOINSURVEY(JOINSURNO,FK_EMPNO,FK_SURNO,FK_QUESTNO,ANSWER,SURJOINDATE)
+               VALUES(seq_tbl_joinsurvey.nextval,#{jvoList.fk_empno},#{jvoList.fk_surno},#{jvoList.fk_questno},#{jvoList.answer}, sysdate)
 	</insert>
-	
-	
-	
-	
 	
 	
 	<!-- 다음설문번호를 알아오는 매소드  -->
@@ -437,8 +433,27 @@
 		VALUES(seq_tbl_ask.nextval,#{ajax_fk_surno},#{avo.question}, #{avo.option1},#{avo.option2},#{avo.option3},#{avo.option4},#{avo.option5})
 	</insert>
 	
+		
+	<!-- 설문리스트 목록  -설문 참여자 수 구하기(페이징)  -->
+	<select id="getJoinEmpCnt" parameterType="com.spring.groovy.survey.model.JoinSurveyVO" resultType="int">
+		SELECT COUNT(SURJOINDATE)FROM TBL_JOINSURVEY
+	</select>
 	
-	
+	<!-- 관리자 설문리스트 목록 - 한 페이지에 표시할 글 목록  (페이징 페이지수를 알아온다음에 10개씩보여줌) (페이징)-->
+	<select id="surveyManage"  parameterType="HashMap" resultType="com.spring.groovy.survey.model.SurveyVO">
+		SELECT *
+	    FROM (SELECT ROWNUM AS RNO, V.*
+	        FROM( 
+	            SELECT SURNO,SURTITLE,SUREXPLAIN,SURCREATEDATE,SURSTART,SUREND,SURSTATUS,SURTARGET
+	            FROM TBL_SURVEY S LEFT JOIN TBL_TARGET T
+	            ON S.SURNO = T.FK_SURNO
+	            <if test='searchType != "" and searchWord != "" '> 
+		              WHERE AND LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
+		          </if>
+	            ORDER BY SURNO DESC
+	        )V)
+	    WHERE RNO BETWEEN #{startRno} AND #{endRno}
+	</select>
 
 
 		

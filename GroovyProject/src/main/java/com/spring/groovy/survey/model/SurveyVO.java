@@ -13,10 +13,10 @@ public class SurveyVO {
 	private String suropenstatus;   // 설문결과공개여부(0비공개, 1공개)  default 1
 	
 	
-	private String fk_department_no;// 조인
-	private String sursubdate;      // 조인
+	private String fk_department_no; // 조인
+	private String surjoindate;      // 조인(JoinSurveyVO)
 	
-	
+	private String surtarget; 		// 조인(targetvo)
 	
 	
 	public String getSurno() {
@@ -80,13 +80,20 @@ public class SurveyVO {
 		this.fk_department_no = fk_department_no;
 	}
 	
-	public String getSursubdate() {
-		return sursubdate;
+	
+	
+	public String getSurjoindate() {
+		return surjoindate;
 	}
-	public void setSursubdate(String sursubdate) {
-		this.sursubdate = sursubdate;
+	public void setSurjoindate(String surjoindate) {
+		this.surjoindate = surjoindate;
 	}
-
+	public String getSurtarget() {
+		return surtarget;
+	}
+	public void setSurtarget(String surtarget) {
+		this.surtarget = surtarget;
+	}
 	
 	
 	

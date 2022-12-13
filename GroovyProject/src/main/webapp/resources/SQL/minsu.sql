@@ -603,15 +603,16 @@ create table  tbl_joinsurvey
 ,fk_surno   number(20)        not null       -- 설문번호
 ,fk_questno	number(20)        not null       -- 문항번호
 ,answer		number(20)        not null       -- 답변
-,sursubdate date  default sysdate  not null  -- 답변제출일
+,surjoindate date  default sysdate  not null  -- 답변제출일
 ,constraint PK_tbl_joinsurvey_joinsurno  primary key(joinsurno)
 ,constraint FK_tbl_joinsurvey_fk_empno foreign key(fk_empno) references tbl_employee(empno)ON DELETE CASCADE
 ,constraint FK_tbl_joinsurvey_fk_surno foreign key(fk_surno) references tbl_survey(surno)ON DELETE CASCADE
-,constraint FK_tbl_joinsurvey_fk_questno foreign key(fk_empno) references tbl_ask(questno)ON DELETE CASCADE
+,constraint FK_tbl_joinsurvey_fk_questno foreign key(fk_questno) references tbl_ask(questno)ON DELETE CASCADE
 );
 
 select *
 from tbl_joinsurvey
+
 -- 설문참여테이블 시퀀스
 create sequence seq_tbl_joinsurvey
 start with 1
@@ -634,7 +635,10 @@ where surno=1;
 
 SELECT surno from tbl_survey where surno = 1
 
-delete from tbl_survey where surno = 3
+delete from tbl_survey where surno = 56
+
+SELECT *
+FROM TBL_ASK
 
 --- 설문테이블 insert
 insert into tbl_survey(surno,fk_empno,surtitle,surexplain,surcreatedate,surstart,surend,surstatus,suropenstatus)
@@ -708,18 +712,52 @@ WHERE RNO BETWEEN #{startRno} AND #{endRno}
         
         
 select *
-from TBL_SURVEY 
+from TBL_Ask a left join tbl_survey s
+on a.fk_surno = s.surno
 where joinsurno = 13
 
-insert into tbl_joinsurvey(joinsurno,fk_empno,fk_surno,fk_questno,answer)
-                    values(seq_tbl_joinsurvey.nextval,13,11,13,3)
-    select          
-     from TBL_SURVEY               
-        (joinsurno 	number(20)        not null       -- 설문참여번호
-,fk_empno	number            not null   	 -- 사원번호
-,fk_surno   number(20)        not null       -- 설문번호
-,fk_questno	number(20)        not null       -- 문항번호
-,answer		number(20)        not null       -- 답변
-        
-        
+select *
+from tbl_joinsurvey
+
+--설문조사 참여테이블
+insert into tbl_joinsurvey(joinsurno,fk_empno,fk_surno,fk_questno,answer,surjoindate)
+                    values(seq_tbl_joinsurvey.nextval,13,57,193,3, sysdate)
+
+-- 관리자 설문목록결과 조회
+SELECT *
+    FROM (SELECT ROWNUM AS RNO, V.*
+        FROM( 
+            SELECT SURNO,SURTITLE,SUREXPLAIN,SURCREATEDATE,SURSTART,SUREND,SURSTATUS,SURTARGET
+            FROM TBL_SURVEY S LEFT JOIN TBL_TARGET T
+            ON S.SURNO = T.FK_SURNO
+            ORDER BY SURNO DESC
+        )V)
+    WHERE RNO BETWEEN #{startRno} AND #{endRno}
+    
+SELECT COUNT(*) AS CNT , count(surtitle)
+FROM TBL_SURVEY S join an
+
+select count(*)
+from tbl_joinsurvey
+
+
+select *
+from tbl_joinsurvey
+
+select *
+from tbl_survey 
+
+select *
+from tbl_target
+
+select *
+from tbl_employee
+
+
+
+select count(surjoindate)from tbl_joinsurvey
+
+
+
+
         

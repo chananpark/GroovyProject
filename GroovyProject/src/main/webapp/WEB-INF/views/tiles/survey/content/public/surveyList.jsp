@@ -102,7 +102,7 @@
 	<div class="m-4">
 		<div  style='margin: 1% 0 3% 1%'>
 			<span style="color:#086BDE"><input type="button" name="" value="전체  (${requestScope.listCnt})"/></span>
-			<span><input type="button" onclick="go_NotsurveyList()">미참여 &nbsp; </button></span> <%--  value="${empty requestScope.sursubdate}" --%>
+			<span><input type="button" onclick="go_NotsurveyList()">미참여 &nbsp; </button></span> <%--  value="${empty requestScope.surjoindate}" --%>
 			<span><input type="button"onclick="go_OksurveyList()">참여 (2) &nbsp;</button></span>
 		</div>
 		
@@ -150,16 +150,16 @@
 						<!-- 미참여일 경우 설문조사 페이지로 이동 -->
 						<td>
 							<!-- 미참여 -->
-							<c:if test="${empty survey.sursubdate}">
+							<c:if test="${empty survey.surjoindate}">
 								<div id="input_unjoin">미참여</div>
 							</c:if>
 							
 							<!-- 참여 -->
-							<c:if test="${not empty survey.sursubdate}">
+							<c:if test="${not empty survey.surjoindate}">
 								<div id="input_join">참여</div>
 							</c:if>
 						</td>  
-						<td>${survey.sursubdate}</td>
+						<td>${survey.surjoindate}</td>
 					</tr>
 					</c:forEach>
 					

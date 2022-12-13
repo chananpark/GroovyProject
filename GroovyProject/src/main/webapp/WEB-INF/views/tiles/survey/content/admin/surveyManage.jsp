@@ -2,6 +2,8 @@
     pageEncoding="UTF-8"%>
     
  <% String ctxPath = request.getContextPath(); %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
 
 <style>
 
@@ -86,23 +88,40 @@
 				</thead>
 				
 				<tbody align="center">
+				<c:forEach var="survey" items="${requestScope.pageCnt}" varStatus="status">
 				<tr>
 					<td>
+						<input type="hidden" name="surno" id="surno" value="${survey.surno}"/>${survey.surno}
 						<!-- 설문조사가 진행중인경우 -->
-						<input id="situation1" type="text" name="" value="진행중" readonly/>
+						<c:if test="${survey.surstart <= survey.surend}">
+							<div id="situation1">진행중</div>
+						</c:if>
+						
 						<!-- 설문조사가 종료된경우-->
-						<!-- <input id="situation2" type="text" name="" value="종료" readonly/> -->
+						<c:if test="${survey.surend < sysdate}">
+							<div id="situation2">종료</div>
+						</c:if>
 						<!-- 설문조사가 제작중인 경우-->
 						<!-- <input id="situation3" type="text" name="" value="종료" readonly/> -->
 					</td>
 					
-					<td><a href="<%= ctxPath%>/survey/surveyManageView.on" style="color:black;">구성원만족도 조사</a></td>
-					<td>2022-11-27</td>
-					<td>전직원</td>
+					<td><input type="button" name="surtitle" id="surtitle" value="${survey.surtitle}"  style="background-color: white;"/>
+					<td>${survey.surcreatedate}</td>
 					<td>
-						<span id="joinCnt">12/50</span>
+						<c:if test="${survey.surtarget == 0}">
+							전직원
+						</c:if>
+						<c:if test="${survey.surtarget == 1}">
+							
+						</c:if>
+						
+						
+					</td>
+					<td>
+						<span id="joinCnt">${requestScope.joinempcnt}/${requestScope.listCnt}</span>
 					</td>  
 				</tr>
+				</c:forEach>
 				
 				<tr>
 					<td><div style="background-color: #F9F9F9; width: 70px; border: none;"><span style="width: 200px;">종료</span></div></td>
@@ -123,7 +142,7 @@
 				
 				</tbody>
 				
-				<div id="pagebar"></div>
+				<div id="pagebar">${pagebar}</div>
 			
 			
 			</table>

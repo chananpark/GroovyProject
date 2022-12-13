@@ -33,13 +33,10 @@ public class ManagementService implements InterManagementService {
 	// 로그인- 이메일 입력
 	@Override
 	public MemberVO getLogin(String cpemail) {
-		
 		MemberVO loginuser = dao.getLogin(cpemail);
-		
 		if(loginuser == null) {
 			
 		}
-		
 		return loginuser;
 	}
 	

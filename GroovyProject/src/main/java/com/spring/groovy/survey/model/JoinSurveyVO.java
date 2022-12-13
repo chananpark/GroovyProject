@@ -11,7 +11,7 @@ public class JoinSurveyVO {
 	private String fk_surno;		// 설문번호
 	private String fk_questno;	    // 문항번호
 	private String answer;		    // 답변
-	private String sursubdate;      // 답변제출일 sysdate
+	private String surjoindate;     // 답변제출일 sysdate
 	
 	private List<JoinSurveyVO> jvoList;
 	
@@ -45,11 +45,12 @@ public class JoinSurveyVO {
 	public void setAnswer(String answer) {
 		this.answer = answer;
 	}
-	public String getSursubdate() {
-		return sursubdate;
+	
+	public String getSurjoindate() {
+		return surjoindate;
 	}
-	public void setSursubdate(String sursubdate) {
-		this.sursubdate = sursubdate;
+	public void setSurjoindate(String surjoindate) {
+		this.surjoindate = surjoindate;
 	}
 	public List<JoinSurveyVO> getJvoList() {
 		return jvoList;

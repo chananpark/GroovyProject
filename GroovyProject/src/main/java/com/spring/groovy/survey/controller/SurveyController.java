@@ -20,6 +20,7 @@ import com.spring.groovy.management.model.MemberVO;
 import com.spring.groovy.survey.model.AskVO;
 import com.spring.groovy.survey.model.JoinSurveyVO;
 import com.spring.groovy.survey.model.SurveyVO;
+import com.spring.groovy.survey.model.TargetVO;
 import com.spring.groovy.survey.service.InterSurveyService;
 
 @Controller
@@ -192,8 +193,28 @@ public class SurveyController {
 	
 	// 관리자 - 설문관리
 	@RequestMapping(value="/survey/surveyManage.on")
-	public ModelAndView surveyManage(ModelAndView mav, HttpServletRequest request,SurveyVO svo) {
+	public ModelAndView surveyManage(ModelAndView mav, HttpServletRequest request,SurveyVO svo,TargetVO tvo,JoinSurveyVO jvo ,Pagination pagination) {
+	
+		 // 설문리스트 목록 - 전체 글 개수 구하기(페이징) 
+		int listCnt = service.getcountSurveyList(pagination);
 		
+		
+		//  설문리스트 목록  -설문 참여자 수 구하기(페이징) 
+		mav.addObject("joinempcnt",service.getJoinEmpCnt(jvo));
+		
+		// 페이지수 알아오기
+		Map<String, Object> paraMap = pagination.getPageRange(listCnt);// startRno, endRno
+		paraMap.put("svo",svo);
+		
+		mav.addObject("listCnt", listCnt);
+		
+		paraMap.put("tvo",tvo);
+		
+		// 관리자 설문리스트 목록 - 한 페이지에 표시할 글 목록  (페이징 페이지수를 알아온다음에 10개씩보여줌) (페이징)
+		mav.addObject("surveyManageList", service.surveyManage(paraMap));
+		
+		 // 페이지바
+		mav.addObject("pagebar",pagination.getPagebar(request.getContextPath()+"/survey/surveyManage.on"));
 		
 		mav.setViewName("survey/admin/surveyManage.tiles");
 		return mav;

@@ -22,7 +22,7 @@ public interface InterSurveyDAO {
 	int getAskList(Map<String, Object> paramap);
 	
 	// 설문리스트 목록 - 한 페이지에 표시할 글 목록  (페이징 페이지수를 알아온다음에 10개씩보여줌) (페이징)
-	Object getSurveyCnt(Map<String, Object> paraMap);
+	List<SurveyVO> getSurveyCnt(Map<String, Object> paraMap);
 
 	// 설문리스트 - 설문참여
 	List<AskVO> surveyJoin(Map<String, Object> paramap);
@@ -30,6 +30,14 @@ public interface InterSurveyDAO {
 
 	//  답변한 설문지 insert
 	int surveyJoinEnd(Map<String, Object> paramap);
+
+
+	// 관리자 설문리스트 목록 - 한 페이지에 표시할 글 목록  (페이징 페이지수를 알아온다음에 10개씩보여줌) (페이징)
+	List<SurveyVO> surveyManage(Map<String, Object> paraMap);
+
+
+	//  설문리스트 목록  -설문 참여자 수 구하기(페이징) 
+	int getJoinEmpCnt(JoinSurveyVO jvo);
 	
 
 	
