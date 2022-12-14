@@ -137,8 +137,11 @@ public interface InterApprovalDAO {
 	BiztripReportVO getBiztripReportInfo(DraftVO dvo);
 	
 	// 첨부파일 1개 조회
-	DraftFileVO getAttachedFile(String draft_file_no);
+	DraftFileVO getOneAttachedFile(String draft_file_no);
 	
+	// 모든 첨부파일 조회
+	List<DraftFileVO> getAllAttachedFile(String draft_no);
+		
 	// 결재 처리하기
 	int updateApproval(ApprovalVO avo);
 
@@ -178,4 +181,22 @@ public interface InterApprovalDAO {
 	// 임시저장 문서 삭제
 	int deleteTempDraft(String temp_draft_no);
 
+	// draft -> temp_draft 테이블로 옮기기
+	int moveDraft(Map<String, Object> paraMap);
+
+	// approval -> temp_approval로 옮기기
+	int moveApproval(Map<String, Object> paraMap);
+
+	// expense_list -> temp_expense_list로 옮기기
+	int moveExpenseList(Map<String, Object> paraMap);
+
+	// biztrip_report -> temp_biztrip_report로 옮기기
+	int moveBiztripList(Map<String, Object> paraMap);
+
+	// 첨부파일 삭제하기
+	int deleteFiles(List<DraftFileVO> dfvoList);
+
+	// 기안 1개 삭제하기
+	int deleteOneDraft(String draft_no);
+	
 }

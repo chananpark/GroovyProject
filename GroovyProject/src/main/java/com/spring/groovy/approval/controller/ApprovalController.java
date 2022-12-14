@@ -175,15 +175,15 @@ public class ApprovalController {
 		
 		switch (fk_draft_type_no) {
 		case "1":
-			mav.setViewName("approval/draft_detail/temp_work_detail.tiles");
+			mav.setViewName("approval/draft_detail/temp/temp_work_detail.tiles");
 			break;
 			
 		case "2":
-			mav.setViewName("approval/draft_detail/temp_expense_detail.tiles");
+			mav.setViewName("approval/draft_detail/temp/temp_expense_detail.tiles");
 			break;
 			
 		case "3":
-			mav.setViewName("approval/draft_detail/temp_business_trip_detail.tiles");
+			mav.setViewName("approval/draft_detail/temp/temp_business_trip_detail.tiles");
 			break;
 			
 		default:
@@ -218,7 +218,7 @@ public class ApprovalController {
 		PrintWriter out = null;
 
 		try {
-			DraftFileVO dfvo = service.getAttachedFile(draft_file_no); // 파일 조회
+			DraftFileVO dfvo = service.getOneAttachedFile(draft_file_no); // 파일 조회
 			
 			// 글번호가 없거나 파일 이름이 없다면
 			if (dfvo == null || (dfvo != null && dfvo.getFilename() == null)) {
@@ -260,7 +260,7 @@ public class ApprovalController {
 	// 개인문서함-상신함 페이지요청
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/personal/sent.on")
-	public ModelAndView sentDraftList(ModelAndView mav, Pagination pagination, HttpServletRequest request) throws Exception {
+	public ModelAndView sentDraftList(HttpServletRequest request, ModelAndView mav, Pagination pagination) throws Exception {
 
 		MemberVO loginuser = getLoginUser(request);
 
@@ -283,7 +283,7 @@ public class ApprovalController {
 		pagination.setQueryString("&sortType="+paraMap.get("sortType")+"&sortOrder="+paraMap.get("sortOrder"));
 		mav.addObject("pagebar", pagination.getPagebar(url));
 		mav.addObject("paraMap", paraMap);
-
+		
 		mav.setViewName("approval/my_draft/sent.tiles");
 		return mav;
 	}
@@ -291,7 +291,7 @@ public class ApprovalController {
 	// 개인문서함-결재함 페이지요청
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/personal/processed.on")
-	public ModelAndView processdDraftList(ModelAndView mav, Pagination pagination, HttpServletRequest request)
+	public ModelAndView processdDraftList(HttpServletRequest request, ModelAndView mav, Pagination pagination)
 			throws Exception {
 
 		MemberVO loginuser = getLoginUser(request);
@@ -323,7 +323,7 @@ public class ApprovalController {
 	// 개인문서함-임시저장함 페이지요청
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/personal/saved.on")
-	public ModelAndView savedDraftList(ModelAndView mav, Pagination pagination, HttpServletRequest request) throws Exception {
+	public ModelAndView savedDraftList(HttpServletRequest request, ModelAndView mav, Pagination pagination) throws Exception {
 
 		MemberVO loginuser = getLoginUser(request);
 
@@ -355,7 +355,7 @@ public class ApprovalController {
 	// 개인문서함-임시저장함 글삭제
 	@ResponseBody
 	@PostMapping(value = "/delete.on", produces = "text/plain;charset=UTF-8")
-	public String deleteDraftList(ModelAndView mav, HttpServletRequest request) {
+	public String deleteTempDraft(ModelAndView mav, HttpServletRequest request) {
 
 		// 지울 파일 목록
 		String deleteList = request.getParameter("deleteList");
@@ -373,7 +373,7 @@ public class ApprovalController {
 	// 팀문서함 페이지요청
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/team.on")
-	public ModelAndView teamDraftList(ModelAndView mav, Pagination pagination, HttpServletRequest request)
+	public ModelAndView teamDraftList(HttpServletRequest request, ModelAndView mav, Pagination pagination)
 			throws Exception {
 
 		MemberVO loginuser = getLoginUser(request);
@@ -405,7 +405,7 @@ public class ApprovalController {
 	// 결재하기-결재대기문서 페이지요청
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/requested.on")
-	public ModelAndView requestedDraftList(ModelAndView mav, Pagination pagination, HttpServletRequest request)
+	public ModelAndView requestedDraftList(HttpServletRequest request, ModelAndView mav, Pagination pagination)
 			throws Exception {
 		MemberVO loginuser = getLoginUser(request);
 
@@ -446,7 +446,7 @@ public class ApprovalController {
 	// 결재하기-결재예정문서 페이지요청
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/upcoming.on")
-	public ModelAndView upcomingDraftList(ModelAndView mav, Pagination pagination, HttpServletRequest request) throws Exception {
+	public ModelAndView upcomingDraftList(HttpServletRequest request, ModelAndView mav, Pagination pagination) throws Exception {
 		MemberVO loginuser = getLoginUser(request);
 		
 		Map<String, Object> paraMap = BeanUtils.describe(pagination); // pagination을 Map으로
@@ -596,8 +596,8 @@ public class ApprovalController {
 	}
 
 	// 파일 업로드 경로 지정
-	private String setFilePath(MultipartHttpServletRequest mtfRequest, String directory) {
-		HttpSession session = mtfRequest.getSession();
+	private String setFilePath(HttpServletRequest request, String directory) {
+		HttpSession session = request.getSession();
 		String root = session.getServletContext().getRealPath("/");
 		String path = root + "resources" + File.separator + directory;
 		
@@ -796,11 +796,61 @@ public class ApprovalController {
 		return jsonObj.toString();
 	}
 
+	// 기안 상신취소하기
+	@RequestMapping(value = "/cancel.on")
+	public ModelAndView cancelDraft(ModelAndView mav, HttpServletRequest request, DraftVO dvo) {
+		MemberVO loginuser = getLoginUser(request);
+		
+		// 기안 조회하기
+		dvo = service.getDraftInfo(dvo);
+		
+		// 작성자 본인이 아닐 경우
+		if (!loginuser.getEmpno().equals(String.valueOf(dvo.getFk_draft_empno()))) {
+			mav.addObject("message", "다른 사람의 기안을 상신취소할 수 없습니다.");
+			mav.addObject("loc", "javascript:history.back()");
+			mav.setViewName("msg");
+		}
+		else {
+			
+			Map<String, Object> paraMap = new HashMap<>();
+			paraMap.put("filePath", setFilePath(request, "files")); // 파일 저장 경로
+			paraMap.put("dvo", dvo); // 기안 vo
+			
+			// 파일삭제
+			boolean result = service.deleteFiles(paraMap);
+			
+			// 파일삭제 성공 시
+			if (result) {
+				
+				// 기안 상신취소하기
+				result = service.cancelDraft(dvo);
+
+				if (!result) {
+					mav.addObject("message", "상신 취소 실패하였습니다.");
+					mav.addObject("loc", "javascript:history.back()");
+					mav.setViewName("msg");
+				}
+				else {
+					mav.addObject("message", "상신 취소 되었습니다.");
+					mav.addObject("loc", request.getContextPath()+"/approval/personal/saved.on");
+					mav.setViewName("msg");
+				}
+			}
+			else {
+				mav.addObject("message", "상신 취소 실패하였습니다.");
+				mav.addObject("loc", "javascript:history.history.back()");
+				mav.setViewName("msg");
+			}
+		}
+
+		return mav;
+	}
+	
 	// 환경설정-결재라인관리 페이지요청
 	@RequestMapping(value = "/config/approvalLine.on")
 	public ModelAndView configApprovalLine(ModelAndView mav, HttpServletRequest request) {
 		MemberVO loginuser = getLoginUser(request);
-
+		
 		Map<String, String> paraMap = new HashMap<>();
 		paraMap.put("empno", loginuser.getEmpno());
 		

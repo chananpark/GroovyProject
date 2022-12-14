@@ -98,6 +98,10 @@ label:hover {
 .dropBox.active {
 	background-color: #E3F2FD;
 }
+
+.removeFile {
+	font-size: small;
+}
 </style>
 
 <script>
@@ -235,7 +239,7 @@ $(() => {
 		                    "<span class='fileName'>" + fileName + "</span>" +
 		                    "<span class='fileSize'>" + fileSize +" MB</span>" +
 		                    "<span class='digitFileSize' style='display:none'>" + f.size + "</span>" +
-		                    "<span class='removeFile btn small' name='removeFile'>삭제</span>" +
+		                    "<span class='removeFile btn small name='removeFile'>삭제</span>" +
 		                "</div>";
 		    }
 		    $(".dropBox span").hide();
@@ -646,8 +650,7 @@ const emptyApprovalLine = () => {
 				</tr>
 				<tr>
 					<th>출장목적</th>
-					<td><textarea style="width: 100%; height: 50px;" name="trip_purpose" id="trip_purpose" placeholder='내용을 입력하세요'>
-					${draftMap.brvo.trip_purpose}</textarea></td>
+					<td><textarea style="width: 100%; height: 50px;" name="trip_purpose" id="trip_purpose" placeholder='내용을 입력하세요'>${draftMap.brvo.trip_purpose}</textarea></td>
 				</tr>
 				<tr>
 					<th>출장기간</th>
@@ -662,8 +665,7 @@ const emptyApprovalLine = () => {
 				</tr>
 				<tr>
 					<th>출장결과</th>
-					<td><textarea style="width: 100%; height: 400px;" name="draft_content" id="draft_content" placeholder='내용을 입력하세요'>
-					${draftMap.dvo.draft_content}</textarea></td>
+					<td><textarea style="width: 100%; height: 400px;" name="draft_content" id="draft_content" placeholder='내용을 입력하세요'>${draftMap.dvo.draft_content}</textarea></td>
 				</tr>
 			</table>
 			<!-- 기안내용 끝 -->

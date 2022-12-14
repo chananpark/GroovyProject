@@ -215,31 +215,31 @@ public class ApprovalDAO implements InterApprovalDAO {
 		return sqlsession.selectList("approval.getOneOfficialAprvLine", official_aprv_line_no);
 	}
 
-	// draft에서 select
+	// 기안 내용 조회
 	@Override
 	public DraftVO getDraftInfo(DraftVO dvo) {
 		return sqlsession.selectOne("approval.getDraftInfo", dvo);
 	}
 
-	// approval에서 select
+	// 결재정보 조회
 	@Override
 	public List<ApprovalVO> getApprovalInfo(DraftVO dvo) {
 		return sqlsession.selectList("approval.getApprovalInfo", dvo);
 	}
 
-	// file에서 select
+	// 첨부파일 조회
 	@Override
 	public List<DraftFileVO> getDraftFileInfo(DraftVO dvo) {
 		return sqlsession.selectList("approval.getDraftFileInfo", dvo);
 	}
 
-	// 지출내역 select
+	// 지출내역 조회
 	@Override
 	public List<ExpenseListVO> getExpenseListInfo(DraftVO dvo) {
 		return sqlsession.selectList("approval.getExpenseListInfo", dvo);
 	}
 	
-	// 출장보고 select
+	// 출장보고 조회
 	@Override
 	public BiztripReportVO getBiztripReportInfo(DraftVO dvo) {
 		return sqlsession.selectOne("approval.getBiztripReportInfo", dvo);
@@ -264,8 +264,14 @@ public class ApprovalDAO implements InterApprovalDAO {
 
 	// 첨부파일 1개 조회
 	@Override
-	public DraftFileVO getAttachedFile(String draft_file_no) {
-		return sqlsession.selectOne("approval.getAttachedFile", draft_file_no);
+	public DraftFileVO getOneAttachedFile(String draft_file_no) {
+		return sqlsession.selectOne("approval.getOneAttachedFile", draft_file_no);
+	}
+
+	// 모든 첨부파일 조회
+	@Override
+	public List<DraftFileVO> getAllAttachedFile(String draft_no) {
+		return sqlsession.selectList("approval.getAllAttachedFile", draft_no);
 	}
 
 	// 관리자메뉴-공통결재라인 저장
@@ -356,6 +362,42 @@ public class ApprovalDAO implements InterApprovalDAO {
 	@Override
 	public int deleteTempDraft(String temp_draft_no) {
 		return sqlsession.delete("approval.deleteTempDraft", temp_draft_no);
+	}
+
+	// draft -> temp_draft 테이블로 옮기기
+	@Override
+	public int moveDraft(Map<String, Object> paraMap) {
+		return sqlsession.update("approval.moveDraft", paraMap);
+	}
+
+	// approval -> temp_approval로 옮기기
+	@Override
+	public int moveApproval(Map<String, Object> paraMap) {
+		return sqlsession.update("approval.moveApproval", paraMap);
+	}
+
+	// expense_list -> temp_expense_list로 옮기기
+	@Override
+	public int moveExpenseList(Map<String, Object> paraMap) {
+		return sqlsession.update("approval.moveExpenseList", paraMap);
+	}
+
+	// biztrip_report -> temp_biztrip_report로 옮기기
+	@Override
+	public int moveBiztripList(Map<String, Object> paraMap) {
+		return sqlsession.update("approval.moveBiztripList", paraMap);
+	}
+
+	// 첨부파일 삭제하기
+	@Override
+	public int deleteFiles(List<DraftFileVO> dfvoList) {
+		return sqlsession.delete("approval.deleteFiles", dfvoList);
+	}
+	
+	// 기안 1개 삭제하기
+	@Override
+	public int deleteOneDraft(String draft_no) {
+		return sqlsession.delete("approval.deleteOneDraft", draft_no);
 	}
 
 }

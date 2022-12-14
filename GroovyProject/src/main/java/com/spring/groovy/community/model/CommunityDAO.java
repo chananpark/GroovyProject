@@ -149,6 +149,12 @@ public class CommunityDAO implements InterCommunityDAO {
 		return sqlsession.delete("community.delTempPost", temp_post_no);
 	}
 
+	// 30일 지난 임시저장 글 삭제하기
+	@Override
+	public void autoDeleteTempPost() {
+		sqlsession.delete("community.autoDeleteTempPost");
+	}
+
 	// 좋아요 목록 조회
 	@Override
 	public List<CommunityLikeVO> getLikeList(String post_no) {

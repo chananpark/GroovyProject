@@ -86,6 +86,11 @@
 a {
 	color: black;
 }
+
+#showListBtn {
+	margin-top: 10px;
+	float: right;
+}
 </style>
 
 <script>
@@ -218,14 +223,30 @@ const updateApproval = approval_status => {
  });
 }
 
+//목록보기 버튼 클릭
+const showList = () => {
+	
+	// approvalBackUrl 스토리지에서 꺼내기
+	const approvalBackUrl = sessionStorage.getItem("approvalBackUrl");
+	
+	if (approvalBackUrl != null && approvalBackUrl != "" && approvalBackUrl !== undefined){
+		location.href=approvalBackUrl;
+		sessionStorage.removeItem("approvalBackUrl");		
+	}
+	else
+		location.href="javascript:history.go(-1)";
+}
+
+//상신 취소
+const cancelDraft = () => {
+	location.href = "<%=ctxPath%>/approval/cancel.on?draft_no=" + '${draftMap.dvo.draft_no}' + "&fk_draft_type_no=" + '${draftMap.dvo.fk_draft_type_no}';
+}
 </script>
 
 <div class="container">
-
-	<div id="cancelDraftBtn">
-		<button type='button' class='btn btn-lg'><i class="far fa-window-close"></i> 상신 취소</button>
-		<span style='color: gray; font-size: small'>상신 취소 시 임시저장함에 저장됩니다.</span>
-	</div>
+	
+	<button type='button' id='cancelDraftBtn' class='btn btn-lg' onclick="cancelDraft()"><i class="far fa-window-close"></i> 상신 취소</button>
+	<span style='color: gray; font-size: small'>상신 취소 시 임시저장함에 저장됩니다.</span>
 		
 	<div class="card">
 	<c:if test="${not empty draftMap}">
@@ -396,6 +417,7 @@ const updateApproval = approval_status => {
 			</table>
 			</c:if>
 			<!-- 첨부파일 끝 -->
+			<button type="button" id="showListBtn" class="btn-secondary listView rounded" onclick="showList()">목록보기</button>
 			
 			<div style="clear:both; padding-top: 8px; margin-bottom: 30px;">
 			</div>

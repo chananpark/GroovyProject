@@ -83,6 +83,11 @@
 a {
 	color: black;
 }
+
+#showListBtn {
+	margin-top: 10px;
+	float: right;
+}
 </style>
 
 <script>
@@ -91,6 +96,22 @@ a {
 const editDraft = () => {
 	location.href="<%=ctxPath%>/approval/edit.on?draft_no=${draftMap.dvo.draft_no}&fk_draft_type_no=${draftMap.dvo.fk_draft_type_no}";
 }
+
+//목록보기 버튼 클릭
+const showList = () => {
+	
+	// approvalBackUrl 스토리지에서 꺼내기
+	const approvalBackUrl = sessionStorage.getItem("approvalBackUrl");
+	
+	if (approvalBackUrl != null && approvalBackUrl != "" && approvalBackUrl !== undefined){
+		location.href=approvalBackUrl;
+		sessionStorage.removeItem("approvalBackUrl");		
+	}
+	else
+		location.href="javascript:history.go(-1)";
+}
+
+
 </script>
 
 <div class="container">
@@ -228,6 +249,7 @@ const editDraft = () => {
 					</td>
 				</tr>
 			</table>
+			<button type="button" id="showListBtn" class="btn-secondary rounded" onclick="showList()">목록보기</button>
 			<!-- 문서내용 끝 -->
 		</div>
 	</c:if>

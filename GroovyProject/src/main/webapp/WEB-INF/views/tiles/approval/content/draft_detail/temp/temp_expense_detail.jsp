@@ -86,6 +86,11 @@
 a {
 	color: black;
 }
+
+#showListBtn {
+	margin-top: 10px;
+	float: right;
+}
 </style>
 
 <script>
@@ -96,6 +101,20 @@ const editDraft = () => {
 
 // 물품 총합
 let sumAmount = 0;
+
+//목록보기 버튼 클릭
+const showList = () => {
+	
+	// approvalBackUrl 스토리지에서 꺼내기
+	const approvalBackUrl = sessionStorage.getItem("approvalBackUrl");
+	
+	if (approvalBackUrl != null && approvalBackUrl != "" && approvalBackUrl !== undefined){
+		location.href=approvalBackUrl;
+		sessionStorage.removeItem("approvalBackUrl");		
+	}
+	else
+		location.href="javascript:history.go(-1)";
+}
 </script>
 
 <div class="container">
@@ -272,6 +291,7 @@ let sumAmount = 0;
 				$("#sum").text(sumAmount);
 			</script>
 			<!-- 지출내역 표 끝 -->
+			<button type="button" id="showListBtn" class="btn-secondary listView rounded" onclick="showList()">목록보기</button>
 			<!-- 문서내용 끝 -->
 		</div>
 	</c:if>

@@ -1,5 +1,7 @@
 package com.spring.groovy.approval.service;
 
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.forwardedUrl;
+
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -23,16 +25,20 @@ import com.spring.groovy.approval.model.ExpenseListVO;
 import com.spring.groovy.approval.model.InterApprovalDAO;
 import com.spring.groovy.approval.model.OfficialAprvLineVO;
 import com.spring.groovy.approval.model.SavedAprvLineVO;
+import com.spring.groovy.common.FileManager;
+import com.spring.groovy.community.model.CommunityPostFileVO;
 import com.spring.groovy.management.model.MemberVO;
 
 @Service
 public class ApprovalService implements InterApprovalService {
 
 	private InterApprovalDAO dao;
+	private FileManager fileManager;
 	
     @Autowired
-    public ApprovalService(InterApprovalDAO dao) {
+    public ApprovalService(InterApprovalDAO dao, FileManager fileManager) {
         this.dao = dao;
+        this.fileManager = fileManager;
     }
 	
     // 팀 문서함 게시글 수 조회
@@ -397,7 +403,7 @@ public class ApprovalService implements InterApprovalService {
 		dao.autoDeleteSavedDraft();
 	}
 
-	// 기안문서 조회
+	// 기안문서 상세 조회
 	@Override
 	public Map<String, Object> getDraftDetail(DraftVO dvo) {
 				
@@ -447,6 +453,12 @@ public class ApprovalService implements InterApprovalService {
 		
 		return draftMap;
 	}
+	
+	// 기안문서 조회
+	@Override
+	public DraftVO getDraftInfo(DraftVO dvo) {
+		return dao.getDraftInfo(dvo);
+	}
 
 	// 결재 처리하기
 	@Override
@@ -471,8 +483,14 @@ public class ApprovalService implements InterApprovalService {
 
 	// 첨부파일 1개 조회
 	@Override
-	public DraftFileVO getAttachedFile(String draft_file_no) {
-		return dao.getAttachedFile(draft_file_no);
+	public DraftFileVO getOneAttachedFile(String draft_file_no) {
+		return dao.getOneAttachedFile(draft_file_no);
+	}
+
+	// 모든 첨부파일 조회
+	@Override
+	public List<DraftFileVO> getAllAttachedFile(String draft_no) {
+		return dao.getAllAttachedFile(draft_no);
 	}
 
 	// 공통결재라인 목록 불러오기
@@ -541,6 +559,102 @@ public class ApprovalService implements InterApprovalService {
 		}
 		
 		return draftMap;
+	}
+
+	// 기안 상신취소하기
+	@Override
+	@Transactional(propagation=Propagation.REQUIRED, isolation=Isolation.READ_COMMITTED, rollbackFor= {Throwable.class})
+	public boolean cancelDraft(DraftVO dvo) {
+		
+		// 상신 취소 가능한 상태인지 조회
+		List<ApprovalVO> avoList = dao.getApprovalInfo(dvo);
+		for(ApprovalVO avo : avoList) {
+			if (avo.getApproval_status() != 0)
+				return false;
+		}
+		
+		int n = 0;
+		
+		// 임시저장 번호 시퀀스 가져오기
+		String temp_draft_no = dao.getTempDraftNo();
+		
+		Map<String, Object> paraMap = new HashMap<>();
+		paraMap.put("temp_draft_no", temp_draft_no);
+		paraMap.put("dvo", dvo);
+		
+		// draft -> temp_draft 테이블로 옮기기
+		n = dao.moveDraft(paraMap);
+		
+		if (n!=1)
+			return false;
+		
+		// approval -> temp_approval로 옮기기
+		n = dao.moveApproval(paraMap);
+		
+		if (n != avoList.size())
+			return false;
+		
+		// 지출결의서라면
+		if (dvo.getFk_draft_type_no() == 2) {
+			
+			List<ExpenseListVO> evoList = dao.getExpenseListInfo(dvo);
+			
+			// expense_list -> temp_expense_list로 옮기기
+			n = dao.moveExpenseList(paraMap);
+			
+			if (n != evoList.size())
+				return false;
+		}
+		
+		// 출장보고서라면
+		if (dvo.getFk_draft_type_no() == 3) {
+			// biztrip_report -> temp_biztrip_report로 옮기기
+			n = dao.moveBiztripList(paraMap);
+			
+			if (n!=1)
+				return false;
+		}
+		
+		// 원본 기안 삭제하기
+		n = dao.deleteOneDraft(dvo.getDraft_no());
+		return (n==1)? true: false;
+	}
+
+	// 첨부파일 삭제하기
+	@Override
+	public boolean deleteFiles(Map<String, Object> paraMap) {
+		
+		DraftVO dvo = (DraftVO) paraMap.get("dvo");
+		
+		// 첨부파일 목록 조회하기
+		List<DraftFileVO> dfvoList = getAllAttachedFile(dvo.getDraft_no());
+		
+		int n = 0;
+		// 첨부파일이 있다면
+		if (dfvoList != null && dfvoList.size() > 0) {
+			// 테이블에서 파일 삭제
+			n = dao.deleteFiles(dfvoList);
+			System.out.println("파일삭제결과"+n);
+			
+			// 테이블에서 파일 삭제가 제대로 이루어지지 않았다면
+			if (n != dfvoList.size()) {
+				return false;
+			} 
+			else {
+				System.out.println("파일삭제성공");
+				// 서버에서 파일 삭제
+				for(DraftFileVO file : dfvoList)  {
+					fileManager.doFileDelete(file.getFilename(), (String)paraMap.get("filePath"));
+					System.out.println(file.getFilename());
+					System.out.println((String)paraMap.get("filePath"));
+				}
+				return true;
+			}
+		} 
+		// 첨부파일이 없다면
+		else {
+			return true;
+		}
 	}
 
 }
