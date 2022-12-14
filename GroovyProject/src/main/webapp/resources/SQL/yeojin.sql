@@ -509,6 +509,9 @@ create table tbl_reservation_large_category
 ,constraint PK_tbl_reservation_large_category primary key(lgcatgono)
 );
 
+alter table tbl_reservation_large_category add fk_empno number;
+ALTER TABLE   tbl_reservation_large_category  modify lgcategcontent clob;
+
 insert into tbl_reservation_large_category(lgcatgono, lgcatgoname)
 values(1, '회의실');
 insert into tbl_reservation_large_category(lgcatgono, lgcatgoname)
@@ -518,6 +521,10 @@ values(3, '차량');
 
 commit;
 
+
+select lgcatgono, lgcatgoname, lgcategcontent, fk_empno
+from tbl_reservation_large_category
+where lgcatgono = 1
 
 -- *** 자원 항목 *** 
 create table tbl_reservation_small_category 
@@ -533,6 +540,9 @@ create table tbl_reservation_small_category
 );
 -- Table tbl_reservation_small_category(가) 생성되었습니다.
 
+alter table tbl_reservation_small_category add status number; -- 0은 이용 불가능 1 은 이용 가능
+ALTER TABLE tbl_reservation_small_category RENAME COLUMN status TO sc_status;
+commit;
 
 select *
 from tbl_reservation_small_category
@@ -711,3 +721,54 @@ join tbl_reservation_large_category L
 ON C.fk_lgcatgono = L.lgcatgono
 where R.reservationno = 50
         
+
+
+select count(*)
+		from 
+		(
+		    select row_number() over(order by reservationno desc) as rno,
+		           reservationno, to_char(startdate, 'yyyymmddhh24') as startdate, to_char(enddate, 'yyyymmddhh24') as enddate, 
+		           realuser, fk_smcatgono, fk_lgcatgono, 
+		           to_char(reservdate, 'yyyymmddhh24') as reservdate, 
+		           confirm,  status, return_time,
+		           name, fk_empno, department
+		    from tbl_reservation R
+		    join tbl_employee E
+		    ON  R.fk_empno = E.empno
+		where R.fk_empno = 27)
+
+
+
+
+select smcatgono, smcatgoname, sc_status, fk_empno, lgcatgono, lgcatgoname
+from tbl_reservation_small_category C 
+JOIN tbl_reservation_large_category L
+ON C.fk_lgcatgono = L.lgcatgono
+order by lgcatgono, smcatgono
+
+
+UPDATE tbl_reservation_small_category SET fk_empno = 27, sc_status = 0 WHERE smcatgono = 10
+
+commit;
+
+select smcatgono, fk_lgcatgono, smcatgoname, sc_status
+from tbl_reservation_small_category
+where fk_lgcatgono = 1 
+
+
+select smcatgono, smcatgoname, sc_status, fk_empno, lgcatgono, lgcatgoname
+		from tbl_reservation_small_category C 
+		JOIN tbl_reservation_large_category L
+		ON C.fk_lgcatgono = L.lgcatgono
+        where L.lgcatgono = 1
+		order by lgcatgono, smcatgono
+
+
+
+UPDATE tbl_reservation_large_category 
+		SET fk_empno = 27, lgcategcontent = '왜 안되죠?'
+		WHERE lgcatgono = 1
+
+commit
+
+

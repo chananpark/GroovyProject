@@ -220,15 +220,20 @@
 					html += "<tr>";	 
 					 
 					$.each(json, function(index, item){
-						html += "<td>"+item.smcatgoname+"</td>";
-						for(i=0; i<24; i++) { 
-							if(i<10) {
-								html +=  "<td id='mtr"+item.smcatgono+"' class='time_hover time0"+i+" revtime"+item.smcatgono+"0"+i+"' onclick='insertReservation(\""+selectDate+"\", \"0"+i+"\", 1, \""+item.smcatgono+"\");' >&nbsp;&nbsp;</td>";
-					    	} else {
-					    		html +=  "<td id='mtr"+item.smcatgono+"' class='time_hover time"+i+" revtime"+item.smcatgono+i+"' onclick='insertReservation(\""+selectDate+"\", \""+i+"\", 1, \""+item.smcatgono+"\");' >&nbsp;&nbsp;</td>";
-					    	}
-						} // end of for
-						html += "</tr>";
+						
+						if(item.sc_status == 1) {
+							
+							html += "<td>"+item.smcatgoname+"</td>";
+							for(i=0; i<24; i++) { 
+								if(i<10) {
+									html +=  "<td id='mtr"+item.smcatgono+"' class='time_hover time0"+i+" revtime"+item.smcatgono+"0"+i+"' onclick='insertReservation(\""+selectDate+"\", \"0"+i+"\", 1, \""+item.smcatgono+"\");' >&nbsp;&nbsp;</td>";
+						    	} else {
+						    		html +=  "<td id='mtr"+item.smcatgono+"' class='time_hover time"+i+" revtime"+item.smcatgono+i+"' onclick='insertReservation(\""+selectDate+"\", \""+i+"\", 1, \""+item.smcatgono+"\");' >&nbsp;&nbsp;</td>";
+						    	}
+							} // end of for
+							html += "</tr>";
+							
+						}
 					}); // end of each
 					 
 					html += "</table>";
@@ -243,10 +248,6 @@
 		}); // end of ajax
 		
 	} // end of function callReservationTable() 
-
-	
-		
-			
 			
 			
 </script>
@@ -260,10 +261,11 @@
 <div id="reservationFormat" style="width:95%; margin: 0 auto;">
 	<div class="jumbotron">
 	    <div class="container">
-			현재 사용 가능한 회의실은 3층 대회의실(50명), 5층 소회의실1(10명), 5층 소회의실2(10명), 6층 소회의실3(5명)입니다.
-			<br><br>
-	        ※ 회의실 예약 관련 문의는 인사총무팀 시설담당 이시설(내선번호 : 111)으로 연락바랍니다.
+	        ${lvo.lgcategcontent}
 	    </div>
+	    <c:if test="${sessionScope.loginuser.department == '인사총무팀'}">
+        	<div class="container" style="text-align: right; margin-top: 20px;"><i class="btn fas fa-tools fa-lg" style="color:#6c757d;" onclick="goEditContent(1);"></i></div>
+        </c:if>
 	</div>
 	
 		
@@ -288,4 +290,9 @@
 </form>	
 
 
+<%-- 자원 안내 수정 폼 --%>
+<form name="editContentFrm">
+	<input type="hidden" name="lgcatgono" />	
+	<input type="hidden" name="listgobackURL_reserv" value="${requestScope.listgobackURL_reserv}"/>
+</form>	
 

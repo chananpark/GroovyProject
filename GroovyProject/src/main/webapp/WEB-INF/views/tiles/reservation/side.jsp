@@ -550,7 +550,22 @@
 		
 		$("input#realuserInput").val("");
 	
-	}// end of function add_joinUser(value){}----------------------------			
+	}// end of function add_joinUser(value){}----------------------------		
+	
+	
+	
+	// 자원 안내 수정
+	function goEditContent(lgcatgono){
+		$("input[name=lgcatgono]").val(lgcatgono);
+		
+		var frm = document.editContentFrm;
+	    frm.method="get";
+	    frm.action="<%= ctxPath%>/reservation/admin/editResourceContent.on";
+	    frm.submit();
+	}
+	
+	
+	
 		
 	
 </script>
@@ -591,7 +606,7 @@
 	    <li style="margin-top: 7px;" class="nav-item topMenu">관리자 메뉴
 	      	<ul class='subMenus adminMenu'>
 	      		<li style="margin-top: 7px;"><a id="adminConfirm" class="nav-link" href="<%=ctxPath%>/reservation/admin/adminConfirm.on">예약 내역 및 승인</a></li>
-	      		<li><a id="addResource" class="nav-link" href="<%=ctxPath%>/reservation/admin/addResource.on">자원 추가</a></li>
+	      		<li><a id="managementResource" class="nav-link" href="<%=ctxPath%>/reservation/admin/managementResource.on">자원 관리</a></li>
 	      		<%-- <li><a id="management" class="nav-link" href="<%=ctxPath%>/reservation/admin/management.on">이용 안내 관리</a></li> --%>
 	      	</ul>
 	    </li>
@@ -672,6 +687,7 @@
      				<input type="hidden" value="${sessionScope.loginuser.empno}" name="empno"/>
      				<input type="hidden" value="${sessionScope.loginuser.empno}" name="startdate"/>
      				<input type="hidden" value="${sessionScope.loginuser.empno}" name="enddate"/>
+     				<input type="hidden" name="listgobackURL_reserv" value="${requestScope.listgobackURL_reserv}"/>
        			</form>	
       		</div>
       
