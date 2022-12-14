@@ -6,7 +6,9 @@ import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.nhncorp.lucy.security.xss.XssPreventer;
 import com.spring.groovy.reservation.model.InterReservationDAO;
+import com.spring.groovy.reservation.model.ReservLargeCategoryVO;
 import com.spring.groovy.reservation.model.ReservSmallCategoryVO;
 import com.spring.groovy.reservation.model.ReservationVO;
 
@@ -103,6 +105,91 @@ public class ReservationService implements InterReservationService {
 	public Map<String, String> viewReservation(Map<String, String> paraMap) {
 		Map<String, String> map = dao.viewReservation(paraMap);
 		return map;
+	}
+
+
+	// 이용자 예약 내역 전체 개수 구하기
+	@Override
+	public int getResrvSearchCnt(Map<String, Object> paraMap) {
+		int n = dao.getResrvSearchCnt(paraMap);
+		return n;
+	}
+
+
+	// 한 페이지에 표시할 이용자 예약 내역 글 목록
+	@Override
+	public List<Map<String, String>> getResrvList(Map<String, Object> paraMap) {
+		List<Map<String,String>> reservList = dao.getResrvList(paraMap);
+		return reservList;
+	}
+
+
+	// 자원 목록
+	@Override
+	public List<Map<String, String>> managementResource() {
+		List<Map<String,String>> resourceList = dao.managementResource();
+		return resourceList;
+	}
+
+
+	// 자원명 수정 메소드
+	@Override
+	public int editSmcatgoname(Map<String, String> paraMap) {
+		int n = dao.editSmcatgoname(paraMap);
+		return n;
+	}
+
+
+	// 자원 추가 메소드
+	@Override
+	public int addSmcatgo(Map<String, String> paraMap) {
+		int n = dao.addSmcatgo(paraMap);
+		return n;
+	}
+
+
+	// 자원 상태 변경 메소드
+	@Override
+	public int changeStatus(Map<String, String> paraMap) {
+		int n = dao.changeStatus(paraMap);
+		return n;
+	}
+
+
+	// 버튼 클릭 시 자원 항목 리스트 변경 메소드
+	@Override
+	public List<Map<String, String>> resourceFilter(Map<String, String> paraMap) {
+		List<Map<String,String>> resourceList = dao.resourceFilter(paraMap);
+		return resourceList;
+	}
+
+
+	// 예약 안내 페이지 수정
+	@Override
+	public ReservLargeCategoryVO editResourceContent(Map<String, String> paraMap) {
+		ReservLargeCategoryVO lvo = dao.editResourceContent(paraMap);
+		return lvo;
+	}
+
+
+	// 자원 안내 수정 최종
+	@Override
+	public int endEditResourceContent(Map<String, String> paraMap) {
+		int n = dao.endEditResourceContent(paraMap);
+		return n;
+	}
+
+
+	// 자원 안내 내용 보여주기
+	@Override
+	public ReservLargeCategoryVO mainLgcategContent(String lgcatgono) {
+		ReservLargeCategoryVO lvo = dao.mainLgcategContent(lgcatgono);
+		
+		// 역치환 후 다시 set해줌
+		String lgcategcontent = XssPreventer.unescape(lvo.getLgcategcontent());
+		lvo.setLgcategcontent(lgcategcontent);
+		
+		return lvo;
 	}
 	
 	

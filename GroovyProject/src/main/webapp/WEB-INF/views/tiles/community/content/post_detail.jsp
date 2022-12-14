@@ -425,6 +425,20 @@ const updateLike = () => {
 		}
 	}); 
 }
+
+// 목록보기 버튼 클릭
+const showList = () => {
+	
+	// communityBackUrl 스토리지에서 꺼내기
+	const communityBackUrl = sessionStorage.getItem("communityBackUrl");
+	
+	if (communityBackUrl != null && communityBackUrl != "" && communityBackUrl !== undefined){
+		location.href=communityBackUrl;
+		sessionStorage.removeItem("communityBackUrl");		
+	}
+	else
+		location.href="<%=ctxPath%>/community/list.on";
+}
 </script>
 <div class='container'>
 	<div class='my-4'>
@@ -483,7 +497,7 @@ const updateLike = () => {
 				onclick="updateLike()"><i class="far fa-heart fa-lg"></i></button>
 				<button type="button" id="likeListBtn" data-toggle="modal" data-target="#likeModal">좋아요 <span id="likeCnt"></span>명</button>
 			  	<div style="display: inline-block; float:right"> 
-				  <button type="button" id="showList" class="btn-secondary listView rounded" onclick="location.href='${communityBackUrl}'">목록보기</button>
+				  <button type="button" id="showListBtn" class="btn-secondary listView rounded" onclick="showList()">목록보기</button>
 			    </div>
 			</div>
 		</div>

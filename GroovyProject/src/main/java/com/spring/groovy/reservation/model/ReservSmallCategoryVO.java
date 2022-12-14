@@ -7,6 +7,7 @@ public class ReservSmallCategoryVO {
 	private String smcatgoname;   // 자원 항목명
 	private String smcatgocontent;   // 자원 항목 설명
 	private String fk_empno;     // 자원 항목 작성자 유저아이디
+	private String sc_status; 	// 자원 상태  -- 0은 이용 불가능 1 은 이용 가능
 	
 	public String getSmcatgono() {
 		return smcatgono;
@@ -48,4 +49,11 @@ public class ReservSmallCategoryVO {
 		this.fk_empno = fk_empno;
 	}
 	
+	public String getSc_status() {
+		return sc_status;
+	}
+
+	public void setSc_status(String sc_status) {
+		this.sc_status = sc_status;
+	}
 }

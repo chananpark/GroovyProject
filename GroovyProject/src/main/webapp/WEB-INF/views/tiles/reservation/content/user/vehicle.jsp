@@ -75,6 +75,7 @@
 		// 예약된 시간 보여주면서 예약 못하게 막아주는 메소드		
 	    reservTime(selectDate);
 	
+	    $('[data-toggle="tooltip"]').tooltip(); 
 	}); // end of ready
 	
 	
@@ -220,15 +221,17 @@
 					html += "<tr>";	 
 					 
 					$.each(json, function(index, item){
-						html += "<td>"+item.smcatgoname+"</td>";
-						for(i=0; i<24; i++) { 
-							if(i<10) {
-								html +=  "<td id='mtr"+item.smcatgono+"' class='time_hover time0"+i+" revtime"+item.smcatgono+"0"+i+"' onclick='insertReservation(\""+selectDate+"\", \"0"+i+"\", 3, \""+item.smcatgono+"\");' >&nbsp;&nbsp;</td>";
-					    	} else {
-					    		html +=  "<td id='mtr"+item.smcatgono+"' class='time_hover time"+i+" revtime"+item.smcatgono+i+"' onclick='insertReservation(\""+selectDate+"\", \""+i+"\", 3, \""+item.smcatgono+"\");' >&nbsp;&nbsp;</td>";
-					    	}
-						} // end of for
-						html += "</tr>";
+						if(item.sc_status == 1) {
+							html += "<td>"+item.smcatgoname+"</td>";
+							for(i=0; i<24; i++) { 
+								if(i<10) {
+									html +=  "<td id='mtr"+item.smcatgono+"' class='time_hover time0"+i+" revtime"+item.smcatgono+"0"+i+"' onclick='insertReservation(\""+selectDate+"\", \"0"+i+"\", 3, \""+item.smcatgono+"\");' >&nbsp;&nbsp;</td>";
+						    	} else {
+						    		html +=  "<td id='mtr"+item.smcatgono+"' class='time_hover time"+i+" revtime"+item.smcatgono+i+"' onclick='insertReservation(\""+selectDate+"\", \""+i+"\", 3, \""+item.smcatgono+"\");' >&nbsp;&nbsp;</td>";
+						    	}
+							} // end of for
+							html += "</tr>";
+						}
 					}); // end of each
 					 
 					html += "</table>";
@@ -245,8 +248,6 @@
 	} // end of function callReservationTable() 
 
 	
-		
-			
 			
 			
 </script>
@@ -260,16 +261,11 @@
 <div id="reservationFormat" style="width:95%; margin: 0 auto;">
 	<div class="jumbotron">
 	    <div class="container">
-			1. 사용 신청 이후 운영관리자에게 차키와 운행일지를 수령, 사용 후 반납
-			<br>
-			2. 차량 반납 시 차량내부의 쓰레기 등을 반드시 수거하여 차량 청결에 유의
-			<br>
-			3. 차량 내부에서는 절대 금연함
-			<br>
-			4. 차량이용자는 운전 전 차량의 상태 (안전사항 및 청결도)를 확인하며, 이상이 있을 경우 즉시 운영관리자에게 연락함
-			<br><br>
-	        ※ 차량 예약 관련 문의는 인사총무팀 시설담당 이시설(내선번호 : 111)으로 연락바랍니다.
+			${lvo.lgcategcontent}
 	    </div>
+	    <c:if test="${sessionScope.loginuser.department == '인사총무팀'}">
+        	<div class="container" style="text-align: right; margin-top: 20px;"><i class="btn fas fa-tools fa-lg" style="color:#6c757d;" onclick="goEditContent(3);"></i></div>
+        </c:if>
 	</div>
 	
 		
@@ -294,4 +290,8 @@
 </form>	
 
 
-
+<%-- 자원 안내 수정 폼 --%>
+<form name="editContentFrm">
+	<input type="hidden" name="lgcatgono" />	
+	<input type="hidden" name="listgobackURL_reserv" value="${requestScope.listgobackURL_reserv}"/>
+</form>	

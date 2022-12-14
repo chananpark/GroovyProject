@@ -31,6 +31,9 @@ button {
 	font-size: small;
 }
 
+.removeFile {
+	font-size: small;
+}
 </style>
 
 <script>

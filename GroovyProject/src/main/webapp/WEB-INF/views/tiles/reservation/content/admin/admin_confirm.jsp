@@ -123,7 +123,7 @@
 		// 취소 및 반납 버튼 만들기
 		statusButton();
 				
-		if(${not empty requestScope.startdate}){
+		if(${not empty requestScope.startdate}) {
 			$("input[name=startdate]").val("${requestScope.paraMap.startdate}");
 			$("input[name=enddate]").val("${requestScope.paraMap.enddate}");
 			$("select#searchType").val("${requestScope.paraMap.pagination.searchType}");
@@ -152,28 +152,28 @@
 
 				$.each(json, function(index,item){
 					html += "<tr>";
-					html += "	<td class='col-3 modal_viewReservation_td'>자원 예약 시간</td>";
-					html += "	<td class='modal_viewReservation_content'>"+item.startdate+"</td>";
+					html += 	"<td class='col-3 modal_viewReservation_td'>자원 예약 시간</td>";
+					html += 	"<td class='modal_viewReservation_content'>"+item.startdate+"</td>";
 					html += "</tr>";
 					html += "<tr>";
-					html += "	<td class='modal_viewReservation_td'>자원 반납 시간</td>";
-					html += "	<td class='modal_viewReservation_content'>"+item.enddate+"</td>";
+					html += 	"<td class='modal_viewReservation_td'>자원 반납 시간</td>";
+					html += 	"<td class='modal_viewReservation_content'>"+item.enddate+"</td>";
 					html += "</tr>";
 					html += "<tr>";
-					html += "	<td class='modal_viewReservation_td'>예약 항목</td>";
-					html += "	<td class='modal_viewReservation_content'>"+item.lgcatgoname+" : " +item.smcatgoname+"</td>";
+					html += 	"<td class='modal_viewReservation_td'>예약 항목</td>";
+					html += 	"<td class='modal_viewReservation_content'>"+item.lgcatgoname+" : " +item.smcatgoname+"</td>";
 					html += "</tr>";
 					html += "<tr>";
-					html += "	<td class='modal_viewReservation_td'>실사용자</td>";
-					html += "	<td class='modal_viewReservation_content'>"+item.realuser+"</td>";
+					html += 	"<td class='modal_viewReservation_td'>실사용자</td>";
+					html += 	"<td class='modal_viewReservation_content'>"+item.realuser+"</td>";
 					html += "</tr>";
 					html += "<tr>";
-					html += "	<td class='modal_viewReservation_td'>예약자</td>";
-					html += "	<td class='modal_viewReservation_content'>"+item.name+"("+item.cpemail+")</td>";
+					html += 	"<td class='modal_viewReservation_td'>예약자</td>";
+					html += 	"<td class='modal_viewReservation_content'>"+item.name+"("+item.cpemail+")</td>";
 					html += "</tr>";
 					html += "<tr>";
-					html += "	<td class='modal_viewReservation_td'>예약 상태</td>";
-					html += "	<td class='modal_viewReservation_content'>";
+					html += 	"<td class='modal_viewReservation_td'>예약 상태</td>";
+					html += 	"<td class='modal_viewReservation_content'>";
 					
 					if(item.status == 0) {
 						html += "예약 완료";
@@ -183,11 +183,11 @@
 						html += "이용 완료";
 					}
 					
-					html += "	</td>";
+					html += 	"</td>";
 					html += "</tr>";
 					html += "<tr>";
-					html += "	<td class='modal_viewReservation_td'>승인 여부</td>";
-					html += "	<td class='modal_viewReservation_content'>";
+					html += 	"<td class='modal_viewReservation_td'>승인 여부</td>";
+					html += 	"<td class='modal_viewReservation_content'>";
 					
 					if(item.confirm == 0) {
 						html += "승인 대기 중";
@@ -195,7 +195,7 @@
 						html += "승인 완료";
 					}
 					
-					html += "	</td>";
+					html += 	"</td>";
 					html += "</tr>";
 					
 					$("table#table_viewReservation").html(html);
@@ -270,7 +270,7 @@
 							
 						} else if( (num_start_day <= num_now_day && num_end_day >= num_now_day) && item.status == 0) {
 							// 이용 시간 중 반납 버튼
-							html = '<button class="btn" style="color:white; background-color: #086BDE;" onclick="reservReturn('+item.reservationno+');">반납</button>';
+							html = '<button class="btn" style="color:black; background-color: #E3F2FD;" onclick="reservReturn('+item.reservationno+');">반납</button>';
 							$("td."+returnbtn).html(html);
 							
 						} else if(num_end_day < num_now_day || item.status == 2) {
@@ -290,7 +290,7 @@
 							$("td."+confirmbtn).html(html2);
 							
 						} else if(item.confirm = 1) {
-							html2 = '<button class="btn bg-white">승인완료</button>';
+							html2 = '<button class="btn bg-white">승인 완료</button>';
 							$("td."+confirmbtn).html(html2);
 						}
 						
@@ -477,6 +477,7 @@
 						<input type="text" id="fromDate" name="startdate" style="width:48.1%;" readonly="readonly">
 						&nbsp;&nbsp;-&nbsp;&nbsp;  
 			            <input type="text" id="toDate" name="enddate" style="width:48.1%;" readonly="readonly">
+		            	<input type="hidden" name="listgobackURL_reserv" value="${requestScope.listgobackURL_reserv}"/>
 					</td>
 				</tr>
 			</table>

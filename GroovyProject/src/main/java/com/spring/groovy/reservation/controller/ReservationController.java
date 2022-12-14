@@ -16,8 +16,10 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.spring.groovy.common.Myutil;
 import com.spring.groovy.common.Pagination;
 import com.spring.groovy.management.model.MemberVO;
+import com.spring.groovy.reservation.model.ReservLargeCategoryVO;
 import com.spring.groovy.reservation.model.ReservSmallCategoryVO;
 import com.spring.groovy.reservation.model.ReservationVO;
 import com.spring.groovy.reservation.service.InterReservationService;
@@ -35,6 +37,15 @@ public class ReservationController {
 	@RequestMapping(value="/reservation/meetingRoom.on")
 	public ModelAndView meetingRoom(HttpServletRequest request, ModelAndView mav) { 
 		
+		String lgcatgono = "1";
+		
+		// 자원 안내 내용 보여주기
+		ReservLargeCategoryVO lvo = service.mainLgcategContent(lgcatgono);
+		mav.addObject("lvo",lvo);		
+		
+		String listgobackURL_reserv = Myutil.getCurrentURL(request);
+		mav.addObject("listgobackURL_reserv",listgobackURL_reserv);		
+		
 		mav.setViewName("reservation/user/meeting_room.tiles");
 
 		return mav;
@@ -44,6 +55,15 @@ public class ReservationController {
 	// === 자원예약 기기 예약 페이지 === //
 	@RequestMapping(value="/reservation/device.on")
 	public ModelAndView device(HttpServletRequest request, ModelAndView mav) { 
+
+		String lgcatgono = "2";
+		
+		// 자원 안내 내용 보여주기
+		ReservLargeCategoryVO lvo = service.mainLgcategContent(lgcatgono);
+		mav.addObject("lvo",lvo);		
+		
+		String listgobackURL_reserv = Myutil.getCurrentURL(request);
+		mav.addObject("listgobackURL_reserv",listgobackURL_reserv);	
 		
 		mav.setViewName("reservation/user/device.tiles");
 
@@ -55,25 +75,101 @@ public class ReservationController {
 	@RequestMapping(value="/reservation/vehicle.on")
 	public ModelAndView vehicle(HttpServletRequest request, ModelAndView mav) { 
 		
+		String lgcatgono = "3";
+		
+		// 자원 안내 내용 보여주기
+		ReservLargeCategoryVO lvo = service.mainLgcategContent(lgcatgono);
+		mav.addObject("lvo",lvo);		
+		
+		String listgobackURL_reserv = Myutil.getCurrentURL(request);
+		mav.addObject("listgobackURL_reserv",listgobackURL_reserv);	
+		
 		mav.setViewName("reservation/user/vehicle.tiles");
 
 		return mav;
 	}
 	
 	
-	// === 자원예약 예약하기 페이지 === //
-	@RequestMapping(value="/reservation/insertReservation.on")
-	public ModelAndView insertReservation(HttpServletRequest request, ModelAndView mav) { 
-		
-		mav.setViewName("reservation/user/insert_reservation.tiles");
-
-		return mav;
-	}
-		
-	
 	// === 자원예약 예약 내역 페이지 === //
 	@RequestMapping(value="/reservation/confirm.on")
 	public ModelAndView confirm(HttpServletRequest request, ModelAndView mav, Pagination pagination) throws Exception { 
+		
+		List<Map<String,String>> reservList = null;
+		Map<String, Object> paraMap = new HashMap<String, Object>();
+		
+		String startdate = request.getParameter("startdate");
+		String enddate = request.getParameter("enddate");
+	//	String empno = request.getParameter("empno");  
+	//	String cpemail = request.getParameter("cpemail");  
+		
+		// 로그인 정보 가져오기
+		HttpSession session = request.getSession();
+		MemberVO loginuser = (MemberVO) session.getAttribute("loginuser");
+		String empno = loginuser.getEmpno();
+		String cpemail = loginuser.getCpemail();
+
+		if(pagination.getSearchWord() == null || "".equals(pagination.getSearchWord()) || pagination.getSearchWord().trim().isEmpty()) {
+			pagination.setSearchWord("");
+		}
+		
+		if(startdate==null || "".equals(startdate)) {
+			startdate="";
+		}
+		
+		if(enddate==null || "".equals(enddate) || "?searchType=".equals(enddate)) {
+			enddate="";
+		}
+		
+		if(pagination.getSearchType() == null || "".equals(pagination.getSearchType()) || 
+		   (!"1".equals(pagination.getSearchType()) && !"2".equals(pagination.getSearchType()) && !"3".equals(pagination.getSearchType())) ) {
+			pagination.setSearchType("");
+		}
+		
+		if(empno.equals("") || empno == null) {
+			mav.addObject("message", "잘못된 접근입니다.");
+			mav.addObject("loc", request.getContextPath()+"/reservation/confirm.on");
+			
+			mav.setViewName("msg.tiles");
+		}
+
+		// 문자로 장난쳤을 경우
+		try {
+			Integer.parseInt(empno);
+		} catch (Exception e) {
+			mav.addObject("message", "잘못된 접근입니다.");
+			mav.addObject("loc", request.getContextPath()+"/reservation/confirm.on");
+			
+			mav.setViewName("msg.tiles");
+		}
+		
+		paraMap.put("pagination", pagination);
+		paraMap.put("startdate", startdate);
+		paraMap.put("enddate", enddate);
+		paraMap.put("empno", empno);
+		paraMap.put("cpemail", cpemail);
+
+		// 예약 내역 전체 개수 구하기
+		int listCnt = service.getResrvSearchCnt(paraMap);
+	//	System.out.println(listCnt);
+		
+		// startRno, endRno 구하기
+		// 구해 온 최대 글 개수를 파라미터로 넘긴다.
+		// 파라맵에 받아온 두개의 startrno와 endrno를 담아주어야 한다
+		pagination.setPageInfo(listCnt);
+		paraMap.put("pagination", pagination);
+		
+		// 한 페이지에 표시할 이용자 예약 내역 글 목록
+		reservList = service.getResrvList(paraMap);
+		mav.addObject("reservList", reservList);
+		
+		pagination.setQueryString("&startdate="+startdate+"&enddate="+enddate);
+		
+		// 페이지바
+		mav.addObject("pagebar", pagination.getPagebar(request.getContextPath()+"/reservation/confirm.on"));
+		mav.addObject("paraMap", paraMap);
+		
+		String listgobackURL_reserv = Myutil.getCurrentURL(request);
+		mav.addObject("listgobackURL_reserv",listgobackURL_reserv);	
 		
 		mav.setViewName("reservation/user/confirm.tiles");
 
@@ -160,21 +256,14 @@ public class ReservationController {
 		mav.addObject("pagebar", pagination.getPagebar(request.getContextPath()+"/reservation/admin/adminConfirm.on"));
 		mav.addObject("paraMap", paraMap);
 		
+		String listgobackURL_reserv = Myutil.getCurrentURL(request);
+		mav.addObject("listgobackURL_reserv",listgobackURL_reserv);		
+		
 		mav.setViewName("reservation/admin/admin_confirm.tiles");
 
 		return mav;
 	} // end of public ModelAndView adminConfirm(HttpServletRequest request, ModelAndView mav, Pagination pagination) throws Exception
 	
-	
-	// === 자원예약 관리자 자원 추가 페이지 === //
-	@RequestMapping(value="/reservation/admin/addResource.on")
-	public ModelAndView addResource(HttpServletRequest request, ModelAndView mav) { 
-		
-		mav.setViewName("reservation/admin/add_resource.tiles");
-
-		return mav;
-	}
-
 	
 	// === 자원예약 페이지에서 자원항목 불러오기
 	@ResponseBody
@@ -194,6 +283,7 @@ public class ReservationController {
 				JSONObject jsObj = new JSONObject();
 				jsObj.put("smcatgono", rcvo.getSmcatgono());
 				jsObj.put("smcatgoname", rcvo.getSmcatgoname());
+				jsObj.put("sc_status", rcvo.getSc_status());
 				
 				jsArr.put(jsObj);
 			}
@@ -217,6 +307,9 @@ public class ReservationController {
 		String empno = request.getParameter("empno");
 		String returnTime = request.getParameter("return_time");
 		
+		String listgobackURL_reserv = request.getParameter("listgobackURL_reserv");
+		listgobackURL_reserv = listgobackURL_reserv.replaceAll("&amp;", "&");
+		
 		if("".equals(returnTime) || returnTime == null) {
 			returnTime = "";
 		}
@@ -234,7 +327,7 @@ public class ReservationController {
 
 		if(n == 0) {
 			mav.addObject("message", "이미 존재하는 예약 일자에는 예약이 불가능합니다.");
-			mav.addObject("loc", request.getContextPath()+"/reservation/meetingRoom.on");
+			mav.addObject("loc", request.getContextPath()+listgobackURL_reserv);
 
 		}
 		else {
@@ -314,6 +407,8 @@ public class ReservationController {
 	@RequestMapping(value="/reservation/reservConfirm.on", method = {RequestMethod.POST})
 	public ModelAndView reservConfirm(ModelAndView mav, HttpServletRequest request) throws Throwable {
 		
+		String listgobackURL_reserv = request.getParameter("listgobackURL_reserv");
+		listgobackURL_reserv = listgobackURL_reserv.replaceAll("&amp;", "&");
 		String reservationno= request.getParameter("reservationno");
 		
 		Map<String,String> paraMap = new HashMap<String, String>();
@@ -328,7 +423,7 @@ public class ReservationController {
 		}
 		else {
 			mav.addObject("message", "자원 예약을 승인하였습니다. ");
-			mav.addObject("loc", request.getContextPath()+"/reservation/admin/adminConfirm.on");
+			mav.addObject("loc", request.getContextPath()+listgobackURL_reserv);
 		}
 		
 		mav.setViewName("msg");
@@ -342,6 +437,8 @@ public class ReservationController {
 	public ModelAndView reservCancle(ModelAndView mav, HttpServletRequest request) throws Throwable {
 		
 		String reservationno= request.getParameter("reservationno");
+		String listgobackURL_reserv = request.getParameter("listgobackURL_reserv");
+		listgobackURL_reserv = listgobackURL_reserv.replaceAll("&amp;", "&");
 		
 		Map<String,String> paraMap = new HashMap<String, String>();
 		paraMap.put("reservationno", reservationno);
@@ -355,7 +452,7 @@ public class ReservationController {
 		}
 		else {
 			mav.addObject("message", "자원 예약을 취소하였습니다. ");
-			mav.addObject("loc", request.getContextPath()+"/reservation/admin/adminConfirm.on");
+			mav.addObject("loc", request.getContextPath()+listgobackURL_reserv);
 		}
 		
 		mav.setViewName("msg");
@@ -370,7 +467,8 @@ public class ReservationController {
 		
 		String reservationno= request.getParameter("reservationno");
 		String enddate= request.getParameter("hidden_enddate");
-		
+		String listgobackURL_reserv = request.getParameter("listgobackURL_reserv");
+		listgobackURL_reserv = listgobackURL_reserv.replaceAll("&amp;", "&");
 		
 		Map<String,String> paraMap = new HashMap<String, String>();
 		paraMap.put("reservationno", reservationno);
@@ -385,7 +483,7 @@ public class ReservationController {
 		}
 		else {
 			mav.addObject("message", "자원 반납을 완료하였습니다.");
-			mav.addObject("loc", request.getContextPath()+"/reservation/admin/adminConfirm.on");
+			mav.addObject("loc", request.getContextPath()+listgobackURL_reserv);
 		}
 		
 		mav.setViewName("msg");
@@ -429,12 +527,205 @@ public class ReservationController {
 	} // end of public String reservTime(HttpServletRequest request)
 	
 	
+	// === 자원항목 관리 페이지 === //
+	@RequestMapping(value="/reservation/admin/managementResource.on")
+	public ModelAndView managementResource(HttpServletRequest request, ModelAndView mav) { 
+		
+		// 자원 목록
+		List<Map<String,String>> resourceList = service.managementResource();
+		mav.addObject("resourceList", resourceList);
+		
+		mav.setViewName("reservation/admin/management_resource.tiles");
+
+		return mav;
+	}
 
 	
+	// 버튼 클릭 시 자원 항목 리스트 변경 메소드
+	@ResponseBody
+	@RequestMapping(value="/reservation/admin/resourceFilter.on", produces="text/plain;charset=UTF-8")
+	public String resourceFilter(HttpServletRequest request) {
+		
+		String fk_lgcatgono = request.getParameter("fk_lgcatgono");
+		
+		Map<String,String> paraMap = new HashMap<String, String>();
+		paraMap.put("fk_lgcatgono", fk_lgcatgono);
+		
+		List<Map<String,String>> resourceList = service.resourceFilter(paraMap);
+		
+		JSONArray jsArr = new JSONArray();
+		
+		if(resourceList != null && resourceList.size() > 0) {
+			for(Map<String,String> map : resourceList) {
+				JSONObject jsObj = new JSONObject();
+				jsObj.put("smcatgono", map.get("smcatgono"));
+				jsObj.put("smcatgoname", map.get("smcatgoname"));
+				jsObj.put("sc_status", map.get("sc_status"));
+				jsObj.put("fk_empno", map.get("fk_empno"));
+				jsObj.put("lgcatgono", map.get("lgcatgono"));
+				jsObj.put("lgcatgoname", map.get("lgcatgoname"));
+				
+				jsArr.put(jsObj);
+			}// end of for-------------------------------------
+		}
+		
+		return jsArr.toString();
+	} // end of public String reservTime(HttpServletRequest request)
 	
 	
+	// 자원명 수정 메소드
+	@RequestMapping(value="/reservation/admin/editSmcatgoname.on", method = {RequestMethod.POST})
+	public ModelAndView editSmcatgoname(ModelAndView mav, HttpServletRequest request) throws Throwable {
+		
+		String smcatgono= request.getParameter("smcatgono");
+		String smcatgoname= request.getParameter("smcatgoname");
+		String fk_empno = request.getParameter("fk_empno");
+		
+		Map<String,String> paraMap = new HashMap<String, String>();
+		paraMap.put("smcatgono", smcatgono);
+		paraMap.put("smcatgoname", smcatgoname);
+		paraMap.put("fk_empno", fk_empno);
+
+		int n = service.editSmcatgoname(paraMap);
+
+		if(n == 0) {
+			mav.addObject("message", "자원명 수정을 실패하셨습니다.");
+			mav.addObject("loc", request.getContextPath()+"/reservation/admin/managementResource.on");
+
+		}
+		else {
+			mav.addObject("message", "자원명 수정을 완료하였습니다.");
+			mav.addObject("loc", request.getContextPath()+"/reservation/admin/managementResource.on");
+		}
+		
+		mav.setViewName("msg"); 
+		
+		return mav;
+	} // end of public ModelAndView editSmcatgoname(ModelAndView mav, HttpServletRequest request) throws Throwable 
+
 	
-	
+	// 자원 추가 메소드
+	@RequestMapping(value="/reservation/admin/addSmcatgo.on", method = {RequestMethod.POST})
+	public ModelAndView addSmcatgo(ModelAndView mav, HttpServletRequest request) throws Throwable {
+		
+		String fk_lgcatgono= request.getParameter("fk_lgcatgono");
+		String smcatgoname= request.getParameter("smcatgoname");
+		String fk_empno = request.getParameter("fk_empno");
+		
+		Map<String,String> paraMap = new HashMap<String, String>();
+		paraMap.put("fk_lgcatgono", fk_lgcatgono);
+		paraMap.put("smcatgoname", smcatgoname);
+		paraMap.put("fk_empno", fk_empno);
+
+		int n = service.addSmcatgo(paraMap);
+
+		if(n == 0) {
+			mav.addObject("message", "자원 추가를 실패하셨습니다.");
+			mav.addObject("loc", request.getContextPath()+"/reservation/admin/managementResource.on");
+
+		}
+		else {
+			mav.addObject("message", "자원 추가를 완료하였습니다.");
+			mav.addObject("loc", request.getContextPath()+"/reservation/admin/managementResource.on");
+		}
+		
+		mav.setViewName("msg"); 
+		
+		return mav;
+	} // end of public ModelAndView editSmcatgoname(ModelAndView mav, HttpServletRequest request) throws Throwable 
+
+		
+	// 자원 상태 변경 메소드
+	@RequestMapping(value="/reservation/admin/changeStatus.on", method = {RequestMethod.POST})
+	public ModelAndView changeStatus(ModelAndView mav, HttpServletRequest request) throws Throwable {
+		
+		String smcatgono= request.getParameter("smcatgono");
+		String sc_status= request.getParameter("sc_status");
+		
+		// 로그인 정보 가져오기
+		HttpSession session = request.getSession();
+		MemberVO loginuser = (MemberVO) session.getAttribute("loginuser");
+		String empno = loginuser.getEmpno();
+		
+		Map<String,String> paraMap = new HashMap<String, String>();
+		paraMap.put("smcatgono", smcatgono);
+		paraMap.put("sc_status", sc_status);
+		paraMap.put("empno", empno);
+
+		int n = service.changeStatus(paraMap);
+
+		if(n == 0) {
+			mav.addObject("message", "자원 상태 변경을 실패하셨습니다.");
+			mav.addObject("loc", request.getContextPath()+"/reservation/admin/managementResource.on");
+
+		}
+		else {
+			mav.addObject("message", "자원 상태 변경이 완료되었습니다.");
+			mav.addObject("loc", request.getContextPath()+"/reservation/admin/managementResource.on");
+		}
+		
+		mav.setViewName("msg"); 
+		
+		return mav;
+	} // end of public ModelAndView changeStatus(ModelAndView mav, HttpServletRequest request) throws Throwable 
+
+			
+	// 자원 안내 수정 페이지
+	@RequestMapping(value="/reservation/admin/editResourceContent.on")
+	public ModelAndView editResourceContent(ModelAndView mav, HttpServletRequest request) throws Throwable {
+		
+		String lgcatgono= request.getParameter("lgcatgono");
+		String listgobackURL_reserv= request.getParameter("listgobackURL_reserv");
+		
+		Map<String,String> paraMap = new HashMap<String, String>();
+		paraMap.put("lgcatgono", lgcatgono);
+
+		try {
+			Integer.parseInt(lgcatgono);
+			ReservLargeCategoryVO lvo = service.editResourceContent(paraMap);
+			
+			mav.addObject("lvo", lvo);
+			mav.addObject("listgobackURL_reserv", listgobackURL_reserv);
+			mav.setViewName("reservation/admin/resource_content.tiles");
+				
+		} catch (NumberFormatException e) {
+			mav.setViewName("redirect:"+listgobackURL_reserv);
+		}
+		
+		return mav;
+	} // end of public ModelAndView changeStatus(ModelAndView mav, HttpServletRequest request) throws Throwable 
+ 
+			
+	// 자원 안내 수정 최종
+	@RequestMapping(value="/reservation/admin/endEditResourceContent.on", method = {RequestMethod.POST})
+	public ModelAndView endEditResourceContent(ModelAndView mav, HttpServletRequest request) throws Throwable {
+		
+		String lgcategcontent= request.getParameter("lgcategcontent");
+		String lgcatgono= request.getParameter("lgcatgono");
+		String empno= request.getParameter("empno");
+		String listgobackURL_reserv= request.getParameter("listgobackURL_reserv");
+		
+		Map<String,String> paraMap = new HashMap<String, String>();
+		paraMap.put("lgcategcontent", lgcategcontent);
+		paraMap.put("lgcatgono", lgcatgono);
+		paraMap.put("empno", empno);
+
+		int n = service.endEditResourceContent(paraMap);
+
+		if(n == 0) {
+			mav.addObject("message", "자원 안내 변경을 실패하셨습니다.");
+			mav.addObject("loc", request.getContextPath()+listgobackURL_reserv);
+
+		}
+		else {
+			mav.addObject("message", "자원 안내 변경이 완료되었습니다.");
+			mav.addObject("loc", request.getContextPath()+listgobackURL_reserv);
+		}
+		
+		mav.setViewName("msg"); 
+		
+		return mav;
+	} // end of public ModelAndView changeStatus(ModelAndView mav, HttpServletRequest request) throws Throwable 
 	
 	
 	

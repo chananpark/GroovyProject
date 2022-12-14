@@ -102,6 +102,86 @@ public class ReservationDAO implements InterReservationDAO {
 		Map<String, String> map = sqlsession.selectOne("yeojin.viewReservation", paraMap);
 		return map;
 	}
+
+
+	// 이용자 예약 내역 전체 개수 구하기
+	@Override
+	public int getResrvSearchCnt(Map<String, Object> paraMap) {
+		int n = sqlsession.selectOne("yeojin.getResrvSearchCnt", paraMap);
+		return n;
+	}
+
+	
+	// 한 페이지에 표시할 이용자 예약 내역 글 목록
+	@Override
+	public List<Map<String, String>> getResrvList(Map<String, Object> paraMap) {
+		List<Map<String,String>> reservList = sqlsession.selectList("yeojin.getResrvList", paraMap);
+		return reservList;
+	}
+
+
+	// 자원 목록
+	@Override
+	public List<Map<String, String>> managementResource() {
+		List<Map<String,String>> resourceList = sqlsession.selectList("yeojin.managementResource");
+		return resourceList;
+	}
+
+
+	// 자원명 수정 메소드
+	@Override
+	public int editSmcatgoname(Map<String, String> paraMap) {
+		int n = sqlsession.update("yeojin.editSmcatgoname", paraMap);
+		return n;
+	}
+
+
+	// 자원 추가 메소드
+	@Override
+	public int addSmcatgo(Map<String, String> paraMap) {
+		int n = sqlsession.insert("yeojin.addSmcatgo", paraMap);
+		return n;
+	}
+
+
+	// 자원 상태 변경 메소드
+	@Override
+	public int changeStatus(Map<String, String> paraMap) {
+		int n = sqlsession.insert("yeojin.changeStatus", paraMap);
+		return n;
+	}
+
+
+	// 버튼 클릭 시 자원 항목 리스트 변경 메소드
+	@Override
+	public List<Map<String, String>> resourceFilter(Map<String, String> paraMap) {
+		List<Map<String,String>> resourceList = sqlsession.selectList("yeojin.resourceFilter", paraMap);
+		return resourceList;
+	}
+
+
+	// 예약 안내 페이지 수정
+	@Override
+	public ReservLargeCategoryVO editResourceContent(Map<String, String> paraMap) {
+		ReservLargeCategoryVO lvo = sqlsession.selectOne("yeojin.editResourceContent", paraMap);
+		return lvo;
+	}
+
+
+	// 자원 안내 수정 최종
+	@Override
+	public int endEditResourceContent(Map<String, String> paraMap) {
+		int n = sqlsession.update("yeojin.endEditResourceContent", paraMap);
+		return n;
+	}
+
+
+	// 자원 안내 내용 보여주기
+	@Override
+	public ReservLargeCategoryVO mainLgcategContent(String lgcatgono) {
+		ReservLargeCategoryVO lvo = sqlsession.selectOne("yeojin.mainLgcategContent", lgcatgono);
+		return lvo;
+	}
 	
 	
 	

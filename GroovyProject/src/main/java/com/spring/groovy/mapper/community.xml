@@ -185,6 +185,12 @@
 		DELETE FROM TBL_COMMUNITY_POST_TEMP
 		WHERE TEMP_POST_NO = #{temp_post_no}
 	</update>
+	
+	<!-- 30일 지난 임시저장 글 삭제하기 -->
+	<delete id="autoDeleteTempPost">
+		DELETE FROM TBL_COMMUNITY_POST_TEMP
+		WHERE to_date(POST_DATE, 'yyyy-mm-dd') lte to_date(ADD_MONTHS(sysdate, -1),'yyyy-mm-dd')
+	</delete>
 
 	<!-- 좋아요 목록 조회 -->
 	<select id="getLikeList" resultType="com.spring.groovy.community.model.CommunityLikeVO" parameterType="String">

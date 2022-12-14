@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
@@ -293,6 +294,13 @@ public class CommunityService implements InterCommunityService {
 		return resultMapList;
 	}
 
+	// 30일 지난 임시저장 글 삭제하기
+	@Override
+	@Scheduled(cron="0 0 0 * * *")
+	public void autoDeleteTempPost() {
+		dao.autoDeleteTempPost();
+	}
+	
 	// 좋아요 목록 조회
 	@Override
 	public List<CommunityLikeVO> getLikeList(String post_no) {

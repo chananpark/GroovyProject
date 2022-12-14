@@ -38,6 +38,36 @@ public interface InterReservationDAO {
 	// 예약 내역 상세보기
 	Map<String, String> viewReservation(Map<String, String> paraMap);
 
+	// 이용자 예약 내역 전체 개수 구하기
+	int getResrvSearchCnt(Map<String, Object> paraMap);
+
+	// 한 페이지에 표시할 이용자 예약 내역 글 목록
+	List<Map<String, String>> getResrvList(Map<String, Object> paraMap);
+
+	// 자원 목록
+	List<Map<String, String>> managementResource();
+
+	// 자원명 수정 메소드
+	int editSmcatgoname(Map<String, String> paraMap);
+
+	// 자원 추가 메소드
+	int addSmcatgo(Map<String, String> paraMap);
+
+	// 자원 상태 변경 메소드
+	int changeStatus(Map<String, String> paraMap);
+
+	// 버튼 클릭 시 자원 항목 리스트 변경 메소드
+	List<Map<String, String>> resourceFilter(Map<String, String> paraMap);
+
+	// 예약 안내 페이지 수정
+	ReservLargeCategoryVO editResourceContent(Map<String, String> paraMap);
+
+	// 자원 안내 수정 최종
+	int endEditResourceContent(Map<String, String> paraMap);
+
+	// 자원 안내 내용 보여주기
+	ReservLargeCategoryVO mainLgcategContent(String lgcatgono);
+
 	
 	
 	
