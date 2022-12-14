@@ -241,11 +241,16 @@ const showList = () => {
 	else
 		location.href="javascript:history.go(-1)";
 }
+
+// 상신 취소
+const cancelDraft = () => {
+	location.href = "<%=ctxPath%>/approval/cancel.on?draft_no=" + '${draftMap.dvo.draft_no}' + "&fk_draft_type_no=" + '${draftMap.dvo.fk_draft_type_no}';
+}
 </script>
 
 <div class="container">
 	
-	<button type='button' id='cancelDraftBtn' class='btn btn-lg'><i class="far fa-window-close"></i> 상신 취소</button>
+	<button type='button' id='cancelDraftBtn' class='btn btn-lg' onclick="cancelDraft()"><i class="far fa-window-close"></i> 상신 취소</button>
 	<span style='color: gray; font-size: small'>상신 취소 시 임시저장함에 저장됩니다.</span>
 	
 	<div class="card">

@@ -3,8 +3,6 @@ package com.spring.groovy.approval.service;
 import java.util.List;
 import java.util.Map;
 
-import org.json.JSONArray;
-
 import com.spring.groovy.approval.model.ApprovalVO;
 import com.spring.groovy.approval.model.DraftFileVO;
 import com.spring.groovy.approval.model.DraftVO;
@@ -95,11 +93,20 @@ public interface InterApprovalService {
 	// 30일 지난 임시저장 글 삭제하기
 	void autoDeleteSavedDraft();
 
-	// 기안문서 조회
+	// 기안문서 상세 조회
 	Map<String, Object> getDraftDetail(DraftVO dvo);
+	
+	// 기안문서 조회
+	DraftVO getDraftInfo(DraftVO dvo);
+
+	// 임시저장 문서 조회
+	Map<String, Object> getTempDraftDetail(DraftVO dvo);
 
 	// 첨부파일 1개 조회
-	DraftFileVO getAttachedFile(String draft_file_no);
+	DraftFileVO getOneAttachedFile(String draft_file_no);
+	
+	// 모든 첨부파일 조회
+	List<DraftFileVO> getAllAttachedFile(String draft_no);
 	
 	// 결재 처리하기
 	boolean updateApproval(ApprovalVO avo);
@@ -124,8 +131,11 @@ public interface InterApprovalService {
 
 	// 환경설정-서명이미지 수정
 	int updateSignature(Map<String, String> paraMap);
+	
+	// 기안 상신취소하기
+	boolean cancelDraft(DraftVO dvo);
 
-	// 임시저장 문서 조회
-	Map<String, Object> getTempDraftDetail(DraftVO dvo);
+	// 첨부파일 삭제하기
+	boolean deleteFiles(Map<String, Object> paraMap);
 
 }

@@ -175,15 +175,15 @@ public class ApprovalController {
 		
 		switch (fk_draft_type_no) {
 		case "1":
-			mav.setViewName("approval/draft_detail/temp_work_detail.tiles");
+			mav.setViewName("approval/draft_detail/temp/temp_work_detail.tiles");
 			break;
 			
 		case "2":
-			mav.setViewName("approval/draft_detail/temp_expense_detail.tiles");
+			mav.setViewName("approval/draft_detail/temp/temp_expense_detail.tiles");
 			break;
 			
 		case "3":
-			mav.setViewName("approval/draft_detail/temp_business_trip_detail.tiles");
+			mav.setViewName("approval/draft_detail/temp/temp_business_trip_detail.tiles");
 			break;
 			
 		default:
@@ -218,7 +218,7 @@ public class ApprovalController {
 		PrintWriter out = null;
 
 		try {
-			DraftFileVO dfvo = service.getAttachedFile(draft_file_no); // 파일 조회
+			DraftFileVO dfvo = service.getOneAttachedFile(draft_file_no); // 파일 조회
 			
 			// 글번호가 없거나 파일 이름이 없다면
 			if (dfvo == null || (dfvo != null && dfvo.getFilename() == null)) {
@@ -596,8 +596,8 @@ public class ApprovalController {
 	}
 
 	// 파일 업로드 경로 지정
-	private String setFilePath(MultipartHttpServletRequest mtfRequest, String directory) {
-		HttpSession session = mtfRequest.getSession();
+	private String setFilePath(HttpServletRequest request, String directory) {
+		HttpSession session = request.getSession();
 		String root = session.getServletContext().getRealPath("/");
 		String path = root + "resources" + File.separator + directory;
 		
@@ -796,11 +796,61 @@ public class ApprovalController {
 		return jsonObj.toString();
 	}
 
+	// 기안 상신취소하기
+	@RequestMapping(value = "/cancel.on")
+	public ModelAndView cancelDraft(ModelAndView mav, HttpServletRequest request, DraftVO dvo) {
+		MemberVO loginuser = getLoginUser(request);
+		
+		// 기안 조회하기
+		dvo = service.getDraftInfo(dvo);
+		
+		// 작성자 본인이 아닐 경우
+		if (!loginuser.getEmpno().equals(String.valueOf(dvo.getFk_draft_empno()))) {
+			mav.addObject("message", "다른 사람의 기안을 상신취소할 수 없습니다.");
+			mav.addObject("loc", "javascript:history.back()");
+			mav.setViewName("msg");
+		}
+		else {
+			
+			Map<String, Object> paraMap = new HashMap<>();
+			paraMap.put("filePath", setFilePath(request, "files")); // 파일 저장 경로
+			paraMap.put("dvo", dvo); // 기안 vo
+			
+			// 파일삭제
+			boolean result = service.deleteFiles(paraMap);
+			
+			// 파일삭제 성공 시
+			if (result) {
+				
+				// 기안 상신취소하기
+				result = service.cancelDraft(dvo);
+
+				if (!result) {
+					mav.addObject("message", "상신 취소 실패하였습니다.");
+					mav.addObject("loc", "javascript:history.back()");
+					mav.setViewName("msg");
+				}
+				else {
+					mav.addObject("message", "상신 취소 되었습니다.");
+					mav.addObject("loc", request.getContextPath()+"/approval/personal/saved.on");
+					mav.setViewName("msg");
+				}
+			}
+			else {
+				mav.addObject("message", "상신 취소 실패하였습니다.");
+				mav.addObject("loc", "javascript:history.history.back()");
+				mav.setViewName("msg");
+			}
+		}
+
+		return mav;
+	}
+	
 	// 환경설정-결재라인관리 페이지요청
 	@RequestMapping(value = "/config/approvalLine.on")
 	public ModelAndView configApprovalLine(ModelAndView mav, HttpServletRequest request) {
 		MemberVO loginuser = getLoginUser(request);
-
+		
 		Map<String, String> paraMap = new HashMap<>();
 		paraMap.put("empno", loginuser.getEmpno());
 		
