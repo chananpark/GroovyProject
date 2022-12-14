@@ -142,9 +142,7 @@
 						const option3 = $("#option3"+i).val();
 						const option4 = $("#option4"+i).val();
 						const option5 = $("#option5"+i).val();
-						
-					//	const frm = $("form[name='frm"+i+"']").serialize();
-					//	리텀값frm.fk_surno.value=fk_surno; 을 전역변수에 담아놔야한다.
+				
 					
 						$.ajax({
 							url:"<%=ctxPath%>/survey/surveyWritingFinish.on",
@@ -162,8 +160,7 @@
 							success:function(json){
 								
 								if(json.p == 1) {
-									alert([i] +"질문 등록 완료하였습니다.");
-									loction.href="<%=ctxPath%>/survey/surveyList.on"
+									alert([i] +"설문 등록 완료하였습니다.");
 								}
 								else {
 									alert([i] +"질문 등록 실패하였습니다.");
@@ -175,8 +172,7 @@
 							  }
 						});
 					} // end of for -------------------------
-					
-					
+					loction.href="<%=ctxPath%>/survey/surveyList.on"
 				}
 				else {
 					alert("설문지 등록 실패하였습니다.");

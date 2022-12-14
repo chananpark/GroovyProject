@@ -45,38 +45,36 @@
 
 	$(document).ready(function(){
 		
-		
 		// === 삭제하기 버튼을 클릭하면 === //
 		$("button#btn_delete").click(function(){
 			
-			//const surno = $("input[name='surno']").val();
+			const $surno = $("input[name='surno']").val();
 			const result = confirm("해당 설문지를 삭제하시겠습니까?");
+			console.log($surno );
 			
 			if(result){
-				delete_result();
+				btn_delete($surno);
 			}
 			
-			
-			
-			
 		}); // end of $("button#btn_delete").click(function(){ --------------------
-		
-		
 	}); // end of $(document).ready(function(){ ------------------------------
 	
 		
 		
 	// >> 삭제하기 버튼을 클릭하면 << //
-	function delete_result(surno) {
+	function btn_delete(surno) {
+		
 		$.ajax({
 			url:"<%=ctxPath%>/survey/surveyDelete.on",
-			data:{"surno":$("requestScope.surno").val()},
+			data:{"surno":$("input[name='surno']").val()},
 			type:"POST",
 			dataType:"JSON",
 			success:function(json){
 				
+				console.log(json.n);
 				if(json.n == 1){
-					alert("해당 설문지를 삭제하였습니다");
+					swal("해당 설문지를 삭제하였습니다");
+					location.href="<%= ctxPath%>/survey/surveyManage.on";
 				}
 				else {
 					swal("설문지 삭제실패.");
@@ -108,8 +106,8 @@
 		
 	
 		<div class="my-3">
-			<button type="button" id="btn_delete" class="btn btn-sm" >삭제</button>
-			<button id="btn_update" class="btn btn-sm" style="background-color:#086BDE; color:white;">수정</button>
+			<button type="button" id="btn_delete"  class="btn btn-sm" >삭제</button>
+			<!-- <button id="btn_update" class="btn btn-sm" style="background-color:#086BDE; color:white;">수정</button> -->
 			<button ><i class="fas fa-download fa-1x"></i> 결과다운로드(Excel)</button>
 		</div>
 	
@@ -138,13 +136,7 @@
 	</c:forEach>		
 			
 			
-			
-			
-			
-			
-			
 		</div>
-		
 		
 		<div align="center">
 			<button class="btn btn-sm" onclick="javascript:history.back()" style="background-color:#086BDE; color:white; width: 80px;">뒤로</button>

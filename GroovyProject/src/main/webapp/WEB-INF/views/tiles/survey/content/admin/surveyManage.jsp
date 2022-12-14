@@ -50,24 +50,9 @@
 
 	$(document).ready(function(){
 		
-		// === 설문지제목을 누르면 === //
-		$("input#surtitle").click(function(){
-			const surno = $("input#surno").val();
-			func_survey(surno);
-		}); // end of $("input#surtitle").click(function(){ -------------------------
-		
 		
 	}); // end of 
 	
-	
-	// >>> 설문결과를 보여주는 페이지 <<<
-	function  func_survey(surno) {
-		
-		const frm = document.frm_surveyManageList;
-		frm.action="<%=ctxPath%>/survey/surveyManageView.on";
-		frm.method="POST";
-		frm.submit();
-	}
 
 </script>
 
@@ -136,7 +121,7 @@
 						<!-- <div id="situation3" type="text" name="" value="종료" readonly/> -->
 					</td>
 					
-					<td><input type="button" name="surtitle" id="surtitle" value="${survey.surtitle}"  style="background-color: white;"/>
+					<td><a name="surtitle" id="surtitle" href="<%=ctxPath%>/survey/surveyManageView.on?surno=${survey.surno}" style="color: black;">${survey.surtitle}</a>
 					<td>${survey.surcreatedate}</td>
 					<td>
 						<c:choose>

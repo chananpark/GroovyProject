@@ -135,6 +135,7 @@ $("div#team").hide();
 			<span class="mb-3 mr-5" style="font-weight: bold;">설문종료일&nbsp;&nbsp;<input type="date" name="surend"/></span>
 		</div>
 		
+<%-- 다음기회에 
 		<div>
 			<div class="mb-3">설문대상</div>
 			<input type="checkbox" name="surtarget" value="1" onclick="checkOnlyOne(this)" style="margin-left: 1%;">&nbsp;전사원 </input> <br>
@@ -150,7 +151,7 @@ $("div#team").hide();
 				
 			</div>
 		</div>
-		
+--%>	
 		
 		<div>
 			<div class="mb-3">설문결과 공개</div>
@@ -161,7 +162,7 @@ $("div#team").hide();
 	</div>
 	
 	<div align="center" class="mt-5">
-		<button id="btn_cancle" class="btn btn-sm"  href="location.href='redirect:/survey/surveyList.on'">취소</button>
+		<button id="btn_cancle" class="btn btn-sm" onclick="javascript:location.href='<%=ctxPath%>/survey/surveyWriting.on'">취소</button>
 		<button id="btn_next" class="btn btn-sm"  onclick="go_nextSelect()" >다음</button>
 	</div>
 

@@ -15,6 +15,7 @@ import com.spring.groovy.survey.model.AskVO;
 import com.spring.groovy.survey.model.InterSurveyDAO;
 import com.spring.groovy.survey.model.JoinSurveyVO;
 import com.spring.groovy.survey.model.SurveyVO;
+import com.spring.groovy.survey.model.TargetVO;
 
 @Service
 public class SurveyService implements InterSurveyService {
@@ -115,8 +116,6 @@ public class SurveyService implements InterSurveyService {
 	// 설문결과를 조회하는 select
 	@Override
 	public List<SurveyVO> resultView(Map<String, Object> paraMap) {
-		String surno = (String) paraMap.get("surno");
-		System.out.println(surno+"service");
 		return dao.resultView(paraMap);
 	}
 
@@ -124,6 +123,9 @@ public class SurveyService implements InterSurveyService {
 	// 설문지를 삭제 delete
 	@Override
 	public int surveyDelete(Map<String, Object> paraMap) {
+		
+		String surno = (String) paraMap.get("surno");
+		System.out.println(surno+"service");
 		return dao.surveyDelete(paraMap);
 	}
 

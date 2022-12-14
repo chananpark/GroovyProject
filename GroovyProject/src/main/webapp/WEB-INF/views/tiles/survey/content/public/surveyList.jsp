@@ -2,6 +2,8 @@
     pageEncoding="UTF-8"%>
     
  <% String ctxPath = request.getContextPath(); %>
+ 
+ <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
  <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <style>
@@ -60,12 +62,21 @@
 		$("input#surtitle").click(function(){
 			const surno = $("input#surno").val();
 			go_survey(surno);
+		
+			
 		}); // end of $("input#surtitle").click(function(){ -------------------------
 		
+		/* 
+		const notjoin = $("input[name='surjoindate']").length();
+		console.log(notjoin); */
+			
+		var notsurvey = $("input[name='surjoindate']").length;
+		$("#noCnt").html("("+ length+")").css("background-color","yellow");
+
 		
 	}); // end of document.ready(function(){----------------------------
 
-
+<%-- 
 	//>>> 설문지 제목버튼을 누르면 <<<
 	function go_survey(surno) {
 		
@@ -73,13 +84,11 @@
 		frm.action="<%=ctxPath%>/survey/surveyJoin.on";
 		frm.method="GET";
 		frm.submit();
-	}
+	} --%>
 
 </script>
 
 
-
-<form name="frm_surveyList">
 <div id="div_surveyList">
 
 	<div style='margin: 1% 0 3% 1%'>
@@ -102,8 +111,11 @@
 	<div class="m-4">
 		<div  style='margin: 1% 0 3% 1%'>
 			<span style="color:#086BDE"><input type="button" name="" value="전체  (${requestScope.listCnt})"/></span>
-			<span><input type="button" onclick="go_NotsurveyList()">미참여 &nbsp; </button></span> <%--  value="${empty requestScope.surjoindate}" --%>
-			<span><input type="button"onclick="go_OksurveyList()">참여 (2) &nbsp;</button></span>
+			<%-- <span><c:if test="${empty survey.surjoindate}">
+					<input type="button" onclick="go_NotsurveyList()" value="미참여"/><fn:length(surjoindate)></fn:length()>
+					</c:if>
+			<span id="noCnt"></span> </span></c:if>  value="${empty requestScope.surjoindate}"
+			<span><input type="button"onclick="go_OksurveyList()">참여 (2) &nbsp;</button></span> --%>
 		</div>
 		
 		<div class="table table-sm" style='margin: 1% 0 3% 1%' >
@@ -142,7 +154,7 @@
 							</c:if>
 						</td>
 						<%-- <td><a href="<%= ctxPath%>/survey/surveyJoin.on" style="color:black;">${survey.surtitle}</a></td> --%>
-						<td><input type="button" name="surtitle" id="surtitle" value="${survey.surtitle}"  style="background-color: white;"/>
+						<td><a name="surtitle" id="surtitle" href="<%=ctxPath%>/survey/surveyJoin.on?surno=${survey.surno}"  style="color: black;">${survey.surtitle}</a>
 								<!-- onclick="go_survey()" -->
 						</td>
 						<td>${survey.surstart}~${survey.surend}</td>
@@ -173,4 +185,4 @@
 	
 </div>
 
-</form>
+

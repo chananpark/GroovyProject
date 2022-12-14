@@ -524,11 +524,13 @@ create table  tbl_survey
 ,surend	   	    date  			        not null   -- 설문종료일
 ,surstatus    	number(1)   default 1  	not null   -- 상태(0 임시저장, 1 저장)
 ,suropenstatus  number(1)   default 1   not null   -- 설문결과공개여부(0비공개, 1공개)
+,fk_surtarget   number(1)   default 1              -- 설문대상(1전직원, 0직접선택)
 ,constraint PK_tbl_survey_surno primary key(surno)
 ,constraint FK_tbl_survey_fk_empno foreign key(fk_empno) references tbl_employee(empno)
 ,constraint CK_tbl_survey_surstatus check( surstatus in('0','1') )
 ,constraint CK_tbl_survey_suropenstatus check(suropenstatus in('0','1') )
 );
+
 
 -- 설문조사테이블 시퀀스
 create sequence seq_tbl_survey
@@ -539,17 +541,14 @@ nominvalue
 nocycle
 nocache;
 
-
+   
 -- 설문조사대상테이블
-create table  tbl_target
-(surtarget     	number(1)    not null   -- 설문대상(1전직원, 0직접선택)
-,fk_surno		number(20)        	     not null   -- 설문번호
+create table tbl_target
+(surtarget      number(1)    default 1    not null   -- 설문대상
+,fk_surno		number(20)       not null   -- 설문번호
 ,constraint PK_tbl_target_surtarget primary key(surtarget)
-,constraint CK_tbl_target_surtarget check(surtarget in('0','1') )
 ,constraint FK_tbl_target_fk_surno foreign key(fk_surno) references tbl_survey(surno)ON DELETE CASCADE
 );
-
-drop table tbl_target
 
 -- 설문조사대상테이블 시퀀스
 create sequence seq_tbl_target
@@ -775,7 +774,11 @@ WHERE NAME ='김민수'
         FROM TBL_SURVEY S LEFT JOIN TBL_TARGET T
         ON S.SURNO = T.FK_SURNO
 
-
+INSERT INTO TBL_SURVEY(SURNO,FK_EMPNO,SURTITLE,SUREXPLAIN,SURCREATEDATE,SURSTART,SUREND,SURSTATUS,SUROPENSTATUS, SURTARGET)
+		VALUES(#{surno},#{fk_empno},#{surtitle},#{surexplain},sysdate,#{surstart},#{surend},default, default,#{surtarget})
+ SELECT *
+ FROM       TBL_SURVEY 
+        
 delete from TBL_SURVEY
 where surno = 47
 
@@ -790,4 +793,35 @@ rollback;
         WHERE SURNO = 47
 
 
+SELECT QUESTNO,FK_SURNO,QUESTION,OPTION1,OPTION2,OPTION3,OPTION4,OPTION5
+		      ,SURTITLE, SUREXPLAIN
+		FROM TBL_ASK A left JOIN TBL_SURVEY S
+		ON A.FK_SURNO = S.SURNO 
+		WHERE FK_SURNO = #{surno}
         
+
+-- 제약추가하기
+ALTER TABLE tbl_employee add constraint  UK_tbl_employee_pay  unique(pay);
+
+ALTER TABLE tbl_survey add constraint  FK_tbl_survey_fk_surtarget foreign key(fk_surtarget) references tbl_target(surtarget)ON DELETE CASCADE;
+
+alter table tbl_survey add column surtarget
+
+
+
+-- 컬럼삭제
+alter table tbl_survey drop column FK_surtarget
+,constraint FK_tbl_joinsurvey_fk_questno foreign key(fk_questno) references tbl_ask(questno)ON DELETE CASCADE
+COMMIT
+
+SELECT *
+FROM TBL_SURVEY
+ORDER BY SURNO DESc
+
+select *
+from tbl_target
+
+DELETE FROM TBL_SURVEY
+WHERE SURNO = 65
+
+rollback

@@ -51,6 +51,8 @@ public interface InterSurveyDAO {
 
 	// 설문지를 삭제 delete
 	int surveyDelete(Map<String, Object> paraMap);
+
+
 	
 
 	

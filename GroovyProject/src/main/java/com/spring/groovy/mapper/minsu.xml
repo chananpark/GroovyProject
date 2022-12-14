@@ -422,6 +422,10 @@
 	</insert>
 	
 	
+	
+	<!-- ****************************************************************************************************- -->
+	
+	
 	<!-- 다음설문번호를 알아오는 매소드  -->
 	<select id="getsurno" resultType="String" >
 		SELECT SEQ_TBL_SURVEY.NEXTVAL FROM DUAL
@@ -429,10 +433,11 @@
 	
 	<!-- 관리자 - 설문작성(설문조사 번호 insert하기) -->
 	<insert id="getsurveyList" parameterType="com.spring.groovy.survey.model.SurveyVO">
-		INSERT INTO TBL_SURVEY(SURNO,FK_EMPNO,SURTITLE,SUREXPLAIN,SURCREATEDATE,SURSTART,SUREND,SURSTATUS,SUROPENSTATUS, SURTARGET)
-		VALUES(#{surno},#{fk_empno},#{surtitle},#{surexplain},sysdate,#{surstart},#{surend},default, default,#{surtarget})
+		INSERT INTO TBL_SURVEY(SURNO,FK_EMPNO,SURTITLE,SUREXPLAIN,SURCREATEDATE,SURSTART,SUREND,SURSTATUS,SUROPENSTATUS)
+		VALUES(#{surno},#{fk_empno},#{surtitle},#{surexplain},sysdate,#{surstart},#{surend},default, default)
+		
 	</insert>
-	
+
 	
 	<!-- 관리자 - 설문작성(한 문항씩 insert하기) -->
 	<insert id="getAskList" parameterType="HashMap" >
@@ -458,7 +463,7 @@
 	    SELECT *
 	    FROM (SELECT ROWNUM AS RNO, V.*
 	        FROM( 
-	            SELECT SURNO,SURTITLE,SUREXPLAIN,TO_CHAR(SURCREATEDATE, 'YYYY-MM-DD')SURCREATEDATE,SURSTART,SUREND,SURSTATUS,SURTARGET
+	            SELECT SURNO,SURTITLE,SUREXPLAIN,TO_CHAR(SURCREATEDATE, 'YYYY-MM-DD')SURCREATEDATE,SURSTART,SUREND,SURSTATUS
 	            FROM TBL_SURVEY S LEFT JOIN TBL_TARGET T
 	            ON S.SURNO = T.FK_SURNO
 	         	 <if test='searchType != "" and searchWord != "" '> 
@@ -473,13 +478,13 @@
 	<!-- 설문결과를 조회하는 select -->
 	<select id="resultView"  parameterType="HashMap" resultType="com.spring.groovy.survey.model.SurveyVO">
         SELECT SURNO, SURTITLE, SUREXPLAIN, TO_CHAR(SURCREATEDATE,'YYYY-MM-DD')SURCREATEDATE
-        	  ,TO_CHAR(SURSTART,'YYYY-MM-DD') SURSTART,TO_CHAR(SUREND,'YYYY-MM-DD')SUREND, SURSTATUS,SURTARGET
+        	  ,TO_CHAR(SURSTART,'YYYY-MM-DD') SURSTART,TO_CHAR(SUREND,'YYYY-MM-DD')SUREND, SURSTATUS
         FROM TBL_SURVEY S LEFT JOIN TBL_TARGET T
         ON S.SURNO = T.FK_SURNO
         WHERE SURNO = #{surno}
 	</select>
 	
-
+<!-- 설문결과를 조회하는 empno가없는 거 만들기 -->
 	
 	<!-- 설문지를 삭제 delete -->
 	<delete id="surveyDelete" parameterType="HashMap">

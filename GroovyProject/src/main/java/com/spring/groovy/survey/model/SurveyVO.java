@@ -11,7 +11,7 @@ public class SurveyVO {
 	private String surend;	 		// 설문종료일
 	private String surstatus;       // 상태(0 임시저장, 1 저장)  default 1
 	private String suropenstatus;   // 설문결과공개여부(0비공개, 1공개)  default 1
-	
+	private String fk_surtarget;	// 설문대상(1전직원, 0직접선택)
 	
 	private String fk_department_no; // 조인
 	private String surjoindate;      // 조인(JoinSurveyVO)
@@ -73,15 +73,20 @@ public class SurveyVO {
 	public void setSuropenstatus(String suropenstatus) {
 		this.suropenstatus = suropenstatus;
 	}
+	public String getFk_surtarget() {
+		return fk_surtarget;
+	}
+	public void setFk_surtarget(String fk_surtarget) {
+		this.fk_surtarget = fk_surtarget;
+	}
+	
+	
 	public String getFk_department_no() {
 		return fk_department_no;
 	}
 	public void setFk_department_no(String fk_department_no) {
 		this.fk_department_no = fk_department_no;
 	}
-	
-	
-	
 	public String getSurjoindate() {
 		return surjoindate;
 	}
