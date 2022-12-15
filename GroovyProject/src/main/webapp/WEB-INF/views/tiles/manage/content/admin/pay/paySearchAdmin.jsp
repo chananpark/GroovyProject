@@ -125,9 +125,8 @@
 		<div style="margin-left: 73%;" class="pt-1">
 			<span>
 				<select style="width: 100px; border:solid 1px #cccccc;" name="searchType"> 
-					<option> ====== </option>
-					<option name="name">사원명</option>
-					<option name="department">부서명</option>
+					<option value="name">사원명</option>
+					<option value="department">부서명</option>
 				</select> 
 			</span>
 			<input type="text"style="width: 120px; border:solid 1px #cccccc;" name="searchWord"/>

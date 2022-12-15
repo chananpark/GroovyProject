@@ -154,7 +154,13 @@
 	</div>
 	
 	<div class='mx-4'  style="background-color:#e3f2fd; width: 100%; height: 45px;">
-		<div style="margin-left: 82%;" class="pt-1">
+		<div style="margin-left: 73%;" class="pt-1">
+			<span>
+				<select style="width: 110px; border:solid 1px #cccccc;" name="searchType"> 
+					<option value="paymentdate">지급일</option>
+					<option value="monthpay">실지급액</option>
+				</select> 
+			</span>
 			<input type="text"style="width: 120px; border:solid 1px #cccccc;" name="searchWord"/>
 			<button class="btn btn-sm" style="background-color: #086BDE; color:white; width: 60px;font-size:14px;"><i class="fas fa-search"></i>검색</button>
 		</div>

@@ -126,6 +126,7 @@
 		<if test='searchType != "" and searchWord != "" '>
 		WHERE LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
 		</if>
+		
 	</select>
 	
 	<!-- 경조비 목록 - 한 페이지에 표시할 글 목록 (페이징) -->
@@ -135,9 +136,9 @@
 			FROM( 
 			    SELECT *
 			    FROM TBL_CELEBRATE
-			     <if test='searchType != "" and searchWord != "" '>
-		            WHERE LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
-	            </if>
+			      <if test='searchType != "" and searchWord != "" '>
+			    	WHERE LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
+			    </if>
 	            ORDER BY CLBNO DESC
 			)V)
 		WHERE RNO BETWEEN #{startRno} AND #{endRno}
@@ -173,6 +174,14 @@
 		    )P
 	</select>
 	
+	 <!-- 공용 - 급여관리(급여조회) 한 페이지에 표시할  전체 글 개수 구하기(페이징) -->
+	 <select id="getSalaryList" parameterType="com.spring.groovy.common.Pagination" resultType="int">
+	 	SELECT COUNT(*) FROM tbl_celebrate
+		 <if test='searchType != "" and searchWord != "" '>
+	    	WHERE LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
+	    </if>
+	 </select>
+	
 	<!-- 공용 증명서 - 월급리스트 -->
 <!-- 
 	<select id="payView" parameterType="HashMap" resultType="com.spring.groovy.management.model.PayVO">
@@ -189,7 +198,13 @@
 	</select>
 	 -->
 	
-	
+	<!-- 공용 - 급여관리(기본외수당조회) 한 페이지에 표시할  전체 글 개수 구하기(페이징) -->
+	<select id="getOverPayList" parameterType="com.spring.groovy.common.Pagination" resultType="int">
+		SELECT COUNT(*) FROM TBL_PAY
+		 <if test='searchType != "" and searchWord != "" '>
+	    	WHERE LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
+	    </if>
+	</select>
 	
 	
 	
@@ -286,7 +301,7 @@
 			     <if test='searchType != "" and searchWord != "" '>
 		            WHERE LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
 	            </if>
-	            ORDER BY clbno desc
+	            ORDER BY CLBNO DESC
 			)V)
 		WHERE RNO BETWEEN #{startRno} AND #{endRno}
 	</select>
@@ -383,7 +398,7 @@
 			     <if test='searchType != "" and searchWord != "" '>
 		            WHERE LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
 	            </if>
-	            ORDER BY proofno desc
+	            ORDER BY PROOFNO DESC
 			)V)
 		WHERE RNO BETWEEN #{startRno} AND #{endRno}
 	</select>
@@ -414,6 +429,7 @@
 		                 <if test='searchType != "" and searchWord != "" '>
 				            WHERE LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
 			            </if>
+			            ORDER BY PAYMENTDATE DESC
 		            )V
 		        )A
 		    )P

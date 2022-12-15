@@ -327,6 +327,18 @@ public class ManagementService implements InterManagementService {
 		return dao.getcountPayList(pagination);
 	}
 
+	// 공용 - 급여관리(급여조회) 한 페이지에 표시할  전체 글 개수 구하기(페이징)
+	@Override
+	public int getSalaryList(Pagination pagination) {
+		return dao.getSalaryList(pagination);
+	}
+
+	// 공용 - 급여관리(기본외수당조회) 한 페이지에 표시할  전체 글 개수 구하기(페이징)
+	@Override
+	public int getOverPayList(Pagination pagination) {
+		return dao.getOverPayList(pagination);
+	}
+
 
 
 	

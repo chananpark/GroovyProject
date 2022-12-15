@@ -134,6 +134,12 @@ public interface InterManagementService {
 	// 관리자 - 급여관리(급여조회) 한 페이지에 표시할 전체 글 개수 구하기(페이징)
 	int getcountPayList(Pagination pagination);
 
+	// 공용 - 급여관리(급여조회) 한 페이지에 표시할  전체 글 개수 구하기(페이징)
+	int getSalaryList(Pagination pagination);
+
+	// 공용 - 급여관리(기본외수당조회) 한 페이지에 표시할  전체 글 개수 구하기(페이징)
+	int getOverPayList(Pagination pagination);
+
 	
 
 
