@@ -95,12 +95,13 @@
 			<thead>
 				<tr>
 					<th>No</th>
-					<th>사원번호</th>
-					<th>사원명</th>
-					<th>부문</th>
-					<th>부서</th>
-					<th>직급</th>
-					<th>금액<th>
+					<th>초과근무수당</th>
+					<th>연차수당</th>
+					<th>소득세</th>
+					<th>국민연금</th>
+					<th>고용보험</th>
+					<th>부문<th>
+					<th>부서<th>
 					<th>지급기준일<th>
 				</tr>
 				

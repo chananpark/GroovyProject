@@ -63,7 +63,7 @@
 	      <h4 class='mb-4'>설문조사</h4>
 	    </li>
 	    
-	    <!-- 관리자 Links -->
+	  <!-- 관리자 Links -->
      <c:if test="${sessionScope.loginuser != null && loginuser.department ==  '인사총무팀'}">
      <li class="nav-item mb-4">
       	<button id="insertBtn" type="button" style='width:100%;' class="btn btn-outline-dark" onclick="surveyWriting();">설문작성</button>

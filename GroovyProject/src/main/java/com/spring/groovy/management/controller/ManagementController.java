@@ -11,6 +11,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -23,8 +24,11 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
 import com.spring.groovy.common.FileManager;
 import com.spring.groovy.common.Pagination;
+import com.spring.groovy.mail.model.TagVO;
 import com.spring.groovy.management.model.CelebrateVO;
 import com.spring.groovy.management.model.MemberVO;
 import com.spring.groovy.management.model.PayVO;
@@ -357,9 +361,11 @@ public class ManagementController {
 		
 		HttpSession session = request.getSession();
 		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
+		String empno = loginuser.getEmpno();
 		
 		Map<String,Object> paramap = new HashMap<>();
 		paramap.put("pvo", pvo);
+		paramap.put("empno", empno);
 		
 		// 공용 증명서 - 월급리스트
 		List<PayVO> payList = service.paySearch(paramap);
@@ -370,14 +376,51 @@ public class ManagementController {
 		return mav;
 	}
 	
-	//공용 증명서 -  급여관리(기본외수당조회)
-	@RequestMapping(value="/manage/pay/overtimepaySearch.on")
-	public ModelAndView overtimepaySearch(ModelAndView mav, HttpServletRequest request, PayVO pvo) {
+	/*
+	@ResponseBody
+	@RequestMapping(value="/manage/pay/payDetailView.on")
+	public String payDetailView(ModelAndView mav, HttpServletRequest request, PayVO pvo) {
+	
 		HttpSession session = request.getSession();
 		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
+		String empno = loginuser.getEmpno();
+		String payno = request.getParameter("payno");
 		
 		Map<String,Object> paramap = new HashMap<>();
 		paramap.put("pvo", pvo);
+		paramap.put("empno", empno);
+		paramap.put("payno", payno);
+		
+		List<PayVO> payDetailList = null;
+		// 공용 증명서 - 월급리스트
+		payDetailList = service.payView(paramap);
+		
+		JsonArray jsonArr = new JsonArray(); 
+		
+		if(payDetailList != null) {
+			for(PayVO paramap : payDetailList) {
+				JsonObject jsonObj = new JsonObject(); // {}
+				jsonObj.addProperty("empno", empno); 
+				jsonObj.addProperty("payno", payno); 
+				jsonArr.add(jsonObj);
+			}// end of for---------------------------
+		}
+		
+		return jsonArr.toString();
+	}
+	*/
+	
+	//공용 증명서 -  급여관리(기본외수당조회)
+	@RequestMapping(value="/manage/pay/overtimepaySearch.on")
+	public ModelAndView overtimepaySearch(ModelAndView mav, HttpServletRequest request, PayVO pvo) {
+		
+		HttpSession session = request.getSession();
+		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
+		String empno = loginuser.getEmpno();
+		
+		Map<String,Object> paramap = new HashMap<>();
+		paramap.put("pvo", pvo);
+		paramap.put("empno", empno);
 		
 		// 공용 증명서 - 월급리스트
 		List<PayVO> payList = service.paySearch(paramap);
@@ -420,9 +463,6 @@ public class ManagementController {
 		return mav;
 		
 	}
-	
-	
-	// ============= 사원관리 다음기회에 =====================//
 	
 	//관리자 사원관리 - 사원등록(이메일중복확인 Ajax)
 	@ResponseBody
@@ -552,9 +592,32 @@ public class ManagementController {
 		
 	// 관리자 - 급여관리(급여조회)
 	@RequestMapping(value="/manage/pay/paySearchAdmin.on")
-	public String paySearchAdmin(HttpServletRequest request) {
+	public ModelAndView paySearchAdmin(ModelAndView mav,HttpServletRequest request, PayVO pvo, Pagination pagination) {
 		
-		return "manage/admin/pay/paySearchAdmin.tiles";
+		Map<String,Object> paramap = new HashMap<>();
+		paramap.put("pvo", pvo);
+		
+	//	List<PayVO> payList = service.paySearchAdmin(paramap);
+	//	mav.addObject("payList",payList);
+		
+		//  관리자 - 급여관리(급여조회) 한 페이지에 표시할 재직증명서 전체 글 개수 구하기(페이징)
+		int listCnt = service.getcountPayList(pagination);
+		  
+		 // 페이지수 알아오기 (페이징)
+		Map<String, Object> paraMap = pagination.getPageRange(listCnt);// startRno, endRno ==> 첫페이지에 ~번부터 ~까지하 보여줄지 
+		 
+		// 관리자 - 급여관리(급여조회) - 한 페이지에 표시할 글 목록  (페이징 페이지수를 알아온다음에 10개씩보여줌) (페이징)
+		mav.addObject("payList", service.paySearchAdmin(paraMap)); // startRno, endRno을 가지고 select문에 1번
+		
+		 // 페이지바
+		mav.addObject("pagebar",pagination.getPagebar(request.getContextPath()+"/manage/pay/paySearchAdmin.on"));
+		mav.addObject("paraMap", paraMap);
+
+		
+		
+
+		mav.setViewName("manage/admin/pay/paySearchAdmin.tiles");
+		return mav;
 	}
 	
 	// 관리자 - 급여관리(기본외수당)

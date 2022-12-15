@@ -147,37 +147,47 @@
 	
 	<!-- 공용 증명서 - 월급리스트 -->
 	<select id="paySearch" parameterType="HashMap" resultType="com.spring.groovy.management.model.PayVO">
-		
-	SELECT PAYNO, FK_EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, SALARY,PAY ,ANNUALPAY,OVERTIMEPAY,PAYMENTDATE,OVERPAY,
-	        INCOMTAX,PENSION,INSURANCE, ALLPAY, TAX,
-	        (ALLPAY - TAX) AS MONTHPAY
-	FROM 
-	    (
-	        SELECT PAYNO, FK_EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, SALARY,PAY ,ANNUALPAY,OVERTIMEPAY,PAYMENTDATE,OVERPAY,
-	                    INCOMTAX,PENSION,INSURANCE, 
-	                    (SALARY+ANNUALPAY+OVERTIMEPAY) AS ALLPAY,
-	                    (INCOMTAX+PENSION+INSURANCE) AS TAX
-	                    
-	        FROM 
-	        (
-	            SELECT PAYNO, FK_EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, SALARY,PAY ,ANNUALPAY,OVERTIMEPAY,PAYMENTDATE, (ANNUALPAY+OVERTIMEPAY) AS OVERPAY,
-	                    CEIL(SALARY*INCOMTAX) AS INCOMTAX, CEIL(SALARY*PENSION)AS PENSION, CEIL(SALARY*INSURANCE)AS INSURANCE
-	            FROM
-	                (SELECT E.EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, ROUND(SALARY/12)AS SALARY,
-	                        PAYNO, FK_EMPNO, PAY, NVL(ANNUALPAY,0) AS ANNUALPAY, NVL(OVERTIMEPAY,0)  AS OVERTIMEPAY, TO_CHAR(PAYMENTDATE, 'YYYY-MM-DD') AS PAYMENTDATE
-	                        ,INCOMTAX,PENSION,INSURANCE
-	                FROM TBL_EMPLOYEE E RIGHT JOIN TBL_PAY P
-	                ON E.EMPNO = P.FK_EMPNO
-	            )V
-	        )A
-	    )P
+		SELECT PAYNO, FK_EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, SALARY,PAY ,ANNUALPAY,OVERTIMEPAY,PAYMENTDATE,OVERPAY,
+		        INCOMTAX,PENSION,INSURANCE, ALLPAY, TAX,
+		        (ALLPAY - TAX) AS MONTHPAY
+		FROM 
+		    (
+		        SELECT PAYNO, FK_EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, SALARY,PAY ,ANNUALPAY,OVERTIMEPAY,PAYMENTDATE,OVERPAY,
+		                    INCOMTAX,PENSION,INSURANCE, 
+		                    (SALARY+ANNUALPAY+OVERTIMEPAY) AS ALLPAY,
+		                    (INCOMTAX+PENSION+INSURANCE) AS TAX
+		                    
+		        FROM 
+		        (
+		            SELECT PAYNO, FK_EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, SALARY,PAY ,ANNUALPAY,OVERTIMEPAY,PAYMENTDATE, (ANNUALPAY+OVERTIMEPAY) AS OVERPAY,
+		                    CEIL(SALARY*INCOMTAX) AS INCOMTAX, CEIL(SALARY*PENSION)AS PENSION, CEIL(SALARY*INSURANCE)AS INSURANCE
+		            FROM
+		                (SELECT E.EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, ROUND(SALARY/12)AS SALARY,
+		                        PAYNO, FK_EMPNO, PAY, NVL(ANNUALPAY,0) AS ANNUALPAY, NVL(OVERTIMEPAY,0)  AS OVERTIMEPAY, TO_CHAR(PAYMENTDATE, 'YYYY-MM-DD') AS PAYMENTDATE
+		                        ,INCOMTAX,PENSION,INSURANCE
+		                FROM TBL_EMPLOYEE E RIGHT JOIN TBL_PAY P
+		                ON E.EMPNO = P.FK_EMPNO
+		                WHERE EMPNO = #{empno} 
+		            )V
+		        )A
+		    )P
 	</select>
 	
-	
-	
-	
-	
-	
+	<!-- 공용 증명서 - 월급리스트 -->
+<!-- 
+	<select id="payView" parameterType="HashMap" resultType="com.spring.groovy.management.model.PayVO">
+		 SELECT PAYNO, FK_EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, SALARY,PAY ,ANNUALPAY,OVERTIMEPAY,PAYMENTDATE, (ANNUALPAY+OVERTIMEPAY) AS OVERPAY,
+	             CEIL(SALARY*INCOMTAX) AS INCOMTAX, CEIL(SALARY*PENSION)AS PENSION, CEIL(SALARY*INSURANCE)AS INSURANCE
+	     FROM
+	         (SELECT E.EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, ROUND(SALARY/12)AS SALARY,
+	                 PAYNO, FK_EMPNO, PAY, NVL(ANNUALPAY,0) AS ANNUALPAY, NVL(OVERTIMEPAY,0)  AS OVERTIMEPAY, TO_CHAR(PAYMENTDATE, 'YYYY-MM-DD') AS PAYMENTDATE
+	                 ,INCOMTAX,PENSION,INSURANCE
+	         FROM TBL_EMPLOYEE E RIGHT JOIN TBL_PAY P
+	         ON E.EMPNO = P.FK_EMPNO
+	         WHERE EMPNO = 13 and PAYNO = 1 
+	     )V
+	</select>
+	 -->
 	
 	
 	
@@ -378,6 +388,44 @@
 		WHERE RNO BETWEEN #{startRno} AND #{endRno}
 	</select>
 	
+	<!-- 관리자 - 급여관리(급여조회)-->
+	
+	 <select id="paySearchAdmin" parameterType="HashMap" resultType="com.spring.groovy.management.model.PayVO">
+		SELECT PAYNO, FK_EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, SALARY,PAY ,ANNUALPAY,OVERTIMEPAY,PAYMENTDATE,OVERPAY,
+		        INCOMTAX,PENSION,INSURANCE, ALLPAY, TAX,
+		        (ALLPAY - TAX) AS MONTHPAY
+		FROM 
+		    (
+		        SELECT PAYNO, FK_EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, SALARY,PAY ,ANNUALPAY,OVERTIMEPAY,PAYMENTDATE,OVERPAY,
+		                    INCOMTAX,PENSION,INSURANCE, 
+		                    (SALARY+ANNUALPAY+OVERTIMEPAY) AS ALLPAY,
+		                    (INCOMTAX+PENSION+INSURANCE) AS TAX
+		                    
+		        FROM 
+		        (
+		            SELECT PAYNO, FK_EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, SALARY,PAY ,ANNUALPAY,OVERTIMEPAY,PAYMENTDATE, (ANNUALPAY+OVERTIMEPAY) AS OVERPAY,
+		                    CEIL(SALARY*INCOMTAX) AS INCOMTAX, CEIL(SALARY*PENSION)AS PENSION, CEIL(SALARY*INSURANCE)AS INSURANCE
+		            FROM
+		                (SELECT E.EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, ROUND(SALARY/12)AS SALARY,
+		                        PAYNO, FK_EMPNO, PAY, NVL(ANNUALPAY,0) AS ANNUALPAY, NVL(OVERTIMEPAY,0)  AS OVERTIMEPAY, TO_CHAR(PAYMENTDATE, 'YYYY-MM-DD') AS PAYMENTDATE
+		                        ,INCOMTAX,PENSION,INSURANCE
+		                FROM TBL_EMPLOYEE E RIGHT JOIN TBL_PAY P
+		                ON E.EMPNO = P.FK_EMPNO
+		                 <if test='searchType != "" and searchWord != "" '>
+				            WHERE LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
+			            </if>
+		            )V
+		        )A
+		    )P
+	</select>
+	
+	<!-- 관리자 - 급여관리(급여조회) 한 페이지에 표시할 전체 글 개수 구하기(페이징) -->
+	<select id="getcountPayList" parameterType="com.spring.groovy.common.Pagination" resultType="int">
+		SELECT COUNT(*) FROM TBL_PAY
+		<if test='searchType != "" and searchWord != "" '>
+		WHERE LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
+		</if>
+	</select>
 	
 	<!-- ============================================  설문조사  ========================================================= -->
 	

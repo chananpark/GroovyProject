@@ -2,6 +2,7 @@
     pageEncoding="UTF-8"%>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"  %>
 
 <% String ctxPath = request.getContextPath(); %>   
 
@@ -142,30 +143,38 @@
 			<thead>
 				<tr>
 					<th>No</th>
-					<th>지급기준일</th>
+					<th>부문</th>
+					<th>부서</th>
 					<th>사원번호</th>
 					<th>사원명</th>
-					<th>부서</th>
 					<th>지급총액</th>
 					<th>공제급액</th>
 					<th>실지급액</th>
+					<th>지급기준일</th>
 				</tr>
 			</thead>
 			<tbody  onclick="go_detailInfo">
-				<tr class="text-center border" id="list">
-					<td>1</td>
-					<td>223</td>
-					<td>명절상여금</td>
-					<td>김민수</td>
-					<td>200,000</td>
-					<td>완료</td>
-					<td>2022-11-12</td>
-				</tr>
+				<c:forEach var="emp" items="${requestScope.payList}" varStatus="status">
+					<tr class="text-center border" id="list">
+						<td>${status.count}</td>
+						<td>${emp.bumun}</td>
+						<td>${emp.department}</td>
+						<td>${emp.name}</td>
+						<td><fmt:formatNumber value="${emp.allpay}" pattern="#,###" /></td>
+						<td><fmt:formatNumber value="${emp.tax}" pattern="#,###" /></td>
+						<td><fmt:formatNumber value="${emp.monthpay}" pattern="#,###" /></td>
+						<td>${emp.paymentdate}</td>
+					</tr>
+				</c:forEach>
 			</tbody>
 		</table>
 	</div>
+	</div>
+</form>
+
+<div>${pagebar}</div>
 	
-	
+<!-- 	
 	<div class="mt-5" id="detailPay">
 		<h5 class='mx-4'>급여상세</h5>
 		<table class="table table-bordered table-sm mx-4 ">
@@ -218,12 +227,11 @@
 			</span>
 		</div>
 	</div>
-</div>
-</form>
-
+ -->
 
 <%-- 급여상세 모달창 --%>
-<div class="modal" id="go_payDetail" style="font-size: 12px;">
+<%-- 
+	<div class="modal" id="go_payDetail" style="font-size: 12px;">
    <div class="modal-dialog" >
       <div class="modal-content modals-fullsize">
       
@@ -304,7 +312,7 @@
          </table>
          
          <div class="float-center mt-5" style="font-size: 16px;">
-        	 <div> 2022년 11월 15일 </div> <%-- 현재날짜 넣기 --%>
+        	 <div> 2022년 11월 15일 </div> 현재날짜 넣기
         	 <div>(주) Groovy</div>
          </div>
          
@@ -314,5 +322,4 @@
     </div>
  </div>
 
-
-
+ --%>

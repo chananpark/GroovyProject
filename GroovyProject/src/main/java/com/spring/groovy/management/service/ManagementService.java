@@ -308,6 +308,25 @@ public class ManagementService implements InterManagementService {
 		return proofListPG;
 	}
 
+	// 공용 증명서 - 월급리스트
+	@Override
+	public List<PayVO> payView(Map<String, Object> paramap) {
+		return dao.payView(paramap);
+	}
+
+
+	// 관리자 - 급여관리(급여조회)
+	@Override
+	public List<PayVO> paySearchAdmin(Map<String, Object> paramap) {
+		return dao.paySearchAdmin(paramap);
+	}
+
+	// 관리자 - 급여관리(급여조회) 한 페이지에 표시할 전체 글 개수 구하기(페이징)
+	@Override
+	public int getcountPayList(Pagination pagination) {
+		return dao.getcountPayList(pagination);
+	}
+
 
 
 	

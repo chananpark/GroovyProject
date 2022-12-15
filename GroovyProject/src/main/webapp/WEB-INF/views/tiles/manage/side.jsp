@@ -23,6 +23,13 @@
 		color: white;
 	}
 	
+	#insertBtn:hover{
+		border: 1px solid #086BDE;
+		color: white;
+		background-color: #086BDE;
+	}
+	
+	
 </style>
 
 <script type="text/javascript">
@@ -83,6 +90,14 @@
     <li class="nav-item">
       <h4 class='mb-4'>사원관리</h4>
     </li>
+    
+      <!-- 관리자 Links -->
+     <c:if test="${sessionScope.loginuser != null && loginuser.department ==  '인사총무팀'}">
+     <li class="nav-item mb-4">
+      	<button id="insertBtn" type="button" style='width:100%;' class="btn btn-outline-dark" onclick="<%=ctxPath%>/manage/admin/registerInfo.on">사원등록</button>
+    	</li>
+     </c:if> 
+     
     
     <li class="menu topMenu nav-item">
       <a class="nav-link" href="<%= ctxPath%>/manage/info/viewInfo.on">사원정보</a>
