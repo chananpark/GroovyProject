@@ -1,7 +1,5 @@
 package com.spring.groovy.approval.service;
 
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.forwardedUrl;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -26,7 +24,6 @@ import com.spring.groovy.approval.model.InterApprovalDAO;
 import com.spring.groovy.approval.model.OfficialAprvLineVO;
 import com.spring.groovy.approval.model.SavedAprvLineVO;
 import com.spring.groovy.common.FileManager;
-import com.spring.groovy.community.model.CommunityPostFileVO;
 import com.spring.groovy.management.model.MemberVO;
 
 @Service
@@ -634,19 +631,15 @@ public class ApprovalService implements InterApprovalService {
 		if (dfvoList != null && dfvoList.size() > 0) {
 			// 테이블에서 파일 삭제
 			n = dao.deleteFiles(dfvoList);
-			System.out.println("파일삭제결과"+n);
 			
 			// 테이블에서 파일 삭제가 제대로 이루어지지 않았다면
 			if (n != dfvoList.size()) {
 				return false;
 			} 
 			else {
-				System.out.println("파일삭제성공");
 				// 서버에서 파일 삭제
 				for(DraftFileVO file : dfvoList)  {
 					fileManager.doFileDelete(file.getFilename(), (String)paraMap.get("filePath"));
-					System.out.println(file.getFilename());
-					System.out.println((String)paraMap.get("filePath"));
 				}
 				return true;
 			}

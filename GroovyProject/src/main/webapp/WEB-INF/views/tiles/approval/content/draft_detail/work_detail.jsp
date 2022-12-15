@@ -136,7 +136,7 @@ $(()=>{
 	}		
 	
 	// 상신 취소 버튼 감추기
-	$("#cancelDraftBtn").hide();
+	$("#cancelDraftDiv").hide();
 	
 	//  내가 작성한 기안이고 아직 결재가 시작되지 않았을 때만 보임 
 	let statusArr = avoList.map(el => Number(el.approval_status));
@@ -145,7 +145,7 @@ $(()=>{
 	}, 0);
 	
 	if (${draftMap.dvo.fk_draft_empno} == ${loginuser.empno} && status == 0)
-		$("#cancelDraftBtn").show();
+		$("#cancelDraftDiv").show();
 	
 	// 승인 혹은 반려 버튼 클릭시 이벤트
 	$(".myApprovalBtn").click((e)=>{
@@ -192,7 +192,7 @@ const updateApproval = approval_status => {
 	// 대결일 경우
 	else {
 		
-		// 자신의 결재단계
+		// 자신의 결재단계 + 1
 		formData.append("levelno", (Number(myApprovalInfo.levelno)+1));
 		
 		// 결재의견
@@ -250,8 +250,10 @@ const cancelDraft = () => {
 
 <div class="container">
 	
-	<button type='button' id='cancelDraftBtn' class='btn btn-lg' onclick="cancelDraft()"><i class="far fa-window-close"></i> 상신 취소</button>
-	<span style='color: gray; font-size: small'>상신 취소 시 임시저장함에 저장됩니다.</span>
+	<div id='cancelDraftDiv'>
+		<button type='button' id='cancelDraftBtn' class='btn btn-lg' onclick="cancelDraft()"><i class="far fa-window-close"></i> 상신 취소</button>
+		<span style='color: gray; font-size: small'>상신 취소 시 임시저장함에 저장됩니다.</span>
+	</div>
 	
 	<div class="card">
 	<c:if test="${not empty draftMap}">

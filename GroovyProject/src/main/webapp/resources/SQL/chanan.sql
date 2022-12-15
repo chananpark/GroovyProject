@@ -624,3 +624,52 @@ from TBL_COMMUNITY_LIKE L
 join tbl_employee E
 on L.fk_empno = empno
 ;
+
+-- 오늘의 명언 프로시저 --
+create or replace procedure pcd_get_TODAY_PROVERB
+(o_proverb out TBL_TODAY_PROVERB.proverb%type
+)
+is
+    v_proverb_no TBL_TODAY_PROVERB.proverb_no%type;
+    v_today_used_count number;
+    v_unused_count number;
+begin
+
+    -- 오늘 이미 사용된 명언이 있는지 조회
+    SELECT count(*) into v_today_used_count FROM TBL_TODAY_PROVERB
+    WHERE TO_CHAR(USED_DATE, 'YYYY-MM-DD') = TO_CHAR(SYSDATE, 'YYYY-MM-DD');
+    
+    -- 오늘 사용된 명언이 있다면 out변수에 담기
+    if (v_today_used_count = 1) then
+    SELECT proverb into o_proverb FROM TBL_TODAY_PROVERB
+    WHERE TO_CHAR(USED_DATE, 'YYYY-MM-DD') = TO_CHAR(SYSDATE, 'YYYY-MM-DD');
+
+    -- 오늘 사용된 명언이 없다면
+    else
+        -- 사용하지 않은 명언 개수 조회
+        SELECT COUNT(*) into v_unused_count FROM TBL_TODAY_PROVERB
+        WHERE USED_STATUS = 0;
+    
+        -- 모든 명언이 사용되었으면 초기화하기
+        if (v_unused_count = 0) then
+            UPDATE TBL_TODAY_PROVERB
+            SET USED_STATUS = 0, USED_DATE = null;
+            
+        -- 사용되지 않은 명언이 있다면
+        else
+            -- 랜덤 조회하기
+            select proverb, proverb_no into o_proverb, v_proverb_no 
+            from(
+                SELECT proverb, proverb_no FROM TBL_TODAY_PROVERB
+                WHERE USED_STATUS = 0
+                order by DBMS_RANDOM.RANDOM)
+            where rownum = 1;
+            
+            -- 상태 업데이트하기
+            UPDATE TBL_TODAY_PROVERB
+            SET USED_STATUS = 1, USED_DATE = TO_CHAR(SYSDATE, 'YYYY-MM-DD')
+            WHERE PROVERB_NO = v_proverb_no;
+        end if;
+    end if;
+    
+end pcd_get_TODAY_PROVERB;
