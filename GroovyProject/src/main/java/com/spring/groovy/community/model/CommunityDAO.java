@@ -173,4 +173,10 @@ public class CommunityDAO implements InterCommunityDAO {
 		return sqlsession.update("community.updateLike", like);
 	}
 
+	// 테이블에서 파일 삭제
+	@Override
+	public int deleteAttachedFiles(String post_no) {
+		return sqlsession.delete("community.deleteAttachedFiles", post_no);
+	}
+
 }

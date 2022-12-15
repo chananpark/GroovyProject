@@ -70,4 +70,7 @@ public interface InterCommunityService {
 	// 좋아요 누르기/취소하기
 	boolean updateLike(CommunityLikeVO like);
 
+	// 모든 첨부파일 삭제하기
+	boolean deleteAttachedFiles(Map<String, String> paraMap);
+
 }

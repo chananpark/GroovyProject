@@ -218,6 +218,12 @@
 		INSERT(LIKE_NO, FK_EMPNO, FK_POST_NO) VALUES(#{like_no}, #{fk_empno}, #{fk_post_no})
 	</update>
 	
+	<!-- 모든 첨부파일 삭제 -->
+ 	<delete id="deleteAttachedFiles" parameterType="String">
+		DELETE FROM TBL_COMMUNITY_POST_FILE
+		WHERE FK_POST_NO = #{post_no}
+	</delete>
+	
 	<!-- 검색 sql문 -->
 	<sql id="search">
 		WHERE

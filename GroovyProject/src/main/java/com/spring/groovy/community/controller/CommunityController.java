@@ -273,7 +273,16 @@ public class CommunityController {
 				json.put("msg", "다른 사용자의 글은 삭제할 수 없습니다!");
 			
 			else {
-				boolean result = service.deletePost(paraMap);
+				paraMap.put("filePath", setFilePath(request, "files")); // 파일 저장 경로
+				
+				// 파일삭제
+				boolean result = service.deleteAttachedFiles(paraMap);
+				
+				// 파일삭제 성공 시
+				if (result) {
+					// 게시글 삭제
+					result = service.deletePost(paraMap);
+				}
 				json.put("msg", (result)? "글이 성공적으로 삭제되었습니다." : "글 삭제를 실패하였습니다.");
 			}
 			
