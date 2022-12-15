@@ -457,11 +457,26 @@ public class ApprovalService implements InterApprovalService {
 		return dao.getDraftInfo(dvo);
 	}
 
+	// 결재단계 사원번호 조회
+	@Override
+	public String checkApproval(ApprovalVO avo) {
+		return dao.checkApproval(avo);
+	}
+	
+	// 자신의 다음 결재단계 조회
+	@Override
+	public int checkApprovalProxy(ApprovalVO avo) {
+		return dao.checkApprovalProxy(avo);
+	}
+
 	// 결재 처리하기
 	@Override
 	public boolean updateApproval(ApprovalVO avo) {
+		Map<String, Object> approvalMap = new HashMap<String, Object>();
+		approvalMap.put("avo", avo); // IN 파라미터
+		approvalMap.put("o_updateCnt", 0); // OUT 파라미터
 		
-		int n = dao.updateApproval(avo);
+		int n = dao.updateApproval(approvalMap);
 		
 		return n > 0? true: false; 
 	}
@@ -537,7 +552,8 @@ public class ApprovalService implements InterApprovalService {
 			for(ApprovalVO avo : avoList) {
 				if (avo.getExternal() == 0)
 					internalList.add(avo);
-				else externalList.add(avo);
+				else 
+					externalList.add(avo);
 			}
 			draftMap.put("internalList", internalList);
 			draftMap.put("externalList", externalList);
@@ -649,6 +665,7 @@ public class ApprovalService implements InterApprovalService {
 			return true;
 		}
 	}
+
 
 }
 	

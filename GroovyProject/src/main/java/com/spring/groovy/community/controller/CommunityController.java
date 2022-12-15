@@ -480,8 +480,15 @@ public class CommunityController {
 	@PostMapping(value = "/delComment.on", produces = "text/plain;charset=UTF-8")
 	public String delComment(HttpServletRequest request, CommunityCommentVO comment) {
 		
-		// 댓글 삭제하기
-		boolean result = service.delComment(comment);
+		boolean result = false;
+		
+		MemberVO loginuser = getLoginUser(request);
+
+		// 댓글 작성자와 로그인한 사용자가 같을때
+		if (loginuser.getEmpno().equals(comment.getFk_empno())) {
+			// 댓글 삭제하기
+			result = service.delComment(comment);
+		}
 		
 		JSONObject jsonObj = new JSONObject();
 		jsonObj.put("result", result);

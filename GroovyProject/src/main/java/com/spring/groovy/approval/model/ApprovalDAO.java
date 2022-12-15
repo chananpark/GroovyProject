@@ -244,14 +244,22 @@ public class ApprovalDAO implements InterApprovalDAO {
 	public BiztripReportVO getBiztripReportInfo(DraftVO dvo) {
 		return sqlsession.selectOne("approval.getBiztripReportInfo", dvo);
 	}
-	
+
+	// 결재단계 사원번호 조회
+	@Override
+	public String checkApproval(ApprovalVO avo) {
+		return sqlsession.selectOne("approval.checkApproval", avo);
+	}
+
+	// 자신의 다음 결재단계 조회
+	@Override
+	public int checkApprovalProxy(ApprovalVO avo) {
+		return sqlsession.selectOne("approval.checkApprovalProxy", avo);
+	}
+
 	// 결재 처리하기
 	@Override
-	public int updateApproval(ApprovalVO avo) {
-		Map<String, Object> approvalMap = new HashMap<String, Object>();
-		approvalMap.put("avo", avo); // IN 파라미터
-		approvalMap.put("o_updateCnt", 0); // OUT 파라미터
-		
+	public int updateApproval(Map<String, Object> approvalMap) {
 		sqlsession.selectOne("approval.updateApproval", approvalMap);
 		return (int) approvalMap.get("o_updateCnt");
 	}

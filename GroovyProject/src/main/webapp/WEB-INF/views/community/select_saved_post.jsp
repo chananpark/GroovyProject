@@ -83,6 +83,7 @@ const submitAprvLine = () => {
 <body>
 
 <div class='container-fluid'>
+	<span>임시저장 된 글은 30일 뒤 자동 삭제됩니다.</span>
 	<div id='savedPostContainer'>
 	</div>
 	<div class='text-center'>
