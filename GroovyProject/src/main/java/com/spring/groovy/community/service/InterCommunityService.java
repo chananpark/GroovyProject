@@ -73,4 +73,10 @@ public interface InterCommunityService {
 	// 모든 첨부파일 삭제하기
 	boolean deleteAttachedFiles(Map<String, String> paraMap);
 
+	// 임시저장글 조회하기
+	CommunityPostVO getTempPost(String temp_post_no);
+
+	// 임시저장글 삭제하기
+	boolean delTempPost(String temp_post_no);
+
 }

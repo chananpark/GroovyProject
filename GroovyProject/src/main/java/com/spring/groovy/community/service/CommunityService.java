@@ -346,4 +346,18 @@ public class CommunityService implements InterCommunityService {
 		return (n==1)? true: false;
 	}
 
+	// 임시저장글 조회하기
+	@Override
+	public CommunityPostVO getTempPost(String temp_post_no) {
+		return dao.getTempPost(temp_post_no);
+	}
+
+	// 임시저장 삭제하기
+	@Override
+	public boolean delTempPost(String temp_post_no) {
+		int n = dao.delTempPost(temp_post_no);
+		
+		return (n == 1)? true: false;
+	}
+
 }

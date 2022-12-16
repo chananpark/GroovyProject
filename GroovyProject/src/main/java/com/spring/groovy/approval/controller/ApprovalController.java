@@ -494,8 +494,13 @@ public class ApprovalController {
 		List<MemberVO> recipientList = service.getRecipientList(type_no);
 		JSONArray recipientArr = new JSONArray();
 		
-		if(recipientList.size() > 0 && recipientList.get(0).getFk_department_no() != loginuser.getFk_department_no()) {
-			recipientArr = new JSONArray(recipientList);
+		// 공통결재라인이 있을 경우
+		if(recipientList.size() > 0) {
+			for (MemberVO emp : recipientList) {
+				// 결재자 부서와 로그인한 사용자의 부서가 같지 않으면
+				if (emp.getFk_department_no() != loginuser.getFk_department_no())
+					recipientArr = new JSONArray(recipientList);
+			}
 		}
 		
 		mav.addObject("recipientArr", String.valueOf(recipientArr));
@@ -658,8 +663,13 @@ public class ApprovalController {
 		List<MemberVO> recipientList = service.getRecipientList(fk_draft_type_no);
 		JSONArray recipientArr = new JSONArray();
 		
-		if(recipientList.size() > 0 && recipientList.get(0).getFk_department_no() != loginuser.getFk_department_no()) {
-			recipientArr = new JSONArray(recipientList);
+		// 공통결재라인이 있을 경우
+		if(recipientList.size() > 0) {
+			for (MemberVO emp : recipientList) {
+				// 결재자 부서와 로그인한 사용자의 부서가 같지 않으면
+				if (emp.getFk_department_no() != loginuser.getFk_department_no())
+					recipientArr = new JSONArray(recipientList);
+			}
 		}
 		
 		mav.addObject("recipientArr", String.valueOf(recipientArr));
@@ -1125,12 +1135,6 @@ public class ApprovalController {
 		String sortOrder = request.getParameter("sortOrder");
 		sortOrder = sortOrder == null ? "desc" : sortOrder;
 		paraMap.put("sortOrder", sortOrder);
-	}
-
-	@ExceptionHandler(Exception.class)
-	private String error(Exception e) {
-		e.printStackTrace();
-		return "error";
 	}
 
 	// 문서함 목록 엑셀 다운로드

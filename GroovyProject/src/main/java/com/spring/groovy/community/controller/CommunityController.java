@@ -234,6 +234,33 @@ public class CommunityController {
 		
 	}
 	
+	// 임시저장글 삭제하기
+	@ResponseBody
+	@PostMapping(value = "/deleteTempPost.on", produces = "text/plain;charset=UTF-8")
+	public String savePost(HttpServletRequest request, @RequestParam("temp_post_no") String temp_post_no) {
+		
+		MemberVO loginuser = getLoginUser(request);
+		String empno =  loginuser.getEmpno();
+		
+		// 임시저장글 조회하기
+		CommunityPostVO post = service.getTempPost(temp_post_no);
+		
+		boolean result = false;
+		JSONObject jsonObj = new JSONObject();
+		
+		if (post.getFk_empno().equals(empno)) {
+			// 임시저장 삭제하기
+			result = service.delTempPost(temp_post_no);
+		} else {
+			jsonObj.put("msg", "다른 사람의 임시저장 글은 삭제할 수 없습니다!");
+		}
+		
+		jsonObj.put("result", result);
+		
+		return jsonObj.toString();
+		
+	}
+	
 	// 임시저장 글 불러오기 팝업창 요청
 	@RequestMapping(value = "/getSavedPost.on", produces = "text/plain;charset=UTF-8")
 	public ModelAndView getSavedPost(ModelAndView mav, HttpServletRequest request) {

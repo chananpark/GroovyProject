@@ -180,6 +180,14 @@
 		ORDER BY TEMP_POST_NO DESC
 	</select>
 
+	<!-- 임시저장글 조회하기 -->
+	<select id="getTempPost" resultType="com.spring.groovy.community.model.CommunityPostVO" parameterType="String" >
+		SELECT *
+        FROM
+        TBL_COMMUNITY_POST_TEMP
+        WHERE TEMP_POST_NO = #{temp_post_no}
+	</select>
+	
 	<!-- 임시저장글 삭제하기 -->
 	<update id="delTempPost" parameterType="String">
 		DELETE FROM TBL_COMMUNITY_POST_TEMP

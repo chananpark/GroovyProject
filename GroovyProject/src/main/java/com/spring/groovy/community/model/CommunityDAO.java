@@ -179,4 +179,10 @@ public class CommunityDAO implements InterCommunityDAO {
 		return sqlsession.delete("community.deleteAttachedFiles", post_no);
 	}
 
+	// 임시저장글 조회하기
+	@Override
+	public CommunityPostVO getTempPost(String temp_post_no) {
+		return sqlsession.selectOne("community.getTempPost", temp_post_no);
+	}
+
 }
