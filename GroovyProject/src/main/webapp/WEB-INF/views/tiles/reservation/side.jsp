@@ -46,9 +46,6 @@
 	$(document).ready(function(){
 		
 		
-		// 사이드 메뉴 닫기
-	//	$(".subMenus").hide(); 
-		
 		// 메뉴 선택시 다른 메뉴 닫기      
 	    $(".topMenu").click(function(e) {
 	        const target = $(e.target.children[0]);
@@ -79,7 +76,7 @@
 	    	
 	    	// 이전 날짜 선택 막기
 	    	blockSelectDate(startDate);
-	    	blockSelectTime(startDate);
+	    	blockSelectStartTime(startDate);
 	    }); // end of  $("input#reservStartDate").change(function()
     	
 	    $("input#endDate").change(function(){
@@ -87,7 +84,7 @@
 	    	
 	    	// 이전 날짜 선택 막기
 	    	blockSelectDate(endDate);
-	    	blockSelectTime(endDate);
+	    	blockSelectEndTime(endDate);
 	    }); // end of  $("input#reservStartDate").change(function()
 		// 자원 예약 모달창에서 이전 날짜 예약 막기 끝
 		
@@ -232,7 +229,8 @@
 		// === *** 달력(type="date") 관련 시작 *** === //
 		
 		// 오늘 날짜의 경우에는 현재 시간 이전에는 시간 선택을 하지 못하게 해준다
-		blockSelectTime(selectDate, selectTime);
+		blockSelectStartTime(selectDate, selectTime);
+		blockSelectEndTime(selectDate, selectTime);
 		
 		// === *** 달력(type="date") 관련 끝 *** === //
 		
@@ -268,9 +266,6 @@
 		if(selectTime != undefined) {
 			$("select#startHour").val(selectTime).prop("selected",true);
 			$("select#endHour").val(selectEndTime).prop("selected",true);
-		} else {
-			$("select#startHour").val('00').prop("selected",true);
-			$("select#endHour").val('00').prop("selected",true);
 		}
 		
 		// 내가 선택한 회의실 select 잡아주기
@@ -313,7 +308,7 @@
 	    	
 	    	// 이전 날짜 선택 막기
 	    	blockSelectDate(startDate);
-	    	blockSelectTime(startDate, selectTime);
+	    	blockSelectStartTime(startDate, selectTime);
 	    }); // end of  $("input#reservStartDate").change(function()
     	
 	    $("input#endDate").change(function(){
@@ -321,7 +316,7 @@
 	    	
 	    	// 이전 날짜 선택 막기
 	    	blockSelectDate(endDate);
-	    	blockSelectTime(endDate, selectTime);
+	    	blockSelectEndTime(endDate, selectTime);
 	    }); // end of  $("input#reservStartDate").change(function()
 		// 자원 예약 모달창에서 이전 날짜 예약 막기 끝
 		
@@ -444,8 +439,8 @@
 	} // end of function blockSelectDate(now_day, selectDate, today_date) 
 	
 	
-	// 오늘 날짜인 경우 현재 시간 이후로 선택
-	function blockSelectTime(selectDate, selectTime) {
+	// 자원 예약 시간 오늘 날짜인 경우 현재 시간 이후로 선택
+	function blockSelectStartTime(selectDate, selectTime) {
 		
 		// 현재 시간 날짜 구해오기
 		var now_year = now.getFullYear();
@@ -481,10 +476,64 @@
 			}// end of for----------------------
 			
 			$("select#startHour").html(html);
+			
+		} else if (selectDate == now_day) {
+			
+			for(var i=(now_hours+1); i<24; i++){
+				if(i<10){
+					html+="<option value='0"+i+"'>0"+i+"</option>";
+				}
+				else{
+					html+="<option value="+i+">"+i+"</option>";
+				}
+			}// end of for----------------------
+			
+			$("select#startHour").html(html);
+		
+		}
+		
+	} // end of function blockSelectTime(selectDate)
+	
+	// 자원 반납 시간 오늘 날짜인 경우 현재 시간 이후로 선택
+	function blockSelectEndTime(selectDate, selectTime) {
+		
+		// 현재 시간 날짜 구해오기
+		var now_year = now.getFullYear();
+		var now_month = now.getMonth();
+		var now_date = now.getDate();
+		var now_hours = now.getHours();
+		
+		if(now_month < 10) {
+			now_month = "0"+(now_month+1);
+		} else {
+			now_month = now_month + 1;
+		}
+		
+		if(now_date < 10) {
+			now_date = "0"+now_date;
+		} 
+		
+		var now_day =  now_year.toString() + "-" + now_month.toString() + "-" + now_date.toString();
+		
+		// 시작시간, 종료시간		
+		var html="";
+		$("select#EndHour").val();
+		
+		// 오늘이 아닐 때
+		if(selectDate != now_day) {
+			for(var i=0; i<24; i++){
+				if(i<10){
+					html+="<option value='0"+i+"'>0"+i+"</option>";
+				}
+				else{
+					html+="<option value="+i+">"+i+"</option>";
+				}
+			}// end of for----------------------
+			
 			$("select#endHour").html(html);
 			
 		// 오늘인데 23선택했을 때
-		} else if (selectDate == now_day && selectTime == "23") {
+		} else if (selectDate == now_day && selectTime == "23" && $("#endDate").val() != now_day) {
 			
 			for(var i=(now_hours+1); i<24; i++){
 				if(i<10){
@@ -509,7 +558,7 @@
 			
 			$("select#endHour").html(html2);
 		
-		// 오늘일 때	
+		// 오늘일 때
 		} else if (selectDate == now_day) {
 			
 			for(var i=(now_hours+1); i<24; i++){
@@ -521,13 +570,8 @@
 				}
 			}// end of for----------------------
 			
-			$("select#startHour").html(html);
 			$("select#endHour").html(html);
-		
-		
 		}
-		
-		
 		
 	} // end of function blockSelectTime(selectDate)
 	
