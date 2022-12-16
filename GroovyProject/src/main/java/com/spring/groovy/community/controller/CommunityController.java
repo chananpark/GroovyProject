@@ -92,7 +92,7 @@ public class CommunityController {
 	@RequestMapping(value = "/detail.on")
 	public ModelAndView getCommunityDetail(ModelAndView mav, HttpServletRequest request, @RequestParam("post_no") String post_no) {
 		
-		MemberVO loginuser = getLoginUser(request);
+		MemberVO loginuser = Myutil.getLoginUser(request);
 		
 		Map<String, String> paraMap = new HashMap<>();
 		paraMap.put("empno", loginuser.getEmpno());
@@ -139,7 +139,7 @@ public class CommunityController {
 	@PostMapping(value = "/addPost.on", produces = "text/plain;charset=UTF-8")
 	public String addPost(MultipartHttpServletRequest mtfRequest, CommunityPostVO post) {
 		
-		MemberVO loginuser = getLoginUser(mtfRequest);
+		MemberVO loginuser = Myutil.getLoginUser(mtfRequest);
 		post.setFk_empno(loginuser.getEmpno());
 		
 		Map<String, Object> paraMap = new HashMap<>();
@@ -154,7 +154,7 @@ public class CommunityController {
 		if (mtfRequest.getFiles("fileList").size() > 0) {
 			
 			// 파일 업로드 경로 지정
-			String path = setFilePath(mtfRequest, "files");
+			String path = Myutil.setFilePath(mtfRequest, "files");
 			
 			// view에서 넘어온 파일들
 			List<MultipartFile> multiFileList = mtfRequest.getFiles("fileList");
@@ -208,7 +208,7 @@ public class CommunityController {
 	@PostMapping(value = "/savePost.on", produces = "text/plain;charset=UTF-8")
 	public String savePost(MultipartHttpServletRequest mtfRequest, CommunityPostVO post) {
 		
-		MemberVO loginuser = getLoginUser(mtfRequest);
+		MemberVO loginuser = Myutil.getLoginUser(mtfRequest);
 		post.setFk_empno(loginuser.getEmpno());
 		
 		// 제목이 비어있다면
@@ -239,7 +239,7 @@ public class CommunityController {
 	@PostMapping(value = "/deleteTempPost.on", produces = "text/plain;charset=UTF-8")
 	public String savePost(HttpServletRequest request, @RequestParam("temp_post_no") String temp_post_no) {
 		
-		MemberVO loginuser = getLoginUser(request);
+		MemberVO loginuser = Myutil.getLoginUser(request);
 		String empno =  loginuser.getEmpno();
 		
 		// 임시저장글 조회하기
@@ -265,7 +265,7 @@ public class CommunityController {
 	@RequestMapping(value = "/getSavedPost.on", produces = "text/plain;charset=UTF-8")
 	public ModelAndView getSavedPost(ModelAndView mav, HttpServletRequest request) {
 		
-		MemberVO loginuser = getLoginUser(request);
+		MemberVO loginuser = Myutil.getLoginUser(request);
 		String fk_empno = loginuser.getEmpno();
 		
 		// 임시저장 목록 가져오기
@@ -286,7 +286,7 @@ public class CommunityController {
 		
 		JSONObject json = new JSONObject();
 
-		MemberVO loginuser = getLoginUser(request);
+		MemberVO loginuser = Myutil.getLoginUser(request);
 		
 		Map<String, String> paraMap = new HashMap<>();
 		paraMap.put("post_no", post_no); // 삭제하려는 글번호
@@ -300,7 +300,7 @@ public class CommunityController {
 				json.put("msg", "다른 사용자의 글은 삭제할 수 없습니다!");
 			
 			else {
-				paraMap.put("filePath", setFilePath(request, "files")); // 파일 저장 경로
+				paraMap.put("filePath", Myutil.setFilePath(request, "files")); // 파일 저장 경로
 				
 				// 파일삭제
 				boolean result = service.deleteAttachedFiles(paraMap);
@@ -325,7 +325,7 @@ public class CommunityController {
 	@GetMapping(value = "/editPost.on")
 	public ModelAndView editPost(ModelAndView mav, HttpServletRequest request, @RequestParam("post_no") String post_no) {
 		
-		MemberVO loginuser = getLoginUser(request);
+		MemberVO loginuser = Myutil.getLoginUser(request);
 		
 		Map<String, String> paraMap = new HashMap<>();
 		paraMap.put("post_no", post_no); // 수정하려는 글번호
@@ -371,7 +371,7 @@ public class CommunityController {
 		if (mtfRequest.getFiles("fileList").size() > 0) {
 			
 			// 파일 업로드 경로 지정
-			String path = setFilePath(mtfRequest, "files");
+			String path = Myutil.setFilePath(mtfRequest, "files");
 			
 			// view에서 넘어온 파일들
 			List<MultipartFile> multiFileList = mtfRequest.getFiles("fileList");
@@ -430,7 +430,7 @@ public class CommunityController {
 		paraMap.put("post_file_no", post_file_no); // 삭제하려는 파일번호
 		
 		// 파일삭제
-		boolean result = service.deleteFile(post_file_no, setFilePath(request, "files"));
+		boolean result = service.deleteFile(post_file_no, Myutil.setFilePath(request, "files"));
 
 		JSONObject json = new JSONObject();
 		json.put("result", result);
@@ -458,7 +458,7 @@ public class CommunityController {
 	@RequestMapping(value = "/addComment.on", produces = "text/plain;charset=UTF-8")
 	public String addComment(HttpServletRequest request, CommunityCommentVO comment) {
 
-		MemberVO loginuser = getLoginUser(request);
+		MemberVO loginuser = Myutil.getLoginUser(request);
 		comment.setFk_empno(loginuser.getEmpno());
 		
 		// 댓글 작성하기
@@ -475,7 +475,7 @@ public class CommunityController {
 	@RequestMapping(value = "/addReComment.on", produces = "text/plain;charset=UTF-8")
 	public String addReComment(HttpServletRequest request, CommunityCommentVO comment) {
 		System.out.println("답댓작성컨트롤러");
-		MemberVO loginuser = getLoginUser(request);
+		MemberVO loginuser = Myutil.getLoginUser(request);
 		comment.setFk_empno(loginuser.getEmpno());
 		
 		// 댓글 작성하기
@@ -509,7 +509,7 @@ public class CommunityController {
 		
 		boolean result = false;
 		
-		MemberVO loginuser = getLoginUser(request);
+		MemberVO loginuser = Myutil.getLoginUser(request);
 
 		// 댓글 작성자와 로그인한 사용자가 같을때
 		if (loginuser.getEmpno().equals(comment.getFk_empno())) {
@@ -602,13 +602,6 @@ public class CommunityController {
 		
 	}
 	
-	// 로그인 사용자 정보 가져오기
-	private MemberVO getLoginUser(HttpServletRequest request) {
-		HttpSession session = request.getSession();
-		MemberVO loginuser = (MemberVO) session.getAttribute("loginuser");
-		return loginuser;
-	}
-	
 	// 게시글 목록 조회 시 정렬 설정하기
 	private void setSorting(HttpServletRequest request, Map<String, String> paraMap) {
 		// 정렬기준
@@ -620,15 +613,6 @@ public class CommunityController {
 		String sortOrder = request.getParameter("sortOrder");
 		sortOrder = sortOrder == null ? "desc" : sortOrder;
 		paraMap.put("sortOrder", sortOrder);
-	}
-	
-	// 파일 업로드 경로 지정
-	private String setFilePath(HttpServletRequest request, String directory) {
-		HttpSession session = request.getSession();
-		String root = session.getServletContext().getRealPath("/");
-		String path = root + "resources" + File.separator + directory;
-		
-		return path;
 	}
 	
 }

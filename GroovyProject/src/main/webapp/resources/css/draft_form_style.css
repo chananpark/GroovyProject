@@ -1,0 +1,96 @@
+@charset "UTF-8";
+
+.table {
+	font-size: small;
+}
+
+label:hover {
+	cursor: pointer;
+}
+
+.card-header {
+	background-color: #E3F2FD;
+}
+
+.table th {
+	background-color: #E3F2FD;
+	vertical-align: middle;
+	text-align: center;
+}
+
+.workFrmContainer .btn {
+	font-size: 9pt !important;
+	padding: 2px 7px !important;
+}
+
+.draftInfo,
+.approvalLineInfo,
+.recipientLineInfo {
+	display: inline-block;
+}
+
+.draftInfo {
+	float: left;
+}
+
+.approvalLineInfo, .apvLineBtn, .recipientLineInfo {
+	float: right;
+}
+
+.filebox input[type="file"] {
+	position: absolute;
+	width: 0;
+	height: 0;
+	padding: 0;
+	overflow: hidden;
+	border: 0;
+}
+
+#setLineBtn {
+	background-color: #086BDE;
+	color: white;
+	font-size: small;
+	float: left;
+}
+
+#setLineBtn:hover {
+	background-color: #E3F2FD;
+	color: #086BDE;
+	font-size: small;
+}
+
+#resetLineBtn {
+	border: 1px solid gray;
+	color: gray;
+}
+
+#resetLineBtn:hover {
+	background-color: gray;
+	color: white;
+}
+
+#getLineBtn {
+	border: 1px solid #086BDE;
+	color: #086BDE;
+}
+
+#getLineBtn:hover {
+	background-color: #086BDE;
+	color: white
+}
+
+.dropBox {
+	background-color: #eee;
+	min-height: 50px;
+	min-height: 50px;
+	overflow:auto;
+	font-size: small;
+}
+
+.dropBox.active {
+	background-color: #E3F2FD;
+}
+
+.removeFile {
+	font-size: small;
+}

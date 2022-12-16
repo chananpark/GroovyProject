@@ -1,29 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <% String ctxPath=request.getContextPath(); %>
+
+<link rel = "stylesheet" href = "<%=ctxPath%>/resources/css/draft_list_style.css">
+
 <style>
-#list {
-	font-size: small;
-	margin-bottom: 50px !important;
-}
-
-a {
-	color: black;
-}
-
-a:hover {
-	text-decoration: none;
-}
-
-#pageList a{
-	font-size: small;
-	color: black;
-}
-
-#pageList .active a{
-	color: white;
-	background-color: #086BDE;
-}
 
 label {
 	margin-bottom: 0;

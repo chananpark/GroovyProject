@@ -1,6 +1,11 @@
 package com.spring.groovy.common;
 
+import java.io.File;
+
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+
+import com.spring.groovy.management.model.MemberVO;
 
 public class Myutil {
 
@@ -45,5 +50,20 @@ public class Myutil {
 		return str;
 	}
 	
+	// 로그인 사용자 정보 가져오기
+	public static MemberVO getLoginUser(HttpServletRequest request) {
+		HttpSession session = request.getSession();
+		MemberVO loginuser = (MemberVO) session.getAttribute("loginuser");
+		return loginuser;
+	}
 	
+
+	// 파일 업로드 경로 지정
+	public static String setFilePath(HttpServletRequest request, String directory) {
+		HttpSession session = request.getSession();
+		String root = session.getServletContext().getRealPath("/");
+		String path = root + "resources" + File.separator + directory;
+		
+		return path;
+	}
 } // end of public class Myutil

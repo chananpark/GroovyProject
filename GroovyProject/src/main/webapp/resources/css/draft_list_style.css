@@ -1,0 +1,33 @@
+@charset "UTF-8";
+
+#list {
+	font-size: small;
+	margin-bottom: 50px !important;
+}
+
+a {
+	color: black;
+}
+
+a:hover {
+	text-decoration: none;
+}
+
+#pageList a{
+	font-size: small;
+	color: black;
+}
+
+#pageList .active a{
+	color: white;
+	background-color: #086BDE;
+}
+
+#excelButton {
+	border-style: none;
+	background-color: transparent;
+}
+
+#excelButton:hover {
+	cursor: pointer;
+}
