@@ -340,6 +340,7 @@ public class MailController {
 	@ResponseBody
 	@RequestMapping(value = "/mail/getTagListSide.on", method= {RequestMethod.POST},produces="text/plain;charset=UTF-8")
 	public String getTagListSide(HttpServletRequest request, HttpServletResponse response) {
+		
 		HttpSession session = request.getSession();
 
 		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");

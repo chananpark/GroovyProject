@@ -396,7 +396,7 @@ function readURL(input) {
 	<table class="m-4 mb-3 table table-bordered table-sm" id="first_table">
 		<tr>
 			<td rowspan='4' style="width:2%;">
-				<img id="preview" src="<%=ctxPath%>/resources/images/empphoto/${loginuser.empimg}" class="image-box" width="150px;" />
+				<img id="preview" src="<%=ctxPath%>/resources/images/profile/${loginuser.empimg}" class="image-box" width="150px;" />
 			    <input id="file" name="attach" type="file" accept="image/*" onchange="readURL(this)" style="width: 65px;"/>
 			</td>
 			<!-- <td rowspan='4' style="width:2%;"><input type="file" name="empimg" id="empimg" accept=".png, .jpeg" onchange="fileUpload(this)" class"readonly"/></td>   -->

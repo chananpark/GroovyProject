@@ -53,7 +53,7 @@
 	<select id="getPostDetail" resultType="com.spring.groovy.community.model.CommunityPostVO" parameterType="HashMap" >
 		SELECT *
         FROM
-        VIEW_POST_LIST
+        VIEW_POST_DETAIL
         WHERE POST_NO = #{post_no}
 	</select>
 	
@@ -63,6 +63,12 @@
         FROM
         TBL_COMMUNITY_POST_FILE
         WHERE FK_POST_NO = #{post_no}
+	</select>
+	
+	<!-- 첨부파일 1개 조회 -->
+	<select id="getAttachedFile" resultType="com.spring.groovy.community.model.CommunityPostFileVO" parameterType="String" >
+		SELECT * FROM TBL_COMMUNITY_POST_FILE
+		WHERE POST_FILE_NO = #{post_file_no}
 	</select>
 			
 	<!-- 게시글 조회수 증가하기 -->
@@ -74,12 +80,15 @@
 		
 	<!-- 댓글 조회하기 -->
 	<select id="getComment" resultType="com.spring.groovy.community.model.CommunityCommentVO" parameterType="String" >
-		SELECT COMMENT_CONTENT, COMMENT_DATE, NAME, EMPIMG
-		FROM TBL_COMMUNITY_COMMENT
+		SELECT C.*, NAME, EMPIMG
+		FROM TBL_COMMUNITY_COMMENT C
 		JOIN TBL_EMPLOYEE
 		ON FK_EMPNO = EMPNO
 		WHERE FK_POST_NO = #{post_no}
-		ORDER BY COMMENT_NO DESC
+		AND COMMENT_STATUS = 1
+		START WITH PARENT_COMMENT_NO = 0
+		CONNECT BY PRIOR COMMENT_NO = PARENT_COMMENT_NO
+		ORDER BY GROUP_NO DESC, COMMENT_DATE ASC
 	</select>
 		
 	<!-- 파일번호로 파일 한개 조회 -->
@@ -116,6 +125,98 @@
 		VALUES (SEQ_COMMENT_NO.nextval, #{fk_empno}, #{fk_post_no}, #{comment_content}, 
 				(SELECT NVL(MAX(GROUP_NO),0)+1 GROUP_NO FROM TBL_COMMUNITY_COMMENT WHERE FK_POST_NO=#{fk_post_no}))
 	</insert>
+		
+	<!-- 댓글 수정하기 -->
+	<update id="editComment" parameterType="com.spring.groovy.community.model.CommunityCommentVO">
+		UPDATE TBL_COMMUNITY_COMMENT
+		SET COMMENT_CONTENT = #{comment_content}
+		WHERE COMMENT_NO = #{comment_no}
+	</update>
+		
+	<!-- 댓글 삭제하기 -->
+	<update id="delComment" parameterType="com.spring.groovy.community.model.CommunityCommentVO">
+		UPDATE TBL_COMMUNITY_COMMENT
+		SET COMMENT_STATUS = 0
+		WHERE COMMENT_NO = #{comment_no}
+	</update>
+		
+	<!-- 답댓글 작성하기 -->
+	<insert id="addReComment" parameterType="com.spring.groovy.community.model.CommunityCommentVO">
+		INSERT INTO TBL_COMMUNITY_COMMENT
+		(COMMENT_NO, FK_EMPNO, FK_POST_NO, COMMENT_CONTENT, PARENT_COMMENT_NO, GROUP_NO, DEPTH)
+		VALUES (SEQ_COMMENT_NO.nextval, #{fk_empno}, #{fk_post_no}, #{comment_content}, #{parent_comment_no}, #{group_no}, 1)
+	</insert>
+			
+	<!-- 임시저장 시퀀스 조회 -->
+	<select id="getTempPostNo" resultType="String" >
+		SELECT SEQ_TEMP_POST_NO.NEXTVAL
+		FROM DUAL
+	</select>
+		
+	<!-- 게시글 임시저장하기 -->
+	<update id="savePost" parameterType="HashMap">
+		MERGE INTO TBL_COMMUNITY_POST_TEMP
+		USING DUAL
+		ON (TEMP_POST_NO = #{temp_post_no})
+		WHEN MATCHED THEN
+		UPDATE SET POST_SUBJECT = #{post.post_subject}, POST_CONTENT = #{post.post_content}, POST_DATE = SYSDATE
+		WHEN NOT MATCHED THEN
+		INSERT(TEMP_POST_NO, FK_EMPNO, POST_SUBJECT, POST_CONTENT) VALUES(#{temp_post_no}, #{post.fk_empno}, #{post.post_subject}, #{post.post_content})
+	</update>
+	
+	<!-- 임시저장 목록 조회 -->
+	<resultMap type="HashMap" id="deptMap">
+		<result property="temp_post_no" column="temp_post_no" javaType="String"/>
+		<result property="post_subject" column="post_subject" javaType="String"/>
+		<result property="post_content" column="post_content" javaType="String"/>
+		<result property="plain_post_content" column="plain_post_content" javaType="String"/>
+		<result property="post_date" column="post_date" javaType="String"/>
+	</resultMap>
+	
+	<select id="getSavedPostList" resultMap="deptMap" parameterType="HashMap">
+		SELECT *
+		FROM VIEW_TEMP_POST_LIST
+		WHERE FK_EMPNO = #{fk_empno}
+		ORDER BY TEMP_POST_NO DESC
+	</select>
+
+	<!-- 임시저장글 삭제하기 -->
+	<update id="delTempPost" parameterType="String">
+		DELETE FROM TBL_COMMUNITY_POST_TEMP
+		WHERE TEMP_POST_NO = #{temp_post_no}
+	</update>
+	
+	<!-- 30일 지난 임시저장 글 삭제하기 -->
+	<delete id="autoDeleteTempPost">
+		DELETE FROM TBL_COMMUNITY_POST_TEMP
+		WHERE to_date(POST_DATE, 'yyyy-mm-dd') lte to_date(ADD_MONTHS(sysdate, -1),'yyyy-mm-dd')
+	</delete>
+
+	<!-- 좋아요 목록 조회 -->
+	<select id="getLikeList" resultType="com.spring.groovy.community.model.CommunityLikeVO" parameterType="String">
+		SELECT *
+		FROM VIEW_LIKE_LIST
+		WHERE FK_POST_NO = #{post_no}
+		ORDER BY LIKE_NO DESC
+	</select>
+	
+	<!-- 좋아요 시퀀스 조회 -->
+	<select id="getLikeNo" resultType="String" >
+		SELECT SEQ_LIKE_NO.NEXTVAL
+		FROM DUAL
+	</select>
+	
+	<!-- 좋아요/취소 하기 -->
+	<update id="updateLike" parameterType="com.spring.groovy.community.model.CommunityLikeVO">
+		MERGE INTO TBL_COMMUNITY_LIKE
+		USING DUAL
+		ON (LIKE_NO = #{like_no})
+		WHEN MATCHED THEN
+        UPDATE SET FK_EMPNO = #{fk_empno}
+		DELETE WHERE (LIKE_NO = #{like_no})
+		WHEN NOT MATCHED THEN
+		INSERT(LIKE_NO, FK_EMPNO, FK_POST_NO) VALUES(#{like_no}, #{fk_empno}, #{fk_post_no})
+	</update>
 	
 	<!-- 검색 sql문 -->
 	<sql id="search">
@@ -123,8 +224,8 @@
 		<choose>
 			<!-- 제목+내용으로 검색 시 -->
 			<when test="searchType == 'all' ">
-				POST_SUBJECT like '%'||LOWER(#{searchWord})||'%'
-				OR POST_CONTENT like '%' ||LOWER(#{searchWord})||'%'
+				LOWER(POST_SUBJECT) like '%'||LOWER(#{searchWord})||'%'
+				OR LOWER(POST_CONTENT) like '%' ||LOWER(#{searchWord})||'%'
 			</when>
 			<!-- 기타 -->
 			<otherwise>

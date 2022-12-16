@@ -5,7 +5,14 @@
 <!-- 루트 엘리먼트 & 네임스페이스 설정(프로젝트 전체 내에서 유일해야 함, 주로 파일명) -->
 <mapper namespace="minsu">
 	<!-- 이 안에 sql문을 적는다 -->
-	
+	 <!-- #### 중요 #### 
+			 HashMap 타입으로 매개변수를 받아온 것을 꺼내서 사용할때 
+			 1. 데이터로 사용할때는 #{key명} 이고,
+			 2. 식별자(테이블명, 컬럼명)로 사용할때는 ${key명} 이고,
+			 3. myBatis 에서 제공하는 if 엘리먼트나 choose 엘리먼트 안에서 사용할때는 
+			       그냥 <if test="key명"> <when test="key명"> 으로 사용한다. 
+	-->
+			
 	<select id="getLogin" resultType="com.spring.groovy.management.model.MemberVO" parameterType="String" >
 		SELECT CPEMAIL
 		FROM TBL_EMPLOYEE
@@ -119,6 +126,7 @@
 		<if test='searchType != "" and searchWord != "" '>
 		WHERE LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
 		</if>
+		
 	</select>
 	
 	<!-- 경조비 목록 - 한 페이지에 표시할 글 목록 (페이징) -->
@@ -128,9 +136,9 @@
 			FROM( 
 			    SELECT *
 			    FROM TBL_CELEBRATE
-			     <if test='searchType != "" and searchWord != "" '>
-		            WHERE LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
-	            </if>
+			      <if test='searchType != "" and searchWord != "" '>
+			    	WHERE LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
+			    </if>
 	            ORDER BY CLBNO DESC
 			)V)
 		WHERE RNO BETWEEN #{startRno} AND #{endRno}
@@ -140,39 +148,63 @@
 	
 	<!-- 공용 증명서 - 월급리스트 -->
 	<select id="paySearch" parameterType="HashMap" resultType="com.spring.groovy.management.model.PayVO">
-		
-	SELECT PAYNO, FK_EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, SALARY,PAY ,ANNUALPAY,OVERTIMEPAY,PAYMENTDATE,OVERPAY,
-	        INCOMTAX,PENSION,INSURANCE, ALLPAY, TAX,
-	        (ALLPAY - TAX) AS MONTHPAY
-	FROM 
-	    (
-	        SELECT PAYNO, FK_EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, SALARY,PAY ,ANNUALPAY,OVERTIMEPAY,PAYMENTDATE,OVERPAY,
-	                    INCOMTAX,PENSION,INSURANCE, 
-	                    (SALARY+ANNUALPAY+OVERTIMEPAY) AS ALLPAY,
-	                    (INCOMTAX+PENSION+INSURANCE) AS TAX
-	                    
-	        FROM 
-	        (
-	            SELECT PAYNO, FK_EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, SALARY,PAY ,ANNUALPAY,OVERTIMEPAY,PAYMENTDATE, (ANNUALPAY+OVERTIMEPAY) AS OVERPAY,
-	                    CEIL(SALARY*INCOMTAX) AS INCOMTAX, CEIL(SALARY*PENSION)AS PENSION, CEIL(SALARY*INSURANCE)AS INSURANCE
-	            FROM
-	                (SELECT E.EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, ROUND(SALARY/12)AS SALARY,
-	                        PAYNO, FK_EMPNO, PAY, NVL(ANNUALPAY,0) AS ANNUALPAY, NVL(OVERTIMEPAY,0)  AS OVERTIMEPAY, TO_CHAR(PAYMENTDATE, 'YYYY-MM-DD') AS PAYMENTDATE
-	                        ,INCOMTAX,PENSION,INSURANCE
-	                FROM TBL_EMPLOYEE E RIGHT JOIN TBL_PAY P
-	                ON E.EMPNO = P.FK_EMPNO
-	            )V
-	        )A
-	    )P
+		SELECT PAYNO, FK_EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, SALARY,PAY ,ANNUALPAY,OVERTIMEPAY,PAYMENTDATE,OVERPAY,
+		        INCOMTAX,PENSION,INSURANCE, ALLPAY, TAX,
+		        (ALLPAY - TAX) AS MONTHPAY
+		FROM 
+		    (
+		        SELECT PAYNO, FK_EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, SALARY,PAY ,ANNUALPAY,OVERTIMEPAY,PAYMENTDATE,OVERPAY,
+		                    INCOMTAX,PENSION,INSURANCE, 
+		                    (SALARY+ANNUALPAY+OVERTIMEPAY) AS ALLPAY,
+		                    (INCOMTAX+PENSION+INSURANCE) AS TAX
+		                    
+		        FROM 
+		        (
+		            SELECT PAYNO, FK_EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, SALARY,PAY ,ANNUALPAY,OVERTIMEPAY,PAYMENTDATE, (ANNUALPAY+OVERTIMEPAY) AS OVERPAY,
+		                    CEIL(SALARY*INCOMTAX) AS INCOMTAX, CEIL(SALARY*PENSION)AS PENSION, CEIL(SALARY*INSURANCE)AS INSURANCE
+		            FROM
+		                (SELECT E.EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, ROUND(SALARY/12)AS SALARY,
+		                        PAYNO, FK_EMPNO, PAY, NVL(ANNUALPAY,0) AS ANNUALPAY, NVL(OVERTIMEPAY,0)  AS OVERTIMEPAY, TO_CHAR(PAYMENTDATE, 'YYYY-MM-DD') AS PAYMENTDATE
+		                        ,INCOMTAX,PENSION,INSURANCE
+		                FROM TBL_EMPLOYEE E RIGHT JOIN TBL_PAY P
+		                ON E.EMPNO = P.FK_EMPNO
+		                WHERE EMPNO = #{empno} 
+		            )V
+		        )A
+		    )P
 	</select>
 	
+	 <!-- 공용 - 급여관리(급여조회) 한 페이지에 표시할  전체 글 개수 구하기(페이징) -->
+	 <select id="getSalaryList" parameterType="com.spring.groovy.common.Pagination" resultType="int">
+	 	SELECT COUNT(*) FROM tbl_celebrate
+		 <if test='searchType != "" and searchWord != "" '>
+	    	WHERE LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
+	    </if>
+	 </select>
 	
+	<!-- 공용 증명서 - 월급리스트 -->
+<!-- 
+	<select id="payView" parameterType="HashMap" resultType="com.spring.groovy.management.model.PayVO">
+		 SELECT PAYNO, FK_EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, SALARY,PAY ,ANNUALPAY,OVERTIMEPAY,PAYMENTDATE, (ANNUALPAY+OVERTIMEPAY) AS OVERPAY,
+	             CEIL(SALARY*INCOMTAX) AS INCOMTAX, CEIL(SALARY*PENSION)AS PENSION, CEIL(SALARY*INSURANCE)AS INSURANCE
+	     FROM
+	         (SELECT E.EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, ROUND(SALARY/12)AS SALARY,
+	                 PAYNO, FK_EMPNO, PAY, NVL(ANNUALPAY,0) AS ANNUALPAY, NVL(OVERTIMEPAY,0)  AS OVERTIMEPAY, TO_CHAR(PAYMENTDATE, 'YYYY-MM-DD') AS PAYMENTDATE
+	                 ,INCOMTAX,PENSION,INSURANCE
+	         FROM TBL_EMPLOYEE E RIGHT JOIN TBL_PAY P
+	         ON E.EMPNO = P.FK_EMPNO
+	         WHERE EMPNO = 13 and PAYNO = 1 
+	     )V
+	</select>
+	 -->
 	
-	
-	
-	
-	
-	
+	<!-- 공용 - 급여관리(기본외수당조회) 한 페이지에 표시할  전체 글 개수 구하기(페이징) -->
+	<select id="getOverPayList" parameterType="com.spring.groovy.common.Pagination" resultType="int">
+		SELECT COUNT(*) FROM TBL_PAY
+		 <if test='searchType != "" and searchWord != "" '>
+	    	WHERE LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
+	    </if>
+	</select>
 	
 	
 	
@@ -269,7 +301,7 @@
 			     <if test='searchType != "" and searchWord != "" '>
 		            WHERE LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
 	            </if>
-	            ORDER BY clbno desc
+	            ORDER BY CLBNO DESC
 			)V)
 		WHERE RNO BETWEEN #{startRno} AND #{endRno}
 	</select>
@@ -366,23 +398,179 @@
 			     <if test='searchType != "" and searchWord != "" '>
 		            WHERE LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
 	            </if>
-	            ORDER BY proofno desc
+	            ORDER BY PROOFNO DESC
 			)V)
 		WHERE RNO BETWEEN #{startRno} AND #{endRno}
 	</select>
 	
+	<!-- 관리자 - 급여관리(급여조회)-->
 	
+	 <select id="paySearchAdmin" parameterType="HashMap" resultType="com.spring.groovy.management.model.PayVO">
+		SELECT PAYNO, FK_EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, SALARY,PAY ,ANNUALPAY,OVERTIMEPAY,PAYMENTDATE,OVERPAY,
+		        INCOMTAX,PENSION,INSURANCE, ALLPAY, TAX,
+		        (ALLPAY - TAX) AS MONTHPAY
+		FROM 
+		    (
+		        SELECT PAYNO, FK_EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, SALARY,PAY ,ANNUALPAY,OVERTIMEPAY,PAYMENTDATE,OVERPAY,
+		                    INCOMTAX,PENSION,INSURANCE, 
+		                    (SALARY+ANNUALPAY+OVERTIMEPAY) AS ALLPAY,
+		                    (INCOMTAX+PENSION+INSURANCE) AS TAX
+		                    
+		        FROM 
+		        (
+		            SELECT PAYNO, FK_EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, SALARY,PAY ,ANNUALPAY,OVERTIMEPAY,PAYMENTDATE, (ANNUALPAY+OVERTIMEPAY) AS OVERPAY,
+		                    CEIL(SALARY*INCOMTAX) AS INCOMTAX, CEIL(SALARY*PENSION)AS PENSION, CEIL(SALARY*INSURANCE)AS INSURANCE
+		            FROM
+		                (SELECT E.EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, ROUND(SALARY/12)AS SALARY,
+		                        PAYNO, FK_EMPNO, PAY, NVL(ANNUALPAY,0) AS ANNUALPAY, NVL(OVERTIMEPAY,0)  AS OVERTIMEPAY, TO_CHAR(PAYMENTDATE, 'YYYY-MM-DD') AS PAYMENTDATE
+		                        ,INCOMTAX,PENSION,INSURANCE
+		                FROM TBL_EMPLOYEE E RIGHT JOIN TBL_PAY P
+		                ON E.EMPNO = P.FK_EMPNO
+		                 <if test='searchType != "" and searchWord != "" '>
+				            WHERE LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
+			            </if>
+			            ORDER BY PAYMENTDATE DESC
+		            )V
+		        )A
+		    )P
+	</select>
 	
+	<!-- 관리자 - 급여관리(급여조회) 한 페이지에 표시할 전체 글 개수 구하기(페이징) -->
+	<select id="getcountPayList" parameterType="com.spring.groovy.common.Pagination" resultType="int">
+		SELECT COUNT(*) FROM TBL_PAY
+		<if test='searchType != "" and searchWord != "" '>
+		WHERE LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
+		</if>
+	</select>
 	
-	
-	
-	
-	
-	
-	
+	<!-- ============================================  설문조사  ========================================================= -->
 	
 
-
+	<!-- 설문리스트 목록 - 전체 글 개수 구하기(페이징)  -->
+	<select id="getcountSurveyList" parameterType="com.spring.groovy.common.Pagination" resultType="int" >
+		SELECT COUNT(*) AS CNT FROM TBL_SURVEY
+		<if test='searchType != "" and searchWord != "" '>
+		WHERE LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
+		</if>
+	</select>
+	
+	<!-- 설문리스트 목록 - 한 페이지에 표시할 글 목록  (페이징 페이지수를 알아온다음에 10개씩보여줌) (페이징) -->
+	<select id="getSurveyCnt" parameterType="HashMap" resultType="com.spring.groovy.survey.model.SurveyVO">
+	    SELECT *
+		FROM (SELECT ROWNUM AS RNO, V.*
+			FROM( 
+			    SELECT SURTITLE, SURNO, J.FK_EMPNO, TO_CHAR(SURSTART, 'YYYY-MM-DD')SURSTART,TO_CHAR(SUREND, 'YYYY-MM-DD')SUREND,TO_CHAR(SURJOINDATE, 'YYYY-MM-DD') SURJOINDATE
+			    FROM TBL_SURVEY S LEFT JOIN TBL_JOINSURVEY J
+                ON S.SURNO = J.FK_SURNO
+               <if test='searchType != "" and searchWord != "" '> 
+	              WHERE AND LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
+	           </if>
+	            ORDER BY SURNO DESC
+			)V)
+		WHERE RNO BETWEEN #{startRno} AND #{endRno}
+	</select>
+	
+	<!-- 설문리스트 - 설문참여 -->
+	<select id="surveyJoin" parameterType="HashMap" resultType="com.spring.groovy.survey.model.AskVO">
+		SELECT QUESTNO,FK_SURNO,QUESTION,OPTION1,OPTION2,OPTION3,OPTION4,OPTION5
+		      ,SURTITLE, SUREXPLAIN
+		FROM TBL_ASK A left JOIN TBL_SURVEY S
+		ON A.FK_SURNO = S.SURNO 
+		WHERE FK_SURNO = #{surno}
+	</select>
+	
+	<!--  답변한 설문지 insert -->
+	<insert id="surveyJoinEnd" parameterType="com.spring.groovy.survey.model.JoinSurveyVO">
+		INSERT INTO TBL_JOINSURVEY(JOINSURNO,FK_EMPNO,FK_SURNO,FK_QUESTNO,ANSWER,SURJOINDATE)
+               VALUES(seq_tbl_joinsurvey.nextval,#{jvoList.fk_empno},#{jvoList.fk_surno},#{jvoList.fk_questno},#{jvoList.answer}, sysdate)
+	</insert>
+	
+	
+	
+	<!-- ****************************************************************************************************- -->
+	
+	
+	<!-- 다음설문번호를 알아오는 매소드  -->
+	<select id="getsurno" resultType="String" >
+		SELECT SEQ_TBL_SURVEY.NEXTVAL FROM DUAL
+	</select>
+	
+	<!-- 관리자 - 설문작성(설문조사 번호 insert하기) -->
+	<insert id="getsurveyList" parameterType="com.spring.groovy.survey.model.SurveyVO">
+		INSERT INTO TBL_SURVEY(SURNO,FK_EMPNO,SURTITLE,SUREXPLAIN,SURCREATEDATE,SURSTART,SUREND,SURSTATUS,SUROPENSTATUS)
+		VALUES(#{surno},#{fk_empno},#{surtitle},#{surexplain},sysdate,#{surstart},#{surend},default, default)
 		
+	</insert>
+
+	
+	<!-- 관리자 - 설문작성(한 문항씩 insert하기) -->
+	<insert id="getAskList" parameterType="HashMap" >
+		INSERT INTO TBL_ASK(QUESTNO,FK_SURNO,QUESTION,OPTION1,OPTION2,OPTION3,OPTION4,OPTION5)
+		VALUES(seq_tbl_ask.nextval,#{ajax_fk_surno},#{avo.question}, #{avo.option1},#{avo.option2},#{avo.option3},#{avo.option4},#{avo.option5})
+	</insert>
+	
+		
+	<!-- 설문리스트 목록  -설문 참여자 수 구하기(페이징)  -->
+	<select id="getJoinEmpCnt" parameterType="com.spring.groovy.survey.model.JoinSurveyVO" resultType="int">
+		SELECT COUNT(fk_empno)FROM TBL_JOINSURVEY
+		WHERE FK_SURNO = #{fk_surno}
+	</select>
+	
+	<!-- 설문리스트 목록  -설문 참여자 수 구하기(페이징)  -->
+	<select id="getEmpCnt" parameterType="com.spring.groovy.management.model.MemberVO" resultType="int">
+		SELECT COUNT(EMPNO) FROM TBL_EMPLOYEE
+	</select>
+	
+	
+	<!-- 관리자 설문리스트 목록 - 한 페이지에 표시할 글 목록  (페이징 페이지수를 알아온다음에 10개씩보여줌) (페이징)-->
+	<select id="surveyManage"  parameterType="HashMap" resultType="com.spring.groovy.survey.model.SurveyVO">
+	    SELECT *
+	    FROM (SELECT ROWNUM AS RNO, V.*
+	        FROM( 
+	            SELECT SURNO,SURTITLE,SUREXPLAIN,TO_CHAR(SURCREATEDATE, 'YYYY-MM-DD')SURCREATEDATE,SURSTART,SUREND,SURSTATUS
+	            FROM TBL_SURVEY S LEFT JOIN TBL_TARGET T
+	            ON S.SURNO = T.FK_SURNO
+	         	 <if test='searchType != "" and searchWord != "" '> 
+		              WHERE AND LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
+		          </if>
+	            ORDER BY SURNO DESC
+	        )V)
+	    WHERE RNO BETWEEN #{startRno} AND #{endRno}
+	</select>
+
+
+	<!-- 설문결과를 조회하는 select -->
+	<select id="resultView"  parameterType="HashMap" resultType="com.spring.groovy.survey.model.SurveyVO">
+        SELECT SURNO, SURTITLE, SUREXPLAIN, TO_CHAR(SURCREATEDATE,'YYYY-MM-DD')SURCREATEDATE
+        	  ,TO_CHAR(SURSTART,'YYYY-MM-DD') SURSTART,TO_CHAR(SUREND,'YYYY-MM-DD')SUREND, SURSTATUS
+        FROM TBL_SURVEY S LEFT JOIN TBL_TARGET T
+        ON S.SURNO = T.FK_SURNO
+        WHERE SURNO = #{surno}
+	</select>
+	
+<!-- 설문결과를 조회하는 empno가없는 거 만들기 -->
+	
+	<!-- 설문지를 삭제 delete -->
+	<delete id="surveyDelete" parameterType="HashMap">
+		DELETE FROM TBL_SURVEY
+		WHERE SURNO = #{surno}
+	</delete>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 		
 </mapper>

@@ -461,8 +461,8 @@
 			    		// === 전사일정, 팀별일정, 개인일정, 공유일정의 체크박스중 체크박스에 체크를 한 경우 라면
 			                
 			        	if (arg.event.extendedProps.cid === item.value) { // item.value 가 체크박스의 value 값이다.
-			              	 console.log("일정을 보여주는 cid : "  + arg.event.extendedProps.cid);
-			              	 console.log("일정을 보여주는 체크박스의 value값(item.value) : " + item.value);
+			             // 	 console.log("일정을 보여주는 cid : "  + arg.event.extendedProps.cid);
+			             // 	 console.log("일정을 보여주는 체크박스의 value값(item.value) : " + item.value);
 			                    
 			              	arg.el.style.display = "block"; // 풀캘린더에서 일정을 보여준다.
 			            }
@@ -470,8 +470,8 @@
 						// === 전사일정, 팀별일정, 개인일정, 공유일정의 체크박스중 체크박스에 체크를 해제한 경우 라면
 			                
 						if (arg.event.extendedProps.cid === item.value) {
-	            		 console.log("일정을 숨기는 cid : "  + arg.event.extendedProps.cid);
-	                	 console.log("일정을 숨기는 체크박스의 value값(item.value) : " + item.value);
+	            	//	 console.log("일정을 숨기는 cid : "  + arg.event.extendedProps.cid);
+	                //	 console.log("일정을 숨기는 체크박스의 value값(item.value) : " + item.value);
 			                	
 	            			arg.el.style.display = "none"; // 풀캘린더에서 일정을  숨긴다.
 			            }

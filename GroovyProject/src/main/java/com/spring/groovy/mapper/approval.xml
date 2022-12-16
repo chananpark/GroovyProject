@@ -98,7 +98,7 @@
 		SELECT * 
 		FROM ( SELECT A.*, ROWNUM AS RNO
 		    FROM (SELECT DRAFT_TYPE, TEMP_DRAFT_NO AS DRAFT_NO, FK_DRAFT_EMPNO, DRAFT_DATE,
-					DRAFT_SUBJECT, NAME AS DRAFT_EMP_NAME
+					DRAFT_SUBJECT, FK_DRAFT_TYPE_NO, NAME AS DRAFT_EMP_NAME
 					FROM TBL_TEMP_DRAFT JOIN
 					TBL_EMPLOYEE
 					ON EMPNO = FK_DRAFT_EMPNO
@@ -423,48 +423,6 @@
 		(BIZTRIP_REPORT_NO, FK_DRAFT_NO, TRIP_PURPOSE, TRIP_START_DATE, TRIP_END_DATE, TRIP_LOCATION)
 		VALUES (SEQ_BIZTRIP_REPORT_NO.NEXTVAL, #{fk_draft_no}, #{trip_purpose}, #{trip_start_date}, #{trip_end_date}, #{trip_location})
 	</insert>
-	
-	<!-- 임시저장문서 시퀀스번호 얻어오기 -->
-	<select id="getTempDraftNo" resultType="int">
-		SELECT SEQ_TEMP_DRAFT_NO.NEXTVAL FROM DUAL
-	</select>
-	
-	<!-- 기안 임시저장하기 -->
-	<insert id="saveDraft" parameterType="com.spring.groovy.approval.model.DraftVO">
-		INSERT INTO TBL_TEMP_DRAFT
-		(TEMP_DRAFT_NO, FK_DRAFT_EMPNO, DRAFT_SUBJECT, DRAFT_CONTENT, DRAFT_TYPE, FK_DRAFT_TYPE_NO)
-		VALUES (#{draft_no}, #{fk_draft_empno}, #{draft_subject}, #{draft_content},
-		 #{draft_type}, #{fk_draft_type_no})
-	</insert>
-	
-	<!-- 임시저장 결재정보 등록하기 -->
-	<update id="saveApproval" parameterType="java.util.List">
-		INSERT INTO TBL_TEMP_APPROVAL (TEMP_APPROVAL_NO, FK_TEMP_DRAFT_NO, FK_APPROVAL_EMPNO, LEVELNO)
-		SELECT SEQ_TEMP_APPROVAL_NO.NEXTVAL AS APPROVAL_NO, A.* 
-		FROM (
-		<foreach collection="list" item="apvo" index="index" separator="union all">
-			SELECT #{apvo.fk_draft_no} as FK_DRAFT_NO
-	        , #{apvo.fk_approval_empno} as FK_APPROVAL_EMPNO
-	        , (${index}+1) as LEVELNO
-	        , #{apvo.external} as EXTERNAL
-	 		FROM DUAL
-       </foreach>) A
-	</update>
-		
-	<!-- 개인문서함-임시저장함 글 삭제 -->
- 	<delete id="deleteDraftList" parameterType="map">
-		DELETE FROM TBL_TEMP_DRAFT
-		WHERE TEMP_DRAFT_NO IN
-		<foreach collection="array" item="seq" open="(" close=")" separator=",">
-				#{seq}
-		</foreach>
-	</delete>
-	
-	<!-- 30일 지난 임시저장 글 삭제하기 -->
-	<delete id="autoDeleteSavedDraft" >
-		DELETE TBL_TEMP_DRAFT
-		WHERE to_date(DRAFT_DATE, 'yyyy-mm-dd') lte to_date(ADD_MONTHS(sysdate, -1),'yyyy-mm-dd')
-	</delete>
 
 	<!-- 기안 문서 조회 -->
 	<select id="getDraftInfo" resultType="com.spring.groovy.approval.model.DraftVO" parameterType="com.spring.groovy.approval.model.DraftVO" >
@@ -502,9 +460,15 @@
 	</select>
 	
 	<!-- 첨부파일 1개 조회 -->
-	<select id="getAttachedFile" resultType="com.spring.groovy.approval.model.DraftFileVO" parameterType="String" >
+	<select id="getOneAttachedFile" resultType="com.spring.groovy.approval.model.DraftFileVO" parameterType="String" >
 		SELECT * FROM TBL_DRAFT_FILE
 		WHERE DRAFT_FILE_NO = #{draft_file_no}
+	</select>
+	
+	<!-- 첨부파일 1개 조회 -->
+	<select id="getAllAttachedFile" resultType="com.spring.groovy.approval.model.DraftFileVO" parameterType="String" >
+		SELECT * FROM TBL_DRAFT_FILE
+		WHERE FK_DRAFT_NO = #{draft_no}
 	</select>
 	
 	<!-- 결재 처리하기(프로시저) -->
@@ -546,4 +510,169 @@
 		SET SIGNIMG = #{filename}
 		WHERE EMPNO = #{empno}
 	</update>
+		
+	<!-- 임시저장문서 시퀀스번호 얻어오기 -->
+	<select id="getTempDraftNo" resultType="String">
+		SELECT SEQ_TEMP_DRAFT_NO.NEXTVAL FROM DUAL
+	</select>
+	
+	<!-- 기안 임시저장하기 -->
+	<update id="addTempDraft" parameterType="com.spring.groovy.approval.model.DraftVO">
+		MERGE INTO TBL_TEMP_DRAFT
+		USING DUAL
+		ON (TEMP_DRAFT_NO = #{draft_no})
+		WHEN MATCHED THEN
+		UPDATE SET DRAFT_SUBJECT = #{draft_subject}, DRAFT_CONTENT = #{draft_content}, DRAFT_DATE = SYSDATE
+		WHEN NOT MATCHED THEN
+		INSERT(TEMP_DRAFT_NO, FK_DRAFT_EMPNO, DRAFT_SUBJECT, DRAFT_CONTENT, DRAFT_TYPE, FK_DRAFT_TYPE_NO)
+		VALUES (#{draft_no}, #{fk_draft_empno}, #{draft_subject}, #{draft_content}, #{draft_type}, #{fk_draft_type_no})
+	</update>
+	
+	<!-- 임시저장 결재정보 등록하기 -->
+	<update id="addTempApproval" parameterType="java.util.List">
+		INSERT INTO TBL_TEMP_APPROVAL (TEMP_APPROVAL_NO, FK_TEMP_DRAFT_NO, FK_APPROVAL_EMPNO, LEVELNO, EXTERNAL)
+		SELECT SEQ_TEMP_APPROVAL_NO.NEXTVAL AS TEMP_APPROVAL_NO, A.* 
+		FROM (
+		<foreach collection="list" item="apvo" index="index" separator="union all">
+			SELECT #{apvo.fk_draft_no} as FK_TEMP_DRAFT_NO
+	        , #{apvo.fk_approval_empno} as FK_APPROVAL_EMPNO
+	        , #{apvo.levelno} as LEVELNO
+	        , #{apvo.external} as EXTERNAL
+	 		FROM DUAL
+       </foreach>) A
+	</update>
+		
+	<!-- 임시 지출내역 등록하기 -->
+	<update id="addTempExpenseList" parameterType="java.util.List">
+		INSERT INTO TBL_TEMP_EXPENSE_LIST (TEMP_EXPENSE_LIST_NO, FK_TEMP_DRAFT_NO, EXPENSE_DATE, EXPENSE_TYPE, EXPENSE_DETAIL, EXPENSE_AMOUNT, EXPENSE_REMARK)
+		SELECT SEQ_TEMP_EXPENSE_LIST_NO.NEXTVAL AS TEMP_EXPENSE_LIST_NO, A.* 
+		FROM (
+		<foreach collection="list" item="evo" separator="union all">
+			SELECT #{evo.fk_draft_no} AS FK_TEMP_DRAFT_NO, #{evo.expense_date} AS EXPENSE_DATE,
+			#{evo.expense_type} AS EXPENSE_TYPE, #{evo.expense_detail} AS EXPENSE_DETAIL,
+			#{evo.expense_amount} AS EXPENSE_AMOUNT, #{evo.expense_remark} AS EXPENSE_REMARK FROM DUAL
+		</foreach>) A
+	</update>
+		
+	<!-- 임시 출장보고 등록하기 -->
+	<insert id="addTempBiztripReport" parameterType="com.spring.groovy.approval.model.BiztripReportVO">
+		INSERT INTO TBL_TEMP_BIZTRIP_REPORT
+		(TEMP_BIZTRIP_REPORT_NO, FK_TEMP_DRAFT_NO, TRIP_PURPOSE, TRIP_START_DATE, TRIP_END_DATE, TRIP_LOCATION)
+		VALUES (SEQ_TEMP_BIZTRIP_REPORT_NO.NEXTVAL, #{fk_draft_no}, #{trip_purpose}, #{trip_start_date}, #{trip_end_date}, #{trip_location})
+	</insert>
+	
+	<!-- 개인문서함-임시저장함 글 삭제 -->
+ 	<delete id="deleteDraftList" parameterType="map">
+		DELETE FROM TBL_TEMP_DRAFT
+		WHERE TEMP_DRAFT_NO IN
+		<foreach collection="array" item="seq" open="(" close=")" separator=",">
+				#{seq}
+		</foreach>
+	</delete>
+	
+	<!-- 임시저장 결재정보 삭제하기 -->
+	<delete id="deleteAprvList" parameterType="String">
+		DELETE FROM TBL_TEMP_APPROVAL
+		WHERE FK_TEMP_DRAFT_NO = #{temp_draft_no}
+	</delete>
+	
+	<!-- 임시저장 지출내역 삭제하기 -->
+	<delete id="deleteEvoList" parameterType="String">
+		DELETE FROM TBL_TEMP_EXPENSE_LIST
+		WHERE FK_TEMP_DRAFT_NO = #{temp_draft_no}
+	</delete>
+	
+	<!-- 임시저장 문서 삭제하기 -->
+	<delete id="deleteTempDraft" parameterType="String">
+		DELETE FROM TBL_TEMP_DRAFT
+		WHERE TEMP_DRAFT_NO = #{temp_draft_no}
+	</delete>
+	
+	<!-- 30일 지난 임시저장 글 삭제하기 -->
+	<delete id="autoDeleteSavedDraft" >
+		DELETE FROM TBL_TEMP_DRAFT
+		WHERE to_date(DRAFT_DATE, 'yyyy-mm-dd') lte to_date(ADD_MONTHS(sysdate, -1),'yyyy-mm-dd')
+	</delete>
+	
+	<!-- 임시저장 기안 문서 조회 -->
+	<select id="getTempDraftInfo" resultType="com.spring.groovy.approval.model.DraftVO" parameterType="com.spring.groovy.approval.model.DraftVO" >
+		SELECT TEMP_DRAFT_NO AS DRAFT_NO, FK_DRAFT_EMPNO, DRAFT_SUBJECT, DRAFT_CONTENT, DRAFT_DATE,
+				DRAFT_TYPE, FK_DRAFT_TYPE_NO, NAME as DRAFT_EMP_NAME, DEPARTMENT AS DRAFT_DEPARTMENT, POSITION, EMPIMG
+        FROM TBL_TEMP_DRAFT JOIN TBL_EMPLOYEE
+        ON EMPNO = FK_DRAFT_EMPNO
+		WHERE TEMP_DRAFT_NO = #{draft_no}
+	</select>
+
+	<!-- 임시저장 기안 결재 정보 조회 -->
+	<select id="getTempApprovalInfo" resultType="com.spring.groovy.approval.model.ApprovalVO" parameterType="com.spring.groovy.approval.model.DraftVO" >
+		SELECT TEMP_APPROVAL_NO AS APPROVAL_NO, FK_TEMP_DRAFT_NO AS FK_DRAFT_NO, FK_APPROVAL_EMPNO, LEVELNO, NAME, DEPARTMENT, SIGNIMG, POSITION, EMPIMG
+		FROM TBL_TEMP_APPROVAL JOIN TBL_EMPLOYEE
+		ON EMPNO = FK_APPROVAL_EMPNO
+		WHERE FK_TEMP_DRAFT_NO = #{draft_no}
+		ORDER BY LEVELNO
+	</select>
+
+	<!-- 임시저장 지출내역 조회 -->
+	<select id="getTempExpenseListInfo" resultType="com.spring.groovy.approval.model.ExpenseListVO" parameterType="com.spring.groovy.approval.model.DraftVO" >
+		SELECT TEMP_EXPENSE_LIST_NO AS EXPENSE_LIST_NO, FK_TEMP_DRAFT_NO AS FK_DRAFT_NO, EXPENSE_DATE, EXPENSE_TYPE, EXPENSE_DETAIL, EXPENSE_AMOUNT, EXPENSE_REMARK
+		FROM TBL_TEMP_EXPENSE_LIST
+		WHERE FK_TEMP_DRAFT_NO = #{draft_no}
+	</select>
+	
+	<!-- 임시저장 출장보고 조회 -->
+	<select id="getTempBiztripReportInfo" resultType="com.spring.groovy.approval.model.BiztripReportVO" parameterType="com.spring.groovy.approval.model.DraftVO" >
+		SELECT TEMP_BIZTRIP_REPORT_NO AS BIZTRIP_REPORT_NO, FK_TEMP_DRAFT_NO AS FK_DRAFT_NO, TRIP_PURPOSE, TRIP_START_DATE, TRIP_END_DATE, TRIP_LOCATION 
+		FROM TBL_TEMP_BIZTRIP_REPORT
+		WHERE FK_TEMP_DRAFT_NO = #{draft_no}
+	</select>
+	
+	<!-- draft -> temp_draft 테이블로 옮기기 -->
+	<update id="moveDraft" parameterType="HashMap">
+		INSERT INTO TBL_TEMP_DRAFT
+		(TEMP_DRAFT_NO, FK_DRAFT_EMPNO, DRAFT_SUBJECT, DRAFT_CONTENT, DRAFT_TYPE, FK_DRAFT_TYPE_NO)
+		(SELECT (SELECT #{temp_draft_no} FROM DUAL), FK_DRAFT_EMPNO, DRAFT_SUBJECT, DRAFT_CONTENT, DRAFT_TYPE, FK_DRAFT_TYPE_NO
+		FROM TBL_DRAFT
+		WHERE DRAFT_NO = #{dvo.draft_no})
+	</update>
+	
+	<!-- approval -> temp_approval로 옮기기 -->
+	<update id="moveApproval" parameterType="HashMap">
+		INSERT INTO TBL_TEMP_APPROVAL
+		(TEMP_APPROVAL_NO, FK_TEMP_DRAFT_NO, FK_APPROVAL_EMPNO, LEVELNO, EXTERNAL)
+		(select SEQ_TEMP_APPROVAL_NO.NEXTVAL, (SELECT #{temp_draft_no} FROM DUAL), FK_APPROVAL_EMPNO, LEVELNO, EXTERNAL
+		FROM TBL_APPROVAL
+		WHERE FK_DRAFT_NO = #{dvo.draft_no})
+	</update>
+	
+	<!-- expense_list -> temp_expense_list로 옮기기 -->
+	<update id="moveExpenseList" parameterType="HashMap">
+		INSERT INTO TBL_TEMP_EXPENSE_LIST (TEMP_EXPENSE_LIST_NO, FK_TEMP_DRAFT_NO, EXPENSE_DATE, EXPENSE_TYPE, EXPENSE_DETAIL, EXPENSE_AMOUNT, EXPENSE_REMARK)
+		(SELECT SEQ_TEMP_EXPENSE_LIST_NO.NEXTVAL, (SELECT #{temp_draft_no} FROM DUAL), EXPENSE_DATE, EXPENSE_TYPE, EXPENSE_DETAIL, EXPENSE_AMOUNT, EXPENSE_REMARK
+		FROM TBL_EXPENSE_LIST
+		WHERE FK_DRAFT_NO = #{dvo.draft_no})
+	</update>
+	
+	<!-- biztrip_report -> temp_biztrip_report로 옮기기 -->
+	<update id="moveBiztripList" parameterType="HashMap">
+		INSERT INTO TBL_TEMP_BIZTRIP_REPORT
+		(TEMP_BIZTRIP_REPORT_NO, FK_TEMP_DRAFT_NO, TRIP_PURPOSE, TRIP_START_DATE, TRIP_END_DATE, TRIP_LOCATION)
+		(SELECT SEQ_TEMP_BIZTRIP_REPORT_NO.NEXTVAL, (SELECT #{temp_draft_no} FROM DUAL), TRIP_PURPOSE, TRIP_START_DATE, TRIP_END_DATE, TRIP_LOCATION
+		FROM TBL_BIZTRIP_REPORT
+		WHERE FK_DRAFT_NO = #{dvo.draft_no})
+	</update>
+		
+	<!-- 첨부파일 삭제 -->
+ 	<delete id="deleteFiles" parameterType="java.util.List">
+		DELETE FROM TBL_DRAFT_FILE
+		WHERE DRAFT_FILE_NO IN
+		<foreach collection="list" item="file" open="(" close=")" separator=",">
+				#{file.draft_file_no}
+		</foreach>
+	</delete>
+	
+	<!-- 기안문서 1개 삭제하기 -->
+	<delete id="deleteOneDraft" parameterType="String">
+		DELETE FROM TBL_DRAFT
+		WHERE DRAFT_NO = #{draft_no}
+	</delete>
 </mapper>

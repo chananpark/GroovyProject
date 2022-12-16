@@ -1,6 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <% String ctxPath = request.getContextPath(); %>
 
 <style type="text/css">
@@ -135,7 +137,6 @@
 	#index_atten #menuBox {	z-index: 1;	} /* div 겹치는거 때문에 함 */
 	/* 출퇴근css 끝 */
 	
-	
 
 </style>
 
@@ -264,7 +265,7 @@
 
 <%-- 상단 --%>
 <div style="margin: 0 auto; width:95%;">
-	<h4 class="mt-3 mb-3">😀그루비 회원님, 좋은 하루 보내세요!</h4>
+	<h4 class="mt-3 mb-3">😀${loginuser.name} 회원님, 좋은 하루 보내세요!</h4>
 </div>
 
 <%-- 하단 card 영역 --%>	
@@ -322,13 +323,13 @@
 			<div class="card mb-3 shadow">
 				<div class="card-header bg-white index_card_header" onClick='location.href="<%=ctxPath%>/approval/home.on"'>전자결재</div>
 				<div class="card-body ">
-					결재해야할 문서가 <span style="color:#086BDE; font-weight: bold;">7건</span>있습니다.
-					<button class="btn mb-1 ml-2"  onClick='location.href="<%=ctxPath%>/approval/requested.on"'>>> 결재하기</button>
+					결재해야할 문서가 <span style="color:#086BDE; font-weight: bold;">${requestedDraftCnt}건</span>있습니다.
+					<button class="btn mb-1 ml-2" style="float:right" onClick='location.href="<%=ctxPath%>/approval/requested.on"'>>> 결재하기</button>
 				</div>
 			</div>
 			
 			<%-- 날씨 --%>
-			<div class="card mb-3 shadow">
+			<div class="card mb-3 shadow" style="clear:both">
 				<div class="card-header bg-white index_card_header">날씨</div>
 				<div class="card-body ">
 					<iframe width="100%" height="230" src="https://forecast.io/embed/#lat=37.5857&lon=126.877&color=#086BDE&name=그루비&color=&font=arial&units=si" frameborder="0"></iframe>
@@ -340,47 +341,20 @@
 			<div id="birthday_card" class="card mb-3 shadow">
 				<div class="card-header bg-white index_card_header">이달의 생일</div>
 				<div class="card-body pl-5" style="display:flex; flex-wrap: wrap; justify-content: flex-start;">
-				
+					<c:forEach items="${birthMem}" var="mem">
 					<div class="card mr-4 mb-2">
-						<img src="<%= ctxPath %>/resources/images/test/profile_icon.png" alt="Avatar" style="width:100%">
+						<c:if test="${empty mem.empimg}">
+							<img src="<%= ctxPath %>/resources/images/test/profile_icon.png" alt="Avatar" style="width:100%">
+						</c:if>
+						<c:if test="${not empty mem.empimg}">
+							<img src="<%= ctxPath %>/resources/images/profile/${mem.empimg}" alt="Avatar" style="width:100%; border-radius: 50%">
+						</c:if>
 					 	<div class="container">
-					    	<h5>박찬안</h5>
-					    	<p>개발팀</p>
+					    	<h5>${mem.name}</h5>
+					    	<p>${mem.department}</p>
 					  	</div>
 					</div>
-					
-					<div class="card mr-4 mb-2">
-						<img src="<%= ctxPath %>/resources/images/test/profile_icon.png" alt="Avatar" style="width:100%">
-					 	<div class="container">
-					    	<h5>김민수</h5>
-					    	<p>개발팀</p>
-					  	</div>
-					</div>
-					
-					<div class="card mr-4 mb-2">
-						<img src="<%= ctxPath %>/resources/images/test/profile_icon.png" alt="Avatar" style="width:100%">
-					 	<div class="container">
-					    	<h5>김진석</h5>
-					    	<p>개발팀</p>
-					  	</div>
-					</div>
-										
-					<div class="card mr-4 mb-2">
-						<img src="<%= ctxPath %>/resources/images/test/profile_icon.png" alt="Avatar" style="width:100%">
-					 	<div class="container">
-					    	<h5>김혜원</h5>
-					    	<p>개발팀</p>
-					  	</div>
-					</div>
-					
-					<div class="card mr-4 mb-2">
-						<img src="<%= ctxPath %>/resources/images/test/profile_icon.png" alt="Avatar" style="width:100%">
-					 	<div class="container">
-					    	<h5>손여진</h5>
-					    	<p>개발팀</p>
-					  	</div>
-					</div>
-					
+					</c:forEach>
 				</div>
 				
 			</div>
@@ -466,7 +440,7 @@
 			<%-- 명언 --%>
 			<div class="card mb-3 shadow">
 				<div class="card-header bg-white index_card_header">오늘의 명언</div>
-				<div class="card-body ">직업에서 행복을 찾아라. 아니면 행복이 무엇인지 절대 모를 것이다. - 엘버트 허버드</div>
+				<div class="card-body">${proverb}</div>
 			</div>
 			
 		</div>

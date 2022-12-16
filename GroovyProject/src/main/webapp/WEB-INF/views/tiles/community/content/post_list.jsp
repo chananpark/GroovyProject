@@ -36,6 +36,11 @@ a {
 <script>
 
 $(()=>{
+		
+	// 정렬기준 변경시
+	$("#sortType").change(()=>{
+		setSortOrder();
+	});
 	
 	// 검색창에서 엔터시 검색하기 함수 실행
 	$("#searchWord").bind("keydown", (e) => {
@@ -58,6 +63,11 @@ $(()=>{
 	
 	// sortOrder 유지시키기
 	$("select#sortOrder").val("${paraMap.sortOrder}");
+
+	setSortOrder();
+	
+	// communityBackUrl 스토리지에 저장하기
+	sessionStorage.setItem("communityBackUrl", "${communityBackUrl}");
 });
 
 const addPost = () =>{
@@ -72,6 +82,17 @@ const goSearch = () => {
 	frm.method = "get";
 	frm.action = "<%=ctxPath%>/community/list.on";
 	frm.submit();
+}
+
+// 정렬순서 설정하기
+const setSortOrder = () => {
+	if ($("#sortType").val() == "post_date") {
+		$("#desc").text("최신순");
+		$("#asc").text("오래된순");
+	} else {
+		$("#desc").text("많은 순");
+		$("#asc").text("적은 순");
+	}
 }
 </script>
 
@@ -108,10 +129,11 @@ const goSearch = () => {
 					</select> 
 					<select id="sortType" name="sortType" onchange="goSearch()">
 						<option value="post_date">작성일</option>
+						<option value="post_hit">조회수</option>
 					</select>
 					<select id="sortOrder" name="sortOrder" onchange="goSearch()">
-						<option value="desc">최신순</option>
-						<option value="asc">오래된순</option>
+						<option value="desc" id='desc'></option>
+						<option value="asc" id='asc'></option>
 					</select>
 				</div>
 			</div>
@@ -134,7 +156,14 @@ const goSearch = () => {
 	                        <tr class='row'>
 								<td class='col text-center'>${post.post_no}</td>
 								<td class='col col-4'><a href='<%=ctxPath%>/community/detail.on?post_no=${post.post_no}'>${post.post_subject}</a>
-								&nbsp;<i class="far fa-comment mx-2"></i>${post.commentCnt}</td>
+								&nbsp;<i class="far fa-comment mx-2"></i>${post.commentCnt}
+								<c:if test="${post.likeCnt > 0}">
+								&nbsp;<i class="far fa-heart"></i>&nbsp;${post.likeCnt}
+								</c:if>
+								<c:if test="${post.fileCnt > 0}">
+								&nbsp;<i class="fas fa-paperclip"></i>&nbsp;${post.fileCnt}
+								</c:if>
+								</td>
 	                            <td class='col text-center'>${post.name}</td>
 	                            <td class='col text-center'>${fn:substring(post.post_date,0,10)}</td>
 	                            <td class='col text-center'>${post.post_hit}</td>

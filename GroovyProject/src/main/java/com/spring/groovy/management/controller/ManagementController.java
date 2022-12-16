@@ -1,10 +1,6 @@
 package com.spring.groovy.management.controller;
 
 
-
-
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.request;
-
 import java.io.File;
 import java.util.HashMap;
 import java.util.List;
@@ -17,7 +13,6 @@ import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -104,7 +99,7 @@ public class ManagementController {
            즉, 웹 요청 정보를 얻기 위한 getParameter()와 같은 메소드와 Multipart(파일처리) 관련 메소드를 모두 사용가능하다.  	
 */	
 		// 파일 업로드 경로 지정
-		String path = setFilePath(mtfRequest, "images" + File.separator + "empphoto");
+		String path = setFilePath(mtfRequest, "images" + File.separator + "profile");
 
 		MultipartFile empimg = mvo.getAttach();
 		
@@ -245,7 +240,7 @@ public class ManagementController {
 		String empno = loginuser.getEmpno();
 		
 		// 재직증명서 신청내역을 가져오기
-		List<CelebrateVO> celebList = service.getCelebrateList(empno);
+		// List<CelebrateVO> celebList = service.getCelebrateList(empno);
 		
 		 // 경조비 목록 - 전체 글 개수 구하기(페이징) 
 		int listCnt = service.getcountCelebList(pagination);
@@ -253,23 +248,20 @@ public class ManagementController {
 		// 페이지수 알아오기
 		Map<String, Object> paraMap = pagination.getPageRange(listCnt);// startRno, endRno
 	
+		paraMap.put("empno", empno);
+		
 		// 경조비 목록 - 한 페이지에 표시할 글 목록  (페이징 페이지수를 알아온다음에 10개씩보여줌) (페이징)
-		mav.addObject("pageCnt", service.getCelebPageCelebCnt(paraMap));
+		mav.addObject("celebList", service.getCelebPageCelebCnt(paraMap));
 		
 		 // 페이지바
 		mav.addObject("pagebar",pagination.getPagebar(request.getContextPath()+"/manage/celebrate/celebrateList.on"));
 		mav.addObject("paraMap", paraMap);
 		
-		
-		mav.addObject("celebList", celebList);
 		mav.addObject("empno", empno);
-		
-		
 		
 		mav.setViewName("manage/each/celebrate/celebrateList.tiles");
 		return mav;
 	}
-	
 	
 	
 	//재직증명서 - 증명서신청
@@ -327,13 +319,15 @@ public class ManagementController {
 		String empno = loginuser.getEmpno();
 		
 		// 재직증명서 신청내역을 가져오기
-		List<ProofVO> proofList = service.getProofList(empno);
+		// List<ProofVO> proofList = service.getProofList(empno);
 		
 		// 재직증명서 한 페이지에 표시할 재직증명서 전체 글 개수 구하기(페이징)
 		int listCnt = service.getcountPfList(pagination);
 		  
 		 // 페이지수 알아오기 (페이징)
 		Map<String, Object> paraMap = pagination.getPageRange(listCnt);// startRno, endRno ==> 첫페이지에 ~번부터 ~까지하 보여줄지 
+		
+		paraMap.put("empno", empno);
 		 
 		// 재직증명서 - 한 페이지에 표시할 글 목록  (페이징 페이지수를 알아온다음에 10개씩보여줌) (페이징)
 		mav.addObject("proofList", service.getOnePagePfCnt(paraMap)); // startRno, endRno을 가지고 select문에 1번
@@ -342,7 +336,6 @@ public class ManagementController {
 		mav.addObject("pagebar",pagination.getPagebar(request.getContextPath()+"/manage/proof/proofList.on"));
 		mav.addObject("paraMap", paraMap);
 		 
-		mav.addObject("proofList", proofList);
 		mav.addObject("empno", empno);
 		
 		mav.setViewName("manage/each/proof/proofList.tiles");
@@ -355,37 +348,100 @@ public class ManagementController {
 	// ====== 나중에 꼭 하기!! ===== //
 	//공용 - 급여관리(급여조회)
 	@RequestMapping(value="/manage/pay/paySearch.on")
-	public ModelAndView paySearch(ModelAndView mav, HttpServletRequest request, PayVO pvo) {
+	public ModelAndView paySearch(ModelAndView mav, HttpServletRequest request, PayVO pvo, Pagination pagination) {
 		
 		HttpSession session = request.getSession();
 		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
+		String empno = loginuser.getEmpno();
 		
 		Map<String,Object> paramap = new HashMap<>();
 		paramap.put("pvo", pvo);
+		paramap.put("empno", empno);
 		
 		// 공용 증명서 - 월급리스트
-		List<PayVO> payList = service.paySearch(paramap);
+		// List<PayVO> payList = service.paySearch(paramap);
 		
+		// 공용 - 급여관리(급여조회) 한 페이지에 표시할  전체 글 개수 구하기(페이징)
+		int listCnt = service.getSalaryList(pagination);
+		  
+		 // 페이지수 알아오기 (페이징)
+		Map<String, Object> paraMap = pagination.getPageRange(listCnt);// startRno, endRno ==> 첫페이지에 ~번부터 ~까지하 보여줄지 
+		 
+		// 공용 - 급여관리(급여조회)한 페이지에 표시할 글 목록  (페이징 페이지수를 알아온다음에 10개씩보여줌) (페이징)
+		mav.addObject("payList", service.paySearch(paramap)); // startRno, endRno을 가지고 select문에 1번
+		
+		 // 페이지바
+		mav.addObject("pagebar",pagination.getPagebar(request.getContextPath()+"/manage/pay/paySearch.on"));
+		mav.addObject("paraMap", paraMap);
+		 
 		mav.addObject("loginuser", loginuser);
-		mav.addObject("payList", payList);
 		mav.setViewName( "manage/each/pay/paySearch.tiles");
 		return mav;
 	}
 	
-	//공용 증명서 -  급여관리(기본외수당조회)
-	@RequestMapping(value="/manage/pay/overtimepaySearch.on")
-	public ModelAndView overtimepaySearch(ModelAndView mav, HttpServletRequest request, PayVO pvo) {
+	/*
+	@ResponseBody
+	@RequestMapping(value="/manage/pay/payDetailView.on")
+	public String payDetailView(ModelAndView mav, HttpServletRequest request, PayVO pvo) {
+	
 		HttpSession session = request.getSession();
 		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
+		String empno = loginuser.getEmpno();
+		String payno = request.getParameter("payno");
 		
 		Map<String,Object> paramap = new HashMap<>();
 		paramap.put("pvo", pvo);
+		paramap.put("empno", empno);
+		paramap.put("payno", payno);
+		
+		List<PayVO> payDetailList = null;
+		// 공용 증명서 - 월급리스트
+		payDetailList = service.payView(paramap);
+		
+		JsonArray jsonArr = new JsonArray(); 
+		
+		if(payDetailList != null) {
+			for(PayVO paramap : payDetailList) {
+				JsonObject jsonObj = new JsonObject(); // {}
+				jsonObj.addProperty("empno", empno); 
+				jsonObj.addProperty("payno", payno); 
+				jsonArr.add(jsonObj);
+			}// end of for---------------------------
+		}
+		
+		return jsonArr.toString();
+	}
+	*/
+	
+	//공용 증명서 -  급여관리(기본외수당조회)
+	@RequestMapping(value="/manage/pay/overtimepaySearch.on")
+	public ModelAndView overtimepaySearch(ModelAndView mav, HttpServletRequest request, PayVO pvo, Pagination pagination) {
+		
+		HttpSession session = request.getSession();
+		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
+		String empno = loginuser.getEmpno();
+		
+		Map<String,Object> paramap = new HashMap<>();
+		paramap.put("pvo", pvo);
+		paramap.put("empno", empno);
 		
 		// 공용 증명서 - 월급리스트
-		List<PayVO> payList = service.paySearch(paramap);
+		//List<PayVO> payList = service.paySearch(paramap);
+		
+		// 공용 - 급여관리(기본외수당조회) 한 페이지에 표시할  전체 글 개수 구하기(페이징)
+		int listCnt = service.getOverPayList(pagination);
+		
+		 // 페이지수 알아오기 (페이징)
+		Map<String, Object> paraMap = pagination.getPageRange(listCnt);// startRno, endRno ==> 첫페이지에 ~번부터 ~까지하 보여줄지 
+		 
+		// 재직증명서 - 한 페이지에 표시할 글 목록  (페이징 페이지수를 알아온다음에 10개씩보여줌) (페이징)
+		mav.addObject("payList", service.paySearch(paraMap)); // startRno, endRno을 가지고 select문에 1번
+		
+		 // 페이지바
+		mav.addObject("pagebar",pagination.getPagebar(request.getContextPath()+"/manage/proof/proofEmploymentSearch.on"));
+		mav.addObject("paraMap", paraMap);
 		
 		mav.addObject("loginuser", loginuser);
-		mav.addObject("payList", payList);
 
 		mav.setViewName("manage/each/pay/overtimepaySearch.tiles");
 		
@@ -422,9 +478,6 @@ public class ManagementController {
 		return mav;
 		
 	}
-	
-	
-	// ============= 사원관리 다음기회에 =====================//
 	
 	//관리자 사원관리 - 사원등록(이메일중복확인 Ajax)
 	@ResponseBody
@@ -484,8 +537,6 @@ public class ManagementController {
 	
 		return json.toString();
 	}
-	
-	
 	
 	
 
@@ -554,16 +605,56 @@ public class ManagementController {
 		
 	// 관리자 - 급여관리(급여조회)
 	@RequestMapping(value="/manage/pay/paySearchAdmin.on")
-	public String paySearchAdmin(HttpServletRequest request) {
+	public ModelAndView paySearchAdmin(ModelAndView mav,HttpServletRequest request, PayVO pvo, Pagination pagination) {
 		
-		return "manage/admin/pay/paySearchAdmin.tiles";
+		Map<String,Object> paramap = new HashMap<>();
+		paramap.put("pvo", pvo);
+		
+	//	List<PayVO> payList = service.paySearchAdmin(paramap);
+	//	mav.addObject("payList",payList);
+		
+		//  관리자 - 급여관리(급여조회) 한 페이지에 표시할 재직증명서 전체 글 개수 구하기(페이징)
+		int listCnt = service.getcountPayList(pagination);
+		  
+		 // 페이지수 알아오기 (페이징)
+		Map<String, Object> paraMap = pagination.getPageRange(listCnt);// startRno, endRno ==> 첫페이지에 ~번부터 ~까지하 보여줄지 
+		 
+		// 관리자 - 급여관리(급여조회) - 한 페이지에 표시할 글 목록  (페이징 페이지수를 알아온다음에 10개씩보여줌) (페이징)
+		mav.addObject("payList", service.paySearchAdmin(paraMap)); // startRno, endRno을 가지고 select문에 1번
+		
+		 // 페이지바
+		mav.addObject("pagebar",pagination.getPagebar(request.getContextPath()+"/manage/pay/paySearchAdmin.on"));
+		mav.addObject("paraMap", paraMap);
+
+		mav.setViewName("manage/admin/pay/paySearchAdmin.tiles");
+		return mav;
 	}
 	
 	// 관리자 - 급여관리(기본외수당)
 	@RequestMapping(value="/manage/pay/overtimepaySearchAdmin.on")
-	public String overtimepaySearchAdmin(HttpServletRequest request) {
+	public ModelAndView overtimepaySearchAdmin(ModelAndView mav, HttpServletRequest request, PayVO pvo, Pagination pagination) {
 		
-		return "manage/admin/pay/overtimepaySearchAdmin.tiles";
+		Map<String,Object> paramap = new HashMap<>();
+		paramap.put("pvo", pvo);
+		
+	//	List<PayVO> payList = service.paySearchAdmin(paramap);
+	//	mav.addObject("payList",payList);
+		
+		//  관리자 - 급여관리(급여조회) 한 페이지에 표시할 재직증명서 전체 글 개수 구하기(페이징)
+		int listCnt = service.getcountPayList(pagination);
+		  
+		 // 페이지수 알아오기 (페이징)
+		Map<String, Object> paraMap = pagination.getPageRange(listCnt);// startRno, endRno ==> 첫페이지에 ~번부터 ~까지하 보여줄지 
+		 
+		// 관리자 - 급여관리(급여조회) - 한 페이지에 표시할 글 목록  (페이징 페이지수를 알아온다음에 10개씩보여줌) (페이징)
+		mav.addObject("payList", service.paySearchAdmin(paraMap)); // startRno, endRno을 가지고 select문에 1번
+		
+		 // 페이지바
+		mav.addObject("pagebar",pagination.getPagebar(request.getContextPath()+"/manage/pay/paySearchAdmin.on"));
+		mav.addObject("paraMap", paraMap);
+		
+		mav.setViewName("manage/admin/pay/overtimepaySearchAdmin.tiles");
+		return mav;
 	}
 	
 

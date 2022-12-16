@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="index">
+
+	<!-- 오늘의 명언 -->
+	<select id="getTodayProverb" statementType="CALLABLE">
+        { CALL PCD_GET_TODAY_PROVERB(#{proverb, mode=OUT, jdbcType=VARCHAR, javaType=String}) }	
+	</select>
+
+	<!-- 이달의 생일 -->
+	<select id="getMonthlyBirthday" resultType="com.spring.groovy.management.model.MemberVO">
+        SELECT * FROM TBL_EMPLOYEE
+		WHERE SUBSTR(JUBUN,3,2) = TO_CHAR(SYSDATE, 'MM')
+	</select>
+
+</mapper>

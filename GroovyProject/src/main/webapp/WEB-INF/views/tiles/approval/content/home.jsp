@@ -102,7 +102,9 @@ $(()=>{
 				</c:forEach>
 			</c:if>
 		</div>
-
+			<div class='text-right mr-2 mt-4 more'>
+			<a href='<%=ctxPath%>/approval/requested.on'><i class="fas fa-angle-double-right"></i> 더보기</a>
+		</div>
 	</div>
 	<div class='listContainer'>
 		<h5 class='mb-3'>기안 진행 문서</h5>
@@ -140,7 +142,7 @@ $(()=>{
 			</tbody>
 		</table>
 		<div class='text-right mr-2 mt-4 more'>
-			<a href='<%=ctxPath%>/approval/personal/sent'><i class="fas fa-angle-double-right"></i> 더보기</a>
+			<a href='<%=ctxPath%>/approval/personal/sent.on'><i class="fas fa-angle-double-right"></i> 더보기</a>
 		</div>
 
 	</div>
@@ -191,7 +193,7 @@ $(()=>{
 			</tbody>
 		</table>
 		<div class='text-right mr-2 mt-4 more'>
-			<a href='<%=ctxPath%>/approval/personal/sent'><i class="fas fa-angle-double-right"></i> 더보기</a>
+			<a href='<%=ctxPath%>/approval/personal/sent.on'><i class="fas fa-angle-double-right"></i> 더보기</a>
 		</div>
 	</div>
   

@@ -23,16 +23,19 @@ import com.spring.groovy.approval.model.ExpenseListVO;
 import com.spring.groovy.approval.model.InterApprovalDAO;
 import com.spring.groovy.approval.model.OfficialAprvLineVO;
 import com.spring.groovy.approval.model.SavedAprvLineVO;
+import com.spring.groovy.common.FileManager;
 import com.spring.groovy.management.model.MemberVO;
 
 @Service
 public class ApprovalService implements InterApprovalService {
 
 	private InterApprovalDAO dao;
+	private FileManager fileManager;
 	
     @Autowired
-    public ApprovalService(InterApprovalDAO dao) {
+    public ApprovalService(InterApprovalDAO dao, FileManager fileManager) {
         this.dao = dao;
+        this.fileManager = fileManager;
     }
 	
     // 팀 문서함 게시글 수 조회
@@ -199,6 +202,16 @@ public class ApprovalService implements InterApprovalService {
 		
 		int n = 0;
 		boolean result = false;
+		
+		// 임시저장 번호가 있을 경우
+		String temp_draft_no = (String) paraMap.get("temp_draft_no");
+		if (temp_draft_no != null && !"".equals(temp_draft_no)) {
+			// 임시저장 문서 삭제
+			n = dao.deleteTempDraft(temp_draft_no);
+			
+			if (n != 1)
+				return result;
+		}
 
 		// 기안문서 번호 생성
 		String draft_no = getDraftNo();
@@ -300,37 +313,84 @@ public class ApprovalService implements InterApprovalService {
 	@SuppressWarnings("unchecked")
 	@Override
 	@Transactional(propagation=Propagation.REQUIRED, isolation=Isolation.READ_COMMITTED, rollbackFor= {Throwable.class})
-	public boolean saveWorkDraft(Map<String, Object> paraMap) {
+	public String saveTempDraft(Map<String, Object> paraMap) {
 
 		int n = 0;
 		boolean result = false;
 		
-		// 시퀀스 얻어오기
-		int temp_draft_no = dao.getTempDraftNo();
-		
 		DraftVO dvo = (DraftVO)paraMap.get("dvo");
-		dvo.setDraft_no(String.valueOf(temp_draft_no));// 생성된 임시저장번호 set
+		String temp_draft_no = dvo.getDraft_no();
 		
-		// 기안 임시저장 테이블 insert
-		n = dao.saveDraft(dvo);
+		// 기존에 임시저장되었던 글이 아니라면
+		if (temp_draft_no == null || "".equals(temp_draft_no)) {
+
+			// 임시저장 번호 시퀀스 가져오기
+			temp_draft_no = dao.getTempDraftNo();
+			dvo.setDraft_no(temp_draft_no);
+		}
+		
+		// 기안 문서 임시저장
+		n = dao.addTempDraft(dvo);
 		result = (n == 1)? true : false;
 		
 		// 결재 정보 리스트
 		List<ApprovalVO> apvoList = (List<ApprovalVO>) paraMap.get("apvoList");
-		
-		if (!result || apvoList.size() == 0) {
-			return result;
-		}
 
 		// 결재 정보가 있다면
-		for (ApprovalVO apvo : apvoList)
-			apvo.setFk_draft_no(String.valueOf(temp_draft_no)); // 기안번호 set하기
+		if (result && apvoList != null) {
+			for (ApprovalVO apvo : apvoList)
+				apvo.setFk_draft_no(temp_draft_no); // 기안번호 set하기
+			
+			// 기존에 저장된 결재정보 조회
+			List<ApprovalVO> preApvoList = dao.getTempApprovalInfo(dvo);
+			if (preApvoList != null && preApvoList.size() > 0) {
+				// 기존 결재정보 삭제
+				n = dao.deleteAprvList(temp_draft_no);
+				
+				result = (n == preApvoList.size())? true : false;
+			}
+			
+			if (result) {
+				// 결재 테이블 insert
+				n = dao.addTempApproval(apvoList);
+				result = (n == apvoList.size())? true : false;
+			}
+		}
 		
-		// 결재 테이블 insert
-		n = dao.saveApproval(apvoList);
-		result = (n == apvoList.size())? true : false;
+		// 지출내역 리스트
+		List<ExpenseListVO> evoList = (List<ExpenseListVO>) paraMap.get("evoList");
 		
-		return result;
+		// 지출내역이  있다면
+		if (result && evoList != null) {
+			for (ExpenseListVO evo : evoList) {
+				evo.setFk_draft_no(temp_draft_no); // 임시기안번호 set하기
+			}
+			
+			// 기존에 저장된 지출내역 조회
+			List<ExpenseListVO> preEvoList = dao.getTempExpenseListInfo(dvo);
+			if (preEvoList != null && preEvoList.size() > 0) {
+				// 기존 지출내역 삭제
+				n = dao.deleteEvoList(temp_draft_no);
+				
+				result = (n == preEvoList.size())? true : false;
+			}
+			
+			// 지출내역 insert
+			n = dao.addTempExpenseList(evoList);
+			result = (n == evoList.size())? true : false;
+		}
+		
+		// 출장보고서라면
+		BiztripReportVO brvo = (BiztripReportVO)paraMap.get("brvo");
+		if (result && dvo.getFk_draft_type_no() == 3) {
+			brvo.setFk_draft_no(temp_draft_no); // 임시기안번호 set하기
+			
+			// 출장보고 insert
+			n = dao.addTempBiztripReport(brvo);
+			result = (n == 1)? true : false;
+		}
+		
+		return (result)? temp_draft_no: null;
 	}
 	
 	// 30일 지난 임시저장 글 삭제하기
@@ -340,7 +400,7 @@ public class ApprovalService implements InterApprovalService {
 		dao.autoDeleteSavedDraft();
 	}
 
-	// 기안문서 조회
+	// 기안문서 상세 조회
 	@Override
 	public Map<String, Object> getDraftDetail(DraftVO dvo) {
 				
@@ -390,6 +450,12 @@ public class ApprovalService implements InterApprovalService {
 		
 		return draftMap;
 	}
+	
+	// 기안문서 조회
+	@Override
+	public DraftVO getDraftInfo(DraftVO dvo) {
+		return dao.getDraftInfo(dvo);
+	}
 
 	// 결재 처리하기
 	@Override
@@ -414,8 +480,14 @@ public class ApprovalService implements InterApprovalService {
 
 	// 첨부파일 1개 조회
 	@Override
-	public DraftFileVO getAttachedFile(String draft_file_no) {
-		return dao.getAttachedFile(draft_file_no);
+	public DraftFileVO getOneAttachedFile(String draft_file_no) {
+		return dao.getOneAttachedFile(draft_file_no);
+	}
+
+	// 모든 첨부파일 조회
+	@Override
+	public List<DraftFileVO> getAllAttachedFile(String draft_no) {
+		return dao.getAllAttachedFile(draft_no);
 	}
 
 	// 공통결재라인 목록 불러오기
@@ -434,6 +506,148 @@ public class ApprovalService implements InterApprovalService {
 	@Override
 	public int updateSignature(Map<String, String> paraMap) {
 		return dao.updateSignature(paraMap);
+	}
+
+	// 임시저장 문서 조회
+	@Override
+	public Map<String, Object> getTempDraftDetail(DraftVO dvo) {
+				
+		Map<String, Object> draftMap = new HashMap<String, Object>();
+		
+		// temp_draft에서 select
+		dvo = dao.getTempDraftInfo(dvo);
+		
+		// 에디터로 작성한 내용은 태그를 되돌린다.
+		String unescapedContent = XssPreventer.unescape(dvo.getDraft_content());
+		dvo.setDraft_content(unescapedContent);
+		draftMap.put("dvo", dvo);
+		
+		// approval에서 select
+		List<ApprovalVO> avoList = dao.getTempApprovalInfo(dvo);
+		draftMap.put("avoList", avoList);
+		
+		// 결재자 정보가 저장되어 있다면
+		if (avoList.size() > 0) {
+			// 내부 결재자 리스트
+			List<ApprovalVO> internalList = new ArrayList<ApprovalVO>();
+			
+			// 외부 결재자 리스트
+			List<ApprovalVO> externalList = new ArrayList<ApprovalVO>();
+			
+			for(ApprovalVO avo : avoList) {
+				if (avo.getExternal() == 0)
+					internalList.add(avo);
+				else externalList.add(avo);
+			}
+			draftMap.put("internalList", internalList);
+			draftMap.put("externalList", externalList);
+		}
+		
+		// 지출결의서라면
+		if (dvo.getFk_draft_type_no() == 2) {
+			List<ExpenseListVO> evoList = dao.getTempExpenseListInfo(dvo);
+			draftMap.put("evoList", evoList);
+		}
+		
+		// 출장보고서라면
+		if (dvo.getFk_draft_type_no() == 3) {
+			BiztripReportVO brvo = dao.getTempBiztripReportInfo(dvo);
+			draftMap.put("brvo", brvo);
+		}
+		
+		return draftMap;
+	}
+
+	// 기안 상신취소하기
+	@Override
+	@Transactional(propagation=Propagation.REQUIRED, isolation=Isolation.READ_COMMITTED, rollbackFor= {Throwable.class})
+	public boolean cancelDraft(DraftVO dvo) {
+		
+		// 상신 취소 가능한 상태인지 조회
+		List<ApprovalVO> avoList = dao.getApprovalInfo(dvo);
+		for(ApprovalVO avo : avoList) {
+			if (avo.getApproval_status() != 0)
+				return false;
+		}
+		
+		int n = 0;
+		
+		// 임시저장 번호 시퀀스 가져오기
+		String temp_draft_no = dao.getTempDraftNo();
+		
+		Map<String, Object> paraMap = new HashMap<>();
+		paraMap.put("temp_draft_no", temp_draft_no);
+		paraMap.put("dvo", dvo);
+		
+		// draft -> temp_draft 테이블로 옮기기
+		n = dao.moveDraft(paraMap);
+		
+		if (n!=1)
+			return false;
+		
+		// approval -> temp_approval로 옮기기
+		n = dao.moveApproval(paraMap);
+		
+		if (n != avoList.size())
+			return false;
+		
+		// 지출결의서라면
+		if (dvo.getFk_draft_type_no() == 2) {
+			
+			List<ExpenseListVO> evoList = dao.getExpenseListInfo(dvo);
+			
+			// expense_list -> temp_expense_list로 옮기기
+			n = dao.moveExpenseList(paraMap);
+			
+			if (n != evoList.size())
+				return false;
+		}
+		
+		// 출장보고서라면
+		if (dvo.getFk_draft_type_no() == 3) {
+			// biztrip_report -> temp_biztrip_report로 옮기기
+			n = dao.moveBiztripList(paraMap);
+			
+			if (n!=1)
+				return false;
+		}
+		
+		// 원본 기안 삭제하기
+		n = dao.deleteOneDraft(dvo.getDraft_no());
+		return (n==1)? true: false;
+	}
+
+	// 첨부파일 삭제하기
+	@Override
+	public boolean deleteFiles(Map<String, Object> paraMap) {
+		
+		DraftVO dvo = (DraftVO) paraMap.get("dvo");
+		
+		// 첨부파일 목록 조회하기
+		List<DraftFileVO> dfvoList = getAllAttachedFile(dvo.getDraft_no());
+		
+		int n = 0;
+		// 첨부파일이 있다면
+		if (dfvoList != null && dfvoList.size() > 0) {
+			// 테이블에서 파일 삭제
+			n = dao.deleteFiles(dfvoList);
+			
+			// 테이블에서 파일 삭제가 제대로 이루어지지 않았다면
+			if (n != dfvoList.size()) {
+				return false;
+			} 
+			else {
+				// 서버에서 파일 삭제
+				for(DraftFileVO file : dfvoList)  {
+					fileManager.doFileDelete(file.getFilename(), (String)paraMap.get("filePath"));
+				}
+				return true;
+			}
+		} 
+		// 첨부파일이 없다면
+		else {
+			return true;
+		}
 	}
 
 }

@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <% String ctxPath=request.getContextPath(); %>
 
 <style>
@@ -97,6 +98,10 @@ label:hover {
 .dropBox.active {
 	background-color: #E3F2FD;
 }
+
+.removeFile {
+	font-size: small;
+}
 </style>
 
 <script>
@@ -153,7 +158,7 @@ $(() => {
 
 	    if( draft_content == ""  || draft_content == null || draft_content == '&nbsp;' || draft_content == '<p>&nbsp;</p>')  {
 			obj.getById["draft_content"].exec("FOCUS"); //포커싱
-			swal("글내용을 입력하세요!")
+			swal("출장결과를 작성하세요!")
 			.then(function (result) {
 				obj.getById["draft_content"].exec("FOCUS"); //포커싱
 		      })
@@ -175,14 +180,28 @@ $(() => {
 	
 	/* 임시저장 버튼 클릭 시 */
 	$("button#saveBtn").click(function(){
+		// 에디터에서 textarea에 대입
+		obj.getById["draft_content"].exec("UPDATE_CONTENTS_FIELD", []);
 		
-		// 글제목 유효성 검사
-		const draft_subject = $("input#draft_subject").val().trim();
-		if(draft_subject == "") {
-			swal("글제목을 입력하세요!");
- 		return;
-		}
+		// 글내용 유효성검사
+	    var draft_content = $("#draft_content").val();
+
+	    if( draft_content == ""  || draft_content == null || draft_content == '&nbsp;' || draft_content == '<p>&nbsp;</p>')  {
+			obj.getById["draft_content"].exec("FOCUS"); //포커싱
+			swal("출장결과를 작성하세요!!")
+			.then(function (result) {
+				obj.getById["draft_content"].exec("FOCUS"); //포커싱
+		      })
+			return;
+	         
+	    }
 		
+	    // 출장정보 유효성검사
+	    if ($("#trip_purpose").val() == "" || $("#trip_start_date").val() == "" || $("#trip_end_date").val() == "" ||$("#trip_location").val() == "") {
+	    	swal("출장정보를 모두 입력하세요!");
+			return;
+	    }
+	    
 		saveTemp();
 		
 	});
@@ -220,7 +239,7 @@ $(() => {
 		                    "<span class='fileName'>" + fileName + "</span>" +
 		                    "<span class='fileSize'>" + fileSize +" MB</span>" +
 		                    "<span class='digitFileSize' style='display:none'>" + f.size + "</span>" +
-		                    "<span class='removeFile btn small' name='removeFile'>삭제</span>" +
+		                    "<span class='removeFile btn small name='removeFile'>삭제</span>" +
 		                "</div>";
 		    }
 		    $(".dropBox span").hide();
@@ -264,6 +283,7 @@ $(() => {
    	 $(this).parent().remove();
    	 
 	});
+	
 });
 
 //긴급 여부 체크
@@ -345,34 +365,31 @@ const submitDraft = () => {
 /* 임시저장하기 */
 const saveTemp = () => {
 	
- let formData = new FormData($("#draftForm")[0]);
-
-// 첨부파일 가져오기
-getFiles(formData);
+	let formData = new FormData($("#draftForm")[0]);
 	
- $.ajax({
-     url : "<%=ctxPath%>/approval/saveDraft.on",
-     data : formData,
-     type:'POST',
-     enctype:'multipart/form-data',
-     processData:false,
-     contentType:false,
-     dataType:'json',
-     cache:false,
-     success:function(json){
-     	if(json.result == true) {
- 	    	swal("저장 완료", "임시저장되었습니다.", "success")
- 	    	.then((value) => {
-	    	    	location.href = "<%=ctxPath%>/approval/personal/saved.on";
-	    		});
-     	}
-     	else
-     		swal("저장 실패", "임시저장 실패하였습니다.", "error");
-     },
-     error: function(request, status, error){
+	$.ajax({
+		url : "<%=ctxPath%>/approval/saveDraft.on",
+		data : formData,
+		type:'POST',
+		enctype:'multipart/form-data',
+		processData:false,
+		contentType:false,
+		dataType:'json',
+		cache:false,
+		success:function(json){
+   	     	if(json.temp_draft_no != "" && json.temp_draft_no !== undefined) {
+   	     		swal("저장 완료", "임시저장 되었습니다.", "success")
+   	     		.then((value) => {
+   	 	    		$("input[name='temp_draft_no']").val(json.temp_draft_no); // 임시저장 번호 대입
+ 	     		});
+   	     	}
+	    	else
+	    		swal("저장 실패", "임시저장 실패하였습니다.", "error");
+	    },
+	    error: function(request, status, error){
 		alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
 		}
- });
+	});
 }
 
 /* 저장된 결재라인 선택창 */
@@ -519,6 +536,7 @@ const emptyApprovalLine = () => {
 		<form id="draftForm" enctype="multipart/form-data">
 			<input type='hidden' name='fk_draft_empno' value='${loginuser.empno}'/>
 			<input type='hidden' name='fk_draft_type_no' value='3'/>
+			<input type='hidden' name='temp_draft_no' value='${draftMap.dvo.draft_no}'/>
 			
 			<!-- 문서정보 -->
 			<div class='draftInfo' style='width: 20%'>
@@ -561,6 +579,21 @@ const emptyApprovalLine = () => {
 				      </tr>
 				    </thead>
 				    <tbody id="aprvTblBody">
+					<c:if test="${not empty draftMap.internalList}">
+					    <c:forEach items="${draftMap.internalList}" var="emp" varStatus="sts">
+					    <tr>
+					    	<td>${emp.levelno}
+					    	<input type='hidden' name='avoList[${sts.index}].levelno' value='${emp.levelno}'/>
+					    	<input type='hidden' name='avoList[${sts.index}].fk_approval_empno' value='${emp.fk_approval_empno}'/>
+					    	<input type='hidden' name='avoList[${sts.index}].external' value='0'>
+					    	</td>
+					    	<td>${emp.department}</td>
+					    	<td>${emp.position}</td>
+					    	<td>${emp.name}</td>
+					    	
+					    </tr>
+					    </c:forEach>
+				    </c:if>				    
 				    </tbody>
 				</table>
 			</div>
@@ -612,26 +645,27 @@ const emptyApprovalLine = () => {
 			<table class='table table-sm table-bordered text-left' id='draftTable'>
 				<tr>
 					<th>제목</th>
-					<td><input type="text" name="draft_subject" id="draft_subject" placeholder='제목을 입력하세요' style='width: 100%;' /></td>
+					<td><input type="text" name="draft_subject" id="draft_subject" 
+					placeholder='제목을 입력하세요' style='width: 100%;' value="${draftMap.dvo.draft_subject}"/></td>
 				</tr>
 				<tr>
 					<th>출장목적</th>
-					<td><textarea style="width: 100%; height: 50px;" name="trip_purpose" id="trip_purpose" placeholder='내용을 입력하세요'></textarea></td>
+					<td><textarea style="width: 100%; height: 50px;" name="trip_purpose" id="trip_purpose" placeholder='내용을 입력하세요'>${draftMap.brvo.trip_purpose}</textarea></td>
 				</tr>
 				<tr>
 					<th>출장기간</th>
 					<td>
-						<input type='date' name="trip_start_date"> ~ 
-						<input type='date' name="trip_end_date">
+						<input type='date' name="trip_start_date" value="${fn:substring(draftMap.brvo.trip_start_date,0,10)}"> ~ 
+						<input type='date' name="trip_end_date" value="${fn:substring(draftMap.brvo.trip_end_date,0,10)}">
 					</td>
 				</tr>
 				<tr>
 					<th>출장지역</th>
-					<td><input type="text" name="trip_location" id="trip_location"/></td>
+					<td><input type="text" name="trip_location" id="trip_location" value="${draftMap.brvo.trip_location}"/></td>
 				</tr>
 				<tr>
 					<th>출장결과</th>
-					<td><textarea style="width: 100%; height: 400px;" name="draft_content" id="draft_content" placeholder='내용을 입력하세요'></textarea></td>
+					<td><textarea style="width: 100%; height: 400px;" name="draft_content" id="draft_content" placeholder='내용을 입력하세요'>${draftMap.dvo.draft_content}</textarea></td>
 				</tr>
 			</table>
 			<!-- 기안내용 끝 -->

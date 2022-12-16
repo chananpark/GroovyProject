@@ -1,5 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <% String ctxPath=request.getContextPath(); %>
 
 <style>
@@ -97,6 +99,10 @@ label:hover {
 .dropBox.active {
 	background-color: #E3F2FD;
 }
+
+.removeFile {
+	font-size: small;
+}
 </style>
 
 <script>
@@ -112,6 +118,12 @@ let fileList = [];
 
 // 행의 개수
 let rowCnt = 0;
+
+// 임시저장된 금액 총합
+let sumAmount = 0;
+
+// 임시저장 반복인덱스
+let index = 0;
 
 $(() => {
 
@@ -133,8 +145,10 @@ $(() => {
 	// 행삭제버튼 숨기기
 	$("#delBtn").hide();
 
-	// 행 한개 추가
-	addRow();
+	if ("${draftMap.evoList}" == "" || "${draftMap.evoList}" == null || "${draftMap.evoList}" == undefined)
+		// 행 한개 추가
+		addRow();
+			
 	
 	/* 확인 버튼 클릭 시 */
 	$("button#writeBtn").click(function(){
@@ -210,12 +224,48 @@ $(() => {
 	/* 임시저장 버튼 클릭 시 */
 	$("button#saveBtn").click(function(){
 		
-		// 글제목 유효성 검사
-		const draft_subject = $("input#draft_subject").val().trim();
-		if(draft_subject == "") {
-			swal("글제목을 입력하세요!");
- 		return;
-		}
+		// 에디터에서 textarea에 대입
+		obj.getById["draft_content"].exec("UPDATE_CONTENTS_FIELD", []);
+		
+		// 글내용 유효성검사
+	    var draft_content = $("#draft_content").val();
+
+	 	// 글내용 유효성검사
+	    var draft_content = $("#draft_content").val();
+
+	    if( draft_content == ""  || draft_content == null || draft_content == '&nbsp;' || draft_content == '<p>&nbsp;</p>')  {
+			swal("지출사유를 입력하세요!")
+			.then(function (result) {
+				obj.getById["draft_content"].exec("FOCUS"); //포커싱
+		      })
+			return;
+	    }
+	    
+	    // 지출내역 유효성검사
+	    
+	    // 지출일자
+	    const dateInput = Array.from($(".expense_date"));
+	    const dateValue = dateInput.every(el => el.value != "" && el.value != null);
+	    if (!dateValue){
+	    	swal("지출일자를 작성하세요!");
+			return;
+	    }
+	    
+	    // 사용내역
+	    const detailInput = Array.from($(".expense_detail"));
+	    const detailValue = detailInput.every(el => el.value != "" && el.value != null);
+	    if (!detailValue){
+	    	swal("사용내역을 작성하세요!");
+			return;
+	    }
+	    
+	    // 금액
+	    const amountInput = Array.from($(".expense_amount"));
+	    const amountValue = amountInput.every(el => el.value > 0);
+	    if (!amountValue){
+	    	swal("사용금액을 입력하세요!");
+			return;
+	    }
 		
 		saveTemp();
 		
@@ -297,6 +347,7 @@ $(() => {
    	 $(this).parent().remove();
    	 
 	});
+
 });
 
 
@@ -444,34 +495,31 @@ const submitDraft = () => {
 /* 임시저장하기 */
 const saveTemp = () => {
 	
- let formData = new FormData($("#draftForm")[0]);
-
-// 첨부파일 가져오기
-getFiles(formData);
-	
- $.ajax({
-     url : "<%=ctxPath%>/approval/saveDraft.on",
-     data : formData,
-     type:'POST',
-     enctype:'multipart/form-data',
-     processData:false,
-     contentType:false,
-     dataType:'json',
-     cache:false,
-     success:function(json){
-     	if(json.result == true) {
- 	    	swal("저장 완료", "임시저장되었습니다.", "success")
- 	    	.then((value) => {
-	    	    	location.href = "<%=ctxPath%>/approval/personal/saved.on";
-	    		});
-     	}
-     	else
-     		swal("저장 실패", "임시저장 실패하였습니다.", "error");
-     },
-     error: function(request, status, error){
+	let formData = new FormData($("#draftForm")[0]);
+ 
+	$.ajax({
+		url : "<%=ctxPath%>/approval/saveDraft.on",
+		data : formData,
+		type:'POST',
+		enctype:'multipart/form-data',
+		processData:false,
+		contentType:false,
+		dataType:'json',
+		cache:false,
+		success:function(json){
+   	     	if(json.temp_draft_no != "" && json.temp_draft_no !== undefined) {
+   	     		swal("저장 완료", "임시저장 되었습니다.", "success")
+   	     		.then((value) => {
+   	 	    		$("input[name='temp_draft_no']").val(json.temp_draft_no); // 임시저장 번호 대입
+ 	     		});
+   	     	}
+	    	else
+	    		swal("저장 실패", "임시저장 실패하였습니다.", "error");
+	    },
+	    error: function(request, status, error){
 		alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
 		}
- });
+	});
 }
 
 /* 저장된 결재라인 선택창 */
@@ -620,7 +668,7 @@ const emptyApprovalLine = () => {
 			<form id="draftForm" enctype="multipart/form-data">
 				<input type='hidden' name='fk_draft_empno' value='${loginuser.empno}'/>
 				<input type='hidden' name='fk_draft_type_no' value='2'/>
-				
+				<input type='hidden' name='temp_draft_no' value='${draftMap.dvo.draft_no}'/>
 				
 				<!-- 문서정보 -->
 				<div class='draftInfo' style='width: 20%'>
@@ -663,6 +711,21 @@ const emptyApprovalLine = () => {
 					      </tr>
 					    </thead>
 					    <tbody id="aprvTblBody">
+					    <c:if test="${not empty draftMap.internalList}">
+						    <c:forEach items="${draftMap.internalList}" var="emp" varStatus="sts">
+						    <tr>
+						    	<td>${emp.levelno}
+						    	<input type='hidden' name='avoList[${sts.index}].levelno' value='${emp.levelno}'/>
+						    	<input type='hidden' name='avoList[${sts.index}].fk_approval_empno' value='${emp.fk_approval_empno}'/>
+						    	<input type='hidden' name='avoList[${sts.index}].external' value='0'>
+						    	</td>
+						    	<td>${emp.department}</td>
+						    	<td>${emp.position}</td>
+						    	<td>${emp.name}</td>
+						    	
+						    </tr>
+						    </c:forEach>
+					    </c:if>
 					    </tbody>
 					</table>
 				</div>
@@ -714,12 +777,12 @@ const emptyApprovalLine = () => {
 					<tr>
 						<th>제목</th>
 						<td><input type="text" name="draft_subject" id="draft_subject" placeholder='제목을 입력하세요'
-								style='width: 100%; font-size: small;' /></td>
+						style='width: 100%; font-size: small;' value='${draftMap.dvo.draft_subject}'/></td>
 					</tr>
 					<tr>
 						<th>지출사유</th>
 						<td><textarea style="width: 100%; height: 100px;" name="draft_content" id="draft_content"
-								placeholder='내용을 입력하세요'></textarea></td>
+								placeholder='내용을 입력하세요'>${draftMap.dvo.draft_content}</textarea></td>
 					</tr>
 				</table>
 				<!-- 제목 및 지출사유 끝 -->
@@ -743,7 +806,36 @@ const emptyApprovalLine = () => {
 						</tr>
 					</thead>
 					<tbody id='expenseListBody'>
-
+					<c:forEach items="${draftMap.evoList}" var="evo" varStatus="sts">
+						<tr class='tr${sts.count}'>
+							<td><input name='evoList[${sts.index}].expense_date' type='date' class='expense_date' value='${fn:substring(evo.expense_date, 0, 10)}'/>
+							</td>
+							<td><select name='evoList[${sts.index}].expense_type' id='expense_type${sts.index}' class='expense_type'>
+								<option value='물품구입비'>물품구입비</option>
+								<option value='교통비'>교통비</option>
+								<option value='식비'>식비</option>
+								<option value='기타'>기타</option>
+							</select>
+							</td>
+							<td><input name='evoList[${sts.index}].expense_detail' type='text' class='expense_detail' value='${evo.expense_detail}'/></td>
+							<td><input name='evoList[${sts.index}].expense_amount' type='number' onchange='sum()' value='0' min='0' class='expense_amount'/></td>
+							<td><input name='evoList[${sts.index}].expense_remark' type='text' value='${evo.expense_remark}'/></td>
+						</tr>
+						<script>
+							// 분류 select option 선택하기
+							index = "${sts.index}";
+							$('#expense_type'+index).val('${evo.expense_type}').prop("selected",true);
+							
+							// 내역 금액 값 넣기
+							$('input[name="evoList['+index+'].expense_amount"]').val("${evo.expense_amount}");
+							
+							// 임시저장된 내역의 총합 구하기
+							sumAmount += Number("${evo.expense_amount}");
+							
+							// rowCnt 증가
+							rowCnt = Number("${sts.count}");
+						</script>
+					</c:forEach>
 					</tbody>
 					<tfoot>
 						<tr>
@@ -752,6 +844,9 @@ const emptyApprovalLine = () => {
 						</tr>
 					</tfoot>
 				</table>
+				<script>
+					$("#sum").text(sumAmount);
+				</script>
 				<!-- 지출내역 표 끝 -->
 				
 				<!-- 구분선 -->

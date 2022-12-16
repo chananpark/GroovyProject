@@ -30,7 +30,7 @@ public class LoginCheckInterceptor implements HandlerInterceptor{
       if(session.getAttribute("loginuser") == null) {
          
          //로그인이 되지 않은 상태
-         String message = "먼저 로그인 하세요(인터셉터 활용)~~~";
+         String message = "로그인후 이용가능합니다.";
          String loc = request.getContextPath()+"/login.on";
          
          request.setAttribute("message", message);

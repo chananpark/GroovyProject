@@ -55,40 +55,7 @@ create table tbl_pay
 ,constraint PK_tbl_pay_payno primary key(payno)
 ,constraint FK_tbl_pay_fk_empno foreign key(fk_empno) references tbl_employee(empno)
 );
-
 -- Table TBL_PAY이(가) 생성되었습니다.
-
-insert into TBL_PAY (payno,fk_empno,pay,overtimepay,incomtax,pension,insurance,paymentdate)
-values(seq_tbl_pay.nextval,13,default, 100000,default, default, default,sysdate)
-where fk_empno = 13
-commit
-select *
-from TBL_PAY
-
-
-select PAYNO, FK_EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, SALARY,PAY ,ANNUALPAY,OVERTIMEPAY,PAYMENTDATE,OVERPAY,
-        INCOMTAX,PENSION,INSURANCE, ALLPAY, tax,
-        (ALLPAY - tax) AS monthpay
-from 
-    (
-        select PAYNO, FK_EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, SALARY,PAY ,ANNUALPAY,OVERTIMEPAY,PAYMENTDATE,OVERPAY,
-                    INCOMTAX,PENSION,INSURANCE, 
-                    (SALARY+ANNUALPAY+OVERTIMEPAY) AS ALLPAY,
-                    (INCOMTAX+PENSION+INSURANCE) AS tax
-                    
-        from 
-        (
-            SELECT PAYNO, FK_EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, SALARY,PAY ,ANNUALPAY,OVERTIMEPAY,PAYMENTDATE, (ANNUALPAY+OVERTIMEPAY) AS OVERPAY,
-                    CEIL(SALARY*INCOMTAX) AS INCOMTAX, CEIL(SALARY*PENSION)AS PENSION, CEIL(SALARY*INSURANCE)AS INSURANCE
-            FROM
-                (SELECT E.EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, ROUND(SALARY/12)AS SALARY,
-                        PAYNO, FK_EMPNO, PAY, NVL(ANNUALPAY,0) AS ANNUALPAY, NVL(OVERTIMEPAY,0)  AS OVERTIMEPAY, TO_CHAR(PAYMENTDATE, 'YYYY-MM-DD') AS PAYMENTDATE
-                        ,INCOMTAX,PENSION,INSURANCE
-                FROM TBL_EMPLOYEE E RIGHT JOIN TBL_PAY P
-                ON E.EMPNO = P.FK_EMPNO
-            )V
-        )A
-    )P
 
 -- 지급항목
 초과근무수당 :  pay * 1.5*근무시간
@@ -99,14 +66,6 @@ from
 국민연금 : 0.05
 고용보험 : 0.008
 
-select extendstart*1.5
-from tbl_pay P join tbl_attendance A
-on P.fk_empno = A.fk_empno
-
-
-
-commit
-drop sequence seq_tbl_pay
 
 -- 급여테이블 시퀀스
 create sequence seq_tbl_pay
@@ -195,6 +154,7 @@ tbl_attendance
 
 select *
 from tbl_attendance
+
 
 
 -- 이미지 칼럼 추가
@@ -386,7 +346,8 @@ insert tbl_pay into payno='seq_tbl_pay.nextval', fk_empno='13', pay= 3000000, an
 where empno = 13
 
 insert into tbl_pay  
-values(seq_tbl_pay.nextval, 13, 3000000, 100000, 100000,sysdate)
+values(seq_tbl_pay.nextval, 43, 5000000, 100000, 100000,sysdate)
+
 
 select payno, fk_empno, pay, annualpay, overtimepay, paymentdate
 from tbl_pay 
@@ -457,7 +418,9 @@ where name = '아이유'
 commit
 
 insert into TBL_PAY(PAYNO, FK_EMPNO, PAY, ANNUALPAY, OVERTIMEPAY, PAYMENTDATE)
-values(seq_tbl_pay.nextval, 13,3000000, 100000, 200000,sysdate)
+values(seq_tbl_pay.nextval, 43,5000000, 100000, 200000,sysdate)
+
+commit
 
 SELECT PAYNO, FK_EMPNO, PAY, ANNUALPAY, OVERTIMEPAY, PAYMENTDATE
 FROM TBL_PAY
@@ -519,12 +482,410 @@ from tbl_employee
 
 
 
+insert into TBL_PAY (payno,fk_empno,pay,overtimepay,incomtax,pension,insurance,paymentdate)
+values(seq_tbl_pay.nextval,13,default, 100000,default, default, default,sysdate)
+where fk_empno = 13
+commit
+select *
+from TBL_PAY
+
+-- 급여테이블 조회
+select PAYNO, FK_EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, SALARY,PAY ,ANNUALPAY,OVERTIMEPAY,PAYMENTDATE,OVERPAY,
+        INCOMTAX,PENSION,INSURANCE, ALLPAY, tax,
+        (ALLPAY - tax) AS monthpay
+from 
+    (
+        select PAYNO, FK_EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, SALARY,PAY ,ANNUALPAY,OVERTIMEPAY,PAYMENTDATE,OVERPAY,
+                    INCOMTAX,PENSION,INSURANCE, 
+                    (SALARY+ANNUALPAY+OVERTIMEPAY) AS ALLPAY,
+                    (INCOMTAX+PENSION+INSURANCE) AS tax
+                    
+        from 
+        (
+            SELECT PAYNO, FK_EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, SALARY,PAY ,ANNUALPAY,OVERTIMEPAY,PAYMENTDATE, (ANNUALPAY+OVERTIMEPAY) AS OVERPAY,
+                    CEIL(SALARY*INCOMTAX) AS INCOMTAX, CEIL(SALARY*PENSION)AS PENSION, CEIL(SALARY*INSURANCE)AS INSURANCE
+            FROM
+                (SELECT E.EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, ROUND(SALARY/12)AS SALARY,
+                        PAYNO, FK_EMPNO, PAY, NVL(ANNUALPAY,0) AS ANNUALPAY, NVL(OVERTIMEPAY,0)  AS OVERTIMEPAY, TO_CHAR(PAYMENTDATE, 'YYYY-MM-DD') AS PAYMENTDATE
+                        ,INCOMTAX,PENSION,INSURANCE
+                FROM TBL_EMPLOYEE E RIGHT JOIN TBL_PAY P
+                ON E.EMPNO = P.FK_EMPNO
+            )V
+        )A
+    )P
+
+-- ====================================================================================================================================== --
+
+-- 설문조사테이블
+create table  tbl_survey 
+(surno		    number(20)        		not null   -- 설문번호
+,fk_empno	    number   		        not null   -- 사원번호
+,surtitle  	   	Nvarchar2(30)  		    not null   -- 설문제목
+,surexplain    	Nvarchar2(200)        		       -- 설문설명
+,surcreatedate 	date  default sysdate   not null   -- 설문생성일
+,surstart 	    date  			        not null   -- 설문시작일
+,surend	   	    date  			        not null   -- 설문종료일
+,surstatus    	number(1)   default 1  	not null   -- 상태(0 임시저장, 1 저장)
+,suropenstatus  number(1)   default 1   not null   -- 설문결과공개여부(0비공개, 1공개)
+,fk_surtarget   number(1)   default 1              -- 설문대상(1전직원, 0직접선택)
+,constraint PK_tbl_survey_surno primary key(surno)
+,constraint FK_tbl_survey_fk_empno foreign key(fk_empno) references tbl_employee(empno)
+,constraint CK_tbl_survey_surstatus check( surstatus in('0','1') )
+,constraint CK_tbl_survey_suropenstatus check(suropenstatus in('0','1') )
+);
+
+
+-- 설문조사테이블 시퀀스
+create sequence seq_tbl_survey
+start with 1
+increment by 1
+nomaxvalue
+nominvalue
+nocycle
+nocache;
+
+   
+-- 설문조사대상테이블
+create table tbl_target
+(surtarget      number(1)    default 1    not null   -- 설문대상
+,fk_surno		number(20)       not null   -- 설문번호
+,constraint PK_tbl_target_surtarget primary key(surtarget)
+,constraint FK_tbl_target_fk_surno foreign key(fk_surno) references tbl_survey(surno)ON DELETE CASCADE
+);
+
+-- 설문조사대상테이블 시퀀스
+create sequence seq_tbl_target
+start with 1
+increment by 1
+nomaxvalue
+nominvalue
+nocycle
+nocache;
+
+
+-- 설문조사문항테이블
+create table  tbl_ask
+(questno 	    number(20)      not null       -- 문항번호
+,fk_surno		number(20)      not null       -- 설문번호
+,question		varchar2(300)   not null       -- 설문질문
+,option1		varchar2(100)                  -- 선택지1
+,option2		varchar2(100)         	       -- 선택지2
+,option3		varchar2(100)        	       -- 선택지3
+,option4		varchar2(100)         	       -- 선택지4
+,option5		varchar2(100)         	       -- 선택지5
+,constraint PK_tbl_ask_questno   primary key(questno)
+,constraint FK_tbl_ask_fk_surno foreign key(fk_surno) references tbl_survey(surno)ON DELETE CASCADE
+);
+
+-- 칼럼 변경
+alter table tbl_ask modify option1 varchar2(100) 
+alter table tbl_ask modify option2 varchar2(100) 
+alter table tbl_ask modify option3 varchar2(100) 
+alter table tbl_ask modify option4 varchar2(100) 
+alter table tbl_ask modify option5 varchar2(100) 
+delete from tbl_ask
+commit
+drop table tbl_ask
+
+-- 설문조사문항테이블 시퀀스
+create sequence seq_tbl_ask
+start with 1
+increment by 1
+nomaxvalue
+nominvalue
+nocycle
+nocache;
+
+drop table tbl_joinsurvey
+
+-- 설문참여테이블
+create table  tbl_joinsurvey 
+(joinsurno 	number(20)        not null       -- 설문참여번호
+,fk_empno	number            not null   	 -- 사원번호
+,fk_surno   number(20)        not null       -- 설문번호
+,fk_questno	number(20)        not null       -- 문항번호
+,answer		number(20)        not null       -- 답변
+,surjoindate date  default sysdate  not null  -- 답변제출일
+,constraint PK_tbl_joinsurvey_joinsurno  primary key(joinsurno)
+,constraint FK_tbl_joinsurvey_fk_empno foreign key(fk_empno) references tbl_employee(empno)ON DELETE CASCADE
+,constraint FK_tbl_joinsurvey_fk_surno foreign key(fk_surno) references tbl_survey(surno)ON DELETE CASCADE
+,constraint FK_tbl_joinsurvey_fk_questno foreign key(fk_questno) references tbl_ask(questno)ON DELETE CASCADE
+);
+
+select *
+from tbl_joinsurvey
+
+-- 설문참여테이블 시퀀스
+create sequence seq_tbl_joinsurvey
+start with 1
+increment by 1
+nomaxvalue
+nominvalue
+nocycle
+nocache;
+
+commit
+
+
+-- 시퀀스조회
+SELECT seq_tbl_survey.CURRVAL FROM DUAL;
+
+SELECT seq_tbl_survey.NEXTVAL FROM DUAL;
+SELECT seq_tbl_survey.CURRVAL FROM DUAL
+where surno=1;
+
+
+SELECT surno from tbl_survey where surno = 1
+
+delete from tbl_survey where surno = 56
+
+SELECT *
+FROM TBL_ASK
+
+--- 설문테이블 insert
+insert into tbl_survey(surno,fk_empno,surtitle,surexplain,surcreatedate,surstart,surend,surstatus,suropenstatus)
+values(seq_tbl_survey.nextval,13,'설문조사','확인해보기',sysdate,'2022-12-10','2022-12-20',default, default)
+
+select *
+from tbl_ask
+
+select *
+from tbl_survey
+order by surno desc
+
+
+insert into tbl_ask(questno,fk_surno,question,option1)
+values(seq_tbl_ask.nextval,2,'팀플설문조사 많이 어려운가요?', 1)
+
+
+drop table tbl_ask
+drop table tbl_joinsurvey
+drop table tbl_target
 
 
 
 
+select * from tbl_survey
+delete from tbl_survey 
+where surno = 2
+commit
+--
+
+select surstart,surend,surtitle,sursubdate,
+        surno,surexplain,
+from tbl_survey S left join tbl_joinsurvey J
+on S.surno = J.fk_surno
+where J.fk_empno = '13'
+
+select sursubdate
+from tbl_joinsurvey 
+where joinsurno = 13
+
+-- 설문리스트 조회
+SELECT SURTITLE, SURNO, TO_CHAR(SURSTART, 'yyyy-mm-dd')SURSTART,TO_CHAR(SUREND, 'yyyy-mm-dd')SUREND,TO_CHAR(SURSUBDATE, 'yyyy-mm-dd') SURSUBDATE
+FROM TBL_SURVEY S LEFT JOIN TBL_JOINSURVEY J
+ON S.SURNO = J.FK_SURNO
+
+-- 설문내용 조회
+SELECT QUESTNO,FK_SURNO,QUESTION,OPTION1,OPTION2,OPTION3,OPTION4,OPTION5
+      ,SURTITLE, surexplain
+FROM TBL_ASK A left JOIN TBL_SURVEY S
+ON A.FK_SURNO = S.SURNO 
+where FK_SURNO = 54 and fk_empno = 13
 
 
+-- 설문 조회 및 페이지네이션
+SELECT *
+FROM (SELECT ROWNUM AS RNO, v.*
+    FROM( 
+        SELECT SURTITLE, SURNO, S.FK_EMPNO, TO_CHAR(SURSTART, 'yyyy-mm-dd')SURSTART,TO_CHAR(SUREND, 'yyyy-mm-dd')SUREND,TO_CHAR(SURSUBDATE, 'yyyy-mm-dd') SURSUBDATE
+        FROM TBL_SURVEY S LEFT JOIN TBL_JOINSURVEY J
+        ON S.SURNO = J.FK_SURNO
+        where S.FK_EMPNO = 13 
+        ORDER BY SURNO DESC
+    )V)
+WHERE RNO BETWEEN #{startRno} AND #{endRno}
+
+      SELECT QUESTNO,FK_SURNO,QUESTION,OPTION1,OPTION2,OPTION3,OPTION4,OPTION5
+		      ,SURTITLE, SUREXPLAIN
+		FROM TBL_ASK A left JOIN TBL_SURVEY S
+		ON A.FK_SURNO = S.SURNO 
+		WHERE FK_SURNO = 19
+        
+        
+select *
+from TBL_Ask a left join tbl_survey s
+on a.fk_surno = s.surno
+where joinsurno = 13
+
+select *
+from tbl_joinsurvey
+
+--설문조사 참여테이블
+insert into tbl_joinsurvey(joinsurno,fk_empno,fk_surno,fk_questno,answer,surjoindate)
+                    values(seq_tbl_joinsurvey.nextval,13,57,193,3, sysdate)
+
+-- 관리자 설문목록결과 조회
+SELECT *
+    FROM (SELECT ROWNUM AS RNO, V.*
+        FROM( 
+            SELECT SURNO,SURTITLE,SUREXPLAIN,SURCREATEDATE,SURSTART,SUREND,SURSTATUS,SURTARGET
+            FROM TBL_SURVEY S LEFT JOIN TBL_TARGET T
+            ON S.SURNO = T.FK_SURNO
+            ORDER BY SURNO DESC
+        )V)
+    WHERE RNO BETWEEN #{startRno} AND #{endRno}
+    
+SELECT COUNT(*) AS CNT , count(surtitle)
+FROM TBL_SURVEY S join an
+
+select count(*)
+from tbl_joinsurvey
+
+
+select *
+from tbl_joinsurvey
+
+select *
+from tbl_survey 
+
+select *
+from tbl_target
+
+select *
+from tbl_employee
+
+select *
+from tbl_ask
+
+select count(surjoindate)from tbl_joinsurvey
+
+SELECT COUNT(fk_empno)FROM TBL_JOINSURVEY
+where fk_surno = 57
+
+SELECT COUNT(empno)FROM tbl_employee
+
+SELECT PWD
+FROM tbl_employee
+WHERE NAME ='김민수'
+
+	SELECT COUNT(surjoindate)FROM TBL_JOINSURVEY
+    WHERE FK_SURNO = 13
+
+
+ SELECT SURNO,SURTITLE,SUREXPLAIN,TO_CHAR(SURCREATEDATE, 'YYYY-MM-DD')SURCREATEDATE,SURSTART,SUREND,SURSTATUS,SURTARGET
+        FROM TBL_SURVEY S LEFT JOIN TBL_TARGET T
+        ON S.SURNO = T.FK_SURNO
+
+INSERT INTO TBL_SURVEY(SURNO,FK_EMPNO,SURTITLE,SUREXPLAIN,SURCREATEDATE,SURSTART,SUREND,SURSTATUS,SUROPENSTATUS, SURTARGET)
+		VALUES(#{surno},#{fk_empno},#{surtitle},#{surexplain},sysdate,#{surstart},#{surend},default, default,#{surtarget})
+ SELECT *
+ FROM       TBL_SURVEY 
+        
+delete from TBL_SURVEY
+where surno = 47
+
+rollback;
+
+
+
+ SELECT SURNO, SURTITLE, SUREXPLAIN, TO_CHAR(SURCREATEDATE,'YYYY-MM-DD')SURCREATEDATE
+        	  ,TO_CHAR(SURSTART,'YYYY-MM-DD') SURSTART,TO_CHAR(SUREND,'YYYY-MM-DD')SUREND, SURSTATUS,SURTARGET
+        FROM TBL_SURVEY S LEFT JOIN TBL_TARGET T
+        ON S.SURNO = T.FK_SURNO
+        WHERE SURNO = 47
+
+
+SELECT QUESTNO,FK_SURNO,QUESTION,OPTION1,OPTION2,OPTION3,OPTION4,OPTION5
+		      ,SURTITLE, SUREXPLAIN
+		FROM TBL_ASK A left JOIN TBL_SURVEY S
+		ON A.FK_SURNO = S.SURNO 
+		WHERE FK_SURNO = #{surno}
+        
+
+-- 제약추가하기
+ALTER TABLE tbl_employee add constraint  UK_tbl_employee_pay  unique(pay);
+
+ALTER TABLE tbl_survey add constraint  FK_tbl_survey_fk_surtarget foreign key(fk_surtarget) references tbl_target(surtarget)ON DELETE CASCADE;
+
+alter table tbl_survey add column surtarget
+
+
+
+-- 컬럼삭제
+alter table tbl_survey drop column FK_surtarget
+,constraint FK_tbl_joinsurvey_fk_questno foreign key(fk_questno) references tbl_ask(questno)ON DELETE CASCADE
+COMMIT
+
+SELECT *
+FROM TBL_SURVEY
+ORDER BY SURNO DESc
+
+select *
+from tbl_target
+
+
+SELECT PAYNO, FK_EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, SALARY,PAY ,ANNUALPAY,OVERTIMEPAY,PAYMENTDATE,OVERPAY,
+	        INCOMTAX,PENSION,INSURANCE, ALLPAY, TAX,
+	        (ALLPAY - TAX) AS MONTHPAY
+	FROM 
+	    (
+	        SELECT PAYNO, FK_EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, SALARY,PAY ,ANNUALPAY,OVERTIMEPAY,PAYMENTDATE,OVERPAY,
+	                    INCOMTAX,PENSION,INSURANCE, 
+	                    (SALARY+ANNUALPAY+OVERTIMEPAY) AS ALLPAY,
+	                    (INCOMTAX+PENSION+INSURANCE) AS TAX
+	                    
+	        FROM 
+	        (
+	            SELECT PAYNO, FK_EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, SALARY,PAY ,ANNUALPAY,OVERTIMEPAY,PAYMENTDATE, (ANNUALPAY+OVERTIMEPAY) AS OVERPAY,
+	                    CEIL(SALARY*INCOMTAX) AS INCOMTAX, CEIL(SALARY*PENSION)AS PENSION, CEIL(SALARY*INSURANCE)AS INSURANCE
+	            FROM
+	                (SELECT E.EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, ROUND(SALARY/12)AS SALARY,
+	                        PAYNO, FK_EMPNO, PAY, NVL(ANNUALPAY,0) AS ANNUALPAY, NVL(OVERTIMEPAY,0)  AS OVERTIMEPAY, TO_CHAR(PAYMENTDATE, 'YYYY-MM-DD') AS PAYMENTDATE
+	                        ,INCOMTAX,PENSION,INSURANCE
+	                FROM TBL_EMPLOYEE E RIGHT JOIN TBL_PAY P
+	                ON E.EMPNO = P.FK_EMPNO
+                   where empno = 13 and payno = 1
+	            )V
+	        )A
+	    )P
+
+
+select *
+from tbl_pay
+
+
+		SELECT PAYNO, FK_EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, SALARY,PAY ,ANNUALPAY,OVERTIMEPAY,PAYMENTDATE,OVERPAY,
+		        INCOMTAX,PENSION,INSURANCE, ALLPAY, TAX,
+		        (ALLPAY - TAX) AS MONTHPAY
+		FROM 
+		    (
+		        SELECT PAYNO, FK_EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, SALARY,PAY ,ANNUALPAY,OVERTIMEPAY,PAYMENTDATE,OVERPAY,
+		                    INCOMTAX,PENSION,INSURANCE, 
+		                    (SALARY+ANNUALPAY+OVERTIMEPAY) AS ALLPAY,
+		                    (INCOMTAX+PENSION+INSURANCE) AS TAX
+		                    
+		        FROM 
+		        (
+		            SELECT PAYNO, FK_EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, SALARY,PAY ,ANNUALPAY,OVERTIMEPAY,PAYMENTDATE, (ANNUALPAY+OVERTIMEPAY) AS OVERPAY,
+		                    CEIL(SALARY*INCOMTAX) AS INCOMTAX, CEIL(SALARY*PENSION)AS PENSION, CEIL(SALARY*INSURANCE)AS INSURANCE
+		            FROM
+		                (SELECT E.EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, ROUND(SALARY/12)AS SALARY,
+		                        PAYNO, FK_EMPNO, PAY, NVL(ANNUALPAY,0) AS ANNUALPAY, NVL(OVERTIMEPAY,0)  AS OVERTIMEPAY, TO_CHAR(PAYMENTDATE, 'YYYY-MM-DD') AS PAYMENTDATE
+		                        ,INCOMTAX,PENSION,INSURANCE
+		                FROM TBL_EMPLOYEE E RIGHT JOIN TBL_PAY P
+		                ON E.EMPNO = P.FK_EMPNO
+		                WHERE EMPNO = 13
+		                order by PAYMENTDATE desc
+		            )V
+		        )A
+		    )P
+
+	SELECT COUNT(*) FROM tbl_celebrate
+    where fk_empno = 13 and clbno = 36
+
+select *
+from tbl_pay
 
 
 

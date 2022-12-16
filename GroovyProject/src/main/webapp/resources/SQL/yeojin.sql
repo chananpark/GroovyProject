@@ -294,6 +294,13 @@ VALUES(SEQ_TBL_EMPLOYEE.NEXTVAL, 'schedule@groovy.com', '김일정', 'qwer1234$'
 '선임', '981230-1111111', '12345', '경영지원부문','인사총무팀','schedule@naver.com',
 '01011112222','106','2022/11/18','1','국민은행','119123456789',15);
 
+INSERT INTO tbl_employee 
+(empno,cpemail,name,pwd,position,jubun,postcode,bumun,department,pvemail
+,mobile,depttel,joindate,empstauts,bank,account,annualcnt, fk_position_no, fk_department_no, fk_bumun_no)
+VALUES(SEQ_TBL_EMPLOYEE.NEXTVAL, 'facility@groovy.com', '이시설', 'qwer1234$',
+'선임', '951230-2222222', '12345', '경영지원부문','인사총무팀','facility@naver.com',
+'01011112222','111','2022/11/18','1','국민은행','123456789',15, 1,2,2);
+
 
 -- 참석자 선택하기에서 사원 list 불러오는 쿼리문
 select empno, name, bumun, department, position, cpemail
@@ -486,5 +493,282 @@ select count(*)
 from tbl_calendar_small_category         
 where fk_lgcatgono = 1    
 
+commit;
+
+
+
+
+
+----------------------------------------------------------------------------------------------------------------------
+-- 자원예약 --
+-- *** 자원예약 대분류(회의실, 기기, 차량  분류) ***
+create table tbl_reservation_large_category 
+(lgcatgono   number(3) not null      -- 자원 대분류 번호 // 1: 회의실, 2:기기, 3:차량
+,lgcatgoname varchar2(50) not null   -- 자원 대분류 명 
+,lgcategcontent nvarchar2(500)       -- 자원 대분류 설명
+,constraint PK_tbl_reservation_large_category primary key(lgcatgono)
+);
+
+alter table tbl_reservation_large_category add fk_empno number;
+ALTER TABLE   tbl_reservation_large_category  modify lgcategcontent clob;
+
+insert into tbl_reservation_large_category(lgcatgono, lgcatgoname)
+values(1, '회의실');
+insert into tbl_reservation_large_category(lgcatgono, lgcatgoname)
+values(2, '기기');
+insert into tbl_reservation_large_category(lgcatgono, lgcatgoname)
+values(3, '차량');
+
+commit;
+
+
+select lgcatgono, lgcatgoname, lgcategcontent, fk_empno
+from tbl_reservation_large_category
+where lgcatgono = 1
+
+-- *** 자원 항목 *** 
+create table tbl_reservation_small_category 
+(smcatgono    number(8) not null      -- 자원 항목 번호
+,fk_lgcatgono number(3) not null      -- 자원 대분류 번호
+,smcatgoname  varchar2(400) not null  -- 자원 항목명
+,smcatgocontent nvarchar2(500)       -- 자원 항목 설명
+,fk_empno     number  not null        -- 자원 항목 작성자 유저아이디
+,constraint PK_tbl_reservation_small_category primary key(smcatgono)
+,constraint FK_tbl_reservation_small_category_fk_lgcatgono foreign key(fk_lgcatgono) 
+            references tbl_reservation_large_category(lgcatgono) on delete cascade
+,constraint FK_tbl_reservation_small_category_fk_empno foreign key(fk_empno) references tbl_employee(empno)            
+);
+-- Table tbl_reservation_small_category(가) 생성되었습니다.
+
+alter table tbl_reservation_small_category add status number; -- 0은 이용 불가능 1 은 이용 가능
+ALTER TABLE tbl_reservation_small_category RENAME COLUMN status TO sc_status;
+commit;
+
+select *
+from tbl_reservation_small_category
+
+create sequence seq_reserv_smcatgono
+start with 1
+increment by 1
+nomaxvalue
+nominvalue
+nocycle
+nocache;
+-- Sequence seq_reserv_smcatgono(가) 생성되었습니다.
+
+insert into tbl_reservation_small_category(smcatgono, fk_lgcatgono, smcatgoname, fk_empno)
+values(seq_reserv_smcatgono.nextval, 1, '3층 대회의실', 27);
+insert into tbl_reservation_small_category(smcatgono, fk_lgcatgono, smcatgoname, fk_empno)
+values(seq_reserv_smcatgono.nextval, 1, '5층 소회의실1', 27);
+insert into tbl_reservation_small_category(smcatgono, fk_lgcatgono, smcatgoname, fk_empno)
+values(seq_reserv_smcatgono.nextval, 1, '5층 소회의실2', 27);
+insert into tbl_reservation_small_category(smcatgono, fk_lgcatgono, smcatgoname, fk_empno)
+values(seq_reserv_smcatgono.nextval, 1, '6층 소회의실3', 27);
+commit;
+
+insert into tbl_reservation_small_category(smcatgono, fk_lgcatgono, smcatgoname, fk_empno)
+values(seq_reserv_smcatgono.nextval, 2, '노트북1', 27);
+insert into tbl_reservation_small_category(smcatgono, fk_lgcatgono, smcatgoname, fk_empno)
+values(seq_reserv_smcatgono.nextval, 2, '노트북2', 27);
+insert into tbl_reservation_small_category(smcatgono, fk_lgcatgono, smcatgoname, fk_empno)
+values(seq_reserv_smcatgono.nextval, 2, '빔프로젝터', 27);
+
+insert into tbl_reservation_small_category(smcatgono, fk_lgcatgono, smcatgoname, fk_empno)
+values(seq_reserv_smcatgono.nextval, 3, '차량번호 3246', 27);
+insert into tbl_reservation_small_category(smcatgono, fk_lgcatgono, smcatgoname, fk_empno)
+values(seq_reserv_smcatgono.nextval, 3, '차량번호 2345', 27);
+insert into tbl_reservation_small_category(smcatgono, fk_lgcatgono, smcatgoname, fk_empno)
+values(seq_reserv_smcatgono.nextval, 3, '차량번호 2572', 27);
+
+
+-- *** 자원예약 *** 
+create table tbl_reservation
+(reservationno    number                 -- 자원예약 번호
+,startdate     date                   -- 시작일자
+,enddate       date                   -- 종료일자
+,realuser      varchar2(4000)         -- 실사용자(시간여유되면)
+,fk_smcatgono  number(8)              -- 예약 항목 번호
+,fk_lgcatgono  number(3)              -- 예약 대분류 번호
+,fk_empno      number       not null  -- 예약자 사원번호
+,reservdate    date         default sysdate -- 예약일자
+,confirm       number                -- 승인여부(0 미승인, 1 승인)
+,status        number                 -- 취소 및 반납 여부(예약상태 0, 취소 1, 반납 2)
+,constraint PK_tbl_reservation_reservationno primary key(reservationno)
+,constraint FK_tbl_reservation_fk_smcatgono foreign key(fk_smcatgono) 
+            references tbl_reservation_small_category(smcatgono) on delete cascade
+,constraint FK_tbl_reservation_fk_lgcatgono foreign key(fk_lgcatgono) 
+            references tbl_reservation_large_category(lgcatgono) on delete cascade   
+,constraint FK_tbl_reservation_fk_empno foreign key(fk_empno) references tbl_employee(empno) 
+,constraint CK_tbl_reservation_confirm check(confirm in(0,1))
+,constraint CK_tbl_reservation_status check(status in(0,1,2))
+);
+-- Table TBL_CALENDAR_SCHEDULE이(가) 생성되었습니다.
+alter table tbl_reservation add return_time date; 
+commit;
+
+create sequence seq_reservationno
+start with 1
+increment by 1
+nomaxvalue
+nominvalue
+nocycle
+nocache;
+-- Sequence SEQ_SCHEDULENO이(가) 생성되었습니다.
+
+commit;
+
+
+select *
+from tbl_reservation
+
+
+select smcatgono, fk_lgcatgono, smcatgoname
+from tbl_reservation_small_category
+where fk_lgcatgono = 1;
+
+insert into tbl_reservation(reservationno, startdate, enddate, realuser, fk_smcatgono, fk_lgcatgono, fk_empno, reservdate, confirm,  status)
+values(seq_reservationno.nextval, 20221207230000, 20221208000000, #{realuser}, #{fk_smcatgono}, #{fk_lgcatgono}, #{empno}, sysdate, 0, 0)
+
+insert into tbl_reservation(reservationno, startdate, enddate, realuser, fk_smcatgono, fk_lgcatgono, fk_empno, reservdate, confirm,  status, return_time)
+values(seq_reservationno.nextval,  to_date(20221207230000, 'yyyymmddhh24miss'),  to_date(20221208000000, 'yyyymmddhh24miss'), null, 1, 1, 27, sysdate, 0, 0, null)
+		
+commit;
+
+
+select reservationno, to_char(startdate, 'yyyymmddhh24') as startdate, to_char(enddate, 'yyyymmddhh24') as enddate, fk_smcatgono, fk_lgcatgono, confirm,  status
+from tbl_reservation
+where (( to_char(startdate,'yyyymmddhh24') between '2022120800' and '2022120823' )
+or  ( to_char(enddate,'yyyymmddhh24') between '2022120800' and '2022120823' ) )
+and fk_lgcatgono = 1
+
+
+select count(*)
+from tbl_reservation
+where (( to_char(startdate,'yyyymmddhh24') between '2022120800' and '2022120822' )
+or  ( to_char(enddate,'yyyymmddhh24') between '2022120800' and '2022120822' ) )
+and fk_lgcatgono = 1
+
+
+select reservationno, startdate, enddate, realuser, fk_smcatgono, fk_lgcatgono, reservdate, confirm, status, return_time,
+       name, fk_empno, department, smcatgoname, startdate_view, enddate_view
+from 
+(
+    select row_number() over(order by reservationno desc) as rno,
+           reservationno, 
+           to_char(startdate, 'yyyymmddhh24') as startdate, to_char(enddate, 'yyyymmddhh24') as enddate, 
+           to_char(startdate, 'yyyy-mm-dd hh24:mi') as startdate_view, to_char(enddate, 'yyyy-mm-dd hh24:mi') as enddate_view,
+           realuser, R.fk_smcatgono, R.fk_lgcatgono, smcatgoname,
+           to_char(reservdate, 'yyyymmddhh24') as reservdate, 
+           confirm,  status, return_time,
+           E.name, R.fk_empno, department
+    from tbl_reservation R
+    join tbl_employee E
+    ON  R.fk_empno = E.empno
+    join tbl_reservation_small_category C
+    ON R.fk_smcatgono = C.smcatgono
+
+where (( to_char(startdate,'YYYY-MM-DD') between '2022-12-08' and '2022-12-09' )
+or  ( to_char(enddate,'YYYY-MM-DD') between '2022-12-08' and '2022-12-09' ) )
+
+)
+where rno between 1 and 10
+
+
+
+select * from tbl_reservation
+
+
+select count(*)
+from 
+(
+    select row_number() over(order by reservationno desc) as rno,
+           reservationno, to_char(startdate, 'yyyymmddhh24') as startdate, to_char(enddate, 'yyyymmddhh24') as enddate, 
+           realuser, fk_smcatgono, R.fk_lgcatgono, R.fk_empno
+    from tbl_reservation R
+    join tbl_employee E
+    ON  R.fk_empno = E.empno
+    join tbl_reservation_small_category C
+    ON R.fk_smcatgono = C.smcatgono
+    
+where (( to_char(startdate,'YYYY-MM-DD') between '2022-12-08' and '2022-12-09' )
+or  ( to_char(enddate,'YYYY-MM-DD') between '2022-12-08' and '2022-12-09' ) )
+and (lower(realuser) like '%'||lower('이시설')||'%' or lower(name) like '%'||lower('이시설')||'%')
+)
+
+
+
+select reservationno, status, confirm, to_char(startdate, 'yyyymmddhh24mi') as startdate, to_char(enddate, 'yyyymmddhh24mi') as enddate
+from tbl_reservation
+
+select reservationno,to_char(enddate, 'yyyymmddhh24mi') as enddate from tbl_reservation
+
+
+UPDATE tbl_reservation SET confirm=1 WHERE reservationno = 46;
+
+commit;
+
+UPDATE tbl_reservation SET status = 2, retunr_time = sysdate, enddate =  WHERE reservationno = 48;
+
+
+select reservationno, to_char(startdate,'YYYY-MM-DD hh24:mi') as startdate, to_char(enddate,'YYYY-MM-DD hh24:mi') as enddate,
+       C.smcatgoname, L.lgcatgoname, R.realuser, E.empno, E.department, E.name, R.status, R.confirm
+from tbl_reservation R
+join tbl_employee E
+ON  R.fk_empno = E.empno
+join tbl_reservation_small_category C
+ON R.fk_smcatgono = C.smcatgono
+join tbl_reservation_large_category L
+ON C.fk_lgcatgono = L.lgcatgono
+where R.reservationno = 50
         
-        
+
+
+select count(*)
+		from 
+		(
+		    select row_number() over(order by reservationno desc) as rno,
+		           reservationno, to_char(startdate, 'yyyymmddhh24') as startdate, to_char(enddate, 'yyyymmddhh24') as enddate, 
+		           realuser, fk_smcatgono, fk_lgcatgono, 
+		           to_char(reservdate, 'yyyymmddhh24') as reservdate, 
+		           confirm,  status, return_time,
+		           name, fk_empno, department
+		    from tbl_reservation R
+		    join tbl_employee E
+		    ON  R.fk_empno = E.empno
+		where R.fk_empno = 27)
+
+
+
+
+select smcatgono, smcatgoname, sc_status, fk_empno, lgcatgono, lgcatgoname
+from tbl_reservation_small_category C 
+JOIN tbl_reservation_large_category L
+ON C.fk_lgcatgono = L.lgcatgono
+order by lgcatgono, smcatgono
+
+
+UPDATE tbl_reservation_small_category SET fk_empno = 27, sc_status = 0 WHERE smcatgono = 10
+
+commit;
+
+select smcatgono, fk_lgcatgono, smcatgoname, sc_status
+from tbl_reservation_small_category
+where fk_lgcatgono = 1 
+
+
+select smcatgono, smcatgoname, sc_status, fk_empno, lgcatgono, lgcatgoname
+		from tbl_reservation_small_category C 
+		JOIN tbl_reservation_large_category L
+		ON C.fk_lgcatgono = L.lgcatgono
+        where L.lgcatgono = 1
+		order by lgcatgono, smcatgono
+
+
+
+UPDATE tbl_reservation_large_category 
+		SET fk_empno = 27, lgcategcontent = '왜 안되죠?'
+		WHERE lgcatgono = 1
+
+commit
+
+
