@@ -3,8 +3,9 @@
     
  <% String ctxPath = request.getContextPath(); %>
  
- <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
  <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+ <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+ <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 
 <style>
 
@@ -138,18 +139,25 @@
 					<th>답변제출일</th>
 				</thead>
 				
+				<%-- 현재시각을 알아오는 JSTL --%>
+				<jsp:useBean id="now" class="java.util.Date" />
+				<fmt:formatDate value="${now}" pattern="yyyy-MM-dd" var="today" />
+				
+				
 				<tbody align="center" class="table ">
 				<c:forEach var="survey" items="${requestScope.pageCnt}" varStatus="status"> 
 					<tr>
-						<td><input type="hidden" name="surno" id="surno" value="${survey.surno}"/>${survey.surno}</td>
+						<td>${status.count}
+							<input type="hidden" name="surno" id="surno" value="${survey.surno}"/>
+						</td>
 						<td>
 							<!-- 설문조사가 진행중인경우 -->
-							<c:if test="${survey.surstart <= survey.surend}">
-								<div id="situation1">진행중</div>
+							<c:if test="${survey.surstart <= survey.surend && survey.surend >= today}">
+							<div id="situation1">진행중</div>
 							</c:if>
 							
 							<!-- 설문조사가 종료된경우-->
-							<c:if test="${survey.surend < sysdate}">
+							<c:if test="${survey.surend < today}">
 								<div id="situation2">종료</div>
 							</c:if>
 						</td>

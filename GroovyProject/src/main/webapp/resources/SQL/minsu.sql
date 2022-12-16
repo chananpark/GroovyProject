@@ -57,6 +57,8 @@ create table tbl_pay
 );
 -- Table TBL_PAY이(가) 생성되었습니다.
 
+from tbl_pay
+
 -- 지급항목
 초과근무수당 :  pay * 1.5*근무시간
 연차수당 : 연차수당 일급(시간*8)*연차휴가 미사용갯수
@@ -65,6 +67,9 @@ create table tbl_pay
 소득세 : 0.07
 국민연금 : 0.05
 고용보험 : 0.008
+
+alter table 
+PENSION
 
 
 -- 급여테이블 시퀀스
@@ -152,8 +157,26 @@ tbl_attendance
 , constraint PK_tbl_attendance_fk_empno_workdate primary key(fk_empno, workdate)
 );
 
+-- 퇴근시간 - 추가근무시간 알아오기
+select to_date(workdate, 'yyyy-mm-dd hh24-mi-ss') AS workdate, to_date(extendstart,'yyyy-mm-dd hh24-mi-ss')AS extendstart, to_date(workend,'yyyy-mm-dd hh24-mi-ss')workend 
+from tbl_attendance
+where fk_empno = 43 and  workdate = '22/12/16'
+
+update tbl_attendance set EXTENDSTART = to_DATE('2022-12-06 18:15:43','yyyy-mm-dd hh24:mi:ss')
+where fk_empno = 43 and workdate = '22-12-16' 
+
+
+
+select to_char(extendstart,'yyyy-mm-dd hh24-mi-ss')AS extendstart, to_char(workend,'yyyy-mm-dd hh24-mi-ss')workend
+from tbl_attendance
+select to_date('2022-12-06 22:15:43','yyyy-mm-dd hh24:mi:ss')- to_date('workend','yyyy-mm-dd hh24:mi:ss')
+from tbl_attendance
+
+rollback
+
 select *
 from tbl_attendance
+order by fk_empno desc
 
 
 
@@ -313,6 +336,9 @@ where empno = 13
 ALTER TABLE tbl_employee MODIFY pwd varchar2(200) DEFAULT 1111;
 ALTER TABLE tbl_employee MODIFY joindate varchar2(10) DEFAULT SYSDATE;
 
+-- 국민연급 값변경
+ALTER TABLE tbl_pay MODIFY pension number default 0.05  
+
 -- 경조비 목록 조회
 select clbno, fk_empno, to_char(clbdate, 'yyyy-mm-dd') AS clbdate, clbpay, clbtype, clbstatus
 from tbl_celebrate
@@ -346,7 +372,8 @@ insert tbl_pay into payno='seq_tbl_pay.nextval', fk_empno='13', pay= 3000000, an
 where empno = 13
 
 insert into tbl_pay  
-values(seq_tbl_pay.nextval, 13, 3000000, 100000, 100000,sysdate)
+values(seq_tbl_pay.nextval, 43, 5000000, 100000, 100000,sysdate)
+
 
 select payno, fk_empno, pay, annualpay, overtimepay, paymentdate
 from tbl_pay 
@@ -417,7 +444,9 @@ where name = '아이유'
 commit
 
 insert into TBL_PAY(PAYNO, FK_EMPNO, PAY, ANNUALPAY, OVERTIMEPAY, PAYMENTDATE)
-values(seq_tbl_pay.nextval, 13,3000000, 100000, 200000,sysdate)
+values(seq_tbl_pay.nextval, 43,5000000, 100000, 200000,sysdate)
+
+commit
 
 SELECT PAYNO, FK_EMPNO, PAY, ANNUALPAY, OVERTIMEPAY, PAYMENTDATE
 FROM TBL_PAY
@@ -821,7 +850,79 @@ ORDER BY SURNO DESc
 select *
 from tbl_target
 
-DELETE FROM TBL_SURVEY
-WHERE SURNO = 65
 
-rollback
+SELECT PAYNO, FK_EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, SALARY,PAY ,ANNUALPAY,OVERTIMEPAY,PAYMENTDATE,OVERPAY,
+	        INCOMTAX,PENSION,INSURANCE, ALLPAY, TAX,
+	        (ALLPAY - TAX) AS MONTHPAY
+	FROM 
+	    (
+	        SELECT PAYNO, FK_EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, SALARY,PAY ,ANNUALPAY,OVERTIMEPAY,PAYMENTDATE,OVERPAY,
+	                    INCOMTAX,PENSION,INSURANCE, 
+	                    (SALARY+ANNUALPAY+OVERTIMEPAY) AS ALLPAY,
+	                    (INCOMTAX+PENSION+INSURANCE) AS TAX
+	                    
+	        FROM 
+	        (
+	            SELECT PAYNO, FK_EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, SALARY,PAY ,ANNUALPAY,OVERTIMEPAY,PAYMENTDATE, (ANNUALPAY+OVERTIMEPAY) AS OVERPAY,
+	                    CEIL(SALARY*INCOMTAX) AS INCOMTAX, CEIL(SALARY*PENSION)AS PENSION, CEIL(SALARY*INSURANCE)AS INSURANCE
+	            FROM
+	                (SELECT E.EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, ROUND(SALARY/12)AS SALARY,
+	                        PAYNO, FK_EMPNO, PAY, NVL(ANNUALPAY,0) AS ANNUALPAY, NVL(OVERTIMEPAY,0)  AS OVERTIMEPAY, TO_CHAR(PAYMENTDATE, 'YYYY-MM-DD') AS PAYMENTDATE
+	                        ,INCOMTAX,PENSION,INSURANCE
+	                FROM TBL_EMPLOYEE E RIGHT JOIN TBL_PAY P
+	                ON E.EMPNO = P.FK_EMPNO
+                   where empno = 13 and payno = 1
+	            )V
+	        )A
+	    )P
+
+
+select *
+from tbl_pay
+
+
+		SELECT PAYNO, FK_EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, SALARY,PAY ,ANNUALPAY,OVERTIMEPAY,PAYMENTDATE,OVERPAY,
+		        INCOMTAX,PENSION,INSURANCE, ALLPAY, TAX,
+		        (ALLPAY - TAX) AS MONTHPAY
+		FROM 
+		    (
+		        SELECT PAYNO, FK_EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, SALARY,PAY ,ANNUALPAY,OVERTIMEPAY,PAYMENTDATE,OVERPAY,
+		                    INCOMTAX,PENSION,INSURANCE, 
+		                    (SALARY+ANNUALPAY+OVERTIMEPAY) AS ALLPAY,
+		                    (INCOMTAX+PENSION+INSURANCE) AS TAX
+		                    
+		        FROM 
+		        (
+		            SELECT PAYNO, FK_EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, SALARY,PAY ,ANNUALPAY,OVERTIMEPAY,PAYMENTDATE, (ANNUALPAY+OVERTIMEPAY) AS OVERPAY,
+		                    CEIL(SALARY*INCOMTAX) AS INCOMTAX, CEIL(SALARY*PENSION)AS PENSION, CEIL(SALARY*INSURANCE)AS INSURANCE
+		            FROM
+		                (SELECT E.EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, ROUND(SALARY/12)AS SALARY,
+		                        PAYNO, FK_EMPNO, PAY, NVL(ANNUALPAY,0) AS ANNUALPAY, NVL(OVERTIMEPAY,0)  AS OVERTIMEPAY, TO_CHAR(PAYMENTDATE, 'YYYY-MM-DD') AS PAYMENTDATE
+		                        ,INCOMTAX,PENSION,INSURANCE
+		                FROM TBL_EMPLOYEE E RIGHT JOIN TBL_PAY P
+		                ON E.EMPNO = P.FK_EMPNO
+		                WHERE EMPNO = 13
+		                order by PAYMENTDATE desc
+		            )V
+		        )A
+		    )P
+
+	SELECT COUNT(*) FROM tbl_celebrate
+    where fk_empno = 13 and clbno = 36
+
+select *
+from tbl_pay
+
+
+ SELECT PAYNO, FK_EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, SALARY,PAY ,ANNUALPAY,OVERTIMEPAY,PAYMENTDATE, (ANNUALPAY+OVERTIMEPAY) AS OVERPAY,
+	             CEIL(SALARY*INCOMTAX) AS INCOMTAX, CEIL(SALARY*PENSION)AS PENSION, CEIL(SALARY*INSURANCE)AS INSURANCE
+	     FROM
+	         (SELECT E.EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, ROUND(SALARY/12)AS SALARY,
+	                 PAYNO, FK_EMPNO, PAY, NVL(ANNUALPAY,0) AS ANNUALPAY, NVL(OVERTIMEPAY,0)  AS OVERTIMEPAY, TO_CHAR(PAYMENTDATE, 'YYYY-MM-DD') AS PAYMENTDATE
+	                 ,INCOMTAX,PENSION,INSURANCE
+	         FROM TBL_EMPLOYEE E RIGHT JOIN TBL_PAY P
+	         ON E.EMPNO = P.FK_EMPNO
+	         WHERE EMPNO = 13 and PAYNO = 1 
+	     )V
+
+

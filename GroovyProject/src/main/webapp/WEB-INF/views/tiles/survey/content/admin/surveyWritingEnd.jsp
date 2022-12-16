@@ -127,7 +127,7 @@
 				console.log(json.fk_surno+"success:function");
 				
 				if(json.fk_surno != "") {
-					alert("설문지 등록 성공하였습니다.");
+					//alert("설문지 등록 성공하였습니다.");
 					console.log(json.fk_surno+"jsp");
 					fk_surno = json.fk_surno;
 					
@@ -160,7 +160,8 @@
 							success:function(json){
 								
 								if(json.p == 1) {
-									alert([i] +"설문 등록 완료하였습니다.");
+									alert("설문지 등록 성공하였습니다.");
+									loction.href="<%=ctxPath%>/survey/surveyList.on";
 								}
 								else {
 									alert([i] +"질문 등록 실패하였습니다.");
@@ -172,7 +173,7 @@
 							  }
 						});
 					} // end of for -------------------------
-					loction.href="<%=ctxPath%>/survey/surveyList.on"
+					
 				}
 				else {
 					alert("설문지 등록 실패하였습니다.");

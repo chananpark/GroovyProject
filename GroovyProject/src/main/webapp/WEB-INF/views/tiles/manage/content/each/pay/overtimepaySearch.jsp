@@ -78,10 +78,9 @@
 	<div class='mx-4'  style="background-color:#e3f2fd; width: 100%; height: 45px;">
 		<div style="margin-left: 73%;" class="pt-1">
 			<span>
-				<select style="width: 100px; border:solid 1px #cccccc;" name="searchType"> 
-					<option> ====== </option>
-					<option value="1">추가근무수당</option>
-					<option value="2">연차근무수당</option>
+				<select style="width: 110px; border:solid 1px #cccccc;" name="searchType"> 
+					<option value="overtimepay">추가근무수당</option>
+					<option value="annualpay">연차근무수당</option>
 				</select> 
 			</span>
 			<input type="text"style="width: 120px; border:solid 1px #cccccc;" name="searchWord"/>
@@ -95,34 +94,38 @@
 			<thead>
 				<tr>
 					<th>No</th>
-					<th>사원번호</th>
-					<th>사원명</th>
+					<th>지급기준일</th>
 					<th>부문</th>
 					<th>부서</th>
 					<th>직급</th>
-					<th>금액<th>
-					<th>지급기준일<th>
+					<th>사원명</th>
+					<th>초과근무수당</th>
+					<th>연차수당</th>
+					<th>총지급액</th>
 				</tr>
-				
 			</thead>
 			<tbody  onclick="go_detailInfo">
 				<c:forEach  var="emp" items="${requestScope.payList}" varStatus="status">
 					<tr class="text-center border" id="list">
-						<td><c:out value="${status.count}" /></td>
-						<td>${emp.payno}</td>
-						<td>${emp.name}</td>
+						<td>${status.count}</td>
+						<td>${emp.paymentdate}</td>
 						<td>${emp.bumun}</td>
 						<td>${emp.department}</td>
 						<td>${emp.position}</td>
+						<td>${emp.name}</td>
+						<td><fmt:formatNumber value="${emp.overtimepay}" pattern="#,###" /></td>
+						<td><fmt:formatNumber value="${emp.annualpay}" pattern="#,###" /></td>
 						<td><fmt:formatNumber value="${emp.overpay}" pattern="#,###" /></td>
-						<td>${emp.paymentdate}</td>
 					</tr>
 				</c:forEach>
 			</tbody>
 		</table>
 	</div>
+	</div>
+</form>
 	
 	
+<%-- 
 	<div class="mt-5" id="detailPay">
 		<h5 class='mx-4'>기본외수당 상세목록</h5>
 		<table class="table table-bordered table-sm mx-4 ">
@@ -161,8 +164,8 @@
 			</tbody>
 			
 		</table>
-		
-	<!-- 
+	 --%>	
+	<%-- 
 		<table class="table table-bordered table-sm mx-4 ">
 		<c:forEach  var="emp" items="${requestScope.payList}" varStatus="status">
 			<tr>
@@ -187,8 +190,5 @@
 			</tr>		
 		</c:forEach>
 		</table>
-	 -->	
-	</div>
-</div>
-</form>
+	 --%>	
 

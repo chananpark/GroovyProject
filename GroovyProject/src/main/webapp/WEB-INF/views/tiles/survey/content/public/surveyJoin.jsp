@@ -158,7 +158,7 @@
 
 	<c:forEach var="askno" items="${requestScope.surveyAskList}" varStatus="status">
 		<div id="contents">
-			<span>${status.count}. <input type="text" name="jvoList[${status.index}].surtitle"value="${askno.question}" readonly style="border: none;"/></span><br>
+			<span>${status.count}. <input type="text" name="jvoList[${status.index}].surtitle"value="${askno.question}" readonly style="border: none; width: 95%;"/></span><br>
 			<span class="askinput"><input type="radio" name="jvoList[${status.index}].answer" value="1" class="mr-2 "/>${askno.option1}</span>
 			<span class="askinput"><input type="radio" name="jvoList[${status.index}].answer" value="2" class="mr-2" />${askno.option2}</span>
 			<span class="askinput"><input type="radio" name="jvoList[${status.index}].answer" value="3" class="mr-2" />${askno.option3}</span>
