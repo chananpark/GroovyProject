@@ -170,6 +170,27 @@
 		
 		// 출근끝
 		
+		// 오늘 생일 직원 사번 배열
+		var birthEmpno = [];
+
+		<c:forEach items="${birthMem}" var="mem">
+			birthEmpno.push("${mem.empno}");
+		</c:forEach>
+		
+		// 오늘 생일 직원 클릭시 팝오버
+	    $.fn.popover.Constructor.Default.whiteList.table = [];
+	    $.fn.popover.Constructor.Default.whiteList.tr = [];
+	    $.fn.popover.Constructor.Default.whiteList.td = [];
+	    $.fn.popover.Constructor.Default.whiteList.div = [];
+	    $.fn.popover.Constructor.Default.whiteList.tbody = [];
+	    $.fn.popover.Constructor.Default.whiteList.thead = [];
+	    
+	    birthEmpno.forEach(el=>{
+			$('#popover'+el).popover({
+				content: $('#myPopoverContent'+el).html(),
+				html: true
+			});
+	    });
 	}); // end of ready
 	
 
@@ -342,7 +363,7 @@
 				<div class="card-header bg-white index_card_header">이달의 생일</div>
 				<div class="card-body pl-5" style="display:flex; flex-wrap: wrap; justify-content: flex-start;">
 					<c:forEach items="${birthMem}" var="mem">
-					<div class="card mr-4 mb-2">
+					<div class="card mr-4 mb-2 pop"  data-toggle="popover" id='popover${mem.empno}' title="사원 정보">
 						<c:if test="${empty mem.empimg}">
 							<img src="<%= ctxPath %>/resources/images/test/profile_icon.png" alt="Avatar" style="width:100%">
 						</c:if>
@@ -353,6 +374,25 @@
 					    	<h5>${mem.name}</h5>
 					    	<p>${mem.department}</p>
 					  	</div>
+					</div>
+					<div id="myPopoverContent${mem.empno}" style="display: none;">
+						<table class='table table-borderless'>
+						    <tr>
+						        <td>이름: ${mem.name}</td>
+						    </tr>
+						    <tr>
+						        <td>직급: ${mem.position}</td>
+						    </tr>
+						    <tr>
+						        <td>소속: ${mem.bumun}&nbsp;${mem.department}</td>
+						    </tr>
+						    <tr>
+						    	<td>메일: ${mem.cpemail}</td>
+						    </tr>
+						    <tr>
+						    	<td>핸드폰: ${mem.mobile}</td>
+						    </tr>
+						</table>		
 					</div>
 					</c:forEach>
 				</div>
