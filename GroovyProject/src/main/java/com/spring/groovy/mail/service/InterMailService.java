@@ -3,6 +3,7 @@ package com.spring.groovy.mail.service;
 import java.util.List;
 import java.util.Map;
 
+import com.spring.chatting.websockethandler.MessageVO;
 import com.spring.groovy.mail.model.MailVO;
 import com.spring.groovy.mail.model.TagVO;
 
@@ -45,6 +46,29 @@ public interface InterMailService {
 
 	/** ,로 구분되는 메일 주소로 추가될 태그 만들어서 반환*/
 	List<String> getreplyList(String getfK_recipient_address);
+
+	// 채팅방 개설하기
+	int goAddChatroom(Map<String, String> paraMap);
+
+	// 채팅방 리스트 가져오기
+	List<Map<String, String>> getChatroomList(String empno);
+
+	// 메시지 내용 저장
+	int addMessage(MessageVO messageVO);
+
+	// 메시지 내용 가져오기
+	List<MessageVO> getMessageList(String parameter);
+
+	// 조직도 중요체크
+	int orgImportantCheck(Map<String, String> paraMap);
+
+	// 채팅방 멤버 가져오기
+	List<String> getMember(String roomNo);
+	
+	// 채팅방 변경하기
+	int goChangeChatroom(Map<String, String> paraMap);
+	// 채팅방 나가기
+	int deleteMember(Map<String, String> paraMap);
 	
 
 	

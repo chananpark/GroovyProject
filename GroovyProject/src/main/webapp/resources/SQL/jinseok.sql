@@ -472,12 +472,177 @@ insert into tbl_important_organization(fk_user_empno, fk_important_empno)
 Values(12,1);
 -- 12 kjsaj0525 17 kjskjskjs
 
-select *   
+select E.* , nvl(FK_IMPORTANT_EMPNO, 1,0) as important
 from tbl_employee E 
 left join 
-{
+(
 select fk_user_empno,fk_important_empno
 from tbl_important_organization 
 where fk_user_empno = 12
-}I
-on E.empno = I.fk_important_empno;
+)I
+on E.empno = I.fk_important_empno
+order by empno asc;
+
+select * from tbl_employee;
+select * from tbl_important_organization;
+
+
+
+
+select 
+    important = (select fk_important_empno
+                   from tbl_important_organization
+                   where fk_user_empno = e.empno)
+from employee e;
+
+
+
+
+
+
+
+
+
+create table tbl_chatroom 
+(chatroom_no number not null
+, chatroom_name VARCHAR2(50 BYTE) not null
+
+,constraint Pk_tbl_chatroom_chatroom_no primary key(chatroom_no)
+);
+
+commit;
+
+
+create table tbl_chatroom_member 
+(fk_chatroom_no number not null
+, fk_member_no number not null
+
+,constraint Fk_tbl_chatroom_member_fk_member_no foreign key(fk_member_no) references tbl_EMPLOYEE(empno)
+);
+
+commit;
+
+
+create table tbl_chatroom_message 
+(fk_chatroom_no number not null
+, fk_member_no number not null
+, message varchar(200) not null
+
+,constraint Fk_tbl_chatroom_message_fk_member_no foreign key(fk_member_no) references tbl_EMPLOYEE(empno)
+);
+
+
+create sequence seq_chatroom_no
+start with 1                 
+increment by 1              
+nomaxvalue                   
+nominvalue                   
+nocycle                      
+nocache;
+
+select * from tbl_chatroom;
+insert into tbl_chatroom(chatroom_no, chatroom_name)
+values(,);
+select * from tbl_chatroom_message order by send_time asc;
+select * from tbl_chatroom_member;
+select empno from tbl_employee;
+commit;
+
+select * 
+from tbl_chatroom_member
+where fk_chatroom_no = ;
+select empno
+		from tbl_employee
+		where cpemail = lower('kjskjskjs@groovy.com');
+ 
+select *
+from
+(
+select chatroom_no, chatroom_name
+,(select count(*)
+    from tbl_chatroom_member
+    where fk_chatroom_no= chatroom_no
+    ) as cnt
+from tbl_chatroom
+
+)c
+right join
+(
+select *
+from tbl_chatroom_member
+where FK_MEMBER_NO = 17
+)m
+on c.chatroom_no = m.FK_CHATROOM_NO
+order by chatroom_no;
+select * from tbl_employee;
+select * from tbl_chatroom_message;
+
+select fk_chatroom_no, fk_member_no, message, type, send_to, send_time
+, (select name
+   from tbl_employee
+    where empno = fk_member_no) as name
+from tbl_chatroom_message
+order by send_time desc
+
+select fk_chatroom_no, fk_member_no, message, type, send_to, send_time
+		, (select name
+		   from tbl_employee
+		    where empno = fk_member_no) as name
+		from tbl_chatroom_message
+		where fk_chatroom_no=4
+		order by send_time desc
+        
+        
+select * from TBL_IMPORTANT_ORGANIZATION  ;   
+
+commit;
+MERGE 
+		INTO TBL_IMPORTANT_ORGANIZATION
+		USING dual
+		
+		 ON (FK_USER_EMPNO= 12 and FK_IMPORTANT_EMPNO = 1)
+		 
+		WHEN MATCHED THEN
+		
+        update SET IMPORTANT_delete=1
+		delete where IMPORTANT_delete = 1
+		WHEN NOT MATCHED THEN
+		
+		insert(FK_USER_EMPNO,FK_IMPORTANT_EMPNO)
+		values(12,1)
+        
+        
+        
+        
+        select empno, cpemail, name, position, substr(jubun,0,6) as birth_date
+	                      ,empimg, bumun,department, mobile,joindate , nvl2(FK_IMPORTANT_EMPNO, 1,0) as important
+			    from tbl_employee E 
+			    left join 
+			    (
+			        select fk_user_empno,fk_important_empno
+			        from tbl_important_organization 
+			        where fk_user_empno = 12
+			    )I
+		    	on E.empno = I.fk_important_empno
+
+			    	and DEPARTMENT like '%'||lower('경영')||'%'
+		
+		    	order by fk_bumun_no, fk_department_no,fk_position_no;
+                
+select * from tbl_chatroom_member;                
+                
+select '"'||department||' '||position||' '||name||'<![CDATA[<]]>'||cpemail||'<![CDATA[>]]>'||'"' as cpemail
+		from tbl_employee e
+		right join 
+        (
+        select *
+        from tbl_chatroom_member 
+        where fk_chatroom_no = 7
+        )m
+        on e.empno = m.fk_member_no;
+        
+        
+        
+        
+     
+        

@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.spring.chatting.websockethandler.MessageVO;
 import com.spring.groovy.mail.model.InterMailDAO;
 import com.spring.groovy.mail.model.MailVO;
 import com.spring.groovy.mail.model.TagVO;
@@ -172,6 +173,116 @@ public class MailService implements InterMailService {
 		return replyList;
 	}
 	
+	@Override
+	@Transactional(propagation=Propagation.REQUIRED, isolation=Isolation.READ_COMMITTED, rollbackFor= {Throwable.class})
+	public int goAddChatroom(Map<String, String> paraMap) {
+		List<String> recipient_address_List = commaArray(paraMap.get("recipient_address"));	
+		
+		// 채번부터
+		String room_no = dao.getSeqChatNo();
+		paraMap.put("room_no", room_no);
+		// 채번한 번호와 제목으로 방 생성
+		int n = dao.addChatroom(paraMap);
+		int i = 0;
+		int m = 0;
+		if(n==1) {
+			
+			for(String cpemail : recipient_address_List) {
+				// 각 이메일로 사원번호 알아와서 채팅방에 사원번호 추가
+				System.out.println("cpemail"+cpemail);
+				String empNo = dao.getEmpno(cpemail);
+				paraMap.put("empNo", empNo); // 사원번호 자리는 계속 새값을 넣어줌
+				m = dao.addChatMember(paraMap);
+				i += m;
+			}
+			
+		}
+		return i;
+	}
+	
+	
+	@Override
+	@Transactional(propagation=Propagation.REQUIRED, isolation=Isolation.READ_COMMITTED, rollbackFor= {Throwable.class})
+	public int goChangeChatroom(Map<String, String> paraMap) {
+		
+		List<String> recipient_address_List = commaArray(paraMap.get("recipient_address"));	
+		
+			// 방번호로 검색해서 멤버리스트 가져옴
+			// for 문 돌려서 있으면 놔두고 없으면 추가
+
+			int success = 1;
+			for(String cpemail : recipient_address_List) {
+				String empNo = dao.getEmpno(cpemail);
+				paraMap.put("empNo", empNo);
+				int m = dao.addChatMember(paraMap);
+				if(m!=1) {
+					success = 0;
+					System.out.println("엥");
+				}
+			}
+			
+			int n = dao.updateChatroom(paraMap);
+			
+			if(n!=1) {
+				success = 0;
+				System.out.println("엥엥엥");
+			}
+
+		
+			// success 가 0이면 사고난거
+			return success;
+	}
+	
+	@Override
+	public List<Map<String, String>> getChatroomList(String empno) {
+		List<Map<String, String>> chatroomList = dao.getChatroomList(empno);
+		return chatroomList;
+	}
+	
+	@Override
+	public int addMessage(MessageVO MessageVO) {
+		int n = dao.addMessage(MessageVO);
+		return n;
+	}
+	
+	@Override
+	public List<MessageVO> getMessageList(String no) {
+		 List<MessageVO> messageList = dao.getMessageList(no);
+		return messageList;
+	}
+	
+	@Override
+	public int orgImportantCheck(Map<String, String> paraMap) {
+
+		List<String> emp_no_List = commaArray(paraMap.get("emp_no"));
+		
+		for(String no : emp_no_List) {
+			paraMap.put("no",no);
+			int n = dao.orgImportantUpdate(paraMap);
+			if(n!=1) {
+				return n;
+			}
+		}
+		
+
+		return emp_no_List.size();
+	}
+
+	
+	@Override
+	public List<String> getMember(String roomNo) {
+		List<String> memberList = dao.getMember(roomNo);
+		return memberList;
+	}
+
+	// 채팅방 나가기
+	@Override
+	public int deleteMember(Map<String, String> paraMap) {
+		int n = dao.deleteMember(paraMap);
+		return n;
+	}
+
+	
 	
 	
 	// , 로 구분되는 문자열 ArrayList<String> 로 반환
@@ -183,6 +294,19 @@ public class MailService implements InterMailService {
 		}
 		return resultList;
 	}
+
+
+
+
+
+	
+
+	
+	
+
+	
+
+	
 
 
 	

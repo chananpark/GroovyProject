@@ -105,8 +105,15 @@
 		$("#afClick").show();
 		$("#bfClick").hide();
 		<c:forEach var="emp" items="${requestScope.empList}" varStatus="status">
+		
+	
 
 			if('${emp.empno}'==empno){
+				$("#card_header").text("직원 ${emp.name}님 정보");
+				if('${emp.empimg}' != null && '${emp.empimg}'!= ''){
+					$("#empPhoto").attr("src", "<%= ctxPath%>/resources/images/empphoto/${emp.empimg}.jpg" );
+				}
+				
 				$("#selectName").val("${emp.name}");
 				$("#selectBumun").val("${emp.bumun}");
 				$("#selectDepartment").val("${emp.department}");
@@ -145,6 +152,47 @@
 	}
 	
 	
+	function importantSelect(){
+   		
+		var mailCheck = $('input[name="mailCheck"]:checked');
+		if(mailCheck.length > 0){
+			result="";
+			mailCheck.each(function(index, item){
+				result += $(item).attr("no");
+				result += ",";
+
+			});
+
+			result = result.slice(0, -1);
+			console.log("result"+result);
+			$.ajax({
+				url:"<%= ctxPath%>/organization/importantCheck.on",
+				data:{"emp_no":result},
+				type:"post",
+				dataType:"json",
+		        success:function(json){
+		        	if(json.n > 0){
+		        		alert(json.n+ "개 중요 클릭");
+		        		location.reload();
+		        	}
+
+		        },
+		        error: function(request, status, error){
+					alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+				}
+			});
+			
+			
+
+		}
+		else{
+			alert("체크박스를  선택해주세요.");
+		}
+		
+		
+	}
+	
+	
 
 
 
@@ -173,7 +221,7 @@
 					<input type="checkbox" id="mailLAllCheck" value="off" style="vertical-align:middle;"/>&nbsp전체선택
 			    
 			    </button>
-			    <button type="button" class="btn btn-outline-dark toolbtn">
+			    <button type="button" class="btn btn-outline-dark toolbtn" onclick="importantSelect()">
 					<i class="fas fa-flag toolflag"></i>
 				</button>
 			    
@@ -199,8 +247,13 @@
 				 
 				   		<tr onclick = 'ViewInfo(${emp.empno})'>
 						  	  <td class="mail_list_option" onclick="event.stopPropagation()">
-						  	  	<input type="checkbox" id="mailLCheck" name="mailCheck" value="${emp.cpemail}" style="vertical-align:middle">
-						      	<i id="flag${mailVO.mail_no}" class="fas fa-flag" style="color:darkgray;" onclick="importantCheck(${mailVO.mail_no})"></i>
+						  	  	<input type="checkbox" id="mailLCheck" name="mailCheck" value="${emp.cpemail}" no="${emp.empno}" style="vertical-align:middle;  ">
+						  	  	<c:if test="${emp.important!=1}">
+						      		<i id="flag${emp.mail_no}" class="fas fa-flag" style="color:darkgray;" onclick="importantCheck(${mailVO.mail_no})"></i>
+						      	</c:if>
+						      	<c:if test="${emp.important==1}">
+						      		<i id="flag${emp.mail_no}" class="fas fa-flag" style="color:#086BDE;" onclick="importantCheck(${mailVO.mail_no})"></i>
+						      	</c:if>
 						      </td>
 						      <td class = "mail_list_sender" >
 									${emp.bumun}
@@ -258,14 +311,14 @@
 		</div>
 		<div id="afClick">
 			<div class="card mb-3 shadow mt-3">
-				<div class="card-header bg-white index_card_header" >직원 ooo 님 정보</div>
+				<div class="card-header bg-white index_card_header" id="card_header">직원 ooo 님 정보</div>
 				
 				<div class="card-body ">
 					<table id="empInfo" class="table">
 			
 						<tr>
 							<td rowspan="5" style="width:150px;">
-								<img src="<%= ctxPath%>/resources/images/picture/꼬미사진.jpg" height="200px;" width="200px"/>
+								<img id="empPhoto"src="<%= ctxPath%>/resources/images/picture/꼬미사진.jpg" height="200px;" width="200px"/>
 								
 							</td>
 							

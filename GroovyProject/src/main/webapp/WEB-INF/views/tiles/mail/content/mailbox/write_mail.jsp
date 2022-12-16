@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %> 
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" />
 
@@ -304,13 +305,17 @@ var fileSizeList = [];
 	            success:function(json){
 	            	if(json.n == 1){
 	            		swal('메일발송에 성공하였습니다.', "버튼을 누르면 보낸 메일함으로 이동합니다.", 'success')
-	            		location.href = "<%=ctxPath%>/mail/sendMailBox.on";
+	            		.then((value) => {
+	            			location.href = "<%=ctxPath%>/mail/sendMailBox.on";
+	            		});
+
+	            		
 	            	}
-	            	if(n==0){
+	            	if(json.n==0){
 	            		swal('메일발송이 실패하셨습니다.', "이 상태가 지속되면 지원팀에 문의해주세요.", 'warning')
 	            		return false;
 	            	}
-	            	if(n==-1){
+	            	if(json.n==-1){
 	            		swal('메일발송이 실패하셨습니다.', "파일 업로드 진행중 문제가 발생하였습니다.", 'warning')
 	            		return false;
 	            	}
@@ -329,11 +334,15 @@ var fileSizeList = [];
 		var emailList = ${requestScope.mailList}
 		
 		$("#receieveName").autocomplete({
-			source : emailList
+			source : emailList,
+			select: function(event, ui){
+				console.log("ui.item"+event);
+			},
+			focus: function(event, ui){ return false;} // 사라짐 방지용 
 		});
 		// 답장이면 보낸이 이메일 추가
 		if('${requestScope.replyList}' != null){
-				<c:forEach var="reply" items="${requestScope.replyList}" varStatus="status">
+			<c:forEach var="reply" items="${requestScope.replyList}" varStatus="status">
 				var emailStartIdx = '${reply}'.indexOf("<")+2;
 				var emailEndIdx = '${reply}'.indexOf(">")-1;
 				var emailOnly = '${reply}'.substring(emailStartIdx, emailEndIdx);
@@ -374,7 +383,7 @@ var fileSizeList = [];
 			if(e.keyCode == 13 || e.keyCode == 32){
 				var getValue = $(this).val();
 				console.log("getValue: "+getValue);
-				
+				var inList = false;
 				for(let i = 0; i < emailList.length; i++) {
 	    	 		if(emailList[i] == getValue )  {
 	    	 			// 가져온 리스트 안의값이라면 
@@ -406,15 +415,16 @@ var fileSizeList = [];
 					}
 					else{
 						$("#receiver").append('<span class="rounded-pill email-ids" name="email-container">'
-								+ ${reply} + '<span class = "removeAddress" name="removeAddress"><i class="far fa-window-close"></i></span></span>');
+								+ getValue + '<span class = "removeAddress" name="removeAddress"><i class="far fa-window-close"></i></span></span>');
 					}
 				}
 				else{
 					$("#receiver").append('<span class="rounded-pill non-email-ids" name="email-container">'
 							+ getValue + '<span class = "removeAddress" name="removeAddress"><i class="far fa-window-close"></i></span></span>');
-					$("#receieveName").val("");
+					
 					
 				}
+				$("#receieveName").val("");
 				
 				
 				
@@ -426,6 +436,9 @@ var fileSizeList = [];
 			
 			
 		});
+		
+		
+		
 		
 		$("#selfMail").change(function(){
 	        if($("#selfMail").is(":checked")){

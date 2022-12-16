@@ -10,6 +10,8 @@ import javax.annotation.Resource;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.stereotype.Repository;
 
+import com.spring.chatting.websockethandler.MessageVO;
+
 @Repository
 public class MailDAO implements InterMailDAO {
 
@@ -147,6 +149,74 @@ public class MailDAO implements InterMailDAO {
 		String reply = sqlsession.selectOne("jinseok.getreply",cpemail);
 		return reply;
 	}
+
+	@Override
+	public String getSeqChatNo() {
+		String no = sqlsession.selectOne("jinseok.getSeqChatNo");
+		return no;
+	}
+
+	@Override
+	public int addChatroom(Map<String, String> paraMap) {
+		int n = sqlsession.insert("jinseok.addChatroom",paraMap);
+		return n;
+	}
+
+	@Override
+	public String getEmpno(String cpemail) {
+		String n = sqlsession.selectOne("jinseok.getEmpno",cpemail);
+		return n;
+	}
+
+	@Override
+	public int addChatMember(Map<String, String> paraMap) {
+		int n = sqlsession.insert("jinseok.addChatMember",paraMap);
+		return n;
+	}
+
+	@Override
+	public List<Map<String, String>> getChatroomList(String empno) {
+		List<Map<String, String>> chatroomList = sqlsession.selectList("jinseok.getChatroomList",empno);
+		return chatroomList;
+	}
+
+	@Override
+	public int addMessage(MessageVO messageVO) {
+		int n = sqlsession.insert("jinseok.addMessage",messageVO);
+		return n;
+	}
+
+	@Override
+	public List<MessageVO> getMessageList(String no) {
+		List<MessageVO> messageList = sqlsession.selectList("jinseok.getMessageList",no);
+		return messageList;
+	}
+
+	@Override
+	public int orgImportantUpdate(Map<String, String> paraMap) {
+		int n = sqlsession.update("jinseok.orgImportantUpdate", paraMap);
+		return n;
+	}
+
+	@Override
+	public List<String> getMember(String roomNo) {
+		List<String> messageList = sqlsession.selectList("jinseok.getMember",roomNo);
+		return messageList;
+	}
+	// 멤버 지우기
+	@Override
+	public int deleteMember(Map<String, String> paraMap) {
+		int n = sqlsession.delete("jinseok.deleteMember",paraMap);
+		return n;
+	}
+
+	// 방 정보 변경하기
+	@Override
+	public int updateChatroom(Map<String, String> paraMap) {
+		int n = sqlsession.update("jinseok.updateChatroom",paraMap);
+		return n;
+	}
+
 	
 	
 

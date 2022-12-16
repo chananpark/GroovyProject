@@ -228,6 +228,7 @@ i.fa-flag{
 	        success:function(json){
 	        	if(json.n > 0){
 	        		alert(json.n+ "개 중요 클릭");
+	        	
 	        	}
 	        	listRefresh();
 	        },

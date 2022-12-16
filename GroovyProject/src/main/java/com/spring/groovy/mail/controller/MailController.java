@@ -15,7 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.collections4.map.HashedMap;
-
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -32,9 +32,11 @@ import org.springframework.web.servlet.ModelAndView;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.spring.groovy.common.Pagination;
+import com.spring.chatting.websockethandler.MessageVO;
 import com.spring.groovy.common.FileManager;
 import com.spring.groovy.mail.model.MailVO;
 import com.spring.groovy.mail.model.TagVO;
+
 import com.spring.groovy.mail.service.InterMailService;
 import com.spring.groovy.management.model.MemberVO;
 
@@ -562,14 +564,12 @@ public class MailController {
 		
 		String mail_recipient_no = request.getParameter("mail_recipient_no");
 		if(mail_recipient_no != null) {
-			System.out.println("????????????");
 			n = service.importantCheck(mail_recipient_no);
 		}
 		
 		String mail_no = request.getParameter("mail_no");
 		
 		if(mail_no != null) {
-		System.out.println("!!!!!!!!!!!!!!");
 			n = service.importantCheckM(mail_no);
 		}
 		
@@ -633,6 +633,32 @@ public class MailController {
 	}
 	
 	
+	// 조직도 중요체크
+	@ResponseBody
+	@RequestMapping(value = "/organization/importantCheck.on", method= {RequestMethod.POST},produces="text/plain;charset=UTF-8")
+	public String orgImportantCheck(HttpServletRequest request) {
+		JSONObject jsonObj = new JSONObject();
+		int n = 0;
+		
+		String emp_no = request.getParameter("emp_no");
+		if(emp_no != null) {
+			
+			HttpSession session = request.getSession();
+			MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
+			
+			Map<String,String> paraMap = new HashMap<>();
+			paraMap.put("loginuserNo",loginuser.getEmpno());
+			paraMap.put("emp_no",emp_no);
+			
+			n = service.orgImportantCheck(paraMap);
+		}
+
+
+		jsonObj.put("n", n);
+		
+		return jsonObj.toString(); 
+	}
+	
 	
 	
 	
@@ -652,21 +678,129 @@ public class MailController {
 	// 채팅
 	@RequestMapping(value = "/chat.on")
 	public String chat(HttpServletRequest request) {
+		
+		// 내가 참가 가능한 채팅방리스트 가져오기
+		List<Map<String, String>> chatroomList = null;
+		
+		HttpSession session = request.getSession();
+		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
+		chatroomList = service.getChatroomList(loginuser.getEmpno()); 
+		request.setAttribute("chatroomList", chatroomList);
+		
+		// 자동완성용 메일리스트 가져오기 
+		List<String> mailList = service.getMailList();
+		request.setAttribute("mailList", mailList);
 
 		return "chat/chatMain.tiles";
 		// ==> views/tiles/chat/content/chatMain.jsp
 	}
 	
+	// 채팅방 추가하기
+	@RequestMapping(value = "/chat/goAddChatroom.on")
+	public ModelAndView goAddChatroom(ModelAndView mav, HttpServletRequest request) {
+		
+		String subject = request.getParameter("subject");
+		String recipient_address = request.getParameter("recipient_address");
+		
+		Map<String,String> paraMap = new HashMap<>();
+		paraMap.put("subject", subject);
+		paraMap.put("recipient_address", recipient_address);
+		
+		int n = service.goAddChatroom(paraMap);
+		if (n == 0) {
+			mav.addObject("message", "채팅방 개설에 실패하였습니다.");
+			mav.addObject("loc", "javascript:history.back()");
+		} else {
+			mav.addObject("message", "채팅방이 개설되었습니다.");
+			mav.addObject("loc", request.getContextPath() + "/chat.on");
+		}
+
+		mav.setViewName("msg");
+
+		return mav;
+		
+
+	}
+	
+	
+	// 채팅방 변경하기
+		@RequestMapping(value = "/chat/goChangeChatroom.on")
+		public ModelAndView goChangeChatroom(ModelAndView mav, HttpServletRequest request) {
+			String no = request.getParameter("no");
+			String subject = request.getParameter("subject");
+			String recipient_address = request.getParameter("recipient_address");
+			
+			Map<String,String> paraMap = new HashMap<>();
+			paraMap.put("room_no", no);
+			paraMap.put("subject", subject);
+			paraMap.put("recipient_address", recipient_address);
+			
+			System.out.println("recipient_address"+recipient_address);
+			
+			int n = service.goChangeChatroom(paraMap);
+			if (n == 0) {
+				mav.addObject("message", "채팅방 변경에 실패하였습니다.");
+				mav.addObject("loc", "javascript:history.back()");
+			} else {
+				mav.addObject("message", "채팅방이 변경되었습니다.");
+				mav.addObject("loc", request.getContextPath() + "/chat.on");
+			}
+
+			mav.setViewName("msg");
+
+			return mav;
+			
+
+		}
+
 	// 채팅방 띄우기
 	@RequestMapping(value = "/chat/chatroom.on")
 	public String chatroom(HttpServletRequest request) {
-
+		// 자기 채팅방 맞는지 확인작업 한번 필요함
+		request.setAttribute("no", request.getParameter("no"));
+		// 채팅방 채팅내역 가져오기
+		List<MessageVO> messageList = service.getMessageList(request.getParameter("no"));
+		System.out.println("messageList"+messageList);
+		request.setAttribute("messageList", messageList);
 		return "chat/chatroom";
 		// ==> views/tiles/chat/content/chatMain.jsp
 	}
 	
+	// 채팅방 멤버 가져오기
+	@ResponseBody
+	@RequestMapping(value = "/chat/getMember.on", method= {RequestMethod.GET},produces="text/plain;charset=UTF-8")
+	public String getMember(HttpServletRequest request) {
+		String roomNo = request.getParameter("roomNo");
+		System.out.println("roomNo"+roomNo);
+		List<String> memberList = service.getMember(roomNo);
+		System.out.println(memberList);
+
+		JSONArray arr_strJson = new JSONArray(Arrays.asList(memberList));
+		System.out.println(arr_strJson.toString());
+		
+		return arr_strJson.toString();
+	}
 	
 	
+	
+	@ResponseBody
+	@RequestMapping(value = "/chat/exit.on", method= {RequestMethod.POST},produces="text/plain;charset=UTF-8")
+	public String exit(HttpServletRequest request) {
+		Map<String, String> paraMap = new HashMap<>();
+		HttpSession session = request.getSession();
+
+		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
+		String empNo = loginuser.getEmpno();
+		String room_no = request.getParameter("room_no");
+		System.out.println(room_no);
+		paraMap.put("empNo",empNo);
+		paraMap.put("room_no",room_no);
+		
+		int n = service.deleteMember(paraMap);
+
+		
+		return Integer.toString(n);
+	}
 	
 	
 	

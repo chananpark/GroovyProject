@@ -125,6 +125,9 @@
 		select seq_mail_no.nextval
 		from dual
 	</select>
+	
+	
+	
 	<!-- 메일 추가하기 -->
 	<insert id="addMail" parameterType="HashMap">
 		insert into tbl_mail(MAIL_NO, FK_Sender_address,FK_Recipient_address,SUBJECT, CONTENTS,
@@ -272,6 +275,8 @@
    		where mail_no = #{mail_no}
 	</update>
 	
+
+	
 	
 	
 	
@@ -330,6 +335,7 @@
 		<result property="department" column="department" javaType="String"/>
 		<result property="mobile" column="mobile" javaType="String"/>
 		<result property="joindate" column="joindate" javaType="String"/>
+		<result property="important" column="important" javaType="String"/>
 	</resultMap>
 	
 	<select id="empListSearchWithPaging" parameterType="HashMap" resultMap="empList"> 
@@ -339,19 +345,158 @@
 		    select rownum AS rno, V.*
 		    from 
 		    ( 
-			select empno, cpemail, name, position, substr(jubun,0,6) as birth_date
-		          ,empimg, bumun,department, mobile,joindate
-		    from TBL_EMPLOYEE
-		    where 1=1
-		    <if test='searchType != "" and searchWord != "" '>
-		    	and lower(${searchType}) like '%'||lower(#{searchWord})||'%'
-		    </if>
-		    order by fk_bumun_no, fk_department_no,fk_position_no
+				select empno, cpemail, name, position, substr(jubun,0,6) as birth_date
+	                      ,empimg, bumun,department, mobile,joindate , nvl2(FK_IMPORTANT_EMPNO, 1,0) as important
+			    from tbl_employee E 
+			    left join 
+			    (
+			        select fk_user_empno,fk_important_empno
+			        from tbl_important_organization 
+			        where fk_user_empno = 12
+			    )I
+		    	on E.empno = I.fk_important_empno
+		    	where 1=1
+			    <if test='searchType != "" and searchWord != "" '>
+			    	and lower(${searchType}) like '%'||lower(#{searchWord})||'%'
+			    </if>
+		    	order by fk_bumun_no, fk_department_no,fk_position_no
 		    ) V
 		) T 
 		where rno between #{startRno} and #{endRno}
     </select>
 	
+	
+	
+		
+	
+	
+	
+	
+	<!-- 채팅방 채번하기 -->
+	<select id="getSeqChatNo" resultType="String">
+		select seq_chatroom_no.nextval
+		from dual
+	</select>
+	
+	<!--  채팅방 개설하기 -->
+	<insert id="addChatroom"  parameterType="HashMap">
+		insert into tbl_chatroom(chatroom_no, chatroom_name)
+		values(#{room_no},#{subject})
+	</insert>
+	
+	<!--  사원번호 가져오기 	 -->
+	<select id="getEmpno" resultType="String" parameterType="String"> 
+		select empno
+		from tbl_employee
+		where cpemail = lower(#{cpemail})
+	</select>
+
+	 
+	
+	<!--  채팅방에 인원 추가하기 	-->
+	<insert id="addChatMember"  parameterType="HashMap">
+		insert into tbl_chatroom_member(fk_chatroom_no, fk_member_no)
+		values(#{room_no},#{empNo})
+	</insert>
+	
+	<resultMap type="HashMap" id="chatroom">
+		<result property="chatroom_no" column="chatroom_no" javaType="String"/>
+		<result property="chatroom_name" column="chatroom_name" javaType="String"/>
+		<result property="cnt" column="cnt" javaType="String"/>
+		<result property="position" column="position" javaType="String"/>
+
+	</resultMap>
+	<select id="getChatroomList" parameterType="String" resultMap="chatroom">
+		select *
+		from
+		(
+		select chatroom_no, chatroom_name
+		,(select count(*)
+		    from tbl_chatroom_member
+		    where fk_chatroom_no= chatroom_no) as cnt
+		from tbl_chatroom
+		)c
+		right join
+		(
+		select *
+		from tbl_chatroom_member
+		where FK_MEMBER_NO = #{empno}
+		)m
+		on c.chatroom_no = m.FK_CHATROOM_NO
+		order by chatroom_no
+	</select>
+	
+	<!--  메시지 추가하기  -->
+	<insert id="addMessage" parameterType="com.spring.chatting.websockethandler.MessageVO">
+		insert into tbl_chatroom_message(fk_chatroom_no, fk_member_no,message,type,send_time,send_to)
+		values(#{no},#{fk_member_no},#{message},#{type},#{send_time},
+		<if test='to == "all" '>
+		null
+		</if>
+		<if test='to != "all" '>
+		#{to}
+		</if>
+		)
+	</insert>
+	
+	
+	<!--  채팅방 멤버가져오기 -->
+	<select id="getMember" resultType="String" parameterType="String"> 
+		select '"'||department||' '||position||' '||name||'<![CDATA[<]]>'||cpemail||'<![CDATA[>]]>'||'"' as cpemail
+		from tbl_employee e
+		right join 
+        (
+        select *
+        from tbl_chatroom_member 
+        where fk_chatroom_no = #{roomNo}
+        )m
+        on e.empno = m.fk_member_no
+	</select>
+
+	<!--  messageList 가져오기 -->
+	<select id="getMessageList" parameterType="String" resultType="com.spring.chatting.websockethandler.MessageVO">
+		select fk_chatroom_no, fk_member_no, message, type, send_to, send_time
+		, (select name
+		   from tbl_employee
+		    where empno = fk_member_no) as name
+		from tbl_chatroom_message
+		where fk_chatroom_no=#{no}
+		order by send_time asc
+	</select>
+	
+	
+	
+	<!-- 조직도 중요 체크 / 해제 -->
+	<update id="orgImportantUpdate" parameterType = "HashMap" >
+		MERGE 
+		INTO TBL_IMPORTANT_ORGANIZATION
+		USING dual
+		
+		 ON (FK_USER_EMPNO= #{loginuserNo} and FK_IMPORTANT_EMPNO = #{no})
+		 
+		WHEN MATCHED THEN
+		update SET IMPORTANT_delete=1
+		delete where IMPORTANT_delete = 1
+		WHEN NOT MATCHED THEN
+		
+		insert(FK_USER_EMPNO,FK_IMPORTANT_EMPNO)
+		values(#{loginuserNo},#{no})
+	</update>
+	
+
+	
+	
+	<delete id="deleteMember" parameterType="HashMap">
+		delete from tbl_chatroom_member
+   		where FK_MEMBER_NO = #{empNo}
+   		and fk_chatroom_no = #{room_no}
+	</delete>
+	
+	<update id="updateChatroom" parameterType="HashMap">
+		update tbl_chatroom
+		set chatroom_name =  #{subject}
+   		where chatroom_no = #{room_no}
+	</update>
 	
 	
 		

@@ -2,59 +2,70 @@
     pageEncoding="UTF-8"%>
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
-<%-- // === #195. (웹채팅관련5) === // --%>
+<%@ page import="java.net.InetAddress" %>
 
+<style type="text/css">
+    html{overflow:hidden;}
+</style>
+   
+
+
+
+
+<script src="http://code.jquery.com/jquery-latest.js"></script> 
 <script type="text/javascript">
-// === !!! WebSocket 통신 프로그래밍은 HTML5 표준으로써 자바스크립트로 작성하는 것이다. !!! === //
-// WebSocket(웹소켓)은 웹 서버로 소켓을 연결한 후 데이터를 주고 받을 수 있도록 만든 HTML5 표준이다.
-// 그런데 이러한 WebSocket(웹소켓)은 HTTP 프로토콜로 소켓 연결을 하기 때문에 웹 브라우저가 이 기능을 지원하지 않으면 사용할 수 없다. 
-/*
- >> 소켓(Socket)이란? 
-	- 어떤 통신프로그램이 네트워크상에서 데이터를 송수신할 수 있도록 연결해주는 연결점으로써 
-	  IP Address와 port 번호의 조합으로 이루어진다. 
-	    또한 어떤 하나의 통신프로그램은 하나의 소켓(Socket)만을 가지는 것이 아니라 
-	    동일한 프로토콜, 동일한 IP Address, 동일한 port 번호를 가지는 수십개 혹은 수만 개의 소켓(Socket)을 가질 수 있다.
+<%
+String ctxPath = request.getContextPath();
 
-	 =================================================================================================  
-	    클라이언트  소켓(Socket)                                         서버  소켓(Socket)
-         211.238.142.70:7942 ◎------------------------------------------◎  211.238.142.40:9090
-    
-          클라이언트는 서버인 211.238.142.40:9090 소켓으로 클라이언트 자신의 정보인 211.238.142.70:7942 을 
-          보내어 연결을 시도하여 연결이 이루어지면 서버는 클라이언트의 소켓인 211.238.142.70:7942 으로 데이터를 보내면서 통신이 이루어진다.
-    ====================================================================================================
-         
-         소켓(Socket)은 데이터를 통신할 수 있도록 해주는 연결점이기 때문에 통신할 두 프로그램(Client, Server) 모두에 소켓이 생성되야 한다.
+// === #193. (웹채팅관련3) === //
+// === 서버 IP 주소 알아오기(사용중인 IP주소가 유동IP 이라면 IP주소를 알아와야 한다.) ===
+InetAddress inet = InetAddress.getLocalHost(); 
+String serverIP = inet.getHostAddress();
 
-	  Server는 특정 포트와 연결된 소켓(Server 소켓)을 가지고 서버 컴퓨터 상에서 동작하게 되는데, 
-	   이 Server는 소켓을 통해 Cilent측 소켓의 연결 요청이 있을 때까지 기다리고 있다(Listening 한다 라고도 표현함).
-	  Client 소켓에서 연결요청을 하면(올바른 port로 들어왔을 때) Server 소켓이 허락을 하여 통신을 할 수 있도록 연결(connection)되는 것이다.
-*/
+// System.out.println("serverIP : " + serverIP);
+// serverIP : 211.238.142.40
 
-	$(()=>{
-		
+// String serverIP = "211.238.142.72"; 만약에 사용중인 IP주소가 고정IP 이라면 IP주소를 직접입력해주면 된다.
+
+// === 서버 포트번호 알아오기   ===
+int portnumber = request.getServerPort();
+// System.out.println("portnumber : " + portnumber);
+// portnumber : 9090
+
+String serverName = "http://"+serverIP+":"+portnumber; 
+ System.out.println("serverName : " + serverName);
+// serverName : http://211.238.142.40:9090
+%>
+
+
+	$( document ).ready(function() {
+		$("div#chatMessage").scrollTop(999999999);
 		$("div#mycontent").css({"background-color":"#cce0ff"});
 		// div#mycontent 는 /Board/src/main/webapp/WEB-INF/tiles/layout/layout-tiles1.jsp 파일의 내용에 들어있는 <div id="mycontent"> 이다. 
 		
 		const url = window.location.host; // 웹브라우저의 주소창의 포트까지 가져옴
-	 // alert("결과값 url : " + url);
+	 	console.log("결과값 url : " + url);
 	 // 결과값 url : 211.238.142.40:9090
 	 
 	    const pathname = window.location.pathname; // 최초 '/' 부터 오른쪽에 있는 모든 경로
-	 // alert("결과값 pathname : " + pathname);
-	 // 결과값 pathname : /board/chatting/multichat.action
+	 // console.log("결과값 pathname : " + pathname);
+	 // 결과값 pathname : /groovy/chat/chatroom.on
 	
 	    const appCtx = pathname.substring(0, pathname.lastIndexOf("/") ); 
-	 // alert("결과값 appCtx : " + appCtx);
-	 // 결과값 appCtx : /board/chatting
+	 // console.log("결과값 appCtx : " + appCtx);
+	 // 결과값 appCtx : /groovy/chat
 	 
 	    const root = url + appCtx;
-	 // alert("결과값 root : " + root);
-	 // 결과값 root : 211.238.142.40:9090/board/chatting
+	 // console.log("결과값 root : " + root);
+	 // 결과값 root : 211.238.142.40:9090/groovy/chat
 		
-		const wsUrl = "ws://" + root + "/multichatstart.action";
+		const wsUrl = "ws://" + root + "/multichatstart.on";
+	 //	console.log(wsUrl);
 		// 웹소켓통신을 하기 위해서는 http:// 을 사용하는 것이 아니라 ws:// 을 사용해야 한다.
 		// const wsUrl = "ws://211.238.142.40:9090/board/chatting/multichatstart.action";
+		
 		
 		
 		// >> ====== !!중요!! Javascript WebSocket 이벤트 정리 ====== << //
@@ -67,25 +78,22 @@
 	   	        onclose       WebSocket 연결 해제
 	    */
 	    
-	    const websocket = new WebSocket(wsUrl);
+	    var websocket = new WebSocket(wsUrl);
 		
 		let messageObj = {};  // 자바스크립트 객체 생성함.
 		
 		// === 웹소켓에 최초로 연결이 되었을 경우에 실행되어지는 콜백함수 정의하기 === //
 	    websocket.onopen = function() {
-		//	alert("웹소켓 연결됨!!");
-		    $("div#chatStatus").text("정보: 웹소켓에 연결이 성공됨!!");
-		    
-		/*    
-		    messageObj = {};
-		    messageObj.message = "채팅방에 <span style='color: red;'>입장</span> 했습니다.";
-		    messageObj.type = "all";   // "one"
-		    messageObj.to = "all";     // "엄정화"
-		*/
+
+
 		//  또는
 		    messageObj = {message : "채팅방에 <span style='color: red;'>입장</span> 했습니다."
-		                 ,type : "all"
-		                 ,to : "all"};
+		                 ,type : "enter"
+		                 ,to : "all"
+		                 ,no : "${requestScope.no}"
+		                 ,fk_member_no : "${sessionScope.loginuser.empno}"};
+		
+
 		    
 		    websocket.send(JSON.stringify(messageObj));
 		    // JSON.stringify(자바스크립트객체) 는 자바스크립트객체를 JSON 표기법의 문자열(string)로 변환해준다. 
@@ -96,17 +104,12 @@
 		
 		// === 메시지 수신시 콜백함수 정의하기 === //
 		websocket.onmessage = function(event) {
-			
-		     //	event.data 는 수신되어진 메시지이다. 즉, 지금은 「서영학 엄정화 강감찬 」이다.
-		     if(event.data.substr(0,1) == "「" && event.data.substr(event.data.length-1) == "」") {  
-		    	$("div#connectingUserList").html(event.data); 
-		     }
-		     else {
-		    	//  event.data 는 수신받은 채팅문자이다.
-		    	$("div#chatMessage").append(event.data);
-		    	$("div#chatMessage").append("<br/>");
-		    	$("div#chatMessage").scrollTop(999999999);
-		     }
+
+	    	//  event.data 는 수신받은 채팅문자이다.
+	    	$("div#chatMessage").append(event.data);
+	    	$("div#chatMessage").append("<br/>");
+	    	$("div#chatMessage").scrollTop(999999999);
+
 		};
 		
 		
@@ -133,22 +136,15 @@
 				messageVal.replace(/<script/gi, "&lt;script");
 				// 스크립트 공격을 막으려고 한 것임.
 				
-				<%--
-				messageObj = {message : messageVal
-	                         ,type : "all"
-	                         ,to : "all"};
-				--%>
-				// 또는
+				
 				messageObj = {}; // 자바스크립트 객체 생성함
 		        messageObj.message = messageVal;
-		        messageObj.type = "all"; 
+		        messageObj.type = "send"; 
 		        messageObj.to = "all"; 
+		        messageObj.no = "${requestScope.no}"; 
+		        messageObj.fk_member_no = "${sessionScope.loginuser.empno}";
 		        
 		        const to = $("input#to").val(); 
-		        if( to != "" ) {
-		        	messageObj.type = "one"; 
-			        messageObj.to = to;
-		        }
 		        
 		        websocket.send(JSON.stringify(messageObj));
 			    // JSON.stringify(자바스크립트객체) 는 자바스크립트객체를 JSON 표기법의 문자열(string)로 변환해준다. 
@@ -197,58 +193,46 @@
 		
 		/////////////////////////////////////////////////////////////////
 		
-		// 귓속말대화끊기 버튼은 처음에는 보이지 않도록 한다.
-		$("button#btnAllDialog").hide();
+
 		
-		// 아래는 귓속말을 위해서 대화를 나누는 상대방의 이름을 클릭하면 상대방이름의 웹소켓id 를 알아와서 input 태그인 귓속말대상웹소켓.getId() 에 입력하도록 하는 것이다.
-		$(document).on("click", "span.loginuserName", function(){
-		    /*
-		       span.loginuserName 은 
-		       com.spring.chatting.websockethandler.WebsocketEchoHandler 의
-		       public void handleTextMessage(WebSocketSession wsession, TextMessage message) 메소드내에
-		       152번 라인에 있는 것이다.
-		    */
-		    
-		    const ws_id = $(this).prev().text();
-		 // alert(ws_id);
-		    $("input#to").val(ws_id);
-		    
-		    $("span#privateWho").text($(this).text());
-		    $("button#btnAllDialog").show();
-		    $("input#message").css({'background-color':'black', 'color':'white'});
-		    $("input#message").attr("placeholder","귀속말 메시지 내용");
-		    
-		    isOnlyOneDialog = true;  // 귀속말 대화임을 지정
-		});
-		
-		
-		// 귀속말대화끊기 버튼을 클릭한 경우에는 전체대상으로 채팅하겠다는 말이다.
-		$("button#btnAllDialog").click(function(){
-			
-			$("input#to").val("");
-			$("span#privateWho").text("");
-			$("input#message").css({'background-color':'', 'color':''});
-			$("input#message").attr("placeholder","메시지 내용");
-			$(this).hide();
-			
-			isOnlyOneDialog = false;  // 귀속말 대화가 아닌 모두에게 공개되는 대화임을 지정
-		});
+	
+	
 		
 	}); // end of $(document).ready(function(){})-----------------------
 
 </script>
 
 
-<div class="container-fluid" style="margin: -8px;">
-	<div class="row">
+<div class="container-fluid" style="margin: -8px;background-color:ghostwhite; height: 100%">
+	<div class="row" >
 		<div class="col-md-10 offset-md-1" >
 		   <div id="chatStatus"></div>
-		   <div class="my-3" style="position:fixed; padding: 10px 15px; width: 80%;background-color: #fff;margin: 0 6%;">
+		   <div class="my-3" style="position:fixed; padding: 10px 15px; width: 80%;background-color: #fff;margin: 0 6%;z-index:999;">
 			 공지사항 입니다
 			</div>
-			<input type="hidden" id="to" placeholder="귓속말대상웹소켓.getId()"/>
-			<div style="background-color:ghostwhite; height: 100%; width:100%">
 			
+			
+			<input type="hidden" id="to" placeholder="귓속말대상웹소켓.getId()"/>
+			
+			<div id="chatMessage"style="max-height: 100%; width:100%; overFlow: auto; position:relative; bottom:40px;">
+			<div style="height: 150px"></div>
+			<c:forEach var="message" items="${requestScope.messageList}">
+				<c:set var="send_time" value="${message.send_time}" />
+				<fmt:formatDate value="${send_time}" pattern="a h:mm" var="sendTime"/>
+
+				<c:if test="${message.fk_member_no eq sessionScope.loginuser.empno}">
+					<div style='background-color: #ffff80; display: inline-block; max-width: 60%; float: right; padding: 7px; border-radius: 15%; word-break: break-all;'> ${message.message}</div> 
+					<div style='display: inline-block; float: right; padding: 20px 5px 0 0; font-size: 7pt;'>${sendTime}</div> <div style='clear: both;'>&nbsp;</div>
+				</c:if>
+				<c:if test="${message.fk_member_no != sessionScope.loginuser.empno}">
+					&nbsp;[<span style='font-weight:bold; cursor:pointer;' class='loginuserName'>${message.name}</span>]<br>
+					<div style='background-color: white; display: inline-block; max-width: 60%; padding: 7px; border-radius: 15%; word-break: break-all;'>${message.message}</div> 
+					<div style='display: inline-block; padding: 20px 0 0 5px; font-size: 7pt;'>${sendTime}</div> <div>&nbsp;</div>
+				</c:if>
+			
+			
+			</c:forEach>
+
 			
 			
 			
