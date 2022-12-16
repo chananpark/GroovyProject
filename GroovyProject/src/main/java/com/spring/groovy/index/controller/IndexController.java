@@ -1,6 +1,7 @@
 package com.spring.groovy.index.controller;
 
-import java.util.ArrayList;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,11 +14,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
-import com.spring.groovy.approval.model.DraftVO;
 import com.spring.groovy.approval.service.InterApprovalService;
 import com.spring.groovy.common.FileManager;
 import com.spring.groovy.index.service.InterIndexService;
 import com.spring.groovy.management.model.MemberVO;
+import com.spring.groovy.schedule.model.CalendarScheduleVO;
 
 @Controller
 public class IndexController {
@@ -63,6 +64,16 @@ public class IndexController {
 		/* 이달의 생일 직원 */
 		List<MemberVO> birthMem = indexService.getMonthlyBirthday();
 		mav.addObject("birthMem", birthMem);
+		
+		
+		// 오늘의 일정
+		Date date = new Date();
+		SimpleDateFormat formatter= new SimpleDateFormat("yyyy-MM-dd");
+		paraMap.put("sysdate",formatter.format(date));
+		
+		List<CalendarScheduleVO> scheduleList = indexService.getSchedule(paraMap);
+		mav.addObject("scheduleList", scheduleList);
+		
 		
 		mav.setViewName("index/index.tiles2");
 		return mav;

@@ -175,6 +175,12 @@ from tbl_calendar_schedule
 order by scheduleno desc;
 
 
+select scheduleno, to_char(SD.startdate,'yyyy-mm-dd hh24:mi'), subject, color
+from tbl_calendar_schedule SD 
+JOIN tbl_employee E
+ON SD.fk_empno = E.empno
+where SD.fk_empno = 27 AND to_char(SD.startdate,'yyyy-mm-dd') = '2022-12-21'
+
 -- 일정 상세 보기
 select scheduleno, startdate, enddate, subject, color, place, joinuser, content, fk_smcatgono, fk_lgcatgono, fk_empno, name, smcatgoname, department, position, cpemail
 from 

@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.spring.groovy.index.model.InterIndexDAO;
 import com.spring.groovy.management.model.MemberVO;
+import com.spring.groovy.schedule.model.CalendarScheduleVO;
 
 @Service
 public class IndexService implements InterIndexService {
@@ -38,6 +39,14 @@ public class IndexService implements InterIndexService {
 	@Override
 	public List<MemberVO> getMonthlyBirthday() {
 		return dao.getMonthlyBirthday();
+	}
+	
+	
+	// 오늘의 일정
+	@Override
+	public List<CalendarScheduleVO> getSchedule(Map<String, Object> paraMap) {
+		List<CalendarScheduleVO> scheduleList = dao.getSchedule(paraMap);
+		return scheduleList;
 	}
 
 }

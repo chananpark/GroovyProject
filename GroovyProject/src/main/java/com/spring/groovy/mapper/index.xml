@@ -14,4 +14,14 @@
 		WHERE SUBSTR(JUBUN,3,2) = TO_CHAR(SYSDATE, 'MM')
 	</select>
 
+
+	<!-- 오늘의 일정 -->
+	<select id="getSchedule" parameterType="HashMap" resultType="com.spring.groovy.schedule.model.CalendarScheduleVO">
+		select scheduleno, to_char(SD.startdate,'yyyy-mm-dd hh24:mi') as startdate, subject, color
+		from tbl_calendar_schedule SD 
+		JOIN tbl_employee E
+		ON SD.fk_empno = E.empno
+		where SD.fk_empno = #{empno} AND to_char(SD.startdate,'yyyy-mm-dd') = #{sysdate}
+	</select>
+
 </mapper>

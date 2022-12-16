@@ -137,6 +137,11 @@
 	#index_atten #menuBox {	z-index: 1;	} /* div 겹치는거 때문에 함 */
 	/* 출퇴근css 끝 */
 	
+	#indexSchedule .scheduletr:hover {
+		cursor: pointer;
+	}
+	
+	
 
 </style>
 
@@ -448,7 +453,7 @@
 			</div>
 			
 			<%-- 달력/일정 --%>
-			<div class="card mb-3 shadow">
+			<div id="indexSchedule" class="card mb-3 shadow">
 				<div class="card-header bg-white index_card_header" onClick='location.href="<%=ctxPath%>/schedule/schedule.on"'>오늘의 일정</div>
 				<div class="card-body ">
 				
@@ -461,16 +466,20 @@
 							</tr>
 						</thead>
 						<tbody>
-							<tr>
-								<td><div style="border-radius: 50%; background-color: #64DB56; width: 25px; height: 25px;"></div></td>
-								<td>2022.11.16 09:00:00</td>
-								<td>외부미팅</td>
-							</tr>
-							<tr>
-								<td><div style="border-radius: 50%; background-color: #EFF93A; width: 25px; height: 25px;"></div></td>
-								<td>2022.11.16 15:00:00</td>
-								<td>팀회의</td>
-							</tr>
+							<c:if test="${empty requestScope.scheduleList}">
+								<tr>
+									<td style="text-align: center;" colspan="12">오늘의 일정이 없습니다.</td>
+								</tr>
+							</c:if>
+							<c:if test="${not empty requestScope.scheduleList}">
+								<c:forEach var="map" items="${requestScope.scheduleList}">
+									<tr onclick="location.href='<%= ctxPath %>/schedule/viewSchedule.on?scheduleno=${map.scheduleno}'" class="scheduletr">
+										<td><div style="border-radius: 50%; background-color: ${map.color}; width: 25px; height: 25px;"></div></td>
+										<td>${map.startdate}</td>
+										<td>${map.subject}</td>
+									</tr>
+								</c:forEach>
+							</c:if>
 						</tbody>
 					</table>
 					

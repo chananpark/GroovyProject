@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import com.spring.groovy.management.model.MemberVO;
+import com.spring.groovy.schedule.model.CalendarScheduleVO;
 
 public interface InterIndexDAO {
 
@@ -12,5 +13,8 @@ public interface InterIndexDAO {
 
 	// 이달의 생일 직원 가져오기
 	List<MemberVO> getMonthlyBirthday();
+
+	// 오늘의 일정
+	List<CalendarScheduleVO> getSchedule(Map<String, Object> paraMap);
 
 }

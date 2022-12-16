@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 import com.spring.groovy.management.model.MemberVO;
+import com.spring.groovy.schedule.model.CalendarScheduleVO;
 
 @Repository
 public class IndexDAO implements InterIndexDAO {
@@ -31,4 +32,23 @@ public class IndexDAO implements InterIndexDAO {
 	public List<MemberVO> getMonthlyBirthday() {
 		return sqlsession.selectList("index.getMonthlyBirthday");
 	}
+
+	// 오늘의 일정
+	@Override
+	public List<CalendarScheduleVO> getSchedule(Map<String, Object> paraMap) {
+		List<CalendarScheduleVO> scheduleList = sqlsession.selectList("index.getSchedule", paraMap);
+		return scheduleList;
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
 }
