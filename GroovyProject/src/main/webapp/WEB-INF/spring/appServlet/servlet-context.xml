@@ -91,6 +91,7 @@
 	      	<mvc:mapping path="/manage/admin/**"/>    					  	<!-- /admin/**는 아래의 과정을 거쳐야한다. -->
 	      	<mvc:mapping path="/survey/admin/**"/> 							<!-- /admin/**는 아래의 과정을 거쳐야한다. -->
 	    	<mvc:mapping path="/approval/admin/officialApprovalLine.on"/> 	<!-- 전자결재 관리자메뉴 -->
+	    	<mvc:mapping path="/reservation/admin/**"/> <!-- 자원예약 관리자 페이지 -->
 	        <beans:ref bean="adminCheckInterceptor"/>   <!-- 특정회원인지 로그인유무 검사 -->
 	   </mvc:interceptor>  
 	 </mvc:interceptors>  

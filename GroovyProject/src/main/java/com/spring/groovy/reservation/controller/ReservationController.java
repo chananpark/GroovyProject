@@ -93,7 +93,7 @@ public class ReservationController {
 	// === 자원예약 예약 내역 페이지 === //
 	@RequestMapping(value="/reservation/confirm.on")
 	public ModelAndView confirm(HttpServletRequest request, ModelAndView mav, Pagination pagination) throws Exception { 
-		
+		 
 		List<Map<String,String>> reservList = null;
 		Map<String, Object> paraMap = new HashMap<String, Object>();
 		
