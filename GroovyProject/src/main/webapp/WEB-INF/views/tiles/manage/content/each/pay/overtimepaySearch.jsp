@@ -107,7 +107,7 @@
 			<tbody  onclick="go_detailInfo">
 				<c:forEach  var="emp" items="${requestScope.payList}" varStatus="status">
 					<tr class="text-center border" id="list">
-						<td><c:out value="${status.count}" /></td>
+						<td>${status.count}</td>
 						<td>${emp.paymentdate}</td>
 						<td>${emp.bumun}</td>
 						<td>${emp.department}</td>
@@ -121,8 +121,11 @@
 			</tbody>
 		</table>
 	</div>
+	</div>
+</form>
 	
-<!-- 
+	
+<%-- 
 	<div class="mt-5" id="detailPay">
 		<h5 class='mx-4'>기본외수당 상세목록</h5>
 		<table class="table table-bordered table-sm mx-4 ">
@@ -161,8 +164,8 @@
 			</tbody>
 			
 		</table>
-	 -->	
-	<!-- 
+	 --%>	
+	<%-- 
 		<table class="table table-bordered table-sm mx-4 ">
 		<c:forEach  var="emp" items="${requestScope.payList}" varStatus="status">
 			<tr>
@@ -187,8 +190,5 @@
 			</tr>		
 		</c:forEach>
 		</table>
-	 -->	
-	</div>
-</div>
-</form>
+	 --%>	
 

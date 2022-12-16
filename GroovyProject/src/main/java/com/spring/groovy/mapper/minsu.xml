@@ -148,7 +148,7 @@
 	
 	<!-- 공용 증명서 - 월급리스트 -->
 	<select id="paySearch" parameterType="HashMap" resultType="com.spring.groovy.management.model.PayVO">
-		SELECT PAYNO, FK_EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, SALARY,PAY ,ANNUALPAY,OVERTIMEPAY,PAYMENTDATE,OVERPAY,
+		SELECT PAYNO, FK_EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, SALARY,PAY,ANNUALPAY,OVERTIMEPAY,PAYMENTDATE,OVERPAY,
 		        INCOMTAX,PENSION,INSURANCE, ALLPAY, TAX,
 		        (ALLPAY - TAX) AS MONTHPAY
 		FROM 
@@ -176,10 +176,11 @@
 	
 	 <!-- 공용 - 급여관리(급여조회) 한 페이지에 표시할  전체 글 개수 구하기(페이징) -->
 	 <select id="getSalaryList" parameterType="com.spring.groovy.common.Pagination" resultType="int">
-	 	SELECT COUNT(*) FROM tbl_celebrate
-		 <if test='searchType != "" and searchWord != "" '>
+	 	SELECT COUNT(*) FROM TBL_CELEBRATE
+	 	 <if test='searchType != "" and searchWord != "" '>
 	    	WHERE LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
 	    </if>
+
 	 </select>
 	
 	<!-- 공용 증명서 - 월급리스트 -->
@@ -313,9 +314,6 @@
 	</update>
 	
 	
-	
-	
-	
 	<!-- 관리자 사원관리 - 경조비지급목록 -->
 	<!-- <resultMap type="com.spring.groovy.management.model.CelebrateVO" id="celebList" autoMapping="true">
 		<id column="CLBNO" property="clbno" jdbcType="NUMBER"/>
@@ -404,7 +402,6 @@
 	</select>
 	
 	<!-- 관리자 - 급여관리(급여조회)-->
-	
 	 <select id="paySearchAdmin" parameterType="HashMap" resultType="com.spring.groovy.management.model.PayVO">
 		SELECT PAYNO, FK_EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, SALARY,PAY ,ANNUALPAY,OVERTIMEPAY,PAYMENTDATE,OVERPAY,
 		        INCOMTAX,PENSION,INSURANCE, ALLPAY, TAX,
@@ -527,7 +524,8 @@
 	    SELECT *
 	    FROM (SELECT ROWNUM AS RNO, V.*
 	        FROM( 
-	            SELECT SURNO,SURTITLE,SUREXPLAIN,TO_CHAR(SURCREATEDATE, 'YYYY-MM-DD')SURCREATEDATE,SURSTART,SUREND,SURSTATUS
+	            SELECT SURNO,SURTITLE,SUREXPLAIN,TO_CHAR(SURCREATEDATE, 'YYYY-MM-DD')SURCREATEDATE,TO_CHAR(SURSTART), 'YYYY-MM-DD')SURSTART
+	            		,TO_CHAR(SUREND, 'YYYY-MM-DD')SUREND,SURSTATUS
 	            FROM TBL_SURVEY S LEFT JOIN TBL_TARGET T
 	            ON S.SURNO = T.FK_SURNO
 	         	 <if test='searchType != "" and searchWord != "" '> 

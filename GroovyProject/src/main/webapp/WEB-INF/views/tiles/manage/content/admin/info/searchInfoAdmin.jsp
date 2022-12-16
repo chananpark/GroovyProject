@@ -81,7 +81,6 @@
 	
 	// >>> 검색기능 <<<
 	function go_search() {
-		
 	
 		const frm = document.frm_searchInfo;
 		frm.method = "GET";
