@@ -479,9 +479,29 @@
        	}	
 	</select>
 	
+	<!-- 결재 단계 사원번호 조회 -->
+	<select id="checkApproval" parameterType="com.spring.groovy.approval.model.ApprovalVO" resultType="String">
+        SELECT FK_APPROVAL_EMPNO FROM TBL_APPROVAL
+		WHERE FK_DRAFT_NO = #{fk_draft_no} AND LEVELNO = #{levelno}
+		AND APPROVAL_STATUS = 0
+	</select>
+	
+	<!-- 다음 결재 단계 조회 -->
+	<select id="checkApprovalProxy" parameterType="com.spring.groovy.approval.model.ApprovalVO" resultType="int">
+		SELECT NEXT_LEVELNO FROM
+			(SELECT 
+			FK_APPROVAL_EMPNO,
+			LEAD(LEVELNO) OVER (ORDER BY LEVELNO) AS NEXT_LEVELNO,
+			APPROVAL_STATUS
+			FROM TBL_APPROVAL
+			WHERE FK_DRAFT_NO = #{fk_draft_no})
+		WHERE FK_APPROVAL_EMPNO = #{fk_approval_empno}
+		AND APPROVAL_STATUS = 1
+	</select>
+	
 	<!-- 양식번호로 공통 결재라인 조회 -->
 	<select id="getRecipientList" resultType="com.spring.groovy.management.model.MemberVO" parameterType="String">
-		SELECT EMPNO, NAME, DEPARTMENT, SIGNIMG, POSITION, FK_POSITION_NO, EMPIMG
+		SELECT EMPNO, NAME, DEPARTMENT, FK_DEPARTMENT_NO, SIGNIMG, POSITION, FK_POSITION_NO, EMPIMG
 		FROM TBL_EMPLOYEE
 		WHERE EXISTS
 					(SELECT 1
@@ -605,7 +625,7 @@
 
 	<!-- 임시저장 기안 결재 정보 조회 -->
 	<select id="getTempApprovalInfo" resultType="com.spring.groovy.approval.model.ApprovalVO" parameterType="com.spring.groovy.approval.model.DraftVO" >
-		SELECT TEMP_APPROVAL_NO AS APPROVAL_NO, FK_TEMP_DRAFT_NO AS FK_DRAFT_NO, FK_APPROVAL_EMPNO, LEVELNO, NAME, DEPARTMENT, SIGNIMG, POSITION, EMPIMG
+		SELECT TEMP_APPROVAL_NO AS APPROVAL_NO, FK_TEMP_DRAFT_NO AS FK_DRAFT_NO, FK_APPROVAL_EMPNO, LEVELNO, EXTERNAL, NAME, DEPARTMENT, SIGNIMG, POSITION, EMPIMG
 		FROM TBL_TEMP_APPROVAL JOIN TBL_EMPLOYEE
 		ON EMPNO = FK_APPROVAL_EMPNO
 		WHERE FK_TEMP_DRAFT_NO = #{draft_no}

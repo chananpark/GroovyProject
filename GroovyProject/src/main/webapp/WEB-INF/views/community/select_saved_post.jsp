@@ -36,6 +36,10 @@ label {
 	cursor: pointer;
 }
 
+.deleteTemp:hover {
+	cursor: pointer;
+}
+
 </style>
 
 <script>
@@ -48,9 +52,11 @@ window.onload = function(){
 	let body = "";
 	
 	savedPostArray.forEach(el => {
-		body += "<div class='card small my-4'><div class='card-header'>"
-			 + "<input type='radio' id='"+el.temp_post_no+"' name='temp_post_no' value='"+el.temp_post_no+"'/>"
-			 + "<label for='"+el.temp_post_no+"'> " + el.post_subject + "</span></div>"
+		body += "<div class='card small my-4'>"
+			 + "<div class='card-header' style='display: flex;'>"
+			 + "<input type='radio' id='"+el.temp_post_no+"' name='temp_post_no' value='"+el.temp_post_no+"'/>&nbsp;"
+			 + "<label for='"+el.temp_post_no+"' style='margin-bottom:0'> " + el.post_subject + "</label>"
+			 + "<span style='margin-left: auto;' class='deleteTemp' onclick='deleteTemp("+el.temp_post_no+")'><i class='fas fa-times'></i></span></div>"
 			 + "<div class='card-body'>";
 			 
 		if (el.plain_post_content.length > 10)
@@ -63,6 +69,28 @@ window.onload = function(){
 	
 	$("#savedPostContainer").html(body);
 	
+}
+
+// 삭제버튼 클릭 시
+const deleteTemp = temp_post_no => {
+	
+	$.ajax({
+	     url : "<%=ctxPath%>/community/deleteTempPost.on",
+	     data : {"temp_post_no": temp_post_no},
+	     type:'POST',
+	     dataType:'json',
+	     cache:false,
+	     success:function(json){
+	     	if(json.result == true) {
+	     		window.location.reload();
+	     	}
+	     	else
+	     		swal("삭제 실패", json.msg, "error");
+	     },
+	     error: function(request, status, error){
+			alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			}
+	 });
 }
 
 // 확인버튼 클릭 시
@@ -83,6 +111,7 @@ const submitAprvLine = () => {
 <body>
 
 <div class='container-fluid'>
+	<span>임시저장 된 글은 30일 뒤 자동 삭제됩니다.</span>
 	<div id='savedPostContainer'>
 	</div>
 	<div class='text-center'>

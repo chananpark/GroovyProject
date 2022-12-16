@@ -141,9 +141,15 @@ public interface InterApprovalDAO {
 	
 	// 모든 첨부파일 조회
 	List<DraftFileVO> getAllAttachedFile(String draft_no);
-		
+
+	// 결재단계 사원번호 조회
+	String checkApproval(ApprovalVO avo);
+	
+	// 자신의 다음 결재단계 조회
+	int checkApprovalProxy(ApprovalVO avo);
+
 	// 결재 처리하기
-	int updateApproval(ApprovalVO avo);
+	int updateApproval(Map<String, Object> approvalMap);
 
 	// 기안종류번호로 공통결재라인 가져오기
 	List<MemberVO> getRecipientList(String type_no);
@@ -198,5 +204,5 @@ public interface InterApprovalDAO {
 
 	// 기안 1개 삭제하기
 	int deleteOneDraft(String draft_no);
-	
+
 }

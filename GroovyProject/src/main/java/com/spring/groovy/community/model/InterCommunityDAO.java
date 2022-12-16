@@ -83,5 +83,11 @@ public interface InterCommunityDAO {
 	// 좋아요 누르기/취소하기
 	int updateLike(CommunityLikeVO like);
 
+	// 테이블에서 파일 삭제
+	int deleteAttachedFiles(String post_no);
+
+	// 임시저장글 조회하기
+	CommunityPostVO getTempPost(String temp_post_no);
+
 
 }

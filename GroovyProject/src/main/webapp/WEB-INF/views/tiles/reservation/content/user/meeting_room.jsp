@@ -8,6 +8,7 @@
 	
 	.time_hover:hover {
 		background-color: #E3F2FD;
+		cursor: pointer;
 	}
 
 	.date_style {
@@ -74,7 +75,7 @@
 	   
 		// 예약된 시간 보여주면서 예약 못하게 막아주는 메소드		
 	    reservTime(selectDate);
-	
+	    
 	}); // end of ready
 	
 	
@@ -101,8 +102,8 @@
 						
 						var sub_startdate = str_startdate.substring(0,8);
 						var sub_enddate = str_enddate.substring(0,8);
-						var sub_starttime = str_startdate.substring(8,10);
-						var sub_endtime = str_enddate.substring(8,10);
+						var sub_starttime = Number(str_startdate.substring(8,10));
+						var sub_endtime = Number(str_enddate.substring(8,10));
 						
 						// 시작일자, 반납일자 모두 오늘일 경우
 						if(sub_startdate == str_selectDay && sub_enddate == str_selectDay) {
@@ -162,7 +163,7 @@
 						// 시작날짜는 오늘이고 종료날짜는 오늘 이후일 경우	
 						} else if(Number(sub_startdate) == Number(str_selectDay) && Number(sub_enddate) > Number(str_selectDay)) {
 							
-							for(i=sub_endtime; i<24; i++) {
+							for(i=sub_starttime; i<24; i++) {
 								if(i < 10) {
 									var reservtimeClass = "revtime" + item.fk_smcatgono + "0" +i;
 									
@@ -190,6 +191,7 @@
 		     }	 	
 		}); // end of ajax
 		
+		 $('td.alreadyReserv').attr('onclick', '').unbind('click');
 		
 	} // end of function reservTime()
 	

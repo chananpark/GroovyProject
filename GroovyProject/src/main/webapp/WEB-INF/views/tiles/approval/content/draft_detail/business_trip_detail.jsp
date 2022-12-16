@@ -91,6 +91,17 @@ a {
 	margin-top: 10px;
 	float: right;
 }
+
+.profile_css {
+	border-radius: 50%;
+	background-color: #E3F2FD;
+	width: 100px;
+	height: 100px;
+	color: white;
+	font-size: 50pt;
+	font-weight: bold;
+	text-align: center;
+}
 </style>
 
 <script>
@@ -157,8 +168,7 @@ $(()=>{
 	// 대결 버튼 클릭시 이벤트
 	$(".proxyApprovalBtn").click((e)=>{
 		const target = $(e.target);
-		const approval_status = target.attr('id');
-		updateApproval(approval_status);
+		updateApprovalProxy();
 	});
 });
 
@@ -170,57 +180,78 @@ const updateApproval = approval_status => {
 	// 문서번호
 	formData.append("fk_draft_no", "${draftMap.dvo.draft_no}");
 
-	// 자신의 사원번호
-	formData.append("fk_approval_empno", "${loginuser.empno}");
+	// 자신의 결재단계
+	formData.append("levelno", myApprovalInfo.levelno);
 	
-	// 승인 혹은 반려일 경우
-	if (approval_status != 3) {
-
-		// 자신의 결재단계
-		formData.append("levelno", myApprovalInfo.levelno);
-		
-		// 처리 종류(승인 or 반려)
-		formData.append("approval_status", approval_status);
-		
-	}
-	
-	// 대결일 경우
-	else {
-		
-		// 자신의 결재단계
-		formData.append("levelno", (Number(myApprovalInfo.levelno)+1));
-		
-		// 결재의견
-		formData.set("approval_comment", "${loginuser.name}에 의해 대결 처리되었습니다.");
-		
-		// 처리 종류
-		formData.append("approval_status", 1);
-	}
-	
+	// 처리 종류(승인 or 반려)
+	formData.append("approval_status", approval_status);
 	
 	// 폼 전송하기
- $.ajax({
-     url : "<%=ctxPath%>/approval/updateApproval.on",
-     data : formData,
-     type:'POST',
-     processData:false,
-     contentType:false,
-     dataType:'json',
-     cache:false,
-     success:function(json){
-     	if(json.result == true) {
- 	    	swal("처리 완료", "기안을 처리하였습니다.", "success")
- 	    	.then((value) => {
-	    	    	location.href = "<%=ctxPath%>/approval/requested.on";
+	$.ajax({
+	    url : "<%=ctxPath%>/approval/updateApproval.on",
+	    data : formData,
+	    type:'POST',
+	    processData:false,
+	    contentType:false,
+	    dataType:'json',
+	    cache:false,
+	    success:function(json){
+	    	if(json.result == true) {
+		    	swal("처리 완료", "기안을 처리하였습니다.", "success")
+		    	.then((value) => {
+		    		location.href = "<%=ctxPath%>/approval/draftDetail.on?draft_no=${draftMap.dvo.draft_no}&fk_draft_type_no=${draftMap.dvo.fk_draft_type_no}";
 	    		});
-     	}
-     	else
-     		swal("처리 실패", "처리에 실패하였습니다.", "error");
-     },
-     error: function(request, status, error){
+	    	}
+	    	else
+	    		swal("처리 실패", "처리에 실패하였습니다.", "error");
+	    },
+	    error: function(request, status, error){
 		alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
 		}
- });
+	});
+}
+
+
+//대결 처리하기
+const updateApprovalProxy = () => {
+	
+	let formData = new FormData($("#approvalFrm")[0]);
+	
+	// 문서번호
+	formData.append("fk_draft_no", "${draftMap.dvo.draft_no}");
+
+	// 자신의 결재단계
+	formData.append("levelno", myApprovalInfo.levelno);
+	
+	// 결재의견
+	formData.set("approval_comment", "${loginuser.name}에 의해 대결 처리되었습니다.");
+	
+	// 처리 종류
+	formData.append("approval_status", 1);
+	
+	// 폼 전송하기
+	$.ajax({
+	    url : "<%=ctxPath%>/approval/updateApprovalProxy.on",
+	    data : formData,
+	    type:'POST',
+	    processData:false,
+	    contentType:false,
+	    dataType:'json',
+	    cache:false,
+	    success:function(json){
+	    	if(json.result == true) {
+		    	swal("대결 완료", "기안을 대결 처리하였습니다.", "success")
+		    	.then((value) => {
+	    	    	location.href = "<%=ctxPath%>/approval/draftDetail.on?draft_no=${draftMap.dvo.draft_no}&fk_draft_type_no=${draftMap.dvo.fk_draft_type_no}";
+	    		});
+	    	}
+	    	else
+	    		swal("대결 실패", "대결 처리 실패하였습니다.", "error");
+	    },
+	    error: function(request, status, error){
+		alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+		}
+	});
 }
 
 //목록보기 버튼 클릭
@@ -431,7 +462,16 @@ const cancelDraft = () => {
 					<table class='commentTable'>
 					<c:if test="${not empty draftMap.dvo.draft_comment}">
 						<tr>
-							<td class='profile' rowspan='2'><img style='border-radius: 50%; display: inline-block' src='<%=ctxPath%>/resources/images/profile/${draftMap.dvo.empimg}' width="100" /></td>
+							<c:if test="${empty draftMap.dvo.empimg}">
+								<td class='profile' rowspan='2'>
+									<div class="profile_css" id="profile_bg" style="display: inline-block;">
+										${fn:substring(draftMap.dvo.draft_emp_name,0,1)}
+									</div>
+								</td>
+							</c:if>
+							<c:if test="${not empty draftMap.dvo.empimg}">
+								<td class='profile' rowspan='2'><img style='border-radius: 50%; display: inline-block' src='<%=ctxPath%>/resources/images/profile/${draftMap.dvo.empimg}' width="100" height="100"/></td>
+							</c:if>
 							<td style='text-align:left'><h6>${draftMap.dvo.draft_emp_name}&nbsp;${draftMap.dvo.position}</h6></td>
 							<td id='date'><span style='color: #b3b3b3'>${draftMap.dvo.draft_date}</span></td>
 						</tr>
@@ -456,7 +496,16 @@ const cancelDraft = () => {
 					<c:set var="length" value="${fn:length(draftMap.avoList)}"></c:set>
 						<c:if test="${not empty avo.approval_comment}">
 							<tr>
-								<td class='profile' rowspan='2'><img style='border-radius: 50%; display: inline-block' src='<%=ctxPath%>/resources/images/profile/${avo.empimg}' width="100" /></td>
+								<c:if test="${empty avo.empimg}">
+									<td class='profile' rowspan='2'>
+										<div class="profile_css" id="profile_bg" style="display: inline-block;">
+											${fn:substring(draftMap.dvo.draft_emp_name,0,1)}
+										</div>
+									</td>
+								</c:if>
+								<c:if test="${not empty avo.empimg}">
+									<td class='profile' rowspan='2'><img style='border-radius: 50%; display: inline-block' src='<%=ctxPath%>/resources/images/profile/${avo.empimg}' width="100" height="100"/></td>
+								</c:if>
 								<td><h6>${avo.name}&nbsp;${avo.position}</h6></td>
 								<td id='date'><span style='color: #b3b3b3'>${avo.approval_date}</span></td>
 							</tr>

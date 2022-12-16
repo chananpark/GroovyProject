@@ -123,7 +123,7 @@
 		// 취소 및 반납 버튼 만들기
 		statusButton();
 				
-		if(${not empty requestScope.startdate}) {
+		if(${not empty requestScope.paraMap.startdate}) {
 			$("input[name=startdate]").val("${requestScope.paraMap.startdate}");
 			$("input[name=enddate]").val("${requestScope.paraMap.enddate}");
 			$("select#searchType").val("${requestScope.paraMap.pagination.searchType}");

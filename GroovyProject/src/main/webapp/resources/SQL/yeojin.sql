@@ -521,6 +521,12 @@ values(3, '차량');
 
 commit;
 
+SELECT INDEX_NAME, STATUS FROM DBA_INDEXES
+WHERE OWNER = 'FINAL_ORAUSER4'
+AND INDEX_NAME = 'PK_TBL_RESERVATION_LARGE_CATEGORY' 
+
+ALTER INDEX PK_TBL_RESERVATION_LARGE_CATEGORY REBUILD
+ALTER INDEX PK_TBL_RESERVATION_LARGE_CATEGORY REBUILD PARTITION PARTITION_NAME
 
 select lgcatgono, lgcatgoname, lgcategcontent, fk_empno
 from tbl_reservation_large_category
@@ -637,8 +643,8 @@ commit;
 
 select reservationno, to_char(startdate, 'yyyymmddhh24') as startdate, to_char(enddate, 'yyyymmddhh24') as enddate, fk_smcatgono, fk_lgcatgono, confirm,  status
 from tbl_reservation
-where (( to_char(startdate,'yyyymmddhh24') between '2022120800' and '2022120823' )
-or  ( to_char(enddate,'yyyymmddhh24') between '2022120800' and '2022120823' ) )
+where (( to_char(startdate,'yyyymmddhh24') between '2022121000' and '2022122023' )
+or  ( to_char(enddate,'yyyymmddhh24') between '2022121000' and '2022122023' ) )
 and fk_lgcatgono = 1
 
 
@@ -690,10 +696,18 @@ from
     join tbl_reservation_small_category C
     ON R.fk_smcatgono = C.smcatgono
     
-where (( to_char(startdate,'YYYY-MM-DD') between '2022-12-08' and '2022-12-09' )
-or  ( to_char(enddate,'YYYY-MM-DD') between '2022-12-08' and '2022-12-09' ) )
-and (lower(realuser) like '%'||lower('이시설')||'%' or lower(name) like '%'||lower('이시설')||'%')
+where (( to_char(startdate,'YYYY-MM-DD') between '2022-12-10' and '2022-12-20' )
+or  ( to_char(enddate,'YYYY-MM-DD') between '2022-12-10' and '2022-12-20' ) )
+and (lower(realuser) like '%'||lower('손여진')||'%' or lower(name) like '%'||lower('손여진')||'%')
 )
+
+
+select reservationno, to_char(startdate, 'yyyymmddhh24') as startdate, to_char(enddate, 'yyyymmddhh24') as enddate, fk_smcatgono, fk_lgcatgono, confirm,  status
+		from tbl_reservation
+		where (( to_char(startdate,'YYYY-MM-DD') between '2022-12-16' and '2022-12-16' )
+		or  ( to_char(enddate,'YYYY-MM-DD') between '2022-12-16' and '2022-12-16' ) )
+		and fk_lgcatgono = 1
+		and (status = 0 or status = 2)
 
 
 
@@ -772,3 +786,41 @@ UPDATE tbl_reservation_large_category
 commit
 
 
+select 
+		           reservationno, to_char(startdate, 'yyyymmddhh24') as startdate, to_char(enddate, 'yyyymmddhh24') as enddate, 
+		           realuser, fk_smcatgono, fk_lgcatgono, 
+		           to_char(reservdate, 'yyyymmddhh24') as reservdate, 
+		           confirm,  status, return_time,
+		           name, fk_empno, department
+		    from tbl_reservation R
+		    join tbl_employee E
+		    ON  R.fk_empno = E.empno 
+            where R.fk_empno = 14 or lower(R.realuser) like '%'||lower('shonyj@groovy.com')||'%'
+
+
+
+select reservationno, startdate, enddate, realuser, fk_smcatgono, fk_lgcatgono, reservdate, confirm, status, return_time,
+		       name, fk_empno, department, smcatgoname, startdate_view, enddate_view
+		from 
+		(
+		    select row_number() over(order by reservationno desc) as rno,
+			reservationno, 
+			to_char(startdate, 'yyyymmddhh24') as startdate, to_char(enddate, 'yyyymmddhh24') as enddate, 
+			to_char(startdate, 'yyyy-mm-dd hh24:mi') as startdate_view, to_char(enddate, 'yyyy-mm-dd hh24:mi') as enddate_view,
+			realuser, R.fk_smcatgono, R.fk_lgcatgono, smcatgoname,
+			to_char(reservdate, 'yyyymmddhh24') as reservdate, 
+			confirm,  status, return_time,
+			E.name, R.fk_empno, department
+		    from tbl_reservation R
+		    join tbl_employee E
+		    ON  R.fk_empno = E.empno
+		    join tbl_reservation_small_category C
+		    ON R.fk_smcatgono = C.smcatgono
+
+    where (( to_char(startdate,'YYYY-MM-DD') between '2022-12-10' and '2022-12-20' )
+    or  ( to_char(enddate,'YYYY-MM-DD') between '2022-12-10' and '2022-12-20' ) )
+    and R.fk_lgcatgono = 1
+    and ((R.fk_empno = 14 or lower(R.realuser) like '%'||lower('shonyj@groovy.com')||'%') and (lower(realuser) like '%'||lower('이')||'%'  or lower(name) like '%'||lower('이')||'%'))
+    
+)
+where rno between 1 and 10

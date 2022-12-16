@@ -3,22 +3,19 @@ Spring MVC 모듈을 사용한 그룹웨어 팀프로젝트입니다.
 <hr>
 <h2>개발 환경</h2>
 <ul>
-  <li>Java 8</li>
-  <li>Spring framework</li>
-  <li>Oracle RDBMS</li>
-  <li>Tomcat 9.0</li>
-  <li>HTML</li>
-  <li>CSS</li>
-  <li>JavaScript</li>
-  <li>jQuery</li>
-  <li>BootStrap 4</li>
+  <li>OS: Windows 10</li>
+  <li>Language: Java 1.8.0</li>
+  <li>DBMS: ORACLE</li>
+  <li>Framework: Spring 5.3.22, Mybatis, Tiles, Bootstrap</li>
+  <li>WAS: Tomcat 9.0</li>
+  <li>Technology: HTML5, CSS, javascript, jQuery, AJAX, JSON</li>
 </ul>
 <hr>
 <h2>팀원 소개</h2>
 <ul>
-  <li>박찬안
+  <li>박찬안(팀장)
     <ul>
-      <li>역할: 팀장, 전자결재, 자유게시판(커뮤니티)</li>
+      <li>역할: 전자결재, 커뮤니티, 메인페이지(전자결재, 오늘의 명언, 이번달 생일직원)</li>
       <li>Github: https://github.com/Chanan-Park</li>
       <li>Email: pca_719@naver.com</li>
     </ul>
@@ -32,21 +29,21 @@ Spring MVC 모듈을 사용한 그룹웨어 팀프로젝트입니다.
   </li>
     <li>김진석
       <ul>
-        <li>역할: 메일, 조직도, 채팅</li>
+        <li>역할: 메일, 조직도, 채팅, 메인페이지(메일)</li>
         <li>Github: https://github.com/DGJSKIM</li>
         <li>Email: kjsaj0525@gmail.com</li>
       </ul>
   </li>
     <li>김혜원
       <ul>
-        <li>역할: 근태관리, 공지게시판</li>
+        <li>역할: 근태관리, 공지게시판, 메인페이지(근태관리)</li>
         <li>Github: https://github.com/k1mhyewon</li>
         <li>Email: kimhy0434@gmail.com</li>
       </ul>
   </li>
     <li>손여진
       <ul>
-        <li>역할: 일정관리, </li>
+        <li>역할: 일정관리, 자원예약, 메인페이지(날씨, 오늘의 일정)</li>
         <li>Github: https://github.com/Yeoni711</li>
         <li>Email: jin92214@gmail.com</li>
       </ul>

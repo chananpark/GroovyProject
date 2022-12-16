@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.nhncorp.lucy.security.xss.XssPreventer;
+import com.spring.groovy.approval.model.DraftFileVO;
 import com.spring.groovy.common.FileManager;
 import com.spring.groovy.community.model.CommunityCommentVO;
 import com.spring.groovy.community.model.CommunityLikeVO;
@@ -158,7 +159,7 @@ public class CommunityService implements InterCommunityService {
 		return dao.getPostFiles(post_no);
 	}
 
-	// 파일 삭제하기
+	// 파일 1개 삭제하기
 	@Override
 	public boolean deleteFile(String post_file_no, String path) {
 		
@@ -174,6 +175,28 @@ public class CommunityService implements InterCommunityService {
 		}
 		
 		return (n==1)? true: false;
+	}
+	
+	// 모든 첨부파일 삭제하기
+	@Override
+	public boolean deleteAttachedFiles(Map<String, String> paraMap) {
+		
+		// 파일번호로 파일 조회
+		List<CommunityPostFileVO> fileList = dao.getPostFiles(paraMap.get("post_no"));
+		
+		// 테이블에서 첨부파일 삭제
+		int n = dao.deleteAttachedFiles(paraMap.get("post_no"));
+		
+		if (n == fileList.size()) {
+			// 서버에서 파일 삭제
+			for(CommunityPostFileVO file : fileList)  {
+				fileManager.doFileDelete(file.getFilename(), paraMap.get("filePath"));
+			}
+			return true;
+		}
+		else
+			return false;
+		
 	}
 
 	// 글 수정하기
@@ -321,6 +344,20 @@ public class CommunityService implements InterCommunityService {
 		int n = dao.updateLike(like);
 		
 		return (n==1)? true: false;
+	}
+
+	// 임시저장글 조회하기
+	@Override
+	public CommunityPostVO getTempPost(String temp_post_no) {
+		return dao.getTempPost(temp_post_no);
+	}
+
+	// 임시저장 삭제하기
+	@Override
+	public boolean delTempPost(String temp_post_no) {
+		int n = dao.delTempPost(temp_post_no);
+		
+		return (n == 1)? true: false;
 	}
 
 }

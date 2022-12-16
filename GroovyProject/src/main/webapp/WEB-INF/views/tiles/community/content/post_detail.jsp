@@ -122,7 +122,7 @@ function getComment() {
 					+ "<button type='button' id='delComment"+el.comment_no+"' class='text-right mx-2 commentControl' onclick='delComment("+el.comment_no+")'>삭제</button>";
 
 				}
-				cmt += "<div id='comment"+el.comment_no+"' style='padding-left:50px'><p>" + el.comment_content + "</p></div></div>";
+				cmt += "<div style='white-space:pre; padding-left:50px' id='comment"+el.comment_no+"'><p>" + el.comment_content + "</p></div></div>";
 				
 			});
 			
@@ -538,8 +538,7 @@ const showList = () => {
 			<c:if test="${not empty loginuser.empimg}">
 				<img id='profile' src='<%=ctxPath%>/resources/images/profile/${loginuser.empimg}' width='100'/>
 			</c:if>
-			<textarea name="comment_content" placeholder="댓글을 입력하세요" style="width: 85%; vertical-align: middle;" onkeydown="resize(this)" onkeyup="resize(this)"></textarea>
-			<!-- 파일첨부버튼 --><!-- <i class="fas fa-upload btn"></i> -->
+			<textarea name="comment_content" placeholder="댓글을 입력하세요" style="width: 90%; vertical-align: middle; margin-left: 10px" onkeydown="resize(this)" onkeyup="resize(this)"></textarea>
 			<button type="button" id="addReplyBtn" class="btn-secondary listView rounded" onclick="addComment()">등록</button>
 		</form>
 		

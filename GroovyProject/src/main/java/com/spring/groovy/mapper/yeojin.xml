@@ -652,6 +652,7 @@
 		where (( to_char(startdate,'YYYY-MM-DD') between #{selectDate} and #{selectDate} )
 		or  ( to_char(enddate,'YYYY-MM-DD') between #{selectDate} and #{selectDate} ) )
 		and fk_lgcatgono = #{fk_lgcatgono}
+		and (status = 0 or status = 2)
 	</select>
 		
 		
@@ -855,40 +856,33 @@
 		    from tbl_reservation R
 		    join tbl_employee E
 		    ON  R.fk_empno = E.empno
-		
-			<choose>
-				<when test='startdate == "" and enddate == ""'>
-					where R.fk_empno = #{empno}
-				</when>
-				
-				<otherwise>
-					where (
-							(to_char(startdate,'YYYY-MM-DD') between #{startdate} and #{enddate} )
-							or  ( to_char(enddate,'YYYY-MM-DD') between #{startdate} and #{enddate} ) 
-							and  R.fk_empno = #{empno}
-						  )					
-				
+			where (R.fk_empno = #{empno} or lower(R.realuser) like '%'||lower(#{cpemail})||'%')
+					
+				<if test='startdate != "" and enddate != ""'>
+					and  ((to_char(startdate,'YYYY-MM-DD') between #{startdate} and #{enddate} )
+							or  ( to_char(enddate,'YYYY-MM-DD') between #{startdate} and #{enddate} ))
+							
 					<!-- 검색타입과 검색어가 없는 경우 -->
-					<if test='pagination.searchType == "" and pagination.searchWord == ""'></if>
+					<if test='pagination.searchType == "" and pagination.searchWord == ""'>
+					</if>
 					
 					<!-- 검색 타입은 있고 검색어가 없는 경우 -->
 					<if test='pagination.searchType != "" and pagination.searchWord == ""'>
-						and R.fk_lgcatgono = #{pagination.searchType}
+						   and R.fk_lgcatgono = #{pagination.searchType}
 					</if>
 					
 					<!--  검색 타입은 없고 검색어가 있는 경우 -->
 					<if test='pagination.searchType == "" and pagination.searchWord != ""'>
-						and (lower(realuser) like '%'||lower(#{pagination.searchWord})||'%' or  lower(name) like '%'||lower(#{pagination.searchWord})||'%')
+						  and lower(realuser) like '%'||lower(#{pagination.searchWord})||'%'  or lower(name) like '%'||lower(#{pagination.searchWord})||'%'
 					</if>
 					
 					<!-- 검색 타입과 검색어가 모두 있는 경우 -->
 					<if test='pagination.searchType != "" and pagination.searchWord != ""'>
-						and R.fk_lgcatgono = #{pagination.searchType}
-						and (lower(realuser) like '%'||lower(#{pagination.searchWord})||'%' or lower(name) like '%'||lower(#{pagination.searchWord})||'%')
+						  and R.fk_lgcatgono = #{pagination.searchType}
+						  and (lower(realuser) like '%'||lower(#{pagination.searchWord})||'%' or lower(name) like '%'||lower(#{pagination.searchWord})||'%')
 					</if>
 				
-				</otherwise>	
-			</choose>
+				</if>	
 		)
 	</select>
 	
@@ -931,40 +925,33 @@
 		    ON  R.fk_empno = E.empno
 		    join tbl_reservation_small_category C
 		    ON R.fk_smcatgono = C.smcatgono
-		
-			<choose>
-				<when test='startdate == "" and enddate == ""'>
-					where R.fk_empno = #{empno}
-				</when>
+			where (R.fk_empno = #{empno} or lower(R.realuser) like '%'||lower(#{cpemail})||'%')
 				
-				<otherwise>
-					where (
-							(to_char(startdate,'YYYY-MM-DD') between #{startdate} and #{enddate} )
-							or  ( to_char(enddate,'YYYY-MM-DD') between #{startdate} and #{enddate} ) 
-							and  R.fk_empno = #{empno}
-						  )				
+			<if test='startdate != "" and enddate != ""'>
+				and  ((to_char(startdate,'YYYY-MM-DD') between #{startdate} and #{enddate} )
+						or  ( to_char(enddate,'YYYY-MM-DD') between #{startdate} and #{enddate} ))
+						
+				<!-- 검색타입과 검색어가 없는 경우 -->
+				<if test='pagination.searchType == "" and pagination.searchWord == ""'>
+				</if>
 				
-					<!-- 검색타입과 검색어가 없는 경우 -->
-					<if test='pagination.searchType == "" and pagination.searchWord == ""'></if>
-					
-					<!-- 검색 타입은 있고 검색어가 없는 경우 -->
-					<if test='pagination.searchType != "" and pagination.searchWord == ""'>
-						and R.fk_lgcatgono = #{pagination.searchType}
-					</if>
-					
-					<!--  검색 타입은 없고 검색어가 있는 경우 -->
-					<if test='pagination.searchType == "" and pagination.searchWord != ""'>
-						and (lower(realuser) like '%'||lower(#{pagination.searchWord})||'%'  or lower(name) like '%'||lower(#{pagination.searchWord})||'%')
-					</if>
-					
-					<!-- 검색 타입과 검색어가 모두 있는 경우 -->
-					<if test='pagination.searchType != "" and pagination.searchWord != ""'>
-						and R.fk_lgcatgono = #{pagination.searchType}
-						and (lower(realuser) like '%'||lower(#{pagination.searchWord})||'%' or lower(name) like '%'||lower(#{pagination.searchWord})||'%')
-					</if>
+				<!-- 검색 타입은 있고 검색어가 없는 경우 -->
+				<if test='pagination.searchType != "" and pagination.searchWord == ""'>
+					   and R.fk_lgcatgono = #{pagination.searchType}
+				</if>
 				
-				</otherwise>	
-			</choose>
+				<!--  검색 타입은 없고 검색어가 있는 경우 -->
+				<if test='pagination.searchType == "" and pagination.searchWord != ""'>
+					  and lower(realuser) like '%'||lower(#{pagination.searchWord})||'%'  or lower(name) like '%'||lower(#{pagination.searchWord})||'%'
+				</if>
+				
+				<!-- 검색 타입과 검색어가 모두 있는 경우 -->
+				<if test='pagination.searchType != "" and pagination.searchWord != ""'>
+					  and R.fk_lgcatgono = #{pagination.searchType}
+					  and (lower(realuser) like '%'||lower(#{pagination.searchWord})||'%' or lower(name) like '%'||lower(#{pagination.searchWord})||'%')
+				</if>
+			
+			</if>	
 		)
 		where rno between #{pagination.startRno} and #{pagination.endRno}
 	</select>

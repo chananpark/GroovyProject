@@ -3,6 +3,7 @@
     
  <% String ctxPath = request.getContextPath(); %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+ <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 
 
 <style>
@@ -86,53 +87,52 @@
 		<div class="table table-sm" style="margin: 1% 0 3% 1%;" >
 			<table style="width: 100%;" >
 			  <colgroup align="center">
+			  	<col width=5%>
 			  	<col width=10%>
 	            <col width=10%>
-	            <col width=35%>
-	            <col width=25%>
+	            <col width=30%>
+	            <col width=20%>
 	            <col width=10%>
-	            <col width=10%>
+	            <col width=15%>
 	        </colgroup>
 	        
 				<thead align="center">
 					<th>NO</th>
+					<th>설문번호</th>
 					<th>상태</th>
 					<th>설문제목</th>
 					<th>설문생성일</th>
-					<th>대상</th>
+					<th>설문종료일</th>
 					<th>응답수</th>
 				</thead>
+				
+				<%-- 현재시각을 알아오는 JSTL --%>
+				<jsp:useBean id="now" class="java.util.Date" />
+				<fmt:formatDate value="${now}" pattern="yyyy-MM-dd" var="today" />
+				
 				
 				<tbody align="center">
 				<c:forEach var="survey" items="${requestScope.surveyManageList}" varStatus="status">
 				<tr>
+					<td>${status.count}</td>
 					<td><input type="hidden" name="surno" id="surno" value="${survey.surno}"/>${survey.surno}</td>
 					<td>
 						<!-- 설문조사가 진행중인경우 -->
-						<c:if test="${survey.surstart <= survey.surend}">
+							<c:if test="${survey.surstart <= survey.surend && survey.surend >= today}">
 							<div id="situation1">진행중</div>
-						</c:if>
-						
-						<!-- 설문조사가 종료된경우-->
-						<c:if test="${survey.surend < sysdate}">
-							<div id="situation2">종료</div>
-						</c:if>
+							</c:if>
+							
+							<!-- 설문조사가 종료된경우-->
+							<c:if test="${survey.surend < today}">
+								<div id="situation2">종료</div>
+							</c:if>
 						<!-- 설문조사가 제작중인 경우-->
 						<!-- <div id="situation3" type="text" name="" value="종료" readonly/> -->
 					</td>
 					
 					<td><a name="surtitle" id="surtitle" href="<%=ctxPath%>/survey/surveyManageView.on?surno=${survey.surno}" style="color: black;">${survey.surtitle}</a>
 					<td>${survey.surcreatedate}</td>
-					<td>
-						<c:choose>
-							<c:when  test="${survey.surtarget == 1}">
-								전직원
-							</c:when>
-							<c:otherwise>
-								선택대상
-							</c:otherwise>
-						</c:choose>
-					</td>
+					<td>${survey.surend}</td>
 					<td>
 						<span id="joinCnt">${requestScope.joinempcnt}/${requestScope.empCnt}</span>
 					</td>  

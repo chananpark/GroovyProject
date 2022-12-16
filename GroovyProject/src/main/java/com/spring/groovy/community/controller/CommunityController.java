@@ -234,6 +234,33 @@ public class CommunityController {
 		
 	}
 	
+	// 임시저장글 삭제하기
+	@ResponseBody
+	@PostMapping(value = "/deleteTempPost.on", produces = "text/plain;charset=UTF-8")
+	public String savePost(HttpServletRequest request, @RequestParam("temp_post_no") String temp_post_no) {
+		
+		MemberVO loginuser = getLoginUser(request);
+		String empno =  loginuser.getEmpno();
+		
+		// 임시저장글 조회하기
+		CommunityPostVO post = service.getTempPost(temp_post_no);
+		
+		boolean result = false;
+		JSONObject jsonObj = new JSONObject();
+		
+		if (post.getFk_empno().equals(empno)) {
+			// 임시저장 삭제하기
+			result = service.delTempPost(temp_post_no);
+		} else {
+			jsonObj.put("msg", "다른 사람의 임시저장 글은 삭제할 수 없습니다!");
+		}
+		
+		jsonObj.put("result", result);
+		
+		return jsonObj.toString();
+		
+	}
+	
 	// 임시저장 글 불러오기 팝업창 요청
 	@RequestMapping(value = "/getSavedPost.on", produces = "text/plain;charset=UTF-8")
 	public ModelAndView getSavedPost(ModelAndView mav, HttpServletRequest request) {
@@ -273,7 +300,16 @@ public class CommunityController {
 				json.put("msg", "다른 사용자의 글은 삭제할 수 없습니다!");
 			
 			else {
-				boolean result = service.deletePost(paraMap);
+				paraMap.put("filePath", setFilePath(request, "files")); // 파일 저장 경로
+				
+				// 파일삭제
+				boolean result = service.deleteAttachedFiles(paraMap);
+				
+				// 파일삭제 성공 시
+				if (result) {
+					// 게시글 삭제
+					result = service.deletePost(paraMap);
+				}
 				json.put("msg", (result)? "글이 성공적으로 삭제되었습니다." : "글 삭제를 실패하였습니다.");
 			}
 			
@@ -471,8 +507,15 @@ public class CommunityController {
 	@PostMapping(value = "/delComment.on", produces = "text/plain;charset=UTF-8")
 	public String delComment(HttpServletRequest request, CommunityCommentVO comment) {
 		
-		// 댓글 삭제하기
-		boolean result = service.delComment(comment);
+		boolean result = false;
+		
+		MemberVO loginuser = getLoginUser(request);
+
+		// 댓글 작성자와 로그인한 사용자가 같을때
+		if (loginuser.getEmpno().equals(comment.getFk_empno())) {
+			// 댓글 삭제하기
+			result = service.delComment(comment);
+		}
 		
 		JSONObject jsonObj = new JSONObject();
 		jsonObj.put("result", result);

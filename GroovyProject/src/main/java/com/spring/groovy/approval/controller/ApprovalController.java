@@ -486,11 +486,22 @@ public class ApprovalController {
 
 	// 기안 작성 페이지요청
 	@GetMapping(value = "/write.on")
-	public ModelAndView showWorkDraftForm(ModelAndView mav, @RequestParam("type_no") String type_no) {
+	public ModelAndView showWorkDraftForm(ModelAndView mav, HttpServletRequest request, @RequestParam("type_no") String type_no) {
+		
+		MemberVO loginuser = getLoginUser(request);
 		
 		// 공통 결재라인 가져오기
 		List<MemberVO> recipientList = service.getRecipientList(type_no);
-		JSONArray recipientArr = new JSONArray(recipientList);
+		JSONArray recipientArr = new JSONArray();
+		
+		// 공통결재라인이 있을 경우
+		if(recipientList.size() > 0) {
+			for (MemberVO emp : recipientList) {
+				// 결재자 부서와 로그인한 사용자의 부서가 같지 않으면
+				if (emp.getFk_department_no() != loginuser.getFk_department_no())
+					recipientArr = new JSONArray(recipientList);
+			}
+		}
 		
 		mav.addObject("recipientArr", String.valueOf(recipientArr));
 		
@@ -644,11 +655,22 @@ public class ApprovalController {
 	
 	// 임시저장 기안 재상신(편집) 페이지요청
 	@GetMapping(value = "/edit.on")
-	public ModelAndView showDraftEditForm(ModelAndView mav, @RequestParam("fk_draft_type_no") String fk_draft_type_no, DraftVO dvo) {
+	public ModelAndView showDraftEditForm(ModelAndView mav, HttpServletRequest request, @RequestParam("fk_draft_type_no") String fk_draft_type_no, DraftVO dvo) {
+		
+		MemberVO loginuser = getLoginUser(request);
 		
 		// 공통 결재라인 가져오기
 		List<MemberVO> recipientList = service.getRecipientList(fk_draft_type_no);
-		JSONArray recipientArr = new JSONArray(recipientList);
+		JSONArray recipientArr = new JSONArray();
+		
+		// 공통결재라인이 있을 경우
+		if(recipientList.size() > 0) {
+			for (MemberVO emp : recipientList) {
+				// 결재자 부서와 로그인한 사용자의 부서가 같지 않으면
+				if (emp.getFk_department_no() != loginuser.getFk_department_no())
+					recipientArr = new JSONArray(recipientList);
+			}
+		}
 		
 		mav.addObject("recipientArr", String.valueOf(recipientArr));
 		
@@ -786,13 +808,46 @@ public class ApprovalController {
 	// 자신의 결재 처리하기(승인 or 반려)
 	@ResponseBody
 	@PostMapping(value = "/updateApproval.on", produces = "text/plain;charset=UTF-8")
-	public String updateApproval(ApprovalVO avo) {
+	public String updateApproval(ApprovalVO avo, HttpServletRequest request) {
 		
-		boolean result = service.updateApproval(avo);
+		MemberVO loginuser = getLoginUser(request);
+		
+		// 결재대상자 조회
+		String approval_empno = service.checkApproval(avo);
+		
+		boolean result = false;
+		// 로그인한 사용자가 결재대상자일때
+		if (loginuser.getEmpno().equals(approval_empno)) {
+			result = service.updateApproval(avo);
+		}
 
 		JSONObject jsonObj = new JSONObject();
 		jsonObj.put("result", result);
 
+		return jsonObj.toString();
+	}
+	
+	// 대결 처리하기
+	@ResponseBody
+	@PostMapping(value = "/updateApprovalProxy.on", produces = "text/plain;charset=UTF-8")
+	public String updateApprovalProxy(ApprovalVO avo, HttpServletRequest request) {
+
+		boolean result = false;
+		
+		MemberVO loginuser = getLoginUser(request);
+		avo.setFk_approval_empno(Integer.parseInt(loginuser.getEmpno()));
+		
+		// 내 다음 결재단계 조회
+		int next_levelno = service.checkApprovalProxy(avo);
+		
+		if (avo.getLevelno() + 1 == next_levelno) {
+			avo.setLevelno(next_levelno);
+			result = service.updateApproval(avo);
+		}
+		
+		JSONObject jsonObj = new JSONObject();
+		jsonObj.put("result", result);
+		
 		return jsonObj.toString();
 	}
 
@@ -1080,12 +1135,6 @@ public class ApprovalController {
 		String sortOrder = request.getParameter("sortOrder");
 		sortOrder = sortOrder == null ? "desc" : sortOrder;
 		paraMap.put("sortOrder", sortOrder);
-	}
-
-	@ExceptionHandler(Exception.class)
-	private String error(Exception e) {
-		e.printStackTrace();
-		return "error";
 	}
 
 	// 문서함 목록 엑셀 다운로드
