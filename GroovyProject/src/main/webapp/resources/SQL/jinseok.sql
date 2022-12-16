@@ -576,6 +576,8 @@ on c.chatroom_no = m.FK_CHATROOM_NO
 order by chatroom_no;
 select * from tbl_employee;
 select * from tbl_chatroom_message;
+select * from tbl_chatroom;
+select * from tbl_chatroom_member;
 
 select fk_chatroom_no, fk_member_no, message, type, send_to, send_time
 , (select name
@@ -611,6 +613,10 @@ MERGE
 		insert(FK_USER_EMPNO,FK_IMPORTANT_EMPNO)
 		values(12,1)
         
+        select FK_MEMBER_NO
+		from tbl_chatroom_member
+		where fk_chatroom_no = 11
+        
         
         
         
@@ -644,5 +650,29 @@ select '"'||department||' '||position||' '||name||'<![CDATA[<]]>'||cpemail||'<![
         
         
         
-     
+     delete from tbl_chatroom_member
+   		where FK_MEMBER_NO in (12,1)
+        
+        rollback;
+        
+        
+select * from TBL_MAIL_Recipient;
+
+ 
+select M.MAIL_NO,M.FK_SENDER_ADDRESS,M.FK_RECIPIENT_ADDRESS
+		        ,M.SUBJECT,M.contents,M.send_Time,M.SENDER_DELETE,M.SENDER_IMPORTANT
+		        ,M.FILENAME, M.ORGFILENAME, M.FILESIZE,M.MAIL_PWD 
+                ,lag(M.MAIL_NO, 1) over(order by SEND_TIME desc) as ck
+from tbl_mail M
+right JOIN TBL_MAIL_Recipient R  
+				   ON R.fk_mail_no = M.mail_no
+where SEND_TIME <= sysdate  
+	and ((FK_Recipient_address_individual = 'kjskjskjs@groovy.com' and Recipient_IMPORTANT = 1 and RECIPIENT_delete =0)
+    			  or (FK_Sender_address = 'kjskjskjs@groovy.com' and SENDER_IMPORTANT = 1 and sender_delete = 0))
+    and CK!= MAIL_NO    
+    ;
+
+	      
+    	
+ 
         

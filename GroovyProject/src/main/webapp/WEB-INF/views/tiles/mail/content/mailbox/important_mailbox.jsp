@@ -218,11 +218,24 @@ i.fa-flag{
 			      	
 			      		</c:forEach>
 			      	</c:forEach>
-			      	<c:if test="${mailVO.sender_important == 1 and mailVO.recipient_important == 0}">[보낸메일함]</c:if>
-			      	<c:if test="${mailVO.sender_important == 0 and mailVOr.ecipient_important == 1}">[받은메일함]</c:if>
-			   		<c:if test="${mailVO.sender_important == 1 and mailVO.recipient_important == 1}">[내게쓴메일]</c:if>
+			      	<c:if test="${sessionScope.loginuser.cpemail eq mailVO.fK_sender_address}">
+			      	<!-- 내가 보낸 메일 중에서  -->
+			      		<c:if test="${sessionScope.loginuser.cpemail eq fK_recipient_address_individual}">
+			      			<!-- 받는 사람이 나인 경우 -->
+			      			[내게쓴메일]
+			      		</c:if>
+			      		<c:if test="${sessionScope.loginuser.cpemail ne fK_recipient_address_individual}">
+			      			<!-- 받는 사람이 내가 아닌 경우 경우 -->
+			      			[보낸메일함]
+			      		</c:if>
+			      	</c:if>
+			      	<!-- 받은 메일은 전부 받은메일 처리 -->
+			      	<c:if test="${sessionScope.loginuser.cpemail ne mailVO.fK_sender_address}"><!-- 내가 보내지 않은 메일들 -->
+			      		<c:if test="${sessionScope.loginuser.cpemail eq mailVO.fK_recipient_address_individual}">[받은메일함]</c:if>
+			      	</c:if>
+			   		
 			   
-				  ${mailVO.subject}  [임시노출 번호${mailVO.mail_no}]   
+				  ${mailVO.subject}  [임시노출 번호${mailVO.mail_no}] [임시노출 수신번호${mailVO.mail_recipient_no}]     
 			      </td>
 			  
 			      	<c:if test="${sendTimeDD == today}">

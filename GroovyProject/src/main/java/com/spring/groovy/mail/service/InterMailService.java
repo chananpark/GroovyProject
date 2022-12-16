@@ -69,6 +69,8 @@ public interface InterMailService {
 	int goChangeChatroom(Map<String, String> paraMap);
 	// 채팅방 나가기
 	int deleteMember(Map<String, String> paraMap);
+
+	int read(Map<String, String> paraMap);
 	
 
 	

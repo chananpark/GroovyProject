@@ -38,8 +38,48 @@ th{
 
 	$(document).ready(function(){
 		
-			});// end of $(document).ready(function(){})-------------------
+	});// end of $(document).ready(function(){})-------------------
 
+	function deleteSend(){
+   		$.ajax({
+			url:"<%= ctxPath%>/mail/deleteCheck.on",
+			data:{"mail_no":'${requestScope.mailVO.mail_no}'},
+			type:"post",
+			dataType:"json",
+	        success:function(json){
+	        	if(json.n = 1){
+	        		swal("삭제 완료", "메일이 삭제되었습니다.", "success")
+		 	    	.then((value) => {
+		    	    	location.href = "<%=ctxPath%>/mail/sendMailBox.on";
+		    		});
+	        	}
+	        	listRefresh();
+	        },
+	        error: function(request, status, error){
+				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			}
+		});
+   	}
+	function deleteReceieve(){
+		$.ajax({
+			url:"<%= ctxPath%>/mail/deleteCheck.on",
+			data:{"mail_recipient_no":'${requestScope.mailRecipientNo}'},
+			type:"post",
+			dataType:"json",
+	        success:function(json){
+	        	if(json.n = 1){
+	        		swal("삭제 완료", "메일이 삭제되었습니다.", "success")
+		 	    	.then((value) => {
+		    	    	location.href = "<%=ctxPath%>/mail/receieveMailBox.on";
+		    		});
+	        	}
+	        	listRefresh();
+	        },
+	        error: function(request, status, error){
+				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			}
+		});
+	}
 </script>
 
 <h2>메일보기</h2>
@@ -49,18 +89,18 @@ th{
 	<div class="critical">
 
 		
-		<button type="button" class="btn btn-outline-dark"><i class="fas fa-reply"></i> 답장</button>
-		<div class="dropdown btn_submenu">
-		  <span class="btn btn-dark dropdown-toggle btn-sm" data-toggle="dropdown">
-		  <!-- 아이콘 클릭시 아래것들 나올예정 -->
-		  </span>
-		  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-		    <a class="dropdown-item" href="#">답장</a>
-		    <a class="dropdown-item" href="#">전체답장</a>
-		  </div>
+		<button type="button" class="btn btn-outline-dark" onclick="location.href='<%= request.getContextPath()%>/mail/writeMail.on?mailNo=${requestScope.mailVO.mail_no}&type=reply'"><i class="fas fa-reply" ></i> 답장</button>
+		
+		<button type="button" class="btn btn-outline-dark"
+		
+		<c:if test="${requestScope.mailVO.fK_sender_address eq sessionScope.loginuser.cpemail}">
+			onclick="deleteSend()"
+		</c:if>
+		<c:if test="${requestScope.mailVO.fK_sender_address ne sessionScope.loginuser.cpemail}">
+			onclick="deleteReceieve()"
+		</c:if>
 
-		</div>
-		<button type="button" class="btn btn-outline-dark"><i class="fas fa-trash-alt"></i> 삭제</button>
+		><i class="fas fa-trash-alt"></i> 삭제</button>
 		<button type="button" class="btn btn-outline-dark"><i class="fas fa-long-arrow-alt-right"></i> 전달</button>
 		<div class="dropdown btn_submenu">
 		  <span class="btn btn-outline-dark dropdown-toggle" data-toggle="dropdown">

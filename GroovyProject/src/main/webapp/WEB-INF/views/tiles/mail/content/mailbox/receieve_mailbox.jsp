@@ -31,8 +31,6 @@
 }
 td.mail_list_option{
 	width:80px;
-	display: flex;
-    justify-content: space-between;
 }
 td.mail_list_sender{
 	width:150px;
@@ -40,6 +38,9 @@ td.mail_list_sender{
 td.mail_list_time {
     width: 300px;
     text-align: end;
+}
+.mail_list_option>i.fas, i.fa{
+padding-left: 4px;
 }
 #mail_box{
 	margin-top:10px;
@@ -81,6 +82,7 @@ i.fa-flag{
 </style>
 <script type="text/javascript">
 	$(document).ready(function(){
+		listRefresh(); 
 		$("div#displayList").hide();
 		
 		$(document).on('click','#mailLAllCheck_btn', function(){
@@ -116,9 +118,9 @@ i.fa-flag{
 		frm.submit();
 	}// end of function goSearch()--------------------
 	
-	function goMail(mailno){
+	function goMail(mailno, mailRecipientNo){
 		
-		location.href="<%=ctxPath%>/mail/viewMail.on?mailNo="+ mailno ;
+		location.href="<%=ctxPath%>/mail/viewMail.on?mailNo="+mailno+"&mailRecipientNo"+mailRecipientNo;
 	}
 	
 
@@ -284,6 +286,78 @@ i.fa-flag{
 			}
 		});
 	}
+	function replySelect(){
+   		
+		var mailCheck = $('input[name="mailCheck"]:checked');
+		console.log(mailCheck);
+		if(mailCheck.length == 1){
+			result="";
+			mailCheck.each(function(index, item){
+				result += $(item).attr("mailno");			
+			});
+			console.log(result);
+		 	location.href="<%=ctxPath%>/mail/writeMail.on?mailNo="+ result+ "&type=reply";
+		}
+		else{
+			alert("체크박스를 하나만 선택해주세요.");
+		}
+	}
+	
+	
+	function passSelect(){
+   		
+		var mailCheck = $('input[name="mailCheck"]:checked');
+		console.log(mailCheck);
+		if(mailCheck.length == 1){
+			result="";
+			mailCheck.each(function(index, item){
+				result += $(item).attr("mailno");			
+			});
+			console.log(result);
+		 	location.href="<%=ctxPath%>/mail/writeMail.on?mailNo="+ result+ "&type=pass";
+		}
+		else{
+			alert("체크박스를 하나만 선택해주세요.");
+		}
+	}
+	
+	function read(){
+		var mailCheck = $('input[name="mailCheck"]:checked');
+		console.log(mailCheck);
+		if(mailCheck.length > 0){
+			result="";
+			mailCheck.each(function(index, item){
+				result += $(item).attr("mailno");		
+				result += ",";	
+			});
+			result = result.slice(0, -1);
+			console.log(result);
+			readCheck(result);
+		}
+		else{
+			alert("체크박스를 선택해주세요.");
+		}
+	}
+	
+	function readCheck(mailno){
+		$.ajax({
+			url:"<%= ctxPath%>/mail/readCheck.on",
+			data:{"mailno":mailno},
+			type:"post",
+			dataType:"json",
+	        success:function(json){
+	        	if(json.n > 0){
+	        		alert(json.n+ "개 읽음처리 하였습니다.");
+	        	}
+	        	listRefresh(); 
+	        },
+	        error: function(request, status, error){
+				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			}
+		});
+	}
+	
+	
 </script>
 
 <div style="margin: 1% 0 5% 1%">
@@ -300,10 +374,10 @@ i.fa-flag{
 			<i class="fas fa-flag toolflag"></i>
 		</button>
 	    
-		<button type="button" class="btn btn-outline-dark toolbtn"><i class="fas fa-reply"></i> 답장</button>
+		<button type="button" class="btn btn-outline-dark toolbtn" onclick="replySelect()"><i class="fas fa-reply"></i> 답장</button>
 
 		<button type="button" class="btn btn-outline-dark toolbtn" onclick="deleteCheckSelect()"><i class="fas fa-trash-alt" ></i> 삭제</button>
-		<button type="button" class="btn btn-outline-dark toolbtn"><i class="fas fa-long-arrow-alt-right"></i> 전달</button>
+		<button type="button" class="btn btn-outline-dark toolbtn" onclick="passSelect()"><i class="fas fa-long-arrow-alt-right"></i> 전달</button>
 		<div class="dropdown btn_submenu">
 		  <span class="btn btn-outline-dark dropdown-toggle toolbtn" data-toggle="dropdown">
 		  <!-- 아이콘 클릭시 아래것들 나올예정 -->
@@ -317,7 +391,7 @@ i.fa-flag{
 		  </div>
 	
 		</div>
-		<button type="button" class="btn btn-outline-dark toolbtn"><i class="far fa-envelope-open"></i> 읽음</button>
+		<button type="button" class="btn btn-outline-dark toolbtn" onclick="read()"><i class="far fa-envelope-open"></i> 읽음</button>
 
 		
 
@@ -332,6 +406,7 @@ i.fa-flag{
 
 <div id="mail_box">
 	<div id="mailTable">
+	<%-- 
 	<table class="table">
 
 	
@@ -354,9 +429,9 @@ i.fa-flag{
 			    	</c:if>
 			    </c:if> 
 			    
-			    <tr onclick = 'goMail(${mailVO.mail_no})'>
+			    <tr onclick = 'goMail(${mailVO.mail_no},${mailVO.mail_recipient_no})'>
 			  	  <td class="mail_list_option" onclick="event.stopPropagation()">
-			      	<input type="checkbox" id="mailLCheck" name="mailCheck"  value="${mailVO.mail_recipient_no}" mailno="${mailVO.mail_no}"style="vertical-align:middle">
+			      	<input type="checkbox" id="mailLCheck" name="mailCheck" value="${mailVO.mail_recipient_no}" mailno="${mailVO.mail_no}" style="vertical-align:middle">
 			      	<c:if test="${mailVO.recipient_important == 0 }">
 			      		<i class="fas fa-flag" style="color:darkgray;" onclick="importantCheck(${mailVO.mail_recipient_no})"></i>
 			      	</c:if>
@@ -401,6 +476,7 @@ i.fa-flag{
 	
 	  	
 	</table>
+	 --%>
 	</div>
 	<div id = "papagebar">
 	${pagebar}

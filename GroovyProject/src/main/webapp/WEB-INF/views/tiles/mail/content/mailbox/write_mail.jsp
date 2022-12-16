@@ -718,6 +718,10 @@ var fileSizeList = [];
 									<p>------------------------------------------------------------------------------------------</p>	
 								</c:if>
 								
+								<c:if test="${requestScope.type == 'pass'}">
+										${mailVO.contents}
+								</c:if>
+								
 							</textarea>
 						</td>
 					</tr>

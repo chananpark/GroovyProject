@@ -183,11 +183,6 @@ public class MailController {
 						+ "<td class=\"mail_list_option\" onclick=\"event.stopPropagation()\">");
 			if(type.equalsIgnoreCase("send")) {
 				sbHtml.append("<input type=\"checkbox\" id=\"mailLCheck\" name=\"mailCheck\" value=\""+mailVO.getMail_no()+"\" style=\"vertical-align:middle\">");
-			}
-			else if(type.equalsIgnoreCase("receieve")) {
-				sbHtml.append("<input type=\"checkbox\" id=\"mailLCheck\" name=\"mailCheck\" value=\""+mailVO.getMail_recipient_no()+"\" mailNo=\""+mailVO.getMail_no()+"style=\"vertical-align:middle\">");
-			}
-			if(type.equalsIgnoreCase("send")) {
 				// 보낸 메일함 기준
 				if(mailVO.getSender_important().equals("0")) {
 					sbHtml.append("<i class=\"fas fa-flag\" style=\"color:darkgray;\" onclick=\"importantCheck('"+mailVO.getMail_no()+"')\"></i>");
@@ -198,6 +193,8 @@ public class MailController {
 			}
 			else if(type.equalsIgnoreCase("receieve")) {
 				// 받은 메일함 기준
+				sbHtml.append("<input type=\"checkbox\" id=\"mailLCheck\" name=\"mailCheck\" value=\""+mailVO.getMail_recipient_no()+"\" mailNo=\""+mailVO.getMail_no()+"\"style=\"vertical-align:middle\">");
+				
 				if(mailVO.getRecipient_important().equals("0")) {
 					sbHtml.append("<i class=\"fas fa-flag\" style=\"color:darkgray;\" onclick=\"importantCheck('"+mailVO.getMail_recipient_no()+"')\"></i>");
 				}
@@ -239,7 +236,8 @@ public class MailController {
 					sbHtml.append("<a href=\"#\"><i class=\"fas fa-tag\" style=\"color:#"+tag.getTag_color()+";\"></i> &nbsp</a>");
 				}
 			}
-			sbHtml.append(mailVO.getSubject()+"[임시노출 번호"+mailVO.getMail_no() +"]"+"[임시노출 수신메일번호"+mailVO.getMail_recipient_no() +"]"
+			sbHtml.append(mailVO.getSubject()
+					//+"[임시노출 번호"+mailVO.getMail_no() +"]"+"[임시노출 수신메일번호"+mailVO.getMail_recipient_no() +"]"
 					    + "</td>");
 			
 			if(sendTimeDD.equalsIgnoreCase(today)) {
@@ -282,14 +280,13 @@ public class MailController {
 			Map<String,String> paraMap = new HashMap<>();
 			paraMap.put("mailNo", mailNo);
 			MailVO mailVO = service.getOneMail(paraMap);
-			
-			List<String> replyList = service.getreplyList(mailVO.getfK_sender_address());
-			
 			String type = request.getParameter("type");
-			request.setAttribute("mailVO", mailVO);
+			if(type.equalsIgnoreCase("reply")) {
+			List<String> replyList = service.getreplyList(mailVO.getfK_sender_address());
 			request.setAttribute("replyList", replyList);
+			}
 			request.setAttribute("type", type);
-			
+			request.setAttribute("mailVO", mailVO);
 		}
 		String cpemail = request.getParameter("cpemail");
 		if(cpemail!= null && !(cpemail.trim().isEmpty())) {
@@ -320,18 +317,14 @@ public class MailController {
 		paraMap.put("FK_MAIL_ADDRESS", loginuser.getCpemail());
 		
 		MailVO mailVO = service.getOneMail(paraMap);
-		
-
-		
-		
-		
 		List<TagVO> tagList = null;
 		tagList = service.getTagListByMailNo(paraMap);
-		
-		
-		
+
 		request.setAttribute("mailVO", mailVO);
 		request.setAttribute("tagList", tagList);
+		if(request.getParameter("mailRecipientNo") != null && !! request.getParameter("mailRecipientNo").equals("")) {
+			request.setAttribute("mailRecipientNo", request.getParameter("mailRecipientNo"));
+		}
 		
 		return "mail/mailbox/view_mail.tiles";
 		// ==> views/tiles/mail/content/mailBox/receieve_mailbox.jsp
@@ -626,6 +619,34 @@ public class MailController {
 			paraMap.put("mail_no_List",mail_no_List);
 			n = service.tagCheckM(paraMap);
 		}
+		
+
+		jsonObj.put("n", n);
+		
+		return jsonObj.toString(); 
+	}
+	// 메일 읽음 처리
+	@ResponseBody
+	@RequestMapping(value = "/mail/readCheck.on", method= {RequestMethod.POST},produces="text/plain;charset=UTF-8")
+	public String readCheck(HttpServletRequest request) {
+		JSONObject jsonObj = new JSONObject();
+		int n = 0;
+
+
+		HttpSession session = request.getSession();
+		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
+		String mail_address = loginuser.getCpemail();
+		
+		// Map 에 내 이메일과 읽음처리할 메일번호 두가지 넣고 돌림
+		Map<String, String> paraMap = new HashMap<>();
+		paraMap.put("FK_MAIL_ADDRESS",mail_address);
+		String mailno_List = request.getParameter("mailno");
+		System.out.println(mailno_List+mailno_List);
+		if(mailno_List != null) {
+			paraMap.put("mailno_List",mailno_List);
+			n = service.read(paraMap);
+		}
+		
 		
 
 		jsonObj.put("n", n);

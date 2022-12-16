@@ -157,8 +157,23 @@ public class MailService implements InterMailService {
 		for(String mail_no : mail_no_List) {
 			paraMap.put("mail_no",mail_no);
 			int n = dao.tagCheckM(paraMap);
+			if(n==0) {
+				return 0;
+			}
 		}
 		return mail_no_List.size();
+	}
+	// 읽음처리
+	@Override
+	public int read(Map<String, String> paraMap) {
+		
+		List<String> mailno_List = commaArray(paraMap.get("mailno_List"));		
+		for(String mail_no : mailno_List) {
+			paraMap.put("mailNo",mail_no);
+			System.out.println("mail_no"+mail_no);
+			dao.readMail(paraMap);
+		}
+		return mailno_List.size();
 	}
 	
 	@Override

@@ -52,6 +52,9 @@ i.fa-flag{
 	color:#086BDE ;
 	margin-left:1px;
 }
+.mail_list_option>i.fas, i.fa{
+padding-left: 4px;
+}
 
 .toolbtn{
 	border-color: #ddd;
@@ -88,6 +91,7 @@ i.fa-flag{
 </style>
 <script type="text/javascript">
 	$(document).ready(function(){
+		listRefresh();
 
 		
 		
@@ -334,6 +338,23 @@ i.fa-flag{
 		}
 	}
 	
+	
+	function passSelect(){
+   		
+		var mailCheck = $('input[name="mailCheck"]:checked');
+		console.log(mailCheck);
+		if(mailCheck.length == 1){
+			result="";
+			mailCheck.each(function(index, item){
+				result += $(item).attr("value");			
+			});
+			console.log(result);
+		 	location.href="<%=ctxPath%>/mail/writeMail.on?mailNo="+ result+ "&type=pass";
+		}
+		else{
+			alert("체크박스를 하나만 선택해주세요.");
+		}
+	}
 
 	
 
@@ -358,7 +379,7 @@ i.fa-flag{
 		<button type="button" class="btn btn-outline-dark toolbtn" onclick="replySelect()"><i class="fas fa-reply"></i> 답장</button>
 
 		<button type="button" class="btn btn-outline-dark toolbtn" onclick="deleteCheckSelect()"><i class="fas fa-trash-alt"></i> 삭제</button>
-		<button type="button" class="btn btn-outline-dark toolbtn" ><i class="fas fa-long-arrow-alt-right"></i> 전달</button>
+		<button type="button" class="btn btn-outline-dark toolbtn" onclick="passSelect()"><i class="fas fa-long-arrow-alt-right"></i> 전달</button>
 		<div class="dropdown btn_submenu">
 		  <span class="btn btn-outline-dark dropdown-toggle toolbtn" data-toggle="dropdown">
 		  <!-- 아이콘 클릭시 아래것들 나올예정 -->
