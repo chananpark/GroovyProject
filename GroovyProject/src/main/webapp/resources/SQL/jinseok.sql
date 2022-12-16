@@ -157,6 +157,7 @@ select *
         order by tag_color asc;
 insert into tbl_tag (tag_no,FK_mail_address,tag_color,tag_name ,fk_MAIL_NO )
 values(seq_tag_no.nextval,'kjsaj0525@groovy.com','f9320c','빨강',45);
+select * from tbl_tag;
 
 insert into tbl_tag (tag_no,FK_mail_address,tag_color,tag_name ,fk_MAIL_NO)
 values(seq_tag_no.nextval,'kjsaj0525@groovy.com','00b9f1','파랑',45);
@@ -647,8 +648,10 @@ select '"'||department||' '||position||' '||name||'<![CDATA[<]]>'||cpemail||'<![
         )m
         on e.empno = m.fk_member_no;
         
-        
-        
+        delete from tbl_tag 
+	where FK_MAIL_ADDRESS='kjsaj0525@groovy.com'
+	and tag_color='8ebadc'
+	and tag_name='추가';
         
      delete from tbl_chatroom_member
    		where FK_MEMBER_NO in (12,1)
@@ -718,13 +721,15 @@ update
 (
 select *
 from TBL_MAIL_Recipient r
-join TBL_MAIL_Recipient m
+join TBL_MAIL m
 on r.fk_mail_no = m.mail_no and FK_RECIPIENT_ADDRESS_INDIVIDUAL = FK_SENDER_ADDRESS and mail_no = 76
 )
-set SENDER_IMPORTANT=0 ,RECIPIENT_IMPORTANT=0
+set RECIPIENT_IMPORTANT=0
 ;
 
 commit;
+
+select * from TBL_MAIL_Recipient;
 
 
 MERGE 

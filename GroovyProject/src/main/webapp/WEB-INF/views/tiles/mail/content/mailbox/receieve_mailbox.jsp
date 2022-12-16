@@ -80,7 +80,27 @@ i.fa-flag{
 
 
 </style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css" integrity="sha512-3pIirOrwegjM6erE5gPSwkUzO+3cTjpnV9lexlNZqvupR64iZBnOOTiiLPb9M36zpMScbmUNIcHUqKD47M719g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js" integrity="sha512-VEd+nq25CkR676O+pLBnDW09R7VQX9Mdiij052gVCp5yVH3jGtH70Ho/UUv4mJDsEdTvqRCFZg0NKGiojGnUCw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
 <script type="text/javascript">
+	toastr.options = { // toastr 옵션
+	  "closeButton": false,
+	  "debug": false,
+	  "newestOnTop": false,
+	  "progressBar": true,
+	  "positionClass": "toast-top-center",
+	  "preventDuplicates": false,
+	  "onclick": null,
+	  "showDuration": "300",
+	  "hideDuration": "1000",
+	  "timeOut": "2000",
+	  "extendedTimeOut": "1000",
+	  "showEasing": "swing",
+	  "hideEasing": "linear",
+	  "showMethod": "fadeIn",
+	  "hideMethod": "fadeOut"
+	}
 	$(document).ready(function(){
 		listRefresh(); 
 		$("div#displayList").hide();
@@ -357,6 +377,94 @@ i.fa-flag{
 		});
 	}
 	
+	function goAddTag(){
+		let tag_color = $("#tag_color").val().substring(1);
+		
+		let tag_name = $("#tag_name").val();
+		
+		console.log("tag_color"+tag_color);
+		
+		var mailCheck = $('input[name="mailCheck"]:checked');
+		console.log(mailCheck);
+		if(mailCheck.length > 0){
+		fk_mail_no="";
+		mailCheck.each(function(index, item){
+			fk_mail_no += $(item).attr("mailno");
+			console.log($(item).attr("mailno"));
+			fk_mail_no += ',';
+			
+		});
+		fk_mail_no = fk_mail_no.slice(0, -1);
+		console.log("fk_mail_no"+fk_mail_no);
+		// 체크한 것들 번호 가져가서 , 로 이어지는 문자열로 변환
+		
+		$.ajax({
+			url:"<%= ctxPath%>/mail/tagAdd.on",
+			data:{"tag_color":tag_color,
+				  "tag_name":tag_name,
+				  "fk_mail_no":fk_mail_no},
+			type:"post",
+			dataType:"json",
+	        success:function(json){
+	        	if(json.n > 0){
+	        		Command: toastr["success"]("선택한 게시글에 새로운 태그가 적용되었습니다.")
+	    
+	        		$('#modal_addTag').modal('hide');
+	
+	        	}
+	        	listRefresh(); 
+	        	sideTag();
+	        },
+	        error: function(request, status, error){
+				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			}
+		});
+
+		}
+		else{
+			toastr["warning"]("체크박스를 선택해주세요")
+		}
+		
+		
+	}
+	
+	function deleteTag(tag_color,tag_name){
+		event.stopPropagation();
+		
+		swal({
+			icon: 'warning',
+			title: '태그 삭제',
+			text : "정말 "+tag_name+" 태그를  모두 삭제하시겠습니까?",
+			buttons: ["취소" , "삭제"]
+		})
+		.then(function(){
+			console.log("tag_color"+tag_color);
+			console.log("tag_name"+tag_name);
+			$.ajax({
+				url:"<%= ctxPath%>/mail/tagDelete.on",
+				data:{"tag_color":tag_color,
+					  "tag_name":tag_name},
+				type:"post",
+				dataType:"json",
+		        success:function(json){
+		        	if(json.n > 0){
+		
+		        		toastr["success"](tag_name+'태그 '+json.n+'개가 전부 삭제되었습니다.');
+		     
+		        	}
+		        	listRefresh(); 
+		        	sideTag();
+		        },
+		        error: function(request, status, error){
+					alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+				}
+			});
+	        
+	  
+	        
+		})
+	}
+	
 	
 </script>
 
@@ -385,8 +493,11 @@ i.fa-flag{
 		  </span>
 		  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
 			<c:forEach var="tagVO" items="${requestScope.tagListSide}" varStatus="status">   		
-     	  		<a class="dropdown-item" href="#" onclick="tagCheckSelect('${tagVO.tag_color}','${tagVO.tag_name}')"><i class="fas fa-tag" style="color:#${tagVO.tag_color}" ></i> &nbsp${tagVO.tag_name}</a>		
-      	 	</c:forEach>
+     	  		<a class="dropdown-item" href="#" onclick="tagCheckSelect('${tagVO.tag_color}','${tagVO.tag_name}')"><i class="fas fa-tag" style="color:#${tagVO.tag_color}" ></i> 
+	     	  	&nbsp${tagVO.tag_name}
+	     	    <i style="float:right" class="fas fa-minus-circle" onclick="deleteTag('${tagVO.tag_color}','${tagVO.tag_name}');"></i></a>		
+      	 </c:forEach>
+      	 		<a class="dropdown-item" href="#" data-toggle="modal" data-target="#modal_addTag"><i class="fas fa-tag"></i>&nbsp태그 추가</a>
 		    
 		  </div>
 	
@@ -497,6 +608,50 @@ i.fa-flag{
 
     <div id="displayList" style="border:solid 1px gray; border-top:0px; height:100px; margin-left:75px; margin-top:-1px; overflow:auto;">
 	</div>
+</div>
+
+
+
+
+<div class="modal fade" id="modal_addTag" role="dialog" data-backdrop="static">
+	<div class="modal-dialog">
+    	<div class="modal-content">
+    
+      		<!-- Modal header -->
+      		<div class="modal-header">
+        		<h4 class="modal-title">태그 추가하기</h4>
+        		<button id="add" type="button" class="close modal_close" data-dismiss="modal">&times;</button>
+      		</div>
+      
+      		<!-- Modal body -->
+      		<div class="modal-body">
+       			<form name="modal_frm">
+       				<table style="width: 100%;" class="table table-borderless">
+     					<tr>
+     						<td style="text-align: left; vertical-align: middle;">태그 이름</td>
+     						<td><input type="text" name="tag_name" id="tag_name"/></td>
+     					</tr>
+     					<tr>
+     						<td style="text-align: left; vertical-align: middle;">색상 선택</td>
+     						
+     						<td>
+     							<input id="tag_color" name="tag_color" type="color" value="#ffffff" />
+     						</td>
+     					</tr>
+
+     				</table>
+       			</form>	
+      		</div>
+      
+      		<!-- Modal footer -->
+      		<div class="modal-footer">
+      			
+				<button type="button" class="btn btn-light btn-sm modal_close" data-dismiss="modal">취소</button>
+      			<button type="button" style="background-color:#086BDE; color:white;" id="addTag" class="btn btn-sm" onclick="goAddTag()">추가</button>
+      		</div>
+      
+    	</div>
+  	</div>
 </div>
 
 

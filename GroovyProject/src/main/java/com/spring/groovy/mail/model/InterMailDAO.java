@@ -81,6 +81,10 @@ public interface InterMailDAO {
 	int deleteMember(Map<String, String> paraMap);
 	/** 방 정보 변경 */
 	int updateChatroom(Map<String, String> paraMap);
+	/** 태그 추가 */
+	int tagAdd(Map<String, String> paraMap);
+	/** 태그 삭제 */
+	int tagDelete(Map<String, String> paraMap);
 
 
 	

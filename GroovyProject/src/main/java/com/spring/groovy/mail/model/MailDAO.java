@@ -146,6 +146,18 @@ public class MailDAO implements InterMailDAO {
 		int n = sqlsession.update("jinseok.tagCheckM",paraMap);
 		return n;
 	}
+	// 태그 추가
+	@Override
+	public int tagAdd(Map<String, String> paraMap) {
+		int n = sqlsession.insert("jinseok.tagAdd",paraMap);
+		return n;
+	}
+	/** 태그 삭제 */
+	@Override
+	public int tagDelete(Map<String, String> paraMap) {
+		int n = sqlsession.delete("jinseok.tagDelete",paraMap);
+		return n;
+	}
 
 	/** 답장시 완성되는 이메일 값 만들어서 반환 */
 	@Override

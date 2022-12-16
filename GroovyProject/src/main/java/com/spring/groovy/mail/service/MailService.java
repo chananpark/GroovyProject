@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpSession;
+
 import org.apache.commons.collections4.map.HashedMap;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -16,6 +18,7 @@ import com.spring.chatting.websockethandler.MessageVO;
 import com.spring.groovy.mail.model.InterMailDAO;
 import com.spring.groovy.mail.model.MailVO;
 import com.spring.groovy.mail.model.TagVO;
+import com.spring.groovy.management.model.MemberVO;
 
 @Service
 public class MailService implements InterMailService {
@@ -107,6 +110,7 @@ public class MailService implements InterMailService {
 
 		return mail_recipient_no_List.size();
 	}
+	
 	@Override
 	public int importantCheckM(String mail_no_str) {
 		
@@ -120,6 +124,9 @@ public class MailService implements InterMailService {
 			paraMap.put("mail_no", mail_no);
 			paraMap.put("SENDER_IMPORTANT", String.valueOf(SENDER_IMPORTANT));
 			int n = dao.importantUpdateM(paraMap);
+			if(n!=1) {
+				return n;
+			}
 		}
 		
 
@@ -161,6 +168,28 @@ public class MailService implements InterMailService {
 		}
 		return mail_no_List.size();
 	}
+	// 태그 추가
+	@Override
+	public int tagAdd(Map<String, String> paraMap) {
+		
+		List<String> fk_mail_no_List = commaArray(paraMap.get("fk_mail_no_List"));		
+		for(String fk_mail_no : fk_mail_no_List) {
+			paraMap.put("fk_mail_no",fk_mail_no);
+			int n = dao.tagAdd(paraMap);
+			if(n==0) {
+				return 0;
+			}
+		}
+		return fk_mail_no_List.size();
+	}
+	// 태그 삭제
+	@Override
+	public int tagDelete(Map<String, String> paraMap) {
+
+		int n = dao.tagDelete(paraMap);
+		return n;
+	}
+	
 	// 읽음처리
 	@Override
 	public int read(Map<String, String> paraMap) {

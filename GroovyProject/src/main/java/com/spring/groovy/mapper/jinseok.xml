@@ -277,7 +277,8 @@
 		MERGE 
 		 INTO TBL_MAIL_Recipient r
 		USING  TBL_MAIL m
-		   ON (r.fk_mail_no = m.mail_no and FK_RECIPIENT_ADDRESS_INDIVIDUAL = FK_SENDER_ADDRESS
+		   ON (r.fk_mail_no = m.mail_no 
+		   	  and FK_RECIPIENT_ADDRESS_INDIVIDUAL = FK_SENDER_ADDRESS
 		      and mail_no = #{mail_no})
 		 WHEN MATCHED THEN
 		      UPDATE
@@ -326,6 +327,20 @@
 		insert(tag_no,FK_mail_address,tag_color,tag_name ,fk_MAIL_NO )
 		values(seq_tag_no.nextval,#{FK_MAIL_ADDRESS},#{tag_color},#{tag_name},#{mail_no})
 	</update>
+	
+	<!-- 태그추가 -->
+	<insert id="tagAdd" parameterType = "HashMap">
+	insert into tbl_tag (tag_no,FK_mail_address,tag_color,tag_name ,fk_MAIL_NO )
+	values(seq_tag_no.nextval,#{FK_MAIL_ADDRESS},#{tag_color},#{tag_name},#{fk_mail_no})
+	</insert>
+	
+	<!-- 태그삭제 -->
+	<delete id="tagDelete" parameterType = "HashMap">
+	delete from tbl_tag 
+	where FK_MAIL_ADDRESS=#{FK_MAIL_ADDRESS}
+	and tag_color=#{tag_color}
+	and tag_name=#{tag_name}
+	</delete>
 	
 	
 	<resultMap type="HashMap" id="departmentMap">

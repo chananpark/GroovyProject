@@ -626,6 +626,68 @@ public class MailController {
 		
 		return jsonObj.toString(); 
 	}
+	
+	// 태그 추가
+	@ResponseBody
+	@RequestMapping(value = "/mail/tagAdd.on", method= {RequestMethod.POST},produces="text/plain;charset=UTF-8")
+	public String tagAdd(HttpServletRequest request) {
+		JSONObject jsonObj = new JSONObject();
+		int n = 0;
+		
+		String tag_color = request.getParameter("tag_color");
+		String tag_name = request.getParameter("tag_name");
+		HttpSession session = request.getSession();
+		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
+		String mail_address = loginuser.getCpemail();
+		
+		Map<String, String> paraMap = new HashMap<>();
+		paraMap.put("tag_color",tag_color);
+		paraMap.put("tag_name",tag_name);
+		paraMap.put("FK_MAIL_ADDRESS",mail_address);
+		
+
+		String fk_mail_no_List = request.getParameter("fk_mail_no");
+		if(fk_mail_no_List != null) {
+			paraMap.put("fk_mail_no_List",fk_mail_no_List);
+			n = service.tagAdd(paraMap);
+		}
+		
+
+		jsonObj.put("n", n);
+		
+		return jsonObj.toString(); 
+	}
+	
+	// 태그  삭제
+	@ResponseBody
+	@RequestMapping(value = "/mail/tagDelete.on", method= {RequestMethod.POST},produces="text/plain;charset=UTF-8")
+	public String tagDelete(HttpServletRequest request) {
+		JSONObject jsonObj = new JSONObject();
+		int n = 0;
+		
+		String tag_color = request.getParameter("tag_color");
+		String tag_name = request.getParameter("tag_name");
+		HttpSession session = request.getSession();
+		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
+		String mail_address = loginuser.getCpemail();
+		
+		Map<String, String> paraMap = new HashMap<>();
+		paraMap.put("tag_color",tag_color);
+		paraMap.put("tag_name",tag_name);
+		paraMap.put("FK_MAIL_ADDRESS",mail_address);
+		System.out.println("tag_color"+tag_color);
+		System.out.println("tag_name"+tag_name);
+		System.out.println("FK_MAIL_ADDRESS"+mail_address);
+
+		n = service.tagDelete(paraMap);
+		System.out.println("n!!"+n);
+		
+
+		jsonObj.put("n", n);
+		
+		return jsonObj.toString(); 
+	}
+	
 	// 메일 읽음 처리
 	@ResponseBody
 	@RequestMapping(value = "/mail/readCheck.on", method= {RequestMethod.POST},produces="text/plain;charset=UTF-8")
