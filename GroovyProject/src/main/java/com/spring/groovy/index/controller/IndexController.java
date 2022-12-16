@@ -17,6 +17,7 @@ import org.springframework.web.servlet.ModelAndView;
 import com.spring.groovy.approval.service.InterApprovalService;
 import com.spring.groovy.common.FileManager;
 import com.spring.groovy.index.service.InterIndexService;
+import com.spring.groovy.mail.model.MailVO;
 import com.spring.groovy.management.model.MemberVO;
 import com.spring.groovy.schedule.model.CalendarScheduleVO;
 
@@ -66,7 +67,7 @@ public class IndexController {
 		mav.addObject("birthMem", birthMem);
 		
 		
-		// 오늘의 일정
+		/* 오늘의 일정 */
 		Date date = new Date();
 		SimpleDateFormat formatter= new SimpleDateFormat("yyyy-MM-dd");
 		paraMap.put("sysdate",formatter.format(date));
@@ -74,6 +75,10 @@ public class IndexController {
 		List<CalendarScheduleVO> scheduleList = indexService.getSchedule(paraMap);
 		mav.addObject("scheduleList", scheduleList);
 		
+		/* 메일 5개 보여주기 */
+		paraMap.put("cpemail", loginuser.getCpemail());
+		List<MailVO> mailList = indexService.getMailList(paraMap);
+		mav.addObject("mailList", mailList);
 		
 		mav.setViewName("index/index.tiles2");
 		return mav;

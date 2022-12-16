@@ -8,6 +8,7 @@ import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.spring.groovy.mail.model.MailVO;
 import com.spring.groovy.management.model.MemberVO;
 import com.spring.groovy.schedule.model.CalendarScheduleVO;
 
@@ -38,6 +39,12 @@ public class IndexDAO implements InterIndexDAO {
 	public List<CalendarScheduleVO> getSchedule(Map<String, Object> paraMap) {
 		List<CalendarScheduleVO> scheduleList = sqlsession.selectList("index.getSchedule", paraMap);
 		return scheduleList;
+	}
+
+	@Override
+	public List<MailVO> getMailList(Map<String, Object> paraMap) {
+		List<MailVO> mailList = sqlsession.selectList("index.getMailList", paraMap);
+		return mailList;
 	}
 	
 	

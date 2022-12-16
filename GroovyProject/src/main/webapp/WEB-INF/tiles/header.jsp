@@ -69,9 +69,10 @@ $(()=>{
 	const pathName = window.location.pathname;
 	const ctxPath = '<%=ctxPath%>';
 	let menuName = pathName.substring(ctxPath.length+1);
-	const index = menuName.indexOf("/");
-	menuName = menuName.substring(0,index) || 'index';
 	
+	const index = menuName.indexOf("/");
+	
+	menuName = menuName.substring(0,index) || menuName.substring(0,menuName.length-3);
 	$('div#'+menuName).addClass('activeHeaderMenu'); // 현재 메뉴에 색 입히기
 	
 	$("#header_profile_bg").text("${sessionScope.loginuser.name}".substring(0,1));
@@ -100,7 +101,7 @@ $(()=>{
    		</div>
     </li>
     <li class="nav-item">
-    	<div id='' class="nav-link text-dark  header_hover header_width" onClick='location.href="<%=ctxPath%>/organization.on"'>
+    	<div id='organization' class="nav-link text-dark  header_hover header_width" onClick='location.href="<%=ctxPath%>/organization.on"'>
     		<div class="text-center"><i class="fas fa-sitemap fa-lg"></i></div>
     		<div style="text-align: center;">조직도</div>
    		</div>
@@ -154,7 +155,7 @@ $(()=>{
    		</div>
     </li>
     <li class="nav-item">
-      	<div id='' class="nav-link text-dark  header_hover header_width" onClick='location.href="<%=ctxPath%>/chat.on"'>
+      	<div id='chat' class="nav-link text-dark  header_hover header_width" onClick='location.href="<%=ctxPath%>/chat.on"'>
     		<div class="text-center"><i class="fas fa-comments fa-lg"></i></div>
     		<div style="text-align: center;">채팅</div>
    		</div>

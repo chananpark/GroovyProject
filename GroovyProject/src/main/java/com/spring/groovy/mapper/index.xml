@@ -23,5 +23,41 @@
 		ON SD.fk_empno = E.empno
 		where SD.fk_empno = #{empno} AND to_char(SD.startdate,'yyyy-mm-dd') = #{sysdate}
 	</select>
+	
+	<!-- 오늘의 일정 -->
+	<select id="getMailList" parameterType="HashMap" resultType="com.spring.groovy.mail.model.MailVO">
+		select *
+		from 
+		(
+		    select rownum AS rno, V.*
+		    from 
+		    (
+		    	select *
+		    	from
+		    	(
+			        select M.MAIL_NO,M.FK_SENDER_ADDRESS,M.FK_RECIPIENT_ADDRESS
+			        ,M.SUBJECT,M.contents,M.send_Time,M.SENDER_DELETE,M.SENDER_IMPORTANT
+			        ,M.FILENAME, M.ORGFILENAME, M.FILESIZE,M.MAIL_PWD, case when(lag(M.MAIL_NO, 1) over(order by SEND_TIME desc) = M.MAIL_NO) then 0 else 1 end as ck
+			        	,R.mail_recipient_no,R.FK_RECIPIENT_ADDRESS_individual
+			        	,R.FK_REFERENCED_ADDRESS_individual,R.READ_CHECK
+			        	,R.RECIPIENT_DELETE,RECIPIENT_IMPORTANT
+
+				   from tbl_mail M  
+                   right JOIN TBL_MAIL_Recipient R  
+				   ON R.fk_mail_no = M.mail_no
+                   <![CDATA[where SEND_TIME <= sysdate]]>
+                   and RECIPIENT_delete =0    	
+				   and ((FK_Recipient_address_individual = #{cpemail})
+				       or (FK_REFERENCED_ADDRESS_individual =#{cpemail}))
+			        		
+
+			        order by SEND_TIME desc
+			        )C
+		    ) V
+		) T 
+		where rno between 1 and 5
+	</select>
+	
+	
 
 </mapper>

@@ -15,6 +15,9 @@
 
 	<select id="getTotalCount" parameterType="HashMap" resultType="int">
 	    select count(*)
+	    from
+	    (
+	    select M.MAIL_NO, SEND_TIME ,case when(lag(M.MAIL_NO, 1) over(order by SEND_TIME desc) = M.MAIL_NO) then 0 else 1 end as ck
 	    from tbl_mail M  
 	    <if test='listType == "FK_Recipient_address" or listType == "important"'>   
 	    right JOIN TBL_MAIL_Recipient R  
@@ -38,7 +41,10 @@
     	<if test='searchType != "" and searchWord != "" '>
 	    	and lower(${searchType}) like '%'||lower(#{searchWord})||'%'
 	    </if>
-			 
+		)
+		<if test='listType == "important"'> 
+       where ck = 1
+       </if> 
 	</select>
 		
 		<!-- 페이징한 메일 정보만 가져오기-->
@@ -49,45 +55,52 @@
 		    select rownum AS rno, V.*
 		    from 
 		    (
-		        select M.MAIL_NO,M.FK_SENDER_ADDRESS,M.FK_RECIPIENT_ADDRESS
-		        ,M.SUBJECT,M.contents,M.send_Time,M.SENDER_DELETE,M.SENDER_IMPORTANT
-		        ,M.FILENAME, M.ORGFILENAME, M.FILESIZE,M.MAIL_PWD
-		        <if test='listType == "FK_Recipient_address" or listType == "important"'>   
+		    	select *
+		    	from
+		    	(
+			        select M.MAIL_NO,M.FK_SENDER_ADDRESS,M.FK_RECIPIENT_ADDRESS
+			        ,M.SUBJECT,M.contents,M.send_Time,M.SENDER_DELETE,M.SENDER_IMPORTANT
+			        ,M.FILENAME, M.ORGFILENAME, M.FILESIZE,M.MAIL_PWD, case when(lag(M.MAIL_NO, 1) over(order by SEND_TIME desc) = M.MAIL_NO) then 0 else 1 end as ck
+			        <if test='listType == "FK_Recipient_address" or listType == "important"'>   
+		
+			        	,R.mail_recipient_no,R.FK_RECIPIENT_ADDRESS_individual
+			        	,R.FK_REFERENCED_ADDRESS_individual,R.READ_CHECK
+			        	,R.RECIPIENT_DELETE,RECIPIENT_IMPORTANT
+					</if>
+				
+				   from tbl_mail M  
+				   <if test='listType == "FK_Recipient_address" or listType == "important"'>
+					   right JOIN TBL_MAIL_Recipient R  
+					   ON R.fk_mail_no = M.mail_no
+				   </if>
+			        <!-- <![CDATA[]]> 파싱하지 않고 문자 그대로 들어감 -->
+			        <![CDATA[where SEND_TIME <= sysdate]]>
+			        <if test='listType != ""'>		
+			        	<if test='listType == "FK_Sender_address"'>
+			        		and sender_delete = 0
+			        		and  ${listType} = #{mail_address}
+			        	</if>
+			        	<if test='listType == "FK_Recipient_address"'>  
+			        		and RECIPIENT_delete =0    	
+				    		and  ((FK_Recipient_address_individual = #{mail_address})
+				    			  or (FK_REFERENCED_ADDRESS_individual = #{mail_address}))
+				    	</if>
+				    	<if test='listType == "important"'>    	
+				    	    and ((FK_Recipient_address_individual = #{mail_address} and Recipient_IMPORTANT = 1 and RECIPIENT_delete =0  )
+				    			  or (FK_Sender_address = #{mail_address} and SENDER_IMPORTANT = 1 and sender_delete = 0)) 
+				    	</if>
+				    </if>
+			        
+				    <if test='searchType != "" and searchWord != "" '>
+				    	
+				    	and lower(${searchType}) like '%'||lower(#{searchWord})||'%'
+				    </if>
 	
-		        	,R.mail_recipient_no,R.FK_RECIPIENT_ADDRESS_individual
-		        	,R.FK_REFERENCED_ADDRESS_individual,R.READ_CHECK
-		        	,R.RECIPIENT_DELETE,RECIPIENT_IMPORTANT
-				</if>
-			
-			   from tbl_mail M  
-			   <if test='listType == "FK_Recipient_address" or listType == "important"'>
-				   right JOIN TBL_MAIL_Recipient R  
-				   ON R.fk_mail_no = M.mail_no
-			   </if>
-		        <!-- <![CDATA[]]> 파싱하지 않고 문자 그대로 들어감 -->
-		        <![CDATA[where SEND_TIME <= sysdate]]>
-		        <if test='listType != ""'>		
-		        	<if test='listType == "FK_Sender_address"'>
-		        		and sender_delete = 0
-		        		and  ${listType} = #{mail_address}
-		        	</if>
-		        	<if test='listType == "FK_Recipient_address"'>  
-		        		and RECIPIENT_delete =0    	
-			    		and  ((FK_Recipient_address_individual = #{mail_address})
-			    			  or (FK_REFERENCED_ADDRESS_individual = #{mail_address}))
-			    	</if>
-			    	<if test='listType == "important"'>    	
-			    	    and ((FK_Recipient_address_individual = #{mail_address} and Recipient_IMPORTANT = 1 and RECIPIENT_delete =0  )
-			    			  or (FK_Sender_address = #{mail_address} and SENDER_IMPORTANT = 1 and sender_delete = 0)) 
-			    	</if>
-			    </if>
-		        
-			    <if test='searchType != "" and searchWord != "" '>
-			    	
-			    	and lower(${searchType}) like '%'||lower(#{searchWord})||'%'
-			    </if>
-
-		        order by SEND_TIME desc
+			        order by SEND_TIME desc
+			        )C
+		        <if test='listType == "important"'> 
+		        where ck = 1
+		        </if>
 		    ) V
 		) T 
 		where rno between #{startRno} and #{endRno} 
@@ -249,14 +262,31 @@
 	<!-- 중요체크 추가 or 해제 mailno -->
 	<update id="importantUpdateM" parameterType = "HashMap" >
 	
-		update TBL_MAIL
+		update TBL_MAIL 
 		<if test="SENDER_IMPORTANT == 0">
 		set SENDER_IMPORTANT =  1
 		</if>
 		<if test="SENDER_IMPORTANT == 1">
 		set SENDER_IMPORTANT =  0
 		</if>
-   		where mail_no = #{mail_no}
+		where mail_no = #{mail_no}
+
+	</update>
+	
+	<update id="importantUpdateM2" parameterType = "HashMap" >
+		MERGE 
+		 INTO TBL_MAIL_Recipient r
+		USING  TBL_MAIL m
+		   ON (r.fk_mail_no = m.mail_no and FK_RECIPIENT_ADDRESS_INDIVIDUAL = FK_SENDER_ADDRESS
+		      and mail_no = #{mail_no})
+		 WHEN MATCHED THEN
+		      UPDATE
+		        <if test="SENDER_IMPORTANT == 0">
+				set RECIPIENT_IMPORTANT =  1
+				</if>
+				<if test="SENDER_IMPORTANT == 1">
+				set RECIPIENT_IMPORTANT =  0
+				</if>
 	</update>
 	
 

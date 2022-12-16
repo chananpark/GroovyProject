@@ -555,7 +555,7 @@ public class MailController {
 	public String importantCheck(HttpServletRequest request) {
 		JSONObject jsonObj = new JSONObject();
 		int n = 0;
-		
+		int m=0;
 		String mail_recipient_no = request.getParameter("mail_recipient_no");
 		if(mail_recipient_no != null) {
 			n = service.importantCheck(mail_recipient_no);
@@ -564,11 +564,12 @@ public class MailController {
 		String mail_no = request.getParameter("mail_no");
 		
 		if(mail_no != null) {
-			n = service.importantCheckM(mail_no);
+			System.out.println("mail_no"+mail_no);
+			m = service.importantCheckM(mail_no);
 		}
 		
 
-		jsonObj.put("n", n);
+		jsonObj.put("n", n+m);
 		
 		return jsonObj.toString(); 
 	}

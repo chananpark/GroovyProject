@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.spring.groovy.index.model.InterIndexDAO;
+import com.spring.groovy.mail.model.MailVO;
 import com.spring.groovy.management.model.MemberVO;
 import com.spring.groovy.schedule.model.CalendarScheduleVO;
 
@@ -47,6 +48,12 @@ public class IndexService implements InterIndexService {
 	public List<CalendarScheduleVO> getSchedule(Map<String, Object> paraMap) {
 		List<CalendarScheduleVO> scheduleList = dao.getSchedule(paraMap);
 		return scheduleList;
+	}
+
+	@Override
+	public List<MailVO> getMailList(Map<String, Object> paraMap) {
+		List<MailVO> mailList = dao.getMailList(paraMap);
+		return mailList;
 	}
 
 }

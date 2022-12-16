@@ -121,6 +121,74 @@ i.fa-flag{
 		frm.action = "<%= ctxPath%>/mail/receiveMailBox.on";
 		frm.submit();
 	}// end of function goSearch()--------------------
+	
+	
+	function importantCheckSelect(){
+		
+		var mailCheck = $('input[name="mailCheck"]:checked');
+		console.log(mailCheck);
+		if(mailCheck.length > 0){
+		mailNo="";
+		mailRecipientNo="";
+		mailCheck.each(function(index, item){
+			if($(item).attr("mailno") != null){
+				mailNo += $(item).attr("mailno");
+				mailNo += ",";
+			}
+			else if($(item).attr("mailRecipientNo") != null){
+				mailRecipientNo += $(item).attr("mailRecipientNo");
+				mailRecipientNo += ",";
+			}
+				
+		});
+		 mailNo = mailNo.slice(0, -1);
+		 mailRecipientNo = mailRecipientNo.slice(0, -1);
+		 console.log("mailNo"+mailNo);
+		 console.log("mailRecipientNo"+mailRecipientNo);
+		 $.ajax({
+				url:"<%= ctxPath%>/mail/importantCheck.on",
+				data:{"mail_recipient_no":mailRecipientNo,
+					  "mail_no":mailNo},
+				type:"post",
+				dataType:"json",
+		        success:function(json){
+		        	if(json.n > 0){
+		        		alert(json.n+ "개 중요 클릭");
+		        	}
+		        	listRefresh();
+		        },
+		        error: function(request, status, error){
+					alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+				}
+			});
+
+		}
+		else{
+			alert("체크박스를 선택해주세요.")
+		}
+	}
+	
+	function importantCheck(no,type){
+		
+		
+		$.ajax({
+			url:"<%= ctxPath%>/mail/importantCheck.on",
+			data:{type:no},
+			type:"post",
+			dataType:"json",
+	        success:function(json){
+	        	if(json.n > 0){
+	        		alert(json.n+ "개 중요 클릭");
+	        	}
+	        	listRefresh();
+	        },
+	        error: function(request, status, error){
+				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			}
+		});
+	}
+	
+ 
 </script>
 
 <div style="margin: 1% 0 5% 1%">
@@ -129,25 +197,16 @@ i.fa-flag{
 <div id="mailToolbar" class="tool_bar">
 	<div class="critical">
 		
-		<button id="mailLAllCheck_btn" type="button" class="btn btn-outline-dark toolbtn">
+		<button id="mailLAllCheck_btn" type="button" class="btn btn-outline-dark toolbtn" >
 			<input type="checkbox" id="mailLAllCheck" value="off" style="vertical-align:middle;">&nbsp전체선택
 	    
 	    </button>
-	    <button type="button" class="btn btn-outline-dark toolbtn">
+	    <button type="button" class="btn btn-outline-dark toolbtn" onclick="importantCheckSelect()">
 			<i class="fas fa-flag toolflag"></i>
 		</button>
 	    
 		<button type="button" class="btn btn-outline-dark toolbtn"><i class="fas fa-reply"></i> 답장</button>
-		<div class="dropdown btn_submenu">
-		  <span class="btn btn-outline-dark dropdown-toggle btn-sm toolbtn" data-toggle="dropdown">
-		  <!-- 아이콘 클릭시 아래것들 나올예정 -->
-		  </span>
-		  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-		    <a class="dropdown-item" href="#">답장</a>
-		    <a class="dropdown-item" href="#">전체답장</a>
-		  </div>
-
-		</div>
+	
 		<button type="button" class="btn btn-outline-dark toolbtn"><i class="fas fa-trash-alt"></i> 삭제</button>
 		<button type="button" class="btn btn-outline-dark toolbtn"><i class="fas fa-long-arrow-alt-right"></i> 전달</button>
 		<div class="dropdown btn_submenu">
@@ -200,11 +259,25 @@ i.fa-flag{
 			    </c:if> 
 			    <tr>
 			  	  <td class="mail_list_option">
-			      	<input type="checkbox" id="mailLCheck" value="off" style="vertical-align:middle">
-			      	<i class="fas fa-flag"></i>
-			      	<!-- 색조정 or 다른 아이콘 -->
-			      	<i class="far fa-envelope"></i>
-			      	<!-- 봤다면 <i class="far fa-envelope-open"></i> -->
+			 
+					<c:if test="${sessionScope.loginuser.cpemail eq mailVO.fK_sender_address}">
+						<input type="checkbox" id="mailLCheck" name="mailCheck" mailno="${mailVO.mail_no}" style="vertical-align:middle">
+						<i class="fas fa-flag" onclick="importantCheck(${mailVO.mail_no},'mail_no)"></i>
+						<i class="fas fa-envelope-open" style="color: darkgray;"></i>
+					</c:if>
+				
+					<c:if test="${sessionScope.loginuser.cpemail ne mailVO.fK_sender_address}">
+						<input type="checkbox" id="mailLCheck" name="mailCheck" mailRecipientNo="${mailVO.mail_recipient_no}"style="vertical-align:middle">
+						<i class="fas fa-flag" onclick="importantCheck('${mailVO.mail_recipient_no},'mail_recipient_no')"></i>
+						<c:if test="${mailVO.read_check == 0 }">
+				      		<i class="fas fa-envelope"></i>
+				      	</c:if>
+				      	<c:if test="${mailVO.read_check == 1 }">
+				      		<i class="fas fa-envelope-open" style="color: darkgray;"></i>
+				      	</c:if>
+					</c:if>
+
+
 			      </td>
 			      <td class = "mail_list_sender" >${mailVO.fK_sender_address}</td>
 			
@@ -219,18 +292,18 @@ i.fa-flag{
 			      		</c:forEach>
 			      	</c:forEach>
 			      	<c:if test="${sessionScope.loginuser.cpemail eq mailVO.fK_sender_address}">
-			      	<!-- 내가 보낸 메일 중에서  -->
+			      
 			      		<c:if test="${sessionScope.loginuser.cpemail eq fK_recipient_address_individual}">
-			      			<!-- 받는 사람이 나인 경우 -->
+			      		
 			      			[내게쓴메일]
 			      		</c:if>
 			      		<c:if test="${sessionScope.loginuser.cpemail ne fK_recipient_address_individual}">
-			      			<!-- 받는 사람이 내가 아닌 경우 경우 -->
+			      		
 			      			[보낸메일함]
 			      		</c:if>
 			      	</c:if>
-			      	<!-- 받은 메일은 전부 받은메일 처리 -->
-			      	<c:if test="${sessionScope.loginuser.cpemail ne mailVO.fK_sender_address}"><!-- 내가 보내지 않은 메일들 -->
+			    
+			      	<c:if test="${sessionScope.loginuser.cpemail ne mailVO.fK_sender_address}">
 			      		<c:if test="${sessionScope.loginuser.cpemail eq mailVO.fK_recipient_address_individual}">[받은메일함]</c:if>
 			      	</c:if>
 			   		
@@ -258,7 +331,7 @@ i.fa-flag{
     <form name="searchFrm" style="margin-top: 20px;">
         <select name="searchType" id="searchType" style="height: 26px;">
            <option value="subject">메일제목</option>
-           <option value="FK_Sender_address">보낸사람</option> <!-- 여기만 바꿔가면서 재활용 -->
+           <option value="FK_Sender_address">보낸사람</option> 
         </select>
         <input type="text" name="searchWord" id="searchWord" size="40" autocomplete="off" />
         <input type="text" style="display: none;" /> <%-- form 태그내에 input 태그가 오로지 1개 뿐일경우에는 엔터를 했을 경우 검색이 되어지므로 이것을 방지하고자 만든것이다. --%> 

@@ -119,8 +119,6 @@ public class MailService implements InterMailService {
 			Map<String, String> paraMap = new HashedMap<String, String>();
 			paraMap.put("mail_no", mail_no);
 			paraMap.put("SENDER_IMPORTANT", String.valueOf(SENDER_IMPORTANT));
-			
-			
 			int n = dao.importantUpdateM(paraMap);
 		}
 		

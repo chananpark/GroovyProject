@@ -658,21 +658,116 @@ select '"'||department||' '||position||' '||name||'<![CDATA[<]]>'||cpemail||'<![
         
 select * from TBL_MAIL_Recipient;
 
- 
+select *
+from 
+ (
 select M.MAIL_NO,M.FK_SENDER_ADDRESS,M.FK_RECIPIENT_ADDRESS
 		        ,M.SUBJECT,M.contents,M.send_Time,M.SENDER_DELETE,M.SENDER_IMPORTANT
 		        ,M.FILENAME, M.ORGFILENAME, M.FILESIZE,M.MAIL_PWD 
-                ,lag(M.MAIL_NO, 1) over(order by SEND_TIME desc) as ck
+                , case when(lag(M.MAIL_NO, 1) over(order by SEND_TIME desc) = M.MAIL_NO) then 0 else 1 end as ck
 from tbl_mail M
 right JOIN TBL_MAIL_Recipient R  
 				   ON R.fk_mail_no = M.mail_no
 where SEND_TIME <= sysdate  
 	and ((FK_Recipient_address_individual = 'kjskjskjs@groovy.com' and Recipient_IMPORTANT = 1 and RECIPIENT_delete =0)
     			  or (FK_Sender_address = 'kjskjskjs@groovy.com' and SENDER_IMPORTANT = 1 and sender_delete = 0))
-    and CK!= MAIL_NO    
-    ;
+)L
+where ck = 1;
 
 	      
     	
- 
-        
+ select count(*)
+	    from
+	    (
+	    select * ,case when(lag(M.MAIL_NO, 1) over(order by SEND_TIME desc) = M.MAIL_NO) then 0 else 1 end as ck
+	    from tbl_mail M  
+	        
+	    right JOIN TBL_MAIL_Recipient R  
+   		ON R.fk_mail_no = M.mail_no
+   		 
+	     where SEND_TIME <= sysdate 	    
+	
+       	 
+       	   
+       		and RECIPIENT_delete =0  	
+    		and  ((FK_Recipient_address_individual = :1 )
+    			  or (FK_REFERENCED_ADDRESS_individual = :2 ))
+    	 
+    	 
+    	 
+		), OriginalSql = select count(*)
+	    from
+	    (
+	    select M.MAIL_NO,M.FK_SENDER_ADDRESS,M.FK_RECIPIENT_ADDRESS
+			        ,M.SUBJECT,M.contents,M.send_Time,M.SENDER_DELETE,M.SENDER_IMPORTANT
+			        ,M.FILENAME, M.ORGFILENAME, M.FILESIZE,M.MAIL_PWD , case when(lag(M.MAIL_NO, 1) over(order by SEND_TIME desc) = M.MAIL_NO) then 0 else 1 end as ck
+	    from tbl_mail M  ;
+	        
+	    right JOIN TBL_MAIL_Recipient R  
+   		ON R.fk_mail_no = M.mail_no
+   		 
+	     where SEND_TIME <= sysdate 	    
+	
+       	 
+       	   
+       		and RECIPIENT_delete =0  	
+    		and  ((FK_Recipient_address_individual = 'kjsaj0525@groovy.com')
+    			  or (FK_REFERENCED_ADDRESS_individual = 'kjsaj0525@groovy.com'));
+
+update
+(
+select *
+from TBL_MAIL_Recipient r
+join TBL_MAIL_Recipient m
+on r.fk_mail_no = m.mail_no and FK_RECIPIENT_ADDRESS_INDIVIDUAL = FK_SENDER_ADDRESS and mail_no = 76
+)
+set SENDER_IMPORTANT=0 ,RECIPIENT_IMPORTANT=0
+;
+
+commit;
+
+
+MERGE 
+ INTO TBL_MAIL_Recipient r
+USING  TBL_MAIL m
+   ON (r.fk_mail_no = m.mail_no and FK_RECIPIENT_ADDRESS_INDIVIDUAL = FK_SENDER_ADDRESS
+      and mail_no = 76)
+ WHEN MATCHED THEN
+      UPDATE
+        SET 
+        RECIPIENT_IMPORTANT =0
+        RECIPIENT_IMPORTANT=SENDER_IMPORTANT;
+
+
+select * from TBL_MAIL_Recipient;
+rollback;
+
+select *
+from
+    (
+        select rownum AS rno, V.*
+        from 
+        (
+            select  M.MAIL_NO,M.FK_SENDER_ADDRESS
+                    ,M.SUBJECT,M.send_Time,M.SENDER_DELETE
+                    ,R.mail_recipient_no,R.FK_RECIPIENT_ADDRESS_individual
+                    ,R.FK_REFERENCED_ADDRESS_individual
+    
+            from 
+            (
+                select *
+                from tbl_mail 
+                where SEND_TIME <= sysdate
+            ) M
+            right JOIN 
+            (
+                select *
+                from TBL_MAIL_Recipient
+                where RECIPIENT_delete =0    	
+                and  ((FK_Recipient_address_individual = 'kjsaj0525@groovy.com') or (FK_REFERENCED_ADDRESS_individual = 'kjsaj0525@groovy.com'))
+            ) R  
+            ON R.fk_mail_no = M.mail_no
+            order by SEND_TIME desc;
+        )V
+    )
+    where rno between 1 and 5

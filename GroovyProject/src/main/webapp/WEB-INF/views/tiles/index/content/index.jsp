@@ -4,7 +4,8 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <% String ctxPath = request.getContextPath(); %>
-
+<jsp:useBean id="now" class="java.util.Date" />
+<fmt:formatDate value="${now}" pattern="yyyy-MM-dd" var="today" />
 <style type="text/css">
 
 	.index_card_header {
@@ -315,31 +316,23 @@
 							</tr>
 						</thead>
 						<tbody>
-							<tr>
-								<td>박찬안</td>
-								<td>그루비팀 회식은</td>
-								<td>2022.11.16 11:23:21</td>
+						<c:forEach items="${mailList}" var="mail">
+						<fmt:formatDate value="${mail.send_time_date}" pattern="yyyy-MM-dd" var="sendTimeDD"/>
+				        <fmt:formatDate value="${mail.send_time_date}" pattern="HH:mm:ss" var="sendTimeToday"/>
+				        <fmt:formatDate value="${mail.send_time_date}" pattern="yyyy-MM-dd HH:mm:ss" var="sendTimeNotToday"/>
+				        
+							<tr onclick="location.href='<%=ctxPath%>/mail/viewMail.on?mailNo=${mail.mail_no}'" style="cursor:pointer">
+								<td>${mail.fK_sender_address}</td>
+								<td>${mail.subject}</td>
+								<c:if test="${sendTimeDD == today}">
+						      		<td class = "mail_list_time">오늘 ${sendTimeToday}</td>
+						      	</c:if>
+						        <c:if test="${sendTimeDD != today}">
+							      	<td class = "mail_list_time">${sendTimeNotToday}</td>
+						      	</c:if>	
 							</tr>
-							<tr>
-								<td>김민수</td>
-								<td>2022년 12월 21일입니다.</td>
-								<td>2022.11.16 11:23:21</td>
-							</tr>
-							<tr>
-								<td>김진석</td>
-								<td>다들 빠지지 마시고</td>
-								<td>2022.11.16 11:23:21</td>
-							</tr>
-							<tr>
-								<td>김혜원</td>
-								<td>꼭 참석해주세요.</td>
-								<td>2022.11.16 11:23:21</td>
-							</tr>
-							<tr>
-								<td>손여진</td>
-								<td>남은 기간도 화이팅입니다.(•̀ᴗ•́)و ̑̑</td>
-								<td>2022.11.16 11:23:21</td>
-							</tr>
+						</c:forEach>	
+							
 						</tbody>
 					</table>
 				</div>
