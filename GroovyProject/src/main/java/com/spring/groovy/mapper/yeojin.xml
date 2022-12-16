@@ -652,7 +652,7 @@
 		where (( to_char(startdate,'YYYY-MM-DD') between #{selectDate} and #{selectDate} )
 		or  ( to_char(enddate,'YYYY-MM-DD') between #{selectDate} and #{selectDate} ) )
 		and fk_lgcatgono = #{fk_lgcatgono}
-		and status = 0
+		and (status = 0 or status = 2)
 	</select>
 		
 		
