@@ -702,6 +702,14 @@ and (lower(realuser) like '%'||lower('손여진')||'%' or lower(name) like '%'||
 )
 
 
+select reservationno, to_char(startdate, 'yyyymmddhh24') as startdate, to_char(enddate, 'yyyymmddhh24') as enddate, fk_smcatgono, fk_lgcatgono, confirm,  status
+		from tbl_reservation
+		where (( to_char(startdate,'YYYY-MM-DD') between '2022-12-16' and '2022-12-16' )
+		or  ( to_char(enddate,'YYYY-MM-DD') between '2022-12-16' and '2022-12-16' ) )
+		and fk_lgcatgono = 1
+		and (status = 0 or status = 2)
+
+
 
 select reservationno, status, confirm, to_char(startdate, 'yyyymmddhh24mi') as startdate, to_char(enddate, 'yyyymmddhh24mi') as enddate
 from tbl_reservation
