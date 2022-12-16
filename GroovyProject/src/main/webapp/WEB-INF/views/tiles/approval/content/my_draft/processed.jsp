@@ -2,35 +2,8 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <% String ctxPath=request.getContextPath(); %>
-<style>
-#list {
-	font-size: small;
-	margin-bottom: 50px !important;
-}
 
-a {
-	color: black;
-}
-
-#pageList a{
-	font-size: small;
-	color: black;
-}
-
-#pageList .active a{
-	color: white;
-	background-color: #086BDE;
-}
-
-#excelButton {
-	border-style: none;
-	background-color: transparent;
-}
-
-#excelButton:hover {
-	cursor: pointer;
-}
-</style>
+<link rel = "stylesheet" href = "<%=ctxPath%>/resources/css/draft_list_style.css">
 
 <script>
 $(()=>{

@@ -55,6 +55,7 @@ import com.spring.groovy.approval.model.OfficialAprvLineVO;
 import com.spring.groovy.approval.model.SavedAprvLineVO;
 import com.spring.groovy.approval.service.InterApprovalService;
 import com.spring.groovy.common.FileManager;
+import com.spring.groovy.common.Myutil;
 import com.spring.groovy.common.Pagination;
 import com.spring.groovy.management.model.MemberVO;
 
@@ -75,7 +76,7 @@ public class ApprovalController {
 	@RequestMapping(value = "/home.on")
 	public ModelAndView approvalHome(ModelAndView mav, HttpServletRequest request) {
 
-		MemberVO loginuser = getLoginUser(request);
+		MemberVO loginuser = Myutil.getLoginUser(request);
 		Map<String, Object> paraMap = new HashMap<>();
 		paraMap.put("empno", loginuser.getEmpno());
 
@@ -262,7 +263,7 @@ public class ApprovalController {
 	@RequestMapping(value = "/personal/sent.on")
 	public ModelAndView sentDraftList(HttpServletRequest request, ModelAndView mav, Pagination pagination) throws Exception {
 
-		MemberVO loginuser = getLoginUser(request);
+		MemberVO loginuser = Myutil.getLoginUser(request);
 
 		Map<String, Object> paraMap = BeanUtils.describe(pagination); // pagination을 Map으로
 		paraMap.put("empno", loginuser.getEmpno());
@@ -294,7 +295,7 @@ public class ApprovalController {
 	public ModelAndView processdDraftList(HttpServletRequest request, ModelAndView mav, Pagination pagination)
 			throws Exception {
 
-		MemberVO loginuser = getLoginUser(request);
+		MemberVO loginuser = Myutil.getLoginUser(request);
 
 		Map<String, Object> paraMap = BeanUtils.describe(pagination); // pagination을 Map으로
 		paraMap.put("empno", loginuser.getEmpno());
@@ -325,7 +326,7 @@ public class ApprovalController {
 	@RequestMapping(value = "/personal/saved.on")
 	public ModelAndView savedDraftList(HttpServletRequest request, ModelAndView mav, Pagination pagination) throws Exception {
 
-		MemberVO loginuser = getLoginUser(request);
+		MemberVO loginuser = Myutil.getLoginUser(request);
 
 		Map<String, Object> paraMap = BeanUtils.describe(pagination); // pagination을 Map으로
 		paraMap.put("empno", loginuser.getEmpno());
@@ -376,7 +377,7 @@ public class ApprovalController {
 	public ModelAndView teamDraftList(HttpServletRequest request, ModelAndView mav, Pagination pagination)
 			throws Exception {
 
-		MemberVO loginuser = getLoginUser(request);
+		MemberVO loginuser = Myutil.getLoginUser(request);
 
 		Map<String, Object> paraMap = BeanUtils.describe(pagination); // pagination을 Map으로
 		paraMap.put("fk_department_no", loginuser.getFk_department_no());
@@ -407,7 +408,7 @@ public class ApprovalController {
 	@RequestMapping(value = "/requested.on")
 	public ModelAndView requestedDraftList(HttpServletRequest request, ModelAndView mav, Pagination pagination)
 			throws Exception {
-		MemberVO loginuser = getLoginUser(request);
+		MemberVO loginuser = Myutil.getLoginUser(request);
 
 		Map<String, Object> paraMap = BeanUtils.describe(pagination); // pagination을 Map으로
 		paraMap.put("empno", loginuser.getEmpno());
@@ -447,7 +448,7 @@ public class ApprovalController {
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/upcoming.on")
 	public ModelAndView upcomingDraftList(HttpServletRequest request, ModelAndView mav, Pagination pagination) throws Exception {
-		MemberVO loginuser = getLoginUser(request);
+		MemberVO loginuser = Myutil.getLoginUser(request);
 		
 		Map<String, Object> paraMap = BeanUtils.describe(pagination); // pagination을 Map으로
 		paraMap.put("empno", loginuser.getEmpno());
@@ -488,7 +489,7 @@ public class ApprovalController {
 	@GetMapping(value = "/write.on")
 	public ModelAndView showWorkDraftForm(ModelAndView mav, HttpServletRequest request, @RequestParam("type_no") String type_no) {
 		
-		MemberVO loginuser = getLoginUser(request);
+		MemberVO loginuser = Myutil.getLoginUser(request);
 		
 		// 공통 결재라인 가져오기
 		List<MemberVO> recipientList = service.getRecipientList(type_no);
@@ -551,7 +552,7 @@ public class ApprovalController {
 		if (mtfRequest.getFiles("fileList").size() > 0) {
 			
 			// 파일 업로드 경로 지정
-			String path = setFilePath(mtfRequest, "files");
+			String path = Myutil.setFilePath(mtfRequest, "files");
 			
 			// view에서 넘어온 파일들
 			List<MultipartFile> multiFileList = mtfRequest.getFiles("fileList");
@@ -605,15 +606,6 @@ public class ApprovalController {
 
 		return String.valueOf(jsonObj);
 	}
-
-	// 파일 업로드 경로 지정
-	private String setFilePath(HttpServletRequest request, String directory) {
-		HttpSession session = request.getSession();
-		String root = session.getServletContext().getRealPath("/");
-		String path = root + "resources" + File.separator + directory;
-		
-		return path;
-	}
 	
 	// 기안 임시저장하기
 	@ResponseBody
@@ -657,7 +649,7 @@ public class ApprovalController {
 	@GetMapping(value = "/edit.on")
 	public ModelAndView showDraftEditForm(ModelAndView mav, HttpServletRequest request, @RequestParam("fk_draft_type_no") String fk_draft_type_no, DraftVO dvo) {
 		
-		MemberVO loginuser = getLoginUser(request);
+		MemberVO loginuser = Myutil.getLoginUser(request);
 		
 		// 공통 결재라인 가져오기
 		List<MemberVO> recipientList = service.getRecipientList(fk_draft_type_no);
@@ -703,7 +695,7 @@ public class ApprovalController {
 	@RequestMapping(value = "/selectApprovalLine.on")
 	public ModelAndView selectApprovalLine(ModelAndView mav, HttpServletRequest request) {
 
-		MemberVO loginuser = getLoginUser(request);
+		MemberVO loginuser = Myutil.getLoginUser(request);
 		String type = request.getParameter("type");
 		
 		Map<String, Object> paraMap = new HashMap<>();
@@ -757,7 +749,7 @@ public class ApprovalController {
 	@RequestMapping(value = "/getSavedAprvLine.on", produces = "text/plain;charset=UTF-8")
 	public String getSavedAprvLine(Model model, HttpServletRequest request) {
 
-		MemberVO loginuser = getLoginUser(request);
+		MemberVO loginuser = Myutil.getLoginUser(request);
 
 		Map<String, String> paraMap = new HashMap<>();
 		paraMap.put("empno", loginuser.getEmpno());
@@ -810,7 +802,7 @@ public class ApprovalController {
 	@PostMapping(value = "/updateApproval.on", produces = "text/plain;charset=UTF-8")
 	public String updateApproval(ApprovalVO avo, HttpServletRequest request) {
 		
-		MemberVO loginuser = getLoginUser(request);
+		MemberVO loginuser = Myutil.getLoginUser(request);
 		
 		// 결재대상자 조회
 		String approval_empno = service.checkApproval(avo);
@@ -834,7 +826,7 @@ public class ApprovalController {
 
 		boolean result = false;
 		
-		MemberVO loginuser = getLoginUser(request);
+		MemberVO loginuser = Myutil.getLoginUser(request);
 		avo.setFk_approval_empno(Integer.parseInt(loginuser.getEmpno()));
 		
 		// 내 다음 결재단계 조회
@@ -854,7 +846,7 @@ public class ApprovalController {
 	// 기안 상신취소하기
 	@RequestMapping(value = "/cancel.on")
 	public ModelAndView cancelDraft(ModelAndView mav, HttpServletRequest request, DraftVO dvo) {
-		MemberVO loginuser = getLoginUser(request);
+		MemberVO loginuser = Myutil.getLoginUser(request);
 		
 		// 기안 조회하기
 		dvo = service.getDraftInfo(dvo);
@@ -868,7 +860,7 @@ public class ApprovalController {
 		else {
 			
 			Map<String, Object> paraMap = new HashMap<>();
-			paraMap.put("filePath", setFilePath(request, "files")); // 파일 저장 경로
+			paraMap.put("filePath", Myutil.setFilePath(request, "files")); // 파일 저장 경로
 			paraMap.put("dvo", dvo); // 기안 vo
 			
 			// 파일삭제
@@ -904,7 +896,7 @@ public class ApprovalController {
 	// 환경설정-결재라인관리 페이지요청
 	@RequestMapping(value = "/config/approvalLine.on")
 	public ModelAndView configApprovalLine(ModelAndView mav, HttpServletRequest request) {
-		MemberVO loginuser = getLoginUser(request);
+		MemberVO loginuser = Myutil.getLoginUser(request);
 		
 		Map<String, String> paraMap = new HashMap<>();
 		paraMap.put("empno", loginuser.getEmpno());
@@ -1016,7 +1008,7 @@ public class ApprovalController {
 	public ModelAndView updateSignature(ModelAndView mav, MultipartHttpServletRequest mtfRequest) {
 		
 		// 파일 업로드 경로 지정
-		String path = setFilePath(mtfRequest, "images" + File.separator + "sign");
+		String path = Myutil.setFilePath(mtfRequest, "images" + File.separator + "sign");
 		
 		// view에서 넘어온 파일들
 		MultipartFile attach = mtfRequest.getFile("attach");
@@ -1040,7 +1032,7 @@ public class ApprovalController {
 			e.printStackTrace();
 		}
 		
-		MemberVO loginuser = getLoginUser(mtfRequest);
+		MemberVO loginuser = Myutil.getLoginUser(mtfRequest);
 						
 		Map<String, String> paraMap = new HashMap<String, String>();
 		paraMap.put("filename", filename);
@@ -1115,13 +1107,6 @@ public class ApprovalController {
 		mav.setViewName("msg");
 
 		return mav;
-	}
-	
-	// 로그인 사용자 정보 가져오기
-	private MemberVO getLoginUser(HttpServletRequest request) {
-		HttpSession session = request.getSession();
-		MemberVO loginuser = (MemberVO) session.getAttribute("loginuser");
-		return loginuser;
 	}
 
 	// 문서함 조회 시 정렬 설정하기
