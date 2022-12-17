@@ -169,7 +169,7 @@
 <div id="body" align="center" class="flex-content join-content">
 <form name="frm_login">
 
-	<div style="color: white; font-size: 33px; font-weight:bold; margin-bottom: 3%;">
+	<div style="color: white; font-size: 33px; font-weight:bold; margin-bottom: 20px;">
 		<span class="easter_egg">G</span><span class="easter_egg">r</span><span class="easter_egg">o</span><span class="easter_egg">o</span><span class="easter_egg">v</span><span class="easter_egg">y</span>
 	</div>
 	

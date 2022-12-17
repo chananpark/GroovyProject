@@ -96,6 +96,9 @@
 		border: solid 2px #086BDE;
 	}
 	
+	.logo {
+		margin-right: 1px;
+	}
 </style>    
 </head>
 <body>
@@ -180,7 +183,9 @@
 	<div id="body" class="body" align="center" class="flex-content join-content">
 	<form name="frm_login">
 	
-		<div style="color: white; font-size: 30px; font-weight:bold; margin: 3%;">Groovy</div>
+		<div style="color: white; font-size: 33px; font-weight:bold; margin-bottom: 20px;">
+			<span class="logo">G</span><span class="logo">r</span><span class="logo">o</span><span class="logo">o</span><span class="logo">v</span><span class="logo">y</span>
+		</div>
 		
 		<div id="container" class="card card-body">
 			<h3 style="font-weight: bold;">로그인</h3>
