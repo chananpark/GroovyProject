@@ -140,6 +140,9 @@ public interface InterManagementService {
 	// 공용 - 급여관리(기본외수당조회) 한 페이지에 표시할  전체 글 개수 구하기(페이징)
 	int getOverPayList(Pagination pagination);
 
+	// 공용 - 급여관리(급여상세조회 Ajax) 
+	List<PayVO> payDetailView(Map<String, Object> paramap);
+
 	
 
 

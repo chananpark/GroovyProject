@@ -57,6 +57,11 @@ create table tbl_pay
 );
 -- Table TBL_PAY이(가) 생성되었습니다.
 
+insert into tbl_pay(payno,fk_empno,pay,incomtax,pension,insurance,paymentdate )
+values(seq_tbl_pay.nextval,10,default,default,default,default,default)
+
+commit
+select *
 from tbl_pay
 
 -- 지급항목
@@ -142,6 +147,7 @@ nocache;
 -- Sequence SEQ_TBL_CERTIFICATE이(가) 생성되었습니다.
 
 
+
 -- 근태 테이블
 tbl_attendance
 ( fk_empno       number  not null                -- 사원번호
@@ -157,20 +163,90 @@ tbl_attendance
 , constraint PK_tbl_attendance_fk_empno_workdate primary key(fk_empno, workdate)
 );
 
+select (extendstart-workend)*24 AS overhour, fk_empno
+from tbl_attendance
+
+-- 연장근무시간과 퇴근시간 차이시간을 알아오기(시간단위로)
+select (extendstart-workend)*24 AS overhour, fk_empno
+from tbl_attendance
+where fk_empno = 10 and to_char(workdate, 'yyyy-mm-dd') = '2022-12-05'
+
+-- 연차가 n으로 남아있다면(일급주기)
+select fk_empno,dayoff
+from tbl_attendance
+where dayoff = 'Y'
+
+-- 급여테이블과 join
+insert all
+into tbl_pay(payno,fk_empno,pay,overtimepay,annualpay,incomtax,pension,insurance,paymentdate)
+values(seq_tbl_pay.nextval, B.fk_empno, pay, overhour*pay as overtimepay, anuualcnt*pay*8 AS anuualpay,default,default,default,sysdate)
+select payno, B.fk_empno, pay, overhour*pay as overtimepay, anuualcnt*pay*8 AS anuualpay,incomtax,pension,insurance,paymentdate
+from 
+    (
+    select fk_empno, nvl((extendstart-workend)*24,0) AS overhour --, nvl2(dayoff,1,0) AS dayoff 
+         , case when dayoff ='N' then 1 else 0 end as anuualcnt-- 만약에 연차가 n이면 급여테이블에서 돈지급, y라면 미지급
+            -- ,nvl2(dayoff,1,0)
+    from tbl_attendance
+    where fk_empno = 10 and to_char(workdate, 'yyyy-mm-dd') = '2022-12-05'
+    ) A
+    join 
+    ( 
+    select fk_empno,pay,annualpay,overtimepay,incomtax,pension,insurance,paymentdate
+    from tbl_pay
+    where fk_empno = 10
+    )B
+    on A.fk_empno = B.fk_empno
+where fk_empno = 10
+
+
+-- 급여테이블에서 연장근무수당이랑 연차수당 컬럼이 있음
+-- 근테테이블에서 연장근무수당은 퇴근시간 - 연장근무시작시간 을 알아와서 급여테이블의 PAY(시급)*알아온시간으로 추가근무수당지급
+-- 근테테이블의 연차수당은 만약 연차를 사용했다면 Y로 나오고 연차를 사용하지 않은 경우라면 N으로 나온다. 연차를 사용하지 않은 N인경우 PAY(시급)*8로 계산해서 연차수당지급
+-- 마지막에 TBL_PAY테이블에 수당을 스케줄러를 사용해서 급여INSERT하기 
+
+
+select overtimepay, annualpay
+from tbl_pay;
+
+select *
+from tbl_pay;
+
+insert into tbl_pay(......) values(  ? , ? ,b  )
+
+select to_char(workend, 'yyyy-mm-dd hh24:mi:ss') , to_char(extendstart, 'yyyy-mm-dd hh24:mi:ss') , workend - extendstart, 
+       (extendstart - workend), (extendstart - workend)*24, (extendstart - workend)*24*20000 as b
+from tbl_attendance
+where extendstart is not null;
+
+select workend - extendstart   AS '연장근무수당'
+from tbl_attendance
+
+
 -- 퇴근시간 - 추가근무시간 알아오기
 select to_date(workdate, 'yyyy-mm-dd hh24-mi-ss') AS workdate, to_date(extendstart,'yyyy-mm-dd hh24-mi-ss')AS extendstart, to_date(workend,'yyyy-mm-dd hh24-mi-ss')workend 
 from tbl_attendance
-where fk_empno = 43 and  workdate = '22/12/16'
+where fk_empno = 43
 
-update tbl_attendance set EXTENDSTART = to_DATE('2022-12-06 18:15:43','yyyy-mm-dd hh24:mi:ss')
-where fk_empno = 43 and workdate = '22-12-16' 
+delete from tbl_attendance
+where fk_empno = 43
+
+UPDATE tbl_attendance SET EXTENDSTART = null
+where fk_empno = 43; 
 
 
+commit
 
-select to_char(extendstart,'yyyy-mm-dd hh24-mi-ss')AS extendstart, to_char(workend,'yyyy-mm-dd hh24-mi-ss')workend
+select EXTENDSTART
 from tbl_attendance
-select to_date('2022-12-06 22:15:43','yyyy-mm-dd hh24:mi:ss')- to_date('workend','yyyy-mm-dd hh24:mi:ss')
+where fk_empno = 43 and workdate = TO_char(workdate, 'YYYY/MM/DD HH:MI:SS'  )
+
+select to_char(extendstart,'yyyy-mm-dd hh24-mi-ss')AS extendstart, to_char(workend,'yyyy-mm-dd hh24-mi-ss')workend, workstart
 from tbl_attendance
+where  to_char(workend,'yyyy-mm-dd hh24-mi-ss') = '2022/12/05'
+
+select to_date(workend,'hh24:mi:ss')- to_date(EXTENDSTART,'hh24:mi:ss')
+from tbl_attendance
+where fk_empno = 43; 
 
 rollback
 
@@ -372,7 +448,7 @@ insert tbl_pay into payno='seq_tbl_pay.nextval', fk_empno='13', pay= 3000000, an
 where empno = 13
 
 insert into tbl_pay  
-values(seq_tbl_pay.nextval, 43, 5000000, 100000, 100000,sysdate)
+values(seq_tbl_pay.nextval, 10, 5000000, 100000, 100000,sysdate)
 
 
 select payno, fk_empno, pay, annualpay, overtimepay, paymentdate
@@ -444,7 +520,7 @@ where name = '아이유'
 commit
 
 insert into TBL_PAY(PAYNO, FK_EMPNO, PAY, ANNUALPAY, OVERTIMEPAY, PAYMENTDATE)
-values(seq_tbl_pay.nextval, 43,5000000, 100000, 200000,sysdate)
+values(seq_tbl_pay.nextval, 10,5000000, 100000, 200000,sysdate)
 
 commit
 
@@ -877,52 +953,6 @@ SELECT PAYNO, FK_EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, SALARY,PAY ,ANNUALPAY
 	    )P
 
 
-select *
-from tbl_pay
 
-
-		SELECT PAYNO, FK_EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, SALARY,PAY ,ANNUALPAY,OVERTIMEPAY,PAYMENTDATE,OVERPAY,
-		        INCOMTAX,PENSION,INSURANCE, ALLPAY, TAX,
-		        (ALLPAY - TAX) AS MONTHPAY
-		FROM 
-		    (
-		        SELECT PAYNO, FK_EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, SALARY,PAY ,ANNUALPAY,OVERTIMEPAY,PAYMENTDATE,OVERPAY,
-		                    INCOMTAX,PENSION,INSURANCE, 
-		                    (SALARY+ANNUALPAY+OVERTIMEPAY) AS ALLPAY,
-		                    (INCOMTAX+PENSION+INSURANCE) AS TAX
-		                    
-		        FROM 
-		        (
-		            SELECT PAYNO, FK_EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, SALARY,PAY ,ANNUALPAY,OVERTIMEPAY,PAYMENTDATE, (ANNUALPAY+OVERTIMEPAY) AS OVERPAY,
-		                    CEIL(SALARY*INCOMTAX) AS INCOMTAX, CEIL(SALARY*PENSION)AS PENSION, CEIL(SALARY*INSURANCE)AS INSURANCE
-		            FROM
-		                (SELECT E.EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, ROUND(SALARY/12)AS SALARY,
-		                        PAYNO, FK_EMPNO, PAY, NVL(ANNUALPAY,0) AS ANNUALPAY, NVL(OVERTIMEPAY,0)  AS OVERTIMEPAY, TO_CHAR(PAYMENTDATE, 'YYYY-MM-DD') AS PAYMENTDATE
-		                        ,INCOMTAX,PENSION,INSURANCE
-		                FROM TBL_EMPLOYEE E RIGHT JOIN TBL_PAY P
-		                ON E.EMPNO = P.FK_EMPNO
-		                WHERE EMPNO = 13
-		                order by PAYMENTDATE desc
-		            )V
-		        )A
-		    )P
-
-	SELECT COUNT(*) FROM tbl_celebrate
-    where fk_empno = 13 and clbno = 36
-
-select *
-from tbl_pay
-
-
- SELECT PAYNO, FK_EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, SALARY,PAY ,ANNUALPAY,OVERTIMEPAY,PAYMENTDATE, (ANNUALPAY+OVERTIMEPAY) AS OVERPAY,
-	             CEIL(SALARY*INCOMTAX) AS INCOMTAX, CEIL(SALARY*PENSION)AS PENSION, CEIL(SALARY*INSURANCE)AS INSURANCE
-	     FROM
-	         (SELECT E.EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, ROUND(SALARY/12)AS SALARY,
-	                 PAYNO, FK_EMPNO, PAY, NVL(ANNUALPAY,0) AS ANNUALPAY, NVL(OVERTIMEPAY,0)  AS OVERTIMEPAY, TO_CHAR(PAYMENTDATE, 'YYYY-MM-DD') AS PAYMENTDATE
-	                 ,INCOMTAX,PENSION,INSURANCE
-	         FROM TBL_EMPLOYEE E RIGHT JOIN TBL_PAY P
-	         ON E.EMPNO = P.FK_EMPNO
-	         WHERE EMPNO = 13 and PAYNO = 1 
-	     )V
 
 
