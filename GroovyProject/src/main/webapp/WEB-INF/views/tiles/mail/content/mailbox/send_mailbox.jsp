@@ -52,9 +52,7 @@ i.fa-flag{
 	color:#086BDE ;
 	margin-left:1px;
 }
-.mail_list_option>i.fas, i.fa{
-padding-left: 4px;
-}
+
 
 .toolbtn{
 	border-color: #ddd;
@@ -110,38 +108,10 @@ padding-left: 4px;
 		  "hideMethod": "fadeOut"
 		}
 	$(document).ready(function(){
+
 		listRefresh();
 
-		
-		
-		$("div#displayList").hide();
-		
-		$(document).on('click','#mailLAllCheck_btn', function(){
-			if($("#mailLAllCheck").is(":checked")){
-				$("input:checkbox[id='mailLAllCheck']").prop("checked", false);
-	        }else{
-	        	$("input:checkbox[id='mailLAllCheck']").prop("checked", true);
-	        }
-			
-			if($("#mailLAllCheck").is(":checked")) $("input[name=mailCheck]").prop("checked", true);
-			else $("input[name=mailCheck]").prop("checked", false);
-			
-		});
-		
-		// 체크박스 전체선택
-		$("input#mailLAllCheck").click(function() {
-			if($("#mailLAllCheck").is(":checked")) $("input[name=mailCheck]").prop("checked", true);
-			else $("input[name=mailCheck]").prop("checked", false);
-		});
 
-		$("input[name=mailCheck]").click(function() {
-			var total = $("input[name=mailCheck]").length;
-			var checked = $("input[name=mailCheck]:checked").length;
-
-			if(total != checked) $("input#mailLAllCheck").prop("checked", false);
-			else $("input#mailLAllCheck").prop("checked", true); 
-		});
-		
 		// 검색 엔터
 		$("input#searchWord").keyup(function(e){
 			if(e.keyCode == 13) {
@@ -167,8 +137,35 @@ padding-left: 4px;
 	}// end of function goSearch()--------------------
 	
 	function goMail(mailno){
-		
-		location.href="<%=ctxPath%>/mail/viewMail.on?mailNo="+ mailno ;
+		// 패스워드 체크
+		$.ajax({
+			url:"<%= ctxPath%>/mail/getPwd.on",
+			type:"post",
+			data:{"mail_no":mailno},
+	        success:function(pwd){
+	        	if(pwd != "" && pwd != null){
+	        		swal("비밀 메일입니다. 암호를 입력해주세요.", {
+	  				  content: "input",
+	  				})
+	  				.then((value) => {
+	  				  if(value == pwd){
+	  					  location.href="<%=ctxPath%>/mail/viewMail.on?mailNo="+ mailno ;
+	  				  }
+	  				  else{
+	  					  swal("잘못된 암호입니다. 다시 확인해주세요.");
+	  				  }
+	  				});
+	        	}
+	        	else{
+	    			 location.href="<%=ctxPath%>/mail/viewMail.on?mailNo="+ mailno ; 
+	    		}
+
+	        	
+	        },
+	        error: function(request, status, error){
+				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			}
+		});
 	}
 	
 
@@ -203,6 +200,8 @@ padding-left: 4px;
 	        		
 	        		$("div#papagebar").html(json.papagebar);
 	        		
+	        		$("#tagOption").html(json.taghtml);
+	        		
 	        		
 	        		if(checkbox != null){
 	        			const checkbox_arr = checkbox.split(',');
@@ -224,13 +223,16 @@ padding-left: 4px;
 	
 	function importantCheckSelect(){
 	
-		var mailCheck = document.querySelectorAll('input[name="mailCheck"]:checked');
+		
+		var mailCheck = $('input[name="mailCheck"]:checked');
 		console.log(mailCheck);
 		if(mailCheck.length > 0){
 		result="";
-		mailCheck.forEach((el) => {
-			result += el.value;
+		mailCheck.each(function(index, item){
+			result += $(item).attr("value");
+			console.log($(item).attr("value"));
 			result += ',';
+			
 		});
 		 result = result.slice(0, -1);
 		 console.log(result);
@@ -243,16 +245,14 @@ padding-left: 4px;
 	}
 	
    	function importantCheck(mail_no){
+   		console.log("mail_no"+mail_no);
 		$.ajax({
 			url:"<%= ctxPath%>/mail/importantCheck.on",
 			data:{"mail_no":mail_no},
 			type:"post",
 			dataType:"json",
 	        success:function(json){
-	        	if(json.n > 0){
-	        		alert(json.n+ "개 중요 클릭");
-	        	
-	        	}
+
 	        	listRefresh();
 	        },
 	        error: function(request, status, error){
@@ -464,6 +464,13 @@ padding-left: 4px;
 	
 	
 
+		
+		
+		
+
+	
+	
+
    	
    	
 </script>
@@ -491,13 +498,14 @@ padding-left: 4px;
 		  <!-- 아이콘 클릭시 아래것들 나올예정 -->
 		  <i class="fas fa-tag"></i>&nbsp태그
 		  </span>
-		  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-		  <c:forEach var="tagVO" items="${requestScope.tagListSide}" varStatus="status">   		
-     	  	<a class="dropdown-item" href="#" onclick="tagCheckSelect('${tagVO.tag_color}','${tagVO.tag_name}')"><i class="fas fa-tag" style="color:#${tagVO.tag_color}" ></i> 
-     	  	&nbsp${tagVO.tag_name}
-     	    <i style="float:right" class="fas fa-minus-circle" onclick="deleteTag('${tagVO.tag_color}','${tagVO.tag_name}');"></i></a>		
-      	 </c:forEach>
-      	 	<a class="dropdown-item" href="#" data-toggle="modal" data-target="#modal_addTag"><i class="fas fa-tag"></i>&nbsp태그 추가</a>
+		  <div id="tagOption" class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+		  <%--  <c:forEach var="tagVO" items="${requestScope.tagListSide}" varStatus="status">   		
+     	  		<a class="dropdown-item" href="#" onclick="tagCheckSelect('${tagVO.tag_color}','${tagVO.tag_name}')"><i class="fas fa-tag" style="color:#${tagVO.tag_color}" ></i> 
+	     	  	&nbsp${tagVO.tag_name}
+	     	    <i style="float:right" class="fas fa-minus-circle" onclick="deleteTag('${tagVO.tag_color}','${tagVO.tag_name}');"></i></a>		
+      	 	</c:forEach>
+   	 		<a class="dropdown-item" href="#" data-toggle="modal" data-target="#modal_addTag"><i class="fas fa-tag"></i>&nbsp태그 추가</a>
+		     --%>
 
 		    
 		  </div>
@@ -516,6 +524,7 @@ padding-left: 4px;
 
 <div id="mail_box">
 	<div id ="mailTable">
+	<%-- 
 		<table class="table">
 	
 		
@@ -587,6 +596,7 @@ padding-left: 4px;
 		
 		  	
 		</table>
+		 --%>
 	</div>
 	<div id = "papagebar">
 	${pagebar}
@@ -606,51 +616,9 @@ padding-left: 4px;
     </form>
     
 
-    <div id="displayList" style="border:solid 1px gray; border-top:0px; height:100px; margin-left:75px; margin-top:-1px; overflow:auto;">
-	</div>
 </div>
 
 
-<div class="modal fade" id="modal_addTag" role="dialog" data-backdrop="static">
-	<div class="modal-dialog">
-    	<div class="modal-content">
-    
-      		<!-- Modal header -->
-      		<div class="modal-header">
-        		<h4 class="modal-title">태그 추가하기</h4>
-        		<button id="add" type="button" class="close modal_close" data-dismiss="modal">&times;</button>
-      		</div>
-      
-      		<!-- Modal body -->
-      		<div class="modal-body">
-       			<form name="modal_frm">
-       				<table style="width: 100%;" class="table table-borderless">
-     					<tr>
-     						<td style="text-align: left; vertical-align: middle;">태그 이름</td>
-     						<td><input type="text" name="tag_name" id="tag_name"/></td>
-     					</tr>
-     					<tr>
-     						<td style="text-align: left; vertical-align: middle;">색상 선택</td>
-     						
-     						<td>
-     							<input id="tag_color" name="tag_color" type="color" value="#ffffff" />
-     						</td>
-     					</tr>
-
-     				</table>
-       			</form>	
-      		</div>
-      
-      		<!-- Modal footer -->
-      		<div class="modal-footer">
-      			
-				<button type="button" class="btn btn-light btn-sm modal_close" data-dismiss="modal">취소</button>
-      			<button type="button" style="background-color:#086BDE; color:white;" id="addTag" class="btn btn-sm" onclick="goAddTag()">추가</button>
-      		</div>
-      
-    	</div>
-  	</div>
-</div>
 
 
 

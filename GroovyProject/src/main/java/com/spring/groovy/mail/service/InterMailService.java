@@ -76,6 +76,11 @@ public interface InterMailService {
 	// 태그 삭제
 	int tagDelete(Map<String, String> paraMap);
 	
+	// 태그메일리스트 훔쳐오기
+	List<String> getTotalCountTag(Map<String, Object> paraMap);
+	// 비번 구해오기
+	String getPwd(String mail_no);
+	
 
 	
 

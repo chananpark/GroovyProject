@@ -120,9 +120,11 @@ public class MailDAO implements InterMailDAO {
 	@Override
 	public int importantUpdateM(Map<String, String> paraMap) {
 		int n = sqlsession.update("jinseok.importantUpdateM",paraMap);
+
 		if(n==1) {
 			System.out.println("!n!"+n);
-			n = sqlsession.update("jinseok.importantUpdateM2",paraMap);
+			sqlsession.update("jinseok.importantUpdateM2",paraMap);
+
 		}
 		return n;
 	}
@@ -231,6 +233,20 @@ public class MailDAO implements InterMailDAO {
 	public int updateChatroom(Map<String, String> paraMap) {
 		int n = sqlsession.update("jinseok.updateChatroom",paraMap);
 		return n;
+	}
+
+	@Override
+	public List<String> getTotalCountTag(Map<String, Object> paraMap) {
+		List<String> TagMailList = sqlsession.selectList("jinseok.getTotalCountTag",paraMap);
+		
+		return TagMailList;
+	}
+
+	@Override
+	public String getPwd(String mail_no) {
+		String pwd = sqlsession.selectOne("jinseok.getPwd",mail_no);
+		
+		return pwd;
 	}
 
 	

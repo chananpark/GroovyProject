@@ -776,3 +776,51 @@ from
         )V
     )
     where rno between 1 and 5
+    
+    
+   select *
+	    from tbl_tag
+	    where FK_MAIL_ADDRESS = 'kjsaj0525@groovy.com'
+	    and TAG_NAME='파랑'
+    ;
+    where FK_MAIL_ADDRESS = 'kjsaj0525@groovy.com'
+	    and TAG_COLOR='00b9f1'
+	    and TAG_NAME='파랑'
+        
+        
+	   where FK_MAIL_ADDRESS = #{mail_address}
+ 	    and TAG_COLOR = #{tag_color}
+	    and TAG_NAME = #{tag_name}  
+    select FK_MAIL_ADDRESS,TAG_COLOR,TAG_NAME,fk_mail_no,tag_no
+		from tbl_tag
+		where FK_mail_address = 'kjsaj0525@groovy.com'
+		order by fk_mail_no desc, tag_color asc, tag_no asc 
+        
+         <!-- where FK_MAIL_ADDRESS = #{mail_address} 
+ 	    where TAG_COLOR = #{tag_color}
+	    where TAG_NAME = #{tag_name}-->
+        
+        
+    select *
+	    from
+	    (
+	    select M.MAIL_NO, SEND_TIME ,case when(lag(M.MAIL_NO, 1) over(order by SEND_TIME desc) = M.MAIL_NO) then 0 else 1 end as ck
+	    from tbl_mail M  
+  
+	    right JOIN TBL_MAIL_Recipient R  
+   		ON R.fk_mail_no = M.mail_no
+   
+	where SEND_TIME <= sysdate    
+
+	        and mail_no in (61, 66, 67, 65, 81, 48, 53, 45, 54, 57, 35, 70)
+	
+	        and ((FK_Sender_address != 'kjsaj0525@groovy.com' and FK_Recipient_address_individual = 'kjsaj0525@groovy.com' and RECIPIENT_delete =0)
+    			  or (FK_Recipient_address_individual != 'kjsaj0525@groovy.com' and FK_Sender_address = 'kjsaj0525@groovy.com' and sender_delete = 0)
+    			  or (FK_Sender_address = 'kjsaj0525@groovy.com'and FK_Recipient_address_individual = 'kjsaj0525@groovy.com' and RECIPIENT_delete =0 and sender_delete = 0))
+
+
+   
+
+		)
+select * from tbl_mail
+order by send_time desc;

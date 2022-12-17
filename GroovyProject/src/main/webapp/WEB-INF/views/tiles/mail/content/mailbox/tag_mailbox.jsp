@@ -39,9 +39,6 @@ td.mail_list_time {
     width: 300px;
     text-align: end;
 }
-.mail_list_option>i.fas, i.fa{
-padding-left: 4px;
-}
 #mail_box{
 	margin-top:10px;
 }
@@ -80,31 +77,13 @@ i.fa-flag{
 
 
 </style>
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css" integrity="sha512-3pIirOrwegjM6erE5gPSwkUzO+3cTjpnV9lexlNZqvupR64iZBnOOTiiLPb9M36zpMScbmUNIcHUqKD47M719g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
-<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js" integrity="sha512-VEd+nq25CkR676O+pLBnDW09R7VQX9Mdiij052gVCp5yVH3jGtH70Ho/UUv4mJDsEdTvqRCFZg0NKGiojGnUCw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-
 <script type="text/javascript">
-	toastr.options = { // toastr 옵션
-	  "closeButton": false,
-	  "debug": false,
-	  "newestOnTop": false,
-	  "progressBar": true,
-	  "positionClass": "toast-top-center",
-	  "preventDuplicates": false,
-	  "onclick": null,
-	  "showDuration": "300",
-	  "hideDuration": "1000",
-	  "timeOut": "2000",
-	  "extendedTimeOut": "1000",
-	  "showEasing": "swing",
-	  "hideEasing": "linear",
-	  "showMethod": "fadeIn",
-	  "hideMethod": "fadeOut"
-	}
 	$(document).ready(function(){
-		listRefresh(); 
-		
-	
+		$("div#displayList").hide();
+		listRefresh();
+
+
+
 		
 		// 검색 엔터
 		$("input#searchWord").keyup(function(e){
@@ -120,64 +99,27 @@ i.fa-flag{
 			$("input#searchWord").val("${requestScope.paraMap.searchWord}");
 		}
 		
-	
+		// 사이드바에 태그 추가해주기
+		var sidebarTag = ``;
+		<c:forEach var="tagVO" items="${requestScope.tagList}" varStatus="status">   		
+			
+			sidebarTag += `<li><a id="tag" class="nav-link" href="<%=ctxPath%>/approval/personal/sent.on"><i class="fas fa-tag" style="color:#${tagVO.tag_color};"></i>${tagVO.tag_name}</a></li>`;
+			
+
+		</c:forEach>
+		$("#sidebarTag").html(sidebarTag);
 		
 	});
 	
-	function goSearch() {
-		const frm = document.searchFrm;
-		frm.method = "GET";
-		frm.action = "<%= ctxPath%>/mail/receiveMailBox.on";
-		frm.submit();
-	}// end of function goSearch()--------------------
-	
-
-		
-	
-	function goMail(mailno, mailRecipientNo){
-		// 패스워드 체크
-		$.ajax({
-			url:"<%= ctxPath%>/mail/getPwd.on",
-			type:"post",
-			data:{"mail_no":mailno},
-	        success:function(pwd){
-	        	if(pwd != "" && pwd != null){
-	        		swal("비밀 메일입니다. 암호를 입력해주세요.", {
-	  				  content: "input",
-	  				})
-	  				.then((value) => {
-	  				  if(value == pwd){
-	  					location.href="<%=ctxPath%>/mail/viewMail.on?mailNo="+mailno+"&mailRecipientNo"+mailRecipientNo;
-	  				  }
-	  				  else{
-	  					  swal("잘못된 암호입니다. 다시 확인해주세요.");
-	  				  }
-	  				});
-	        	}
-	        	else{
-	        		location.href="<%=ctxPath%>/mail/viewMail.on?mailNo="+mailno+"&mailRecipientNo"+mailRecipientNo;
-	    		}
-
-	        	
-	        },
-	        error: function(request, status, error){
-				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-			}
-		});
-		
-		
-	}
-	
-
-	
+	// 목록 불러오기(ajax)
 	function listRefresh(){ // 체크박스 유지용
 		var formData = new FormData();
 		var param = window.location.search;
+		console.log("param"+param);
 		
 		// 원래 체크박스 기억
 		var mailCheck = document.querySelectorAll('input[name="mailCheck"]:checked');
 		console.log(mailCheck);
-		
 		if(mailCheck.length > 0){
 		result="";
 		mailCheck.forEach((el) => {
@@ -188,14 +130,16 @@ i.fa-flag{
 		 console.log("checkbox"+checkbox);
 		// 체크한 것들 번호 가져가서 , 로 이어지는 문자열로 변환
 		}
+		
 		$.ajax({
-			url:"<%= ctxPath%>/mail/receieveMailBoxAjax.on"+param,
+			url:"<%= ctxPath%>/mail/tagMailBoxAjax.on"+param,
 			type:"get",
 			dataType:"json",
 	        success:function(json){
 	        	if(json.html != "" && json.html != null){
 	        		/* console.log("html : " + json.html); */
 	        		$("div#mailTable").html(json.html);
+	        		
 	        		$("div#papagebar").html(json.papagebar);
 	        		$("#tagOption").html(json.taghtml);
 	        		
@@ -206,6 +150,7 @@ i.fa-flag{
 		        			$("input:checkbox[value='"+el+"']").prop("checked", true); // 체크유지
 		        		});
 	        		}
+	        		
 	        	}
 
 	        	
@@ -216,30 +161,75 @@ i.fa-flag{
 		});
 	}
 	
-	function importantCheckSelect(){
+	function goSearch() {
+		const frm = document.searchFrm;
+		frm.method = "GET";
+		frm.action = "<%= ctxPath%>/mail/receiveMailBox.on";
+		frm.submit();
+	}// end of function goSearch()--------------------
 	
-		var mailCheck = document.querySelectorAll('input[name="mailCheck"]:checked');
+	
+	function importantCheckSelect(){
+		
+		var mailCheck = $('input[name="mailCheck"]:checked');
 		console.log(mailCheck);
 		if(mailCheck.length > 0){
-		result="";
-		mailCheck.forEach((el) => {
-			result += el.value;
-			result += ',';
+		mailNo="";
+		mailRecipientNo="";
+		mailCheck.each(function(index, item){
+			if($(item).attr("mailno") != null){
+				mailNo += $(item).attr("mailno");
+				mailNo += ",";
+			}
+			else if($(item).attr("mailRecipientNo") != null){
+				mailRecipientNo += $(item).attr("mailRecipientNo");
+				mailRecipientNo += ",";
+			}
+				
 		});
-		 result = result.slice(0, -1);
-		 console.log("result"+result);
-		// 체크한 것들 번호 가져가서 , 로 이어지는 문자열로 변환
-		 importantCheck(result);  
+		 mailNo = mailNo.slice(0, -1);
+		 mailRecipientNo = mailRecipientNo.slice(0, -1);
+		 console.log("mailNo"+mailNo);
+		 console.log("mailRecipientNo"+mailRecipientNo);
+		 $.ajax({
+				url:"<%= ctxPath%>/mail/importantCheck.on",
+				data:{"mail_recipient_no":mailRecipientNo,
+					  "mail_no":mailNo},
+				type:"post",
+				dataType:"json",
+		        success:function(json){
+		        	if(json.n > 0){
+		        		alert(json.n+ "개 중요 클릭");
+		        	}
+		        	listRefresh();
+		        },
+		        error: function(request, status, error){
+					alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+				}
+			});
+
 		}
 		else{
 			alert("체크박스를 선택해주세요.")
 		}
 	}
 	
-   	function importantCheck(mail_recipient_no){
+	function importantCheck(no,type){
+		console.log("no"+no);
+		console.log("type"+type);
+		var data="";
+		if(type=="mail_recipient_no"){
+			data = {"mail_recipient_no":no};
+		}
+		else if(type=="mail_no"){
+			data = {"mail_no":no};
+		}
+		
+		console.log(data);
 		$.ajax({
 			url:"<%= ctxPath%>/mail/importantCheck.on",
-			data:{"mail_recipient_no":mail_recipient_no},
+			
+			data:data,
 			type:"post",
 			dataType:"json",
 	        success:function(json){
@@ -253,43 +243,54 @@ i.fa-flag{
 			}
 		});
 	}
-   	function deleteCheckSelect(){
-   		var mailCheck = document.querySelectorAll('input[name="mailCheck"]:checked');
+	
+
+	// 삭제
+	function deleteCheckSelect(){
+		var mailCheck = $('input[name="mailCheck"]:checked');
 		console.log(mailCheck);
 		if(mailCheck.length > 0){
-		result="";
-		mailCheck.forEach((el) => {
-			result += el.value;
-			result += ',';
+		mailNo="";
+		mailRecipientNo="";
+		mailCheck.each(function(index, item){
+			if($(item).attr("mailno") != null){
+				mailNo += $(item).attr("mailno");
+				mailNo += ",";
+			}
+			else if($(item).attr("mailRecipientNo") != null){
+				mailRecipientNo += $(item).attr("mailRecipientNo");
+				mailRecipientNo += ",";
+			}
+				
 		});
-		 result = result.slice(0, -1);
-		 console.log(result);
-		// 체크한 것들 번호 가져가서 , 로 이어지는 문자열로 변환
-		 deleteCheck(result);  
+		 mailNo = mailNo.slice(0, -1);
+		 mailRecipientNo = mailRecipientNo.slice(0, -1);
+		 console.log("mailNo"+mailNo);
+		 console.log("mailRecipientNo"+mailRecipientNo);
+		 
+		 $.ajax({
+				url:"<%= ctxPath%>/mail/deleteCheck.on",
+				data:{"mail_recipient_no":mail_recipient_no,
+					"mailNo":mailNo},
+				type:"post",
+				dataType:"json",
+		        success:function(json){
+		        	if(json.n > 0){
+		        		alert(json.n+ "개 삭제");
+		        	}
+		        	listRefresh();
+		        },
+		        error: function(request, status, error){
+					alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+				}
+			});
 		}
 		else{
 			alert("체크박스를 선택해주세요.")
 		}
    	}
-   	
-   	function deleteCheck(mail_recipient_no){
-   		$.ajax({
-			url:"<%= ctxPath%>/mail/deleteCheck.on",
-			data:{"mail_recipient_no":mail_recipient_no},
-			type:"post",
-			dataType:"json",
-	        success:function(json){
-	        	if(json.n > 0){
-	        		alert(json.n+ "개 삭제");
-	        	}
-	        	listRefresh();
-	        },
-	        error: function(request, status, error){
-				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-			}
-		});
-   	}
-   	
+
+   	// 태그
    	function tagCheckSelect(tagColor, tagName){
    		
 		var mailCheck = $('input[name="mailCheck"]:checked');
@@ -297,40 +298,43 @@ i.fa-flag{
 		if(mailCheck.length > 0){
 		result="";
 		mailCheck.each(function(index, item){
-			result += $(item).attr("mailno");
-			console.log($(item).attr("mailno"));
+			if($(item).attr("mailno") != null){
+				result += $(item).attr("mailno");
+			}
+			else{
+				result += $(item).attr("mNo");
+			}
+		
 			result += ',';
 			
 		});
 		 result = result.slice(0, -1);
 		 console.log(result);
 		// 체크한 것들 번호 가져가서 , 로 이어지는 문자열로 변환
-		 tagCheck(result,tagColor, tagName);  
+		 $.ajax({
+				url:"<%= ctxPath%>/mail/tagCheck.on",
+				data:{"mail_no":result,
+					  "tagColor":tagColor,
+					  "tagName":tagName},
+				type:"post",
+				dataType:"json",
+		        success:function(json){
+		        	if(json.n > 0){
+		        		alert(json.n+ "개 태그가 설정되었습니다.");
+		        	}
+		        	listRefresh(); 
+		        },
+		        error: function(request, status, error){
+					alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+				}
+			});  
 		}
 		else{
 			alert("체크박스를 선택해주세요.")
 		}
 	}
-   	
-   	function tagCheck(mail_no, tagColor, tagName){
-		$.ajax({
-			url:"<%= ctxPath%>/mail/tagCheck.on",
-			data:{"mail_no":mail_no,
-				  "tagColor":tagColor,
-				  "tagName":tagName},
-			type:"post",
-			dataType:"json",
-	        success:function(json){
-	        	if(json.n > 0){
-	        		alert(json.n+ "개 태그가 설정되었습니다.");
-	        	}
-	        	listRefresh(); 
-	        },
-	        error: function(request, status, error){
-				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-			}
-		});
-	}
+	
+   	// 삭제
 	function replySelect(){
    		
 		var mailCheck = $('input[name="mailCheck"]:checked');
@@ -338,7 +342,12 @@ i.fa-flag{
 		if(mailCheck.length == 1){
 			result="";
 			mailCheck.each(function(index, item){
-				result += $(item).attr("mailno");			
+				if($(item).attr("mailno") != null){
+					result += $(item).attr("mailno");
+				}
+				else{
+					result += $(item).attr("mNo");
+				}			
 			});
 			console.log(result);
 		 	location.href="<%=ctxPath%>/mail/writeMail.on?mailNo="+ result+ "&type=reply";
@@ -347,8 +356,7 @@ i.fa-flag{
 			alert("체크박스를 하나만 선택해주세요.");
 		}
 	}
-	
-	
+   	
 	function passSelect(){
    		
 		var mailCheck = $('input[name="mailCheck"]:checked');
@@ -356,7 +364,12 @@ i.fa-flag{
 		if(mailCheck.length == 1){
 			result="";
 			mailCheck.each(function(index, item){
-				result += $(item).attr("mailno");			
+				if($(item).attr("mailno") != null){
+					result += $(item).attr("mailno");
+				}
+				else{
+					result += $(item).attr("mNo");
+				}				
 			});
 			console.log(result);
 		 	location.href="<%=ctxPath%>/mail/writeMail.on?mailNo="+ result+ "&type=pass";
@@ -364,42 +377,6 @@ i.fa-flag{
 		else{
 			alert("체크박스를 하나만 선택해주세요.");
 		}
-	}
-	
-	function read(){
-		var mailCheck = $('input[name="mailCheck"]:checked');
-		console.log(mailCheck);
-		if(mailCheck.length > 0){
-			result="";
-			mailCheck.each(function(index, item){
-				result += $(item).attr("mailno");		
-				result += ",";	
-			});
-			result = result.slice(0, -1);
-			console.log(result);
-			readCheck(result);
-		}
-		else{
-			alert("체크박스를 선택해주세요.");
-		}
-	}
-	
-	function readCheck(mailno){
-		$.ajax({
-			url:"<%= ctxPath%>/mail/readCheck.on",
-			data:{"mailno":mailno},
-			type:"post",
-			dataType:"json",
-	        success:function(json){
-	        	if(json.n > 0){
-	        		alert(json.n+ "개 읽음처리 하였습니다.");
-	        	}
-	        	listRefresh(); 
-	        },
-	        error: function(request, status, error){
-				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-			}
-		});
 	}
 	
 	function goAddTag(){
@@ -414,8 +391,13 @@ i.fa-flag{
 		if(mailCheck.length > 0){
 		fk_mail_no="";
 		mailCheck.each(function(index, item){
-			fk_mail_no += $(item).attr("mailno");
-			console.log($(item).attr("mailno"));
+			if($(item).attr("mailno") != null){
+				fk_mail_no += $(item).attr("mailno");
+			}
+			else{
+				fk_mail_no += $(item).attr("mNo");
+			}	
+
 			fk_mail_no += ',';
 			
 		});
@@ -489,21 +471,62 @@ i.fa-flag{
 	        
 		})
 	}
+	function goMail(mailno, mailRecipientNo){
+		// 패스워드 체크
+		$.ajax({
+			url:"<%= ctxPath%>/mail/getPwd.on",
+			type:"post",
+			data:{"mail_no":mailno},
+	        success:function(pwd){
+	        	if(pwd != "" && pwd != null){
+	        		swal("비밀 메일입니다. 암호를 입력해주세요.", {
+	  				  content: "input",
+	  				})
+	  				.then((value) => {
+	  				  if(value == pwd){
+	  					if(mailRecipientNo!=null){
+	  						location.href="<%=ctxPath%>/mail/viewMail.on?mailNo="+mailno+"&mailRecipientNo"+mailRecipientNo;
+	  					}
+	  					else{
+	  						location.href="<%=ctxPath%>/mail/viewMail.on?mailNo="+mailno;
+	  					}
+	  				  }
+	  				  else{
+	  					  swal("잘못된 암호입니다. 다시 확인해주세요.");
+	  				  }
+	  				});
+	        	}
+	        	else{
+	        		if(mailRecipientNo!=null){
+	        			location.href="<%=ctxPath%>/mail/viewMail.on?mailNo="+mailno+"&mailRecipientNo"+mailRecipientNo;
+	        		}
+	        		else{
+	        			location.href="<%=ctxPath%>/mail/viewMail.on?mailNo="+mailno;
+	        		}
+	    		}
+
+	        	
+	        },
+	        error: function(request, status, error){
+				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			}
+		});
+	}
 	
-	
+ 
 </script>
 
 <div style="margin: 1% 0 5% 1%">
-	<h4>받은 메일</h4>
+	<h4>중요 메일</h4>
 </div>
 <div id="mailToolbar" class="tool_bar">
 	<div class="critical">
 		
-		<button id="mailLAllCheck_btn" type="button" class="btn btn-outline-dark toolbtn">
-			<input type="checkbox" id="mailLAllCheck"  style="vertical-align:middle;"/>&nbsp전체선택
+		<button id="mailLAllCheck_btn" type="button" class="btn btn-outline-dark toolbtn" >
+			<input type="checkbox" id="mailLAllCheck" value="off" style="vertical-align:middle;">&nbsp전체선택
 	    
 	    </button>
-	    <button type="button" class="btn btn-outline-dark toolbtn " onclick="importantCheckSelect()">
+	    <button type="button" class="btn btn-outline-dark toolbtn" onclick="importantCheckSelect()">
 			<i class="fas fa-flag toolflag"></i>
 		</button>
 	    
@@ -517,18 +540,16 @@ i.fa-flag{
 		  <i class="fas fa-tag"></i>&nbsp태그
 		  </span>
 		  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-			<%--  <c:forEach var="tagVO" items="${requestScope.tagListSide}" varStatus="status">   		
+		   <%--  <c:forEach var="tagVO" items="${requestScope.tagListSide}" varStatus="status">   		
      	  		<a class="dropdown-item" href="#" onclick="tagCheckSelect('${tagVO.tag_color}','${tagVO.tag_name}')"><i class="fas fa-tag" style="color:#${tagVO.tag_color}" ></i> 
 	     	  	&nbsp${tagVO.tag_name}
 	     	    <i style="float:right" class="fas fa-minus-circle" onclick="deleteTag('${tagVO.tag_color}','${tagVO.tag_name}');"></i></a>		
       	 	</c:forEach>
    	 		<a class="dropdown-item" href="#" data-toggle="modal" data-target="#modal_addTag"><i class="fas fa-tag"></i>&nbsp태그 추가</a>
 		     --%>
-		    
 		  </div>
 	
 		</div>
-		<button type="button" class="btn btn-outline-dark toolbtn" onclick="read()"><i class="far fa-envelope-open"></i> 읽음</button>
 
 		
 
@@ -542,8 +563,9 @@ i.fa-flag{
 
 
 <div id="mail_box">
-	<div id="mailTable">
-	<%-- 
+<div id="mailTable">
+</div>
+<%-- 
 	<table class="table">
 
 	
@@ -561,44 +583,64 @@ i.fa-flag{
 			    	<fmt:formatDate value="${mailVO.send_time_date}" pattern="yyyy년 MM월dd일" var="sendTimeDDT"/>
 				    	<tr>
 				    	 	
-				    	 	<td colspan="4" style="background-color:#F9F9F9; font-size: small;padding: 0.3rem 0.75rem;">${sendTimeDDT}</td>
+				    	 	<td colspan="4" style="background-color:#F9F9F9; font-size: small;padding: 0.3rem 0.75rem;">${sendTimeDDT}<td>
 			    	 	</tr>
 			    	</c:if>
 			    </c:if> 
-			    
 			    <tr onclick = 'goMail(${mailVO.mail_no},${mailVO.mail_recipient_no})'>
-			  	  <td class="mail_list_option" onclick="event.stopPropagation()">
-			      	<input type="checkbox" id="mailLCheck" name="mailCheck" value="${mailVO.mail_recipient_no}" mailno="${mailVO.mail_no}" style="vertical-align:middle">
-			      	<c:if test="${mailVO.recipient_important == 0 }">
-			      		<i class="fas fa-flag" style="color:darkgray;" onclick="importantCheck(${mailVO.mail_recipient_no})"></i>
-			      	</c:if>
-			      	<c:if test="${mailVO.recipient_important == 1 }">
-			      		<i class="fas fa-flag" onclick="importantCheck('${mailVO.mail_recipient_no}')"></i>
-			      	</c:if>
+			  	  <td class="mail_list_option">
+			 
+					<c:if test="${sessionScope.loginuser.cpemail eq mailVO.fK_sender_address}">
+						<input type="checkbox" id="mailLCheck" name="mailCheck" mailno="${mailVO.mail_no}" style="vertical-align:middle">
+						<i class="fas fa-flag" onclick="importantCheck('${mailVO.mail_no}','mail_no')"></i>
+						<i class="fas fa-envelope-open" style="color: darkgray;"></i>
+					</c:if>
+				
+					<c:if test="${sessionScope.loginuser.cpemail ne mailVO.fK_sender_address}">
+						<input type="checkbox" id="mailLCheck" name="mailCheck" mNo="${mailVO.mail_no}" mailRecipientNo="${mailVO.mail_recipient_no}"style="vertical-align:middle">
+						<i class="fas fa-flag" onclick="importantCheck('${mailVO.mail_recipient_no}','mail_recipient_no')"></i>
+						<c:if test="${mailVO.read_check == 0 }">
+				      		<i class="fas fa-envelope"></i>
+				      	</c:if>
+				      	<c:if test="${mailVO.read_check == 1 }">
+				      		<i class="fas fa-envelope-open" style="color: darkgray;"></i>
+				      	</c:if>
+					</c:if>
 
-			      	<c:if test="${mailVO.read_check == 0 }">
-			      		<i class="fas fa-envelope"></i>
-			      	</c:if>
-			      	<c:if test="${mailVO.read_check == 1 }">
-			      		<i class="fas fa-envelope-open" style="color: darkgray;"></i>
-			      	</c:if>
 
-			  
 			      </td>
 			      <td class = "mail_list_sender" >${mailVO.fK_sender_address}</td>
 			
 			      <td class = "mail_list_subject">
 			      	<c:forEach var="tagVO" items="${requestScope.tagList}" varStatus="status">   		
-							<c:if test="${mailVO.mail_no == tagVO.fk_mail_no}">
+	
+			      		<c:forEach var="tag_mail_no" items="${tagVO.mail_no_list}" varStatus="status">
+			      			<c:if test="${mailVO.mail_no == tag_mail_no}">
 			      				<a href="#"><i class="fas fa-tag" style="color:#${tagVO.tag_color};"></i> &nbsp</a>
 			      			</c:if>
-			      		
-			      	</c:forEach>
-			   
-				      	<!-- 태그 개수에 따라 제목옆에 보여줄 예정 -->
-			      	${mailVO.subject}[임시노출 번호${mailVO.mail_no}][임시노출 수신메일번호${mailVO.mail_recipient_no}]
-			      </td>
 			      	
+			      		</c:forEach>
+			      	</c:forEach>
+			      	<c:if test="${sessionScope.loginuser.cpemail eq mailVO.fK_sender_address}">
+			      
+			      		<c:if test="${sessionScope.loginuser.cpemail eq fK_recipient_address_individual}">
+			      		
+			      			[내게쓴메일]
+			      		</c:if>
+			      		<c:if test="${sessionScope.loginuser.cpemail ne fK_recipient_address_individual}">
+			      		
+			      			[보낸메일함]
+			      		</c:if>
+			      	</c:if>
+			    
+			      	<c:if test="${sessionScope.loginuser.cpemail ne mailVO.fK_sender_address}">
+			      		<c:if test="${sessionScope.loginuser.cpemail eq mailVO.fK_recipient_address_individual}">[받은메일함]</c:if>
+			      	</c:if>
+			   		
+			   
+				  ${mailVO.subject}  [임시노출 번호${mailVO.mail_no}] [임시노출 수신번호${mailVO.mail_recipient_no}]     
+			      </td>
+			  
 			      	<c:if test="${sendTimeDD == today}">
 			      		<td class = "mail_list_time">오늘 ${sendTimeToday}</td>
 			      	</c:if>
@@ -612,9 +654,8 @@ i.fa-flag{
 	   
 	
 	  	
-	</table>
-	 --%>
-	</div>
+	</table> 
+	--%>
 	<div id = "papagebar">
 	${pagebar}
 	</div>
@@ -623,15 +664,14 @@ i.fa-flag{
     <form name="searchFrm" style="margin-top: 20px;">
         <select name="searchType" id="searchType" style="height: 26px;">
            <option value="subject">메일제목</option>
-           <option value="FK_Sender_address">보낸사람</option> <!-- 여기만 바꿔가면서 재활용 -->
+           <option value="FK_Sender_address">보낸사람</option> 
         </select>
         <input type="text" name="searchWord" id="searchWord" size="40" autocomplete="off" />
         <input type="text" style="display: none;" /> <%-- form 태그내에 input 태그가 오로지 1개 뿐일경우에는 엔터를 했을 경우 검색이 되어지므로 이것을 방지하고자 만든것이다. --%> 
         
         <button type="button" class="btn btn-secondary btn-sm" onclick="goSearch()">검색</button>
     </form>
-    
-
 
 </div>
+
 

@@ -28,7 +28,9 @@ public class MailService implements InterMailService {
 	
 	@Override
 	public int getTotalCount(Map<String, Object> paraMap) {
+		
 		int totalCount = dao.getTotalCount(paraMap);
+		
 		return totalCount;
 	}
 
@@ -124,6 +126,7 @@ public class MailService implements InterMailService {
 			paraMap.put("mail_no", mail_no);
 			paraMap.put("SENDER_IMPORTANT", String.valueOf(SENDER_IMPORTANT));
 			int n = dao.importantUpdateM(paraMap);
+			System.out.println("nnn"+n);
 			if(n!=1) {
 				return n;
 			}
@@ -335,6 +338,18 @@ public class MailService implements InterMailService {
 			resultList = new ArrayList<String>(Arrays.asList(str.split(","))); 
 		}
 		return resultList;
+	}
+
+	@Override
+	public List<String> getTotalCountTag(Map<String, Object> paraMap) {
+		List<String> TagMailList = dao.getTotalCountTag(paraMap);
+		return TagMailList;
+	}
+
+	@Override
+	public String getPwd(String mail_no) {
+		String pwd = dao.getPwd(mail_no);
+		return pwd;
 	}
 
 

@@ -252,6 +252,7 @@ var fileSizeList = [];
            var pwd = "";
 
 		   if($('#password').is(':visible')){
+			   
 			   console.log($("input#pwd").val());		
 
 			   pwd = $("input#pwd").val();
@@ -290,7 +291,6 @@ var fileSizeList = [];
            console.log(date);		
 		   console.log(hour);
 		   console.log(minute);
-			
 
 		  
 		   $.ajax({
@@ -325,7 +325,7 @@ var fileSizeList = [];
 	            } 
 	        }); 
 		   
-		   
+		
 		   
 		   
 		});
@@ -702,7 +702,21 @@ var fileSizeList = [];
 					<tr>
 						<th style="width: 15%; background-color: #E3F2FD;">제목</th>
 						<td>
-						       <input class="bottomLine" type="text" name="subject" id="subject" size="100" />
+							
+						       
+					       <c:if test="${requestScope.type == 'reply'}">
+					       	<input class="bottomLine" type="text" name="subject" id="subject" size="100" value="[Re:${mailVO.subject}]"/>
+					       </c:if>
+					       
+					        <c:if test="${requestScope.type == 'pass'}">
+					       	<input class="bottomLine" type="text" name="subject" id="subject" size="100" value="${mailVO.subject}"/>
+					       </c:if>
+					       
+					        <c:if test="${requestScope.type == null}">
+					       	<input class="bottomLine" type="text" name="subject" id="subject" size="100"/>
+					       </c:if>
+					       
+						       
 						</td>
 					</tr>
 					
@@ -710,7 +724,6 @@ var fileSizeList = [];
 						<th style="width: 15%; background-color: #E3F2FD;">내용</th>
 						<td>
 							<textarea style="width: 100%; height: 612px;" name="contents" id="contents">
-								
 								<c:if test="${requestScope.type == 'reply'}">
 									<p><br></p><p><br></p><p><br></p><p><br></p><p><br></p><p><br></p><p><br></p><p><br></p><p><br></p><p><br></p><p><br></p><p><br></p><p><br></p>
 									<p>------------------------------------ original message ------------------------------------</p>

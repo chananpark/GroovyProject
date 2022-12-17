@@ -60,10 +60,18 @@ public class MailController {
 	@RequestMapping(value = "/mail/receiveMailBox.on")
 	public ModelAndView receiveMailBox(ModelAndView mav, Pagination pagination, HttpServletRequest request) {
 		
+		 Map<String, String> paraMap2 = new HashMap<>();
+		 HttpSession session = request.getSession();
 
-		 mav = mailpaginglist(mav, pagination, "FK_Recipient_address", request);
-		 mav.addObject("pagebar", pagination.getPagebar("/groovy/mail/receiveMailBox.on"));
-		 
+		 MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
+
+		 String mail_address = loginuser.getCpemail();
+		 paraMap2.put("FK_MAIL_ADDRESS", mail_address);
+		 List<TagVO> tagList = null;
+		 tagList=service.getTagListByMailNo(paraMap2);
+		 List<TagVO>tagListSide = service.getTagListSide(mail_address);
+		 mav.addObject("tagList", tagList);
+		 mav.addObject("tagListSide", tagListSide);
 		 mav.setViewName("mail/mailbox/receieve_mailbox.tiles");
 		// ==> views/tiles/mail/content/mailBox/receieve_mailbox.jsp
 		
@@ -73,38 +81,182 @@ public class MailController {
 	@RequestMapping(value = "/mail/sendMailBox.on")
 	public ModelAndView sendMailBox(ModelAndView mav, Pagination pagination, HttpServletRequest request) {
 
-		 mav = mailpaginglist(mav, pagination, "FK_Sender_address",request);
-		 mav.addObject("pagebar", pagination.getPagebar("/groovy/mail/sendMailBox.on"));
+		 Map<String, String> paraMap2 = new HashMap<>();
+		 HttpSession session = request.getSession();
+
+		 MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
+
+		 String mail_address = loginuser.getCpemail();
+		 paraMap2.put("FK_MAIL_ADDRESS", mail_address);
+		 List<TagVO> tagList = null;
+		 tagList=service.getTagListByMailNo(paraMap2);
+		 List<TagVO>tagListSide = service.getTagListSide(mail_address);
+		 mav.addObject("tagList", tagList);
+		 mav.addObject("tagListSide", tagListSide);
 		 mav.setViewName("mail/mailbox/send_mailbox.tiles");
+		
+		return mav;		
+		// ==> views/tiles/mail/content/mailBox/send_mailbox.jsp
+	}
+	@RequestMapping(value = "/mail/importantMailBox.on")
+	public ModelAndView importantMailBox(ModelAndView mav, Pagination pagination, HttpServletRequest request) {
+		 Map<String, String> paraMap2 = new HashMap<>();
+		 HttpSession session = request.getSession();
+
+		 MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
+
+		 String mail_address = loginuser.getCpemail();
+		 paraMap2.put("FK_MAIL_ADDRESS", mail_address);
+		 List<TagVO> tagList = null;
+		 tagList=service.getTagListByMailNo(paraMap2);
+		 List<TagVO>tagListSide = service.getTagListSide(mail_address);
+		 mav.addObject("tagList", tagList);
+		 mav.addObject("tagListSide", tagListSide);
+		 mav.setViewName("mail/mailbox/important_mailbox.tiles");
+	
+		return mav;	
+		// ==> views/tiles/mail/content/mailBox/important_mailbox.jsp
+	}
+	
+	@RequestMapping(value = "/mail/tagMailBox.on")
+	public ModelAndView tagMailBox(ModelAndView mav, Pagination pagination, HttpServletRequest request) {
+		 Map<String, String> paraMap2 = new HashMap<>();
+		 HttpSession session = request.getSession();
+
+		 MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
+
+		 String mail_address = loginuser.getCpemail();
+		 paraMap2.put("FK_MAIL_ADDRESS", mail_address);
+		 List<TagVO> tagList = null;
+		 tagList=service.getTagListByMailNo(paraMap2);
+		 List<TagVO>tagListSide = service.getTagListSide(mail_address);
+		 mav.addObject("tagList", tagList);
+		 mav.addObject("tagListSide", tagListSide);
+
+		 mav.setViewName("mail/mailbox/tag_mailbox.tiles");
 		
 		return mav;		
 		// ==> views/tiles/mail/content/mailBox/send_mailbox.jsp
 	}
 	
 	@ResponseBody
+	@RequestMapping(value = "/mail/getPwd.on", method= {RequestMethod.POST},produces="text/plain;charset=UTF-8")
+	public String getPwd(Pagination pagination,HttpServletRequest request) {
+		
+		JSONObject jsonObj = new JSONObject();
+		Map<String, Object> htmlMap = new HashMap<String, Object>();
+		
+		String mail_no = request.getParameter("mail_no");
+		String pwd = service.getPwd(mail_no);
+		return pwd;
+		
+	}
+	
+	@ResponseBody
 	@RequestMapping(value = "/mail/sendMailBoxAjax.on", method= {RequestMethod.GET},produces="text/plain;charset=UTF-8")
 	public String sendMailBoxAjax(Pagination pagination,HttpServletRequest request) {
-
+		
 		JSONObject jsonObj = new JSONObject();
 		Map<String, Object> htmlMap = new HashMap<String, Object>();
 		
 		// html 맵에 mailList tagList 넣어줌
 		htmlMap = mailpaginglist(htmlMap, pagination, "FK_Sender_address",request);
+
 		htmlMap.put("type", "send");
 		String html = "";
+		String taghtml = "";
 		try {
 			html = mailPagingToString(htmlMap);
+			taghtml = getTagHtml(htmlMap);
 		} catch (ParseException e) {
 			
 			e.printStackTrace();
 		}
 		
 		jsonObj.put("html", html);
+		jsonObj.put("taghtml", taghtml);
 		jsonObj.put("pagebar", pagination.getPagebar("/groovy/mail/sendMailBox.on"));
 		
 		return jsonObj.toString();
 		
 	}
+	
+	private String getTagHtml(Map<String, Object> htmlMap){
+		
+		List<TagVO>tagListSide = (List<TagVO>)htmlMap.get("tagListSide");
+		StringBuilder htmlSB = new StringBuilder();
+		
+		for(TagVO tagVO:tagListSide) {
+			htmlSB.append("<a class=\"dropdown-item\" href=\"#\" onclick=\"tagCheckSelect('"+tagVO.getTag_color()+"','"+tagVO.getTag_name()+"')\">");
+			htmlSB.append("<i class=\"fas fa-tag\" style=\"color:#"+tagVO.getTag_color()+"\" ></i> \r\n" + 
+					"     	  	&nbsp"+tagVO.getTag_name()+"\r\n" + 
+					"     	    <i style=\"float:right\" class=\"fas fa-minus-circle\" onclick=\"deleteTag('"+tagVO.getTag_color()+"','"+tagVO.getTag_name()+"');\"></i></a>");
+		}
+		htmlSB.append("<a class=\"dropdown-item\" href=\"#\" data-toggle=\"modal\" data-target=\"#modal_addTag\"><i class=\"fas fa-tag\"></i>&nbsp태그 추가</a>");
+		return htmlSB.toString();
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/mail/importantMailBoxAjax.on", method= {RequestMethod.GET},produces="text/plain;charset=UTF-8")
+	public String importantMailBoxAjax(Pagination pagination,HttpServletRequest request) {
+
+		JSONObject jsonObj = new JSONObject();
+		Map<String, Object> htmlMap = new HashMap<String, Object>();
+		HttpSession session = request.getSession();
+		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
+		htmlMap.put("cpemail", loginuser.getCpemail());
+		// html 맵에 mailList tagList 넣어줌
+		htmlMap = mailpaginglist(htmlMap, pagination, "important",request);
+		htmlMap.put("type", "important");
+		String html = "";
+		String taghtml = "";
+		try {
+			html = mailPagingToString(htmlMap);
+			taghtml = getTagHtml(htmlMap);
+		} catch (ParseException e) {
+			
+			e.printStackTrace();
+		}
+
+		jsonObj.put("taghtml", taghtml);
+		jsonObj.put("html", html);
+		jsonObj.put("pagebar", pagination.getPagebar("/groovy/mail/importantMailBox.on"));
+		
+		return jsonObj.toString();
+		
+	}
+	
+	// 태그게시판
+	@ResponseBody
+	@RequestMapping(value = "/mail/tagMailBoxAjax.on", method= {RequestMethod.GET},produces="text/plain;charset=UTF-8")
+	public String tagMailBoxAjax(Pagination pagination,HttpServletRequest request) {
+		JSONObject jsonObj = new JSONObject();
+		Map<String, Object> htmlMap = new HashMap<String, Object>();
+		HttpSession session = request.getSession();
+
+		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
+		htmlMap.put("cpemail", loginuser.getCpemail());
+		// html 맵에 mailList tagList 넣어줌
+		htmlMap = mailpaginglist(htmlMap, pagination, "Tag",request);
+		htmlMap.put("type", "important");
+		String html = "";
+		String taghtml = "";
+		try {
+			html = mailPagingToString(htmlMap);
+			taghtml = getTagHtml(htmlMap);
+		} catch (ParseException e) {
+			
+			e.printStackTrace();
+		}
+		
+		jsonObj.put("html", html);
+		jsonObj.put("taghtml", taghtml);
+		jsonObj.put("pagebar", pagination.getPagebar("/groovy/mail/tagMailBox.on"));
+		
+		return jsonObj.toString();
+		
+	}
+	// 받은메일
 	@ResponseBody
 	@RequestMapping(value = "/mail/receieveMailBoxAjax.on", method= {RequestMethod.GET},produces="text/plain;charset=UTF-8")
 	public String receieveMailBoxAjax(Pagination pagination,HttpServletRequest request) {
@@ -116,14 +268,17 @@ public class MailController {
 		htmlMap = mailpaginglist(htmlMap, pagination, "FK_Recipient_address",request);
 		htmlMap.put("type", "receieve");
 		String html = "";
+		String taghtml = "";
 		try {
 			html = mailPagingToString(htmlMap);
+			taghtml = getTagHtml(htmlMap);
 		} catch (ParseException e) {
 			
 			e.printStackTrace();
 		}
 		
 		jsonObj.put("html", html);
+		jsonObj.put("taghtml", taghtml);
 		jsonObj.put("pagebar", pagination.getPagebar("/groovy/mail/receieveMailBox.on"));
 		
 		return jsonObj.toString();
@@ -142,6 +297,7 @@ public class MailController {
 
 		List<MailVO> mailList = (List<MailVO>)htmlMap.get("mailList");
 		List<TagVO> tagList = (List<TagVO>)htmlMap.get("tagList");
+		String cpemail = (String)htmlMap.get("cpemail");
 		String type = (String)htmlMap.get("type");
 
 		Date now = new Date();
@@ -179,10 +335,10 @@ public class MailController {
 			        		      "</tr>");
 		        }
 			}
-			sbHtml.append("<tr onclick = 'goMail("+mailVO.getMail_no()+")'>"
+			sbHtml.append("<tr onclick = 'goMail("+mailVO.getMail_no()+","+mailVO.getMail_recipient_no()+")'>"
 						+ "<td class=\"mail_list_option\" onclick=\"event.stopPropagation()\">");
 			if(type.equalsIgnoreCase("send")) {
-				sbHtml.append("<input type=\"checkbox\" id=\"mailLCheck\" name=\"mailCheck\" value=\""+mailVO.getMail_no()+"\" style=\"vertical-align:middle\">");
+				sbHtml.append("<input type=\"checkbox\" id=\"mailCheck\" name=\"mailCheck\" onclick=\"clickCheck()\"     value=\""+mailVO.getMail_no()+"\" style=\"vertical-align:middle\">");
 				// 보낸 메일함 기준
 				if(mailVO.getSender_important().equals("0")) {
 					sbHtml.append("<i class=\"fas fa-flag\" style=\"color:darkgray;\" onclick=\"importantCheck('"+mailVO.getMail_no()+"')\"></i>");
@@ -193,7 +349,7 @@ public class MailController {
 			}
 			else if(type.equalsIgnoreCase("receieve")) {
 				// 받은 메일함 기준
-				sbHtml.append("<input type=\"checkbox\" id=\"mailLCheck\" name=\"mailCheck\" value=\""+mailVO.getMail_recipient_no()+"\" mailNo=\""+mailVO.getMail_no()+"\"style=\"vertical-align:middle\">");
+				sbHtml.append("<input type=\"checkbox\" id=\"mailCheck\" name=\"mailCheck\"  onclick=\"clickCheck()\"     value=\""+mailVO.getMail_recipient_no()+"\" mailNo=\""+mailVO.getMail_no()+"\"style=\"vertical-align:middle\">");
 				
 				if(mailVO.getRecipient_important().equals("0")) {
 					sbHtml.append("<i class=\"fas fa-flag\" style=\"color:darkgray;\" onclick=\"importantCheck('"+mailVO.getMail_recipient_no()+"')\"></i>");
@@ -210,7 +366,24 @@ public class MailController {
 				}
 			}
 			
-			
+			else if(type.equalsIgnoreCase("important")) {
+				if(cpemail.equalsIgnoreCase(mailVO.getfK_sender_address())) {
+					sbHtml.append("<input type=\"checkbox\" id=\"mailCheck\" name=\"mailCheck\" onclick=\"clickCheck()\" mailNo=\""+mailVO.getMail_no()+"\"style=\"vertical-align:middle\">");
+					sbHtml.append("<i class=\"fas fa-flag\" onclick=\"importantCheck('"+mailVO.getMail_no()+"','mail_no')\"></i>");
+					sbHtml.append("<i class=\"fas fa-envelope-open\" style=\"color: darkgray;\">");
+				}
+				else {
+					sbHtml.append("<input type=\"checkbox\" id=\"mailCheck\" name=\"mailCheck\" onclick=\"clickCheck()\" mNo=\""+mailVO.getMail_no()+"\" mailRecipientNo=\""+mailVO.getMail_recipient_no()+"\"style=\"vertical-align:middle\">");
+					sbHtml.append("<i class=\"fas fa-flag\" onclick=\"importantCheck('"+mailVO.getMail_recipient_no()+"','mail_recipient_no')\"></i>");
+					if(mailVO.getRead_check().equals("0")) {
+						sbHtml.append("<i class=\"fas fa-envelope\"></i>");
+					}
+					else if(mailVO.getRead_check().equals("1")){
+						sbHtml.append("<i class=\"fas fa-envelope-open\" style=\"color: darkgray;\">");
+					}
+				}
+				
+			}
 			
 			
 			
@@ -225,9 +398,10 @@ public class MailController {
 					sbHtml.append(mailVO.getfK_recipient_address());
 				}
 			}
-			else if(type.equalsIgnoreCase("receieve")) {
+			else if(type.equalsIgnoreCase("receieve") || type.equalsIgnoreCase("important")) {
 				sbHtml.append(mailVO.getfK_sender_address());
 			}
+
 			
 			sbHtml.append("</td>\r\n" + 
 						  "<td class = \"mail_list_subject\">");
@@ -235,6 +409,20 @@ public class MailController {
 				if(tag.getFk_mail_no().equalsIgnoreCase(mailVO.getMail_no())) {
 					sbHtml.append("<a href=\"#\"><i class=\"fas fa-tag\" style=\"color:#"+tag.getTag_color()+";\"></i> &nbsp</a>");
 				}
+			}
+			if(type.equalsIgnoreCase("important")) {
+				if(cpemail.equalsIgnoreCase(mailVO.getfK_sender_address()) ) {
+					if(cpemail.equalsIgnoreCase(mailVO.getfK_recipient_address_individual())) {
+						sbHtml.append("[내게쓴메일]");
+					}
+					else {
+						sbHtml.append("[보낸메일함]");
+					}
+				}
+				else {
+					sbHtml.append("[받은메일함]");
+				}
+				
 			}
 			sbHtml.append(mailVO.getSubject()
 					//+"[임시노출 번호"+mailVO.getMail_no() +"]"+"[임시노출 수신메일번호"+mailVO.getMail_recipient_no() +"]"
@@ -255,16 +443,7 @@ public class MailController {
 		return sbHtml.toString();
 	}
 
-	@RequestMapping(value = "/mail/importantMailBox.on")
-	public ModelAndView importantMailBox(ModelAndView mav, Pagination pagination, HttpServletRequest request) {
 
-		mav = mailpaginglist(mav, pagination, "important",request);
-		mav.addObject("pagebar", pagination.getPagebar("/groovy/mail/importantMailBox.on"));
-		 mav.setViewName("mail/mailbox/important_mailbox.tiles");
-	
-		return mav;	
-		// ==> views/tiles/mail/content/mailBox/important_mailbox.jsp
-	}
 	
 	
 	
@@ -290,7 +469,6 @@ public class MailController {
 		}
 		String cpemail = request.getParameter("cpemail");
 		if(cpemail!= null && !(cpemail.trim().isEmpty())) {
-			System.out.println(cpemail);
 			List<String> replyList = service.getreplyList(cpemail);
 			request.setAttribute("replyList", replyList);
 			
@@ -435,7 +613,6 @@ public class MailController {
 	public String addMail(MultipartHttpServletRequest mrequest) {
 		
 		List<MultipartFile> fileList = mrequest.getFiles("fileList");
-		System.out.println(fileList);
 
 		StringBuilder originalFilenamesb =new StringBuilder();
 		StringBuilder newFileNamesb =new StringBuilder();
@@ -459,7 +636,7 @@ public class MailController {
 				HttpSession session = mrequest.getSession();
 				String root = session.getServletContext().getRealPath("/");
 				
-				System.out.println("~~~~ 확인용 webapp 의 절대경로 => " + root);
+		//		System.out.println("~~~~ 확인용 webapp 의 절대경로 => " + root);
 		//		~~~~ 확인용 webapp 의 절대경로 => > C:\NCS\workspace(spring)\.metadata\.plugins\org.eclipse.wst.server.core\tmp0\wtpwebapps\GroovyProject\
 				String path = root+"resources"+ File.separator +"files";
 
@@ -502,20 +679,17 @@ public class MailController {
 			MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
 			 
 			String FK_Sender_address = loginuser.getCpemail();
-			System.out.println(FK_Sender_address);
 			paraMap.put("FK_Sender_address",FK_Sender_address);
 			paraMap.put("FK_Recipient_address",mrequest.getParameter("recipient_address"));
 			
-			System.out.println("originalFilename"+originalFilename);
 			
 			paraMap.put("originalFilename",originalFilename);
 			paraMap.put("newFileName",newFileName);
 			paraMap.put("fileSize",mrequest.getParameter("fileSize"));
-			
+	
 			paraMap.put("subject",mrequest.getParameter("subject"));
 			paraMap.put("contents", secureCode(mrequest.getParameter("contents")));
-			
-			System.out.println("send_time!"+mrequest.getParameter("send_time"));
+
 			if(mrequest.getParameter("send_time") != "" && mrequest.getParameter("send_time") != null) {
 				paraMap.put("send_time",mrequest.getParameter("send_time"));
 			}
@@ -554,7 +728,7 @@ public class MailController {
 	@RequestMapping(value = "/mail/importantCheck.on", method= {RequestMethod.POST},produces="text/plain;charset=UTF-8")
 	public String importantCheck(HttpServletRequest request) {
 		JSONObject jsonObj = new JSONObject();
-		int n = 0;
+		int n=0;
 		int m=0;
 		String mail_recipient_no = request.getParameter("mail_recipient_no");
 		if(mail_recipient_no != null) {
@@ -564,7 +738,6 @@ public class MailController {
 		String mail_no = request.getParameter("mail_no");
 		
 		if(mail_no != null) {
-			System.out.println("mail_no"+mail_no);
 			m = service.importantCheckM(mail_no);
 		}
 		
@@ -580,7 +753,7 @@ public class MailController {
 	public String deleteCheck(HttpServletRequest request) {
 		JSONObject jsonObj = new JSONObject();
 		int n = 0;
-		
+		int m = 0;
 		String mail_recipient_no = request.getParameter("mail_recipient_no");
 		if(mail_recipient_no != null) {
 			n = service.deleteCheck(mail_recipient_no);
@@ -588,11 +761,11 @@ public class MailController {
 		
 		String mail_no = request.getParameter("mail_no");
 		if(mail_no != null) {
-			n = service.deleteCheckM(mail_no);
+			m = service.deleteCheckM(mail_no);
 		}
 		
 
-		jsonObj.put("n", n);
+		jsonObj.put("n", n+m);
 		
 		return jsonObj.toString(); 
 	}
@@ -675,12 +848,8 @@ public class MailController {
 		paraMap.put("tag_color",tag_color);
 		paraMap.put("tag_name",tag_name);
 		paraMap.put("FK_MAIL_ADDRESS",mail_address);
-		System.out.println("tag_color"+tag_color);
-		System.out.println("tag_name"+tag_name);
-		System.out.println("FK_MAIL_ADDRESS"+mail_address);
 
 		n = service.tagDelete(paraMap);
-		System.out.println("n!!"+n);
 		
 
 		jsonObj.put("n", n);
@@ -704,7 +873,6 @@ public class MailController {
 		Map<String, String> paraMap = new HashMap<>();
 		paraMap.put("FK_MAIL_ADDRESS",mail_address);
 		String mailno_List = request.getParameter("mailno");
-		System.out.println(mailno_List+mailno_List);
 		if(mailno_List != null) {
 			paraMap.put("mailno_List",mailno_List);
 			n = service.read(paraMap);
@@ -820,7 +988,7 @@ public class MailController {
 			paraMap.put("subject", subject);
 			paraMap.put("recipient_address", recipient_address);
 			
-			System.out.println("recipient_address"+recipient_address);
+
 			
 			int n = service.goChangeChatroom(paraMap);
 			if (n == 0) {
@@ -845,7 +1013,6 @@ public class MailController {
 		request.setAttribute("no", request.getParameter("no"));
 		// 채팅방 채팅내역 가져오기
 		List<MessageVO> messageList = service.getMessageList(request.getParameter("no"));
-		System.out.println("messageList"+messageList);
 		request.setAttribute("messageList", messageList);
 		return "chat/chatroom";
 		// ==> views/tiles/chat/content/chatMain.jsp
@@ -856,12 +1023,11 @@ public class MailController {
 	@RequestMapping(value = "/chat/getMember.on", method= {RequestMethod.GET},produces="text/plain;charset=UTF-8")
 	public String getMember(HttpServletRequest request) {
 		String roomNo = request.getParameter("roomNo");
-		System.out.println("roomNo"+roomNo);
+
 		List<String> memberList = service.getMember(roomNo);
-		System.out.println(memberList);
+
 
 		JSONArray arr_strJson = new JSONArray(Arrays.asList(memberList));
-		System.out.println(arr_strJson.toString());
 		
 		return arr_strJson.toString();
 	}
@@ -877,7 +1043,6 @@ public class MailController {
 		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
 		String empNo = loginuser.getEmpno();
 		String room_no = request.getParameter("room_no");
-		System.out.println(room_no);
 		paraMap.put("empNo",empNo);
 		paraMap.put("room_no",room_no);
 		
@@ -909,98 +1074,21 @@ public class MailController {
 	
 	
 	
-	///////////////////////////////////////////
-	public ModelAndView mailpaginglist(ModelAndView mav,Pagination pagination, String listType, HttpServletRequest request) {
-		 Map<String, Object> paraMap = new HashMap<>();
-		 HttpSession session = request.getSession();
-
-		 MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
-
-		 String mail_address = loginuser.getCpemail();
-
-		 paraMap.put("mail_address", mail_address);
-		 paraMap.put("listType", listType);
-		 
-		 // 내 태그 가져오기
-		 List<TagVO> tagList = null;
-		 Map<String, String> paraMap2 = new HashMap<>();
-		 paraMap2.put("FK_MAIL_ADDRESS", mail_address);
-		 
-		 tagList=service.getTagListByMailNo(paraMap2);
-
-		 for(TagVO tag :tagList ) {
-			System.out.println("getTag_no:"+tag.getTag_no());
-		 	System.out.println("getTag_color:"+tag.getTag_color());
-			System.out.println("getFk_mail_no:"+tag.getFk_mail_no());
-		 }
-		 
-		 List<MailVO> mailList = null;
-		 
-		 String searchType = pagination.getSearchType(); 
-		 String searchWord = pagination.getSearchWord();
-		 System.out.println(searchType);
-		 System.out.println(searchWord);
-		 // 둘다 없다면 "" 처리
-		 if(searchType == null || (!"subject".equals(searchType) && !"FK_Sender_address".equals(searchType)) ) {
-			searchType = "";
-		 }
-		
-		 if(searchWord == null || "".equals(searchWord) || searchWord.trim().isEmpty() ) {
-		 	searchWord = "";
-		 }
-		 System.out.println("searchType"+searchType);
-		 System.out.println("searchWord"+searchWord);
-		 paraMap.put("searchType",searchType);
-		 paraMap.put("searchWord",searchWord);	
-		 
-		 // 총 게시물 건수(totalCount)
-		 int listCnt  = service.getTotalCount(paraMap);
-		 
-		 Map<String, Object> resultMap = pagination.getPageRange(listCnt );
-
-		 paraMap.put("startRno",resultMap.get("startRno"));
-		 paraMap.put("endRno",(resultMap.get("endRno")));
-		 
-		 mailList = service.mailListSearchWithPaging(paraMap);
-		 // 페이징 처리한 글목록 가져오기(검색이 있든지, 검색이 없든지 모두 다 포함한 것)
-		
-		// 아래의 것은 검색대상 컬럼과 검색어를 뷰단 페이지에서 유지시키기 위한 것임.
-		 if( !"".equals(searchType) && !"".equals(searchWord) ) {
-			 
-			 mav.addObject("paraMap", paraMap);
-		 }
-
-		System.out.println(mailList);
-		
-		List<TagVO>tagListSide = service.getTagListSide(mail_address);
-		
-		
-		mav.addObject("mailList", mailList);
-		mav.addObject("tagList", tagList);
-		mav.addObject("tagListSide", tagListSide);
-		/*
-		for(MailVO mail :mailList ) {
-			System.out.println("sendTime:"+mail.getSend_time());
-	
-			System.out.println("send_time_date"+mail.getSend_time_date());
-		}
-		*/
-		return mav;
-
-	}
+	/////////////////////
 	
 
 	private Map<String,Object> mailpaginglist(Map<String,Object> htmlMap, Pagination pagination, String listType,HttpServletRequest request) {
 		
 		 Map<String, Object> paraMap = new HashMap<>();
 		 HttpSession session = request.getSession();
-
+		 
 		 MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
 
 		 String mail_address = loginuser.getCpemail();
 
 		 paraMap.put("mail_address", mail_address);
 		 paraMap.put("listType", listType);
+
 		 
 		 // 내 태그 가져오기
 		 List<TagVO> tagList = null;
@@ -1008,18 +1096,12 @@ public class MailController {
 		 paraMap2.put("FK_MAIL_ADDRESS", mail_address);
 		 
 		 tagList=service.getTagListByMailNo(paraMap2);
-
-		 for(TagVO tag :tagList ) {
-		 	System.out.println("getTag_color:"+tag.getTag_color());
-			System.out.println("getFk_mail_no:"+tag.getFk_mail_no());
-		 }
-		 
+ 
 		 List<MailVO> mailList = null;
 		 
 		 String searchType = pagination.getSearchType(); 
 		 String searchWord = pagination.getSearchWord();
-		 System.out.println(searchType);
-		 System.out.println(searchWord);
+
 		 // 둘다 없다면 "" 처리
 		 if(searchType == null || (!"subject".equals(searchType) && !"FK_Sender_address".equals(searchType)) ) {
 			searchType = "";
@@ -1032,8 +1114,17 @@ public class MailController {
 		 paraMap.put("searchWord",searchWord);	
 		 
 		 // 총 게시물 건수(totalCount)
+		 if(listType.equalsIgnoreCase("Tag")) {
+			 paraMap.put("tag_name", request.getParameter("tagName"));
+			 paraMap.put("tag_color", request.getParameter("tagColor"));
+
+			 List<String> TagMailList = service.getTotalCountTag(paraMap);
+			 paraMap.put("TagMailList", TagMailList);
+			 
+		 }
+
 		 int listCnt  = service.getTotalCount(paraMap);
-		 
+		 System.out.println("listCnt"+listCnt);
 		 Map<String, Object> resultMap = pagination.getPageRange(listCnt);
 
 		 paraMap.put("startRno",resultMap.get("startRno"));
@@ -1041,15 +1132,10 @@ public class MailController {
 		 
 		 mailList = service.mailListSearchWithPaging(paraMap);
 		 // 페이징 처리한 글목록 가져오기(검색이 있든지, 검색이 없든지 모두 다 포함한 것)
-		 for(MailVO mail :mailList ) {
-			 	System.out.println("getMail_no:"+mail.getMail_no());
-				System.out.println("getSender_important:"+mail.getSender_important());
-			 }
-
-
-		System.out.println(mailList);
-		htmlMap.put("mailList", mailList);
-		htmlMap.put("tagList", tagList);
+		 List<TagVO>tagListSide = service.getTagListSide(mail_address);
+		 htmlMap.put("tagListSide", tagListSide);
+		 htmlMap.put("mailList", mailList);
+		 htmlMap.put("tagList", tagList);
 
 		return htmlMap;
 	}
