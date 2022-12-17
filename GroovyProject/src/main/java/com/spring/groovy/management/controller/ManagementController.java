@@ -9,6 +9,7 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
+import org.json.JSONArray;
 import org.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -378,6 +379,51 @@ public class ManagementController {
 		mav.setViewName( "manage/each/pay/paySearch.tiles");
 		return mav;
 	}
+	
+	// 공용 - 급여관리(급여상세조회 Ajax) 
+	@ResponseBody
+	@RequestMapping(value="/manage/admin/payDetailView.on", produces="text/plain;charset=UTF-8")
+	public String payDetailView(HttpServletRequest request, PayVO pvo) {
+		
+		HttpSession session = request.getSession();
+		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
+		String empno = loginuser.getEmpno();
+		String payno = request.getParameter("payno");
+		
+		Map<String,Object> paramap = new HashMap<>();
+		paramap.put("payno", payno);
+		paramap.put("empno", empno);
+		
+		System.out.println(payno+"payno");
+		System.out.println(empno+"empno");
+		
+		List<PayVO> payDetailList = service.payDetailView(paramap);
+		
+		JSONArray jsonArr = new JSONArray(); // []
+		
+		if(payDetailList != null) {
+			for(PayVO pvo1 : payDetailList) {
+				JSONObject jsonObj = new JSONObject(); // {}
+				jsonObj.put("payno", pvo1.getPayno());
+				jsonObj.put("pay", pvo1.getPay());
+				jsonObj.put("annualpay", pvo1.getAnnualpay());
+				jsonObj.put("overtimepay", pvo1.getOvertimepay());
+				jsonObj.put("incomtax", pvo1.getIncomtax());
+				jsonObj.put("pension", pvo1.getPension());
+				jsonObj.put("insurance", pvo1.getInsurance());
+				jsonObj.put("paymentdate", pvo1.getPaymentdate());
+				jsonObj.put("allpay", pvo1.getAllpay());
+				jsonObj.put("tax", pvo1.getTax());
+				
+				jsonArr.put(jsonObj);
+			}// end of for-----------------------------
+			
+			System.err.println(jsonArr);
+		}
+		
+		return jsonArr.toString();  //  "[{},{},{}]"  또는  "[]"
+	}
+
 	
 	
 	

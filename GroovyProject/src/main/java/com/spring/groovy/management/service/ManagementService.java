@@ -339,6 +339,12 @@ public class ManagementService implements InterManagementService {
 		return dao.getOverPayList(pagination);
 	}
 
+	// 공용 - 급여관리(급여상세조회 Ajax) 
+	@Override
+	public List<PayVO> payDetailView(Map<String, Object> paramap) {
+		return dao.payDetailView(paramap);
+	}
+
 
 
 	

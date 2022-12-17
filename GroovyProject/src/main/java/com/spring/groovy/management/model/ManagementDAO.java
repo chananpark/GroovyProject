@@ -298,6 +298,12 @@ public class ManagementDAO implements InterManagementDAO {
 		return sqlsession.selectOne("minsu.getOverPayList",pagination);
 	}
 
+	// 공용 - 급여관리(급여상세조회 Ajax) 
+	@Override
+	public List<PayVO> payDetailView(Map<String, Object> paramap) {
+		return sqlsession.selectOne("minsu.payDetailView",paramap);
+	}
+
 	
 
 	
