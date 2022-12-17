@@ -52,7 +52,7 @@
  	
 	.modal-content {
 		width:700px;
-		border: solid 1px orange;
+		/* border: solid 1px orange; */
 	}
 	
 	.font > tr> th {

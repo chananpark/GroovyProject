@@ -24,13 +24,11 @@
 	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
 <!-- Optional JavaScript -->
-<script type="text/javascript"
-	src="<%=ctxPath%>/resources/js/jquery-3.6.0.min.js"></script>
-<script type="text/javascript"
-	src="<%=ctxPath%>/resources/bootstrap-4.6.0-dist/js/bootstrap.bundle.min.js"></script>
-<script type="text/javascript"
-	src="<%=ctxPath%>/resources/smarteditor/js/HuskyEZCreator.js"
-	charset="utf-8"></script>
+<script type="text/javascript" src="<%=ctxPath%>/resources/js/jquery-3.6.0.min.js"></script>
+<script type="text/javascript" src="<%=ctxPath%>/resources/bootstrap-4.6.0-dist/js/bootstrap.bundle.min.js"></script>
+<script type="text/javascript" src="<%=ctxPath%>/resources/smarteditor/js/HuskyEZCreator.js" charset="utf-8"></script>
+<script type="text/javascript" src="<%=ctxPath%>/resources/js/snowfall.jquery.js"></script>
+<script type="text/javascript" src="<%=ctxPath%>/resources/js/snowfall.js"></script>
 
 <%--  jquery-ui --%>
 <link rel="stylesheet" type="text/css"
@@ -81,12 +79,17 @@
 		color: white;
 		margin-right:2%;
 	}
+	.easter_egg {
+		margin-right: 1px;
+	}
 	
-	
+	.big {
+    	font-size: 30pt;
+        transition:width 2s, height 2s, background-color 2s, transform 2s;
+	}
 </style>    
 </head>
 <body>
-
 
 <script type="text/javascript">
 
@@ -97,18 +100,42 @@
 			func_login();
 		}); // end of $("button#btn_next").click(function(){---------------------
 			
-			
 		// 엔터를 했을 경우
 		$("input#pwd").keydown(function(e){
 			if(e.keyCode == 13) { 
 				func_login();
 			}
 		}); // end of $("input#pwd").keydown(function(e){
+		
+		// G,r,o,o,v,y 글자를 클릭했을 때
+		$(".easter_egg").click(e=>{
+			$(e.target).addClass('big');
+
+			let flag = true;
+			$(".easter_egg").each(function (index, item){
+				if ($(item).hasClass('big') == false) {
+					flag= false;
+				}
+			});
 			
-		
-		
-		
-		
+			// 모두 클릭되었다면
+			if (flag == true) {
+				// 눈내리기
+				$(document).snowfall({
+		            image :"<%=ctxPath%>/resources/images/flake.png", 
+		            minSize: 10, 
+		            maxSize: 15, 
+		            flakeCount : 40
+		         });				
+			
+				// 모달띄우기
+				$('#easterModal').modal("show");
+				$(".easter_egg").each(function (index, item){
+					$(item).removeClass('big');
+				});
+			}
+		});
+			
 	}); // end of $(document).ready(function(){ ------------------------------
 
 		
@@ -142,7 +169,9 @@
 <div id="body" align="center" class="flex-content join-content">
 <form name="frm_login">
 
-	<div style="color: white; font-size: 30px; font-weight:bold; margin: 3%;">Groovy</div>
+	<div style="color: white; font-size: 33px; font-weight:bold; margin-bottom: 20px;">
+		<span class="easter_egg">G</span><span class="easter_egg">r</span><span class="easter_egg">o</span><span class="easter_egg">o</span><span class="easter_egg">v</span><span class="easter_egg">y</span>
+	</div>
 	
 	<div id="container"  class="card card-body" >
 		<h3 style="font-weight: bold;">로그인</h3>
@@ -166,6 +195,16 @@
  </div>
 </div>
 
+<div class="modal fade" id="easterModal" role="dialog">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-body">
+				<h3 style="text-align: center; margin-bottom: 12px;">𝑴𝒆𝒓𝒓𝒚 𝑪𝒉𝒓𝒊𝒔𝒕𝒎𝒂𝒔!</h3>
+				<img id="empPhoto"src="<%= ctxPath%>/resources/images/picture/산타꼬미.jpg" width="300" style="margin: auto; display: block;"/>
+			</div>
+		</div>
+	</div>
+</div>
 
 </body>
 </html>
