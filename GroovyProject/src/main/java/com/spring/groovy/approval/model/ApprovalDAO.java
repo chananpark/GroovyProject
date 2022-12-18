@@ -209,6 +209,12 @@ public class ApprovalDAO implements InterApprovalDAO {
 		return sqlsession.selectList("approval.getOfficialAprvList");
 	}
 
+	// 공통결재라인 없는 양식 목록 불러오기
+	@Override
+	public List<Map<String, String>> getNoOfficialAprvList() {
+		return sqlsession.selectList("approval.getNoOfficialAprvList");
+	}
+	
 	// 환경설정-공통결재라인 한개 불러오기
 	@Override
 	public List<MemberVO> getOneOfficialAprvLine(String official_aprv_line_no) {
@@ -280,6 +286,30 @@ public class ApprovalDAO implements InterApprovalDAO {
 	@Override
 	public List<DraftFileVO> getAllAttachedFile(String draft_no) {
 		return sqlsession.selectList("approval.getAllAttachedFile", draft_no);
+	}
+	
+	// 관리자메뉴-공통결재라인 삭제하기
+	@Override
+	public int delOfficialAprvLine(String official_aprv_line_no) {
+		return sqlsession.delete("approval.delOfficialAprvLine", official_aprv_line_no);
+	}
+
+	// 공통결재라인 사용 안함으로 바꾸기
+	@Override
+	public int setNoUseOfficialAprvLine(String draft_type_no) {
+		return sqlsession.update("approval.setNoUseOfficialAprvLine", draft_type_no);
+	}
+	
+	// 공통결재라인 여부 사용으로 변경하기
+	@Override
+	public int setUseOfficialLine(String draft_type_no) {
+		return sqlsession.update("approval.setUseOfficialLine", draft_type_no);
+	}
+
+	// 공통결재선 번호 가져오기
+	@Override
+	public int getNewOfficialLineNo() {
+		return sqlsession.selectOne("approval.getNewOfficialLineNo");
 	}
 
 	// 관리자메뉴-공통결재라인 저장

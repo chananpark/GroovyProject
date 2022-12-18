@@ -60,7 +60,7 @@
 	margin: 0 auto;
 }
 
-input {
+#approvalLineContainer input {
   width: 300px;
   height: 30px;
 }
@@ -85,11 +85,92 @@ $(()=>{
 	    } else {
 	      panel.style.display = "block";
 	    }
-	    getAprvLine(this.id);
+	    if (this.classList.contains('official'))
+	   		getAprvLine(this.id);
 	    
 	  });
 	}
 });
+
+/* 결재라인 삭제하기 */
+const delAprvLine = (official_aprv_line_no, draft_type_no) => {
+	
+	swal({
+		  title: "이 결재라인을 삭제하시겠습니까?",
+		  icon: "warning",
+		  buttons: true,
+		  dangerMode: true,
+		})
+		.then((willDelete) => {
+		  if (willDelete) {
+		    // 삭제
+			$.ajax({
+			      url : "<%=ctxPath%>/approval/admin/delOfficialAprvLine.on",
+			      type:'POST',
+			      data: {'official_aprv_line_no': official_aprv_line_no,
+			    	  	'draft_type_no': draft_type_no},
+			      dataType:'json',
+			      cache:false,
+			      success : function(json){
+			    	  if(json.result == true) {
+					      	swal('결재라인이 삭제되었습니다.').then(function (data) {
+					      	location.href="javascript:history.go(0);";
+					      	});
+						}
+			    	  else{
+			    		  swal('오류로 인해 결재라인 삭제를 실패하였습니다. 다시 시도해주세요.');
+			    	  }
+					},
+			      error: function(request, status, error){
+						alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+					}
+			  });
+			
+		  } else {
+		    swal("삭제가 취소되었습니다.");
+		  }
+		});
+}
+
+/* 결재라인 추가하기 */
+const setOfficialLine = (draft_type_no) => {
+	
+	swal({
+		  title: "이 양식에 공통 결재라인을 추가하시겠습니까?",
+		  icon: "warning",
+		  buttons: true,
+		  dangerMode: true,
+		})
+		.then((willDelete) => {
+		  if (willDelete) {
+		    // 삭제
+			$.ajax({
+			      url : "<%=ctxPath%>/approval/admin/setOfficialLine.on",
+			      type:'POST',
+			      data: {'draft_type_no': draft_type_no},
+			      dataType:'json',
+			      cache:false,
+			      success : function(json){
+			    	  if(json.result == true) {
+			    		  swal("이 양식에 공통 결재라인이 기본값으로 추가되었습니다. \r\n 수정을 통해 설정해주세요.")
+							.then(function (result) {
+								location.href="javascript:history.go(0);";
+			  		      });
+						}
+			    	  else{
+			    		  swal('오류로 인해 공통 결재라인 추가를 실패하였습니다. 다시 시도해주세요.');
+			    	  	}
+					},
+			      error: function(request, status, error){
+						alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+					}
+			  });
+			
+		  } else {
+		    swal("공통 결재라인 추가를 취소하였습니다.");
+		  }
+		});
+}
 
 /* 결재라인 수정하기(결재자 새로 선택하기) */
 const selectApprovalLine = (official_aprv_line_no) => {
@@ -195,11 +276,13 @@ const getAprvLine = (official_aprv_line_no) => {
 <div id='approvalLineContainer' class='m-4'>
 
 	<c:forEach items="${officialAprvList}" var="item">
-		<button class="accordion" id='${item.official_aprv_line_no}'> <i class="fas fa-chevron-down mr-2"></i>${item.draft_type}</button>
+		<button class="accordion official" id='${item.official_aprv_line_no}'> <i class="fas fa-chevron-down mr-2"></i>${item.draft_type}</button>
 		<div class='panel'>
 			<div class='approvalLine mb-4'>
 				<div class='my-4'>
 					<button type="button" class="btn btn-sm" id='editBtn' onclick='selectApprovalLine(${item.official_aprv_line_no})'>수정</button>
+					<button type="button" class="del${item.official_aprv_line_no} btn btn-sm btn-secondary" id='delBtn' 
+					onclick='delAprvLine(${item.official_aprv_line_no}, ${item.draft_type_no})'>삭제</button>
 					<span class='save save${item.official_aprv_line_no} ml-2'>결재라인 수정 후 반드시 저장버튼을 클릭해주세요.</span>
 					<button type="button" class="save save${item.official_aprv_line_no} btn btn-sm" id='saveBtn' onclick='saveAprvLine(${item.official_aprv_line_no})'>저장</button>
 				</div>
@@ -220,6 +303,17 @@ const getAprvLine = (official_aprv_line_no) => {
 					</tbody>
 				</table>
 			</form>
+		</div>
+	</c:forEach>
+
+	<c:forEach items="${noOfficialAprvList}" var="item">
+		<button class="accordion" id='${item.draft_type_no}'> <i class="fas fa-chevron-down mr-2"></i>${item.draft_type}</button>
+		<div class='panel'>
+			<div class='approvalLine mb-4'>
+				<div class='my-4'>
+					<button type="button" class="btn btn-sm" id='editBtn' onclick='setOfficialLine(${item.draft_type_no})'>공통 결재라인 추가</button>
+				</div>
+			</div>
 		</div>
 	</c:forEach>
 </div>
