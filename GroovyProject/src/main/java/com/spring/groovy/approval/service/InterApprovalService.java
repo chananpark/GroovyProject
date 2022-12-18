@@ -123,6 +123,15 @@ public interface InterApprovalService {
 	// 관리자메뉴-공통결재라인 목록 불러오기
 	List<Map<String, String>> getOfficialAprvList();
 	
+	// 관리자메뉴-공통결재라인 삭제하기
+	boolean delOfficialAprvLine(Map<String, String> paraMap);
+
+	// 공통결재라인 여부 사용으로 변경하기
+	boolean setUseOfficialLine(String draft_type_no);
+
+	// 공통결재라인 없는 양식 목록 불러오기
+	List<Map<String, String>> getNoOfficialAprvList();
+
 	// 관리자메뉴-공통결재라인 한개 불러오기
 	List<MemberVO> getOneOfficialAprvLine(String official_aprv_line_no);
 	

@@ -337,6 +337,7 @@
 	<resultMap type="HashMap" id="officialAprvMap">
 		<result property="official_aprv_line_no" column="official_aprv_line_no" javaType="String"/>
 		<result property="draft_type" column="draft_type" javaType="String"/>
+		<result property="draft_type_no" column="draft_type_no" javaType="String"/>
 		<result property="fk_approval_empno1" column="fk_approval_empno1" javaType="String"/>
 		<result property="fk_approval_empno2" column="fk_approval_empno2" javaType="String"/>
 		<result property="fk_approval_empno3" column="fk_approval_empno3" javaType="String"/>
@@ -344,9 +345,23 @@
 	</resultMap>
 	
 	<select id="getOfficialAprvList" resultMap="officialAprvMap">
-		SELECT OFFICIAL_APRV_LINE_NO, DRAFT_TYPE, FK_APPROVAL_EMPNO1, FK_APPROVAL_EMPNO2, FK_APPROVAL_EMPNO3, FK_APPROVAL_EMPNO4
+		SELECT OFFICIAL_APRV_LINE_NO, DRAFT_TYPE_NO, DRAFT_TYPE, FK_APPROVAL_EMPNO1, FK_APPROVAL_EMPNO2, FK_APPROVAL_EMPNO3, FK_APPROVAL_EMPNO4
 		FROM TBL_OFFICIAL_APRV_LINE JOIN TBL_DRAFT_TYPE
 		ON FK_DRAFT_TYPE_NO = DRAFT_TYPE_NO
+		ORDER BY OFFICIAL_APRV_LINE_NO
+	</select>
+	
+	<!-- 공통결재라인 없는 양식 목록 불러오기 -->
+	<resultMap type="HashMap" id="noOfficialAprvMap">
+		<result property="draft_type_no" column="draft_type_no" javaType="String"/>
+		<result property="draft_type" column="draft_type" javaType="String"/>
+		<result property="draft_receive" column="draft_receive" javaType="String"/>
+	</resultMap>
+	
+	<select id="getNoOfficialAprvList" resultMap="noOfficialAprvMap">
+		SELECT *
+		FROM TBL_DRAFT_TYPE
+		WHERE DRAFT_RECEIVE = 0
 	</select>
 
 	<!-- 공통결재라인 이름으로 조회 -->	
@@ -518,11 +533,41 @@
 		
 	<!-- 공통결재라인 저장하기 -->
 	<update id="saveOfficialApprovalLine" parameterType="com.spring.groovy.approval.model.OfficialAprvLineVO">
-		UPDATE TBL_OFFICIAL_APRV_LINE
-		SET FK_APPROVAL_EMPNO1 = #{fk_approval_empno1}, FK_APPROVAL_EMPNO2 = #{fk_approval_empno2}, 
+		MERGE INTO TBL_OFFICIAL_APRV_LINE
+		USING DUAL
+		ON (OFFICIAL_APRV_LINE_NO = #{official_aprv_line_no})
+		WHEN MATCHED THEN
+		UPDATE SET FK_APPROVAL_EMPNO1 = #{fk_approval_empno1}, FK_APPROVAL_EMPNO2 = #{fk_approval_empno2}, 
 				FK_APPROVAL_EMPNO3 = #{fk_approval_empno3}, FK_APPROVAL_EMPNO4 = #{fk_approval_empno4}
-		WHERE OFFICIAL_APRV_LINE_NO = #{official_aprv_line_no}
+		WHEN NOT MATCHED THEN
+		INSERT(OFFICIAL_APRV_LINE_NO, FK_DRAFT_TYPE_NO, FK_APPROVAL_EMPNO1, FK_APPROVAL_EMPNO2, FK_APPROVAL_EMPNO3, FK_APPROVAL_EMPNO4)
+		VALUES (#{official_aprv_line_no}, #{fk_draft_type_no}, #{fk_approval_empno1}, #{fk_approval_empno2}, #{fk_approval_empno3}, #{fk_approval_empno4})
 	</update>
+		
+	<!-- 공통결재라인 삭제하기 -->
+	<delete id="delOfficialAprvLine" parameterType="String">
+		DELETE FROM TBL_OFFICIAL_APRV_LINE
+		WHERE OFFICIAL_APRV_LINE_NO = #{official_aprv_line_no}
+	</delete>
+		
+	<!-- 공통결재라인 사용 안하기 -->
+	<delete id="setNoUseOfficialAprvLine" parameterType="String">
+		UPDATE TBL_DRAFT_TYPE
+		SET DRAFT_RECEIVE = 0
+		WHERE DRAFT_TYPE_NO = #{draft_type_no}
+	</delete>
+		
+	<!-- 공통결재라인 사용으로 변경하기 -->
+	<delete id="setUseOfficialLine" parameterType="String">
+		UPDATE TBL_DRAFT_TYPE
+		SET DRAFT_RECEIVE = 1
+		WHERE DRAFT_TYPE_NO = #{draft_type_no}
+	</delete>
+			
+	<!-- 공통결재선 번호 가져오기 -->
+	<select id="getNewOfficialLineNo" resultType="int">
+		SELECT MAX(OFFICIAL_APRV_LINE_NO)+1 FROM TBL_OFFICIAL_APRV_LINE
+	</select>
 	
 	<!-- 서명이미지 수정하기 -->
 	<update id="updateSignature" parameterType="HashMap">

@@ -94,6 +94,9 @@ public interface InterApprovalDAO {
 	// 공통결재라인 목록 불러오기
 	List<Map<String, String>> getOfficialAprvList();
 
+	// 공통결재라인 없는 양식 목록 불러오기
+	List<Map<String, String>> getNoOfficialAprvList();
+
 	// 환경설정 - 결재라인 저장
 	int saveApprovalLine(SavedAprvLineVO sapVO);
 	
@@ -153,6 +156,18 @@ public interface InterApprovalDAO {
 
 	// 기안종류번호로 공통결재라인 가져오기
 	List<MemberVO> getRecipientList(String type_no);
+
+	// 관리자메뉴-공통결재라인 삭제하기
+	int delOfficialAprvLine(String official_aprv_line_no);
+
+	// 공통결재라인 사용 안함으로 바꾸기
+	int setNoUseOfficialAprvLine(String draft_type_no);
+
+	// 공통결재라인 여부 사용으로 변경하기
+	int setUseOfficialLine(String draft_type_no);
+
+	// 공통결재선 번호 가져오기
+	int getNewOfficialLineNo();
 
 	// 관리자메뉴-공통결재라인 저장
 	int saveOfficialApprovalLine(OfficialAprvLineVO oapVO);

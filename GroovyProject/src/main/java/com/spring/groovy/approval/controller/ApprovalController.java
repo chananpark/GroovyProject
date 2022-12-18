@@ -1064,7 +1064,11 @@ public class ApprovalController {
 		// 공통결재라인 목록 불러오기
 		List<Map<String, String>> officialAprvList = service.getOfficialAprvList(); 
 		
+		// 공통결재라인 없는 양식 목록 불러오기
+		List<Map<String, String>> noOfficialAprvList = service.getNoOfficialAprvList(); 
+		
 		mav.addObject("officialAprvList", officialAprvList);
+		mav.addObject("noOfficialAprvList", noOfficialAprvList);
 		mav.setViewName("approval/admin/official_approvalLine.tiles");
 		return mav;
 	}
@@ -1087,6 +1091,37 @@ public class ApprovalController {
 
 		return aprvArray.toString();
 		
+	}
+	
+	// 관리자메뉴-공통결재라인 삭제하기
+	@ResponseBody
+	@PostMapping(value = "/admin/delOfficialAprvLine.on", produces = "text/plain;charset=UTF-8")
+	public String delOfficialAprvLine(HttpServletRequest request) {
+		
+		Map<String, String> paraMap = new HashMap<>();
+		paraMap.put("official_aprv_line_no", request.getParameter("official_aprv_line_no"));
+		paraMap.put("draft_type_no", request.getParameter("draft_type_no"));
+		
+		// 관리자메뉴-공통결재라인 삭제하기
+		boolean result = service.delOfficialAprvLine(paraMap); 
+		
+		JSONObject json = new JSONObject();
+		json.put("result", result);
+		return String.valueOf(json);
+	}
+	
+	// 관리자메뉴-공통결재라인 추가하기
+	@ResponseBody
+	@PostMapping(value = "/admin/setOfficialLine.on", produces = "text/plain;charset=UTF-8")
+	public String setOfficialLine(HttpServletRequest request, @RequestParam("draft_type_no") String draft_type_no) {
+		
+		JSONObject json = new JSONObject();
+
+		// 공통결재라인 여부 사용으로 변경하기
+		boolean result = service.setUseOfficialLine(draft_type_no); 
+		
+		json.put("result", result);
+		return String.valueOf(json);
 	}
 	
 	// 관리자메뉴-공통결재라인 수정

@@ -511,6 +511,54 @@ public class ApprovalService implements InterApprovalService {
 		return dao.getOfficialAprvList();
 	}
 
+	// 공통결재라인 없는 양식 목록 불러오기
+	@Override
+	public List<Map<String, String>> getNoOfficialAprvList() {
+		return dao.getNoOfficialAprvList();
+	}
+	
+	// 관리자메뉴-공통결재라인 삭제하기
+	@Override
+	@Transactional(propagation=Propagation.REQUIRED, isolation=Isolation.READ_COMMITTED, rollbackFor= {Throwable.class})
+	public boolean delOfficialAprvLine(Map<String, String> paraMap) {
+		
+		String official_aprv_line_no = paraMap.get("official_aprv_line_no"); 
+		String draft_type_no = paraMap.get("draft_type_no"); 
+		
+		// 결재라인 삭제
+		int n = dao.delOfficialAprvLine(official_aprv_line_no);
+		
+		if (n != 1)
+			return false;
+		
+		// 공통결재라인 사용 안함으로 바꾸기
+		n = dao.setNoUseOfficialAprvLine(draft_type_no);
+		
+		return (n==1)? true: false;
+	}
+
+	// 공통결재라인 여부 사용으로 변경하기
+	@Override
+	@Transactional(propagation=Propagation.REQUIRED, isolation=Isolation.READ_COMMITTED, rollbackFor= {Throwable.class})
+	public boolean setUseOfficialLine(String draft_type_no) {
+		int n = dao.setUseOfficialLine(draft_type_no);
+				
+		if (n == 1) {
+
+			int official_aprv_line_no = dao.getNewOfficialLineNo();
+			
+			// 공통결재선 기본값으로 추가하기
+			OfficialAprvLineVO oapVO = new OfficialAprvLineVO();
+			oapVO.setOfficial_aprv_line_no(official_aprv_line_no);
+			oapVO.setFk_draft_type_no(Integer.parseInt(draft_type_no));
+			oapVO.setFk_approval_empno1(1);
+			
+			n = dao.saveOfficialApprovalLine(oapVO);
+		}
+		
+		return (n == 1)? true: false;
+	}
+
 	// 관리자메뉴-공통결재라인 저장
 	@Override
 	public int saveOfficialApprovalLine(OfficialAprvLineVO oapVO) {
@@ -665,7 +713,6 @@ public class ApprovalService implements InterApprovalService {
 			return true;
 		}
 	}
-
 
 }
 	
