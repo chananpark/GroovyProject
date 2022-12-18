@@ -52,9 +52,7 @@ i.fa-flag{
 	color:#086BDE ;
 	margin-left:1px;
 }
-.mail_list_option>i.fas, i.fa{
-padding-left: 4px;
-}
+
 
 .toolbtn{
 	border-color: #ddd;
@@ -89,40 +87,31 @@ padding-left: 4px;
 
 
 </style>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.css" integrity="sha512-3pIirOrwegjM6erE5gPSwkUzO+3cTjpnV9lexlNZqvupR64iZBnOOTiiLPb9M36zpMScbmUNIcHUqKD47M719g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+<script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js" integrity="sha512-VEd+nq25CkR676O+pLBnDW09R7VQX9Mdiij052gVCp5yVH3jGtH70Ho/UUv4mJDsEdTvqRCFZg0NKGiojGnUCw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script type="text/javascript">
+	toastr.options = { // toastr 옵션
+		  "closeButton": false,
+		  "debug": false,
+		  "newestOnTop": false,
+		  "progressBar": true,
+		  "positionClass": "toast-top-center",
+		  "preventDuplicates": false,
+		  "onclick": null,
+		  "showDuration": "300",
+		  "hideDuration": "1000",
+		  "timeOut": "2000",
+		  "extendedTimeOut": "1000",
+		  "showEasing": "swing",
+		  "hideEasing": "linear",
+		  "showMethod": "fadeIn",
+		  "hideMethod": "fadeOut"
+		}
 	$(document).ready(function(){
+
 		listRefresh();
 
-		
-		
-		$("div#displayList").hide();
-		
-		$(document).on('click','#mailLAllCheck_btn', function(){
-			if($("#mailLAllCheck").is(":checked")){
-				$("input:checkbox[id='mailLAllCheck']").prop("checked", false);
-	        }else{
-	        	$("input:checkbox[id='mailLAllCheck']").prop("checked", true);
-	        }
-			
-			if($("#mailLAllCheck").is(":checked")) $("input[name=mailCheck]").prop("checked", true);
-			else $("input[name=mailCheck]").prop("checked", false);
-			
-		});
-		
-		// 체크박스 전체선택
-		$("input#mailLAllCheck").click(function() {
-			if($("#mailLAllCheck").is(":checked")) $("input[name=mailCheck]").prop("checked", true);
-			else $("input[name=mailCheck]").prop("checked", false);
-		});
 
-		$("input[name=mailCheck]").click(function() {
-			var total = $("input[name=mailCheck]").length;
-			var checked = $("input[name=mailCheck]:checked").length;
-
-			if(total != checked) $("input#mailLAllCheck").prop("checked", false);
-			else $("input#mailLAllCheck").prop("checked", true); 
-		});
-		
 		// 검색 엔터
 		$("input#searchWord").keyup(function(e){
 			if(e.keyCode == 13) {
@@ -148,8 +137,35 @@ padding-left: 4px;
 	}// end of function goSearch()--------------------
 	
 	function goMail(mailno){
-		
-		location.href="<%=ctxPath%>/mail/viewMail.on?mailNo="+ mailno ;
+		// 패스워드 체크
+		$.ajax({
+			url:"<%= ctxPath%>/mail/getPwd.on",
+			type:"post",
+			data:{"mail_no":mailno},
+	        success:function(pwd){
+	        	if(pwd != "" && pwd != null){
+	        		swal("비밀 메일입니다. 암호를 입력해주세요.", {
+	  				  content: "input",
+	  				})
+	  				.then((value) => {
+	  				  if(value == pwd){
+	  					  location.href="<%=ctxPath%>/mail/viewMail.on?mailNo="+ mailno ;
+	  				  }
+	  				  else{
+	  					  swal("잘못된 암호입니다. 다시 확인해주세요.");
+	  				  }
+	  				});
+	        	}
+	        	else{
+	    			 location.href="<%=ctxPath%>/mail/viewMail.on?mailNo="+ mailno ; 
+	    		}
+
+	        	
+	        },
+	        error: function(request, status, error){
+				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			}
+		});
 	}
 	
 
@@ -184,6 +200,8 @@ padding-left: 4px;
 	        		
 	        		$("div#papagebar").html(json.papagebar);
 	        		
+	        		$("#tagOption").html(json.taghtml);
+	        		
 	        		
 	        		if(checkbox != null){
 	        			const checkbox_arr = checkbox.split(',');
@@ -205,13 +223,16 @@ padding-left: 4px;
 	
 	function importantCheckSelect(){
 	
-		var mailCheck = document.querySelectorAll('input[name="mailCheck"]:checked');
+		
+		var mailCheck = $('input[name="mailCheck"]:checked');
 		console.log(mailCheck);
 		if(mailCheck.length > 0){
 		result="";
-		mailCheck.forEach((el) => {
-			result += el.value;
+		mailCheck.each(function(index, item){
+			result += $(item).attr("value");
+			console.log($(item).attr("value"));
 			result += ',';
+			
 		});
 		 result = result.slice(0, -1);
 		 console.log(result);
@@ -224,16 +245,14 @@ padding-left: 4px;
 	}
 	
    	function importantCheck(mail_no){
+   		console.log("mail_no"+mail_no);
 		$.ajax({
 			url:"<%= ctxPath%>/mail/importantCheck.on",
 			data:{"mail_no":mail_no},
 			type:"post",
 			dataType:"json",
 	        success:function(json){
-	        	if(json.n > 0){
-	        		alert(json.n+ "개 중요 클릭");
-	        	
-	        	}
+
 	        	listRefresh();
 	        },
 	        error: function(request, status, error){
@@ -355,7 +374,101 @@ padding-left: 4px;
 			alert("체크박스를 하나만 선택해주세요.");
 		}
 	}
+	
+	function goAddTag(){
+		let tag_color = $("#tag_color").val().substring(1);
+		
+		let tag_name = $("#tag_name").val();
+		console.log("tag_color"+tag_color);
+		
+		var mailCheck = $('input[name="mailCheck"]:checked');
+		console.log(mailCheck);
+		if(mailCheck.length > 0){
+		fk_mail_no="";
+		mailCheck.each(function(index, item){
+			fk_mail_no += $(item).attr("value");
+			console.log($(item).attr("value"));
+			fk_mail_no += ',';
+			
+		});
+		fk_mail_no = fk_mail_no.slice(0, -1);
+		console.log("fk_mail_no"+fk_mail_no);
+		// 체크한 것들 번호 가져가서 , 로 이어지는 문자열로 변환
+		
+		$.ajax({
+			url:"<%= ctxPath%>/mail/tagAdd.on",
+			data:{"tag_color":tag_color,
+				  "tag_name":tag_name,
+				  "fk_mail_no":fk_mail_no},
+			type:"post",
+			dataType:"json",
+	        success:function(json){
+	        	if(json.n > 0){
+	        		Command: toastr["success"]("선택한 게시글에 새로운 태그가 적용되었습니다.")
+	    
+	        		$('#modal_addTag').modal('hide');
+	
+	        	}
+	        	listRefresh(); 
+	        	sideTag();
+	        },
+	        error: function(request, status, error){
+				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			}
+		});
 
+		}
+		else{
+			toastr["warning"]("체크박스를 선택해주세요")
+		}
+		
+		
+	}
+	
+	function deleteTag(tag_color,tag_name){
+		event.stopPropagation();
+		
+		swal({
+			icon: 'warning',
+			title: '태그 삭제',
+			text : "정말 "+tag_name+" 태그를  모두 삭제하시겠습니까?",
+			buttons: ["취소" , "삭제"]
+		})
+		.then(function(){
+			console.log("tag_color"+tag_color);
+			console.log("tag_name"+tag_name);
+			$.ajax({
+				url:"<%= ctxPath%>/mail/tagDelete.on",
+				data:{"tag_color":tag_color,
+					  "tag_name":tag_name},
+				type:"post",
+				dataType:"json",
+		        success:function(json){
+		        	if(json.n > 0){
+		
+		        		toastr["success"](tag_name+'태그 '+json.n+'개가 전부 삭제되었습니다.');
+		     
+		        	}
+		        	listRefresh(); 
+		        	sideTag();
+		        },
+		        error: function(request, status, error){
+					alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+				}
+			});
+	        
+	  
+	        
+		})
+	}
+	
+	
+
+		
+		
+		
+
+	
 	
 
    	
@@ -385,10 +498,14 @@ padding-left: 4px;
 		  <!-- 아이콘 클릭시 아래것들 나올예정 -->
 		  <i class="fas fa-tag"></i>&nbsp태그
 		  </span>
-		  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-		  <c:forEach var="tagVO" items="${requestScope.tagListSide}" varStatus="status">   		
-     	  	<a class="dropdown-item" href="#" onclick="tagCheckSelect('${tagVO.tag_color}','${tagVO.tag_name}')"><i class="fas fa-tag" style="color:#${tagVO.tag_color}" ></i> &nbsp${tagVO.tag_name}</a>		
-      	 </c:forEach>
+		  <div id="tagOption" class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+		  <%--  <c:forEach var="tagVO" items="${requestScope.tagListSide}" varStatus="status">   		
+     	  		<a class="dropdown-item" href="#" onclick="tagCheckSelect('${tagVO.tag_color}','${tagVO.tag_name}')"><i class="fas fa-tag" style="color:#${tagVO.tag_color}" ></i> 
+	     	  	&nbsp${tagVO.tag_name}
+	     	    <i style="float:right" class="fas fa-minus-circle" onclick="deleteTag('${tagVO.tag_color}','${tagVO.tag_name}');"></i></a>		
+      	 	</c:forEach>
+   	 		<a class="dropdown-item" href="#" data-toggle="modal" data-target="#modal_addTag"><i class="fas fa-tag"></i>&nbsp태그 추가</a>
+		     --%>
 
 		    
 		  </div>
@@ -407,6 +524,7 @@ padding-left: 4px;
 
 <div id="mail_box">
 	<div id ="mailTable">
+	<%-- 
 		<table class="table">
 	
 		
@@ -478,6 +596,7 @@ padding-left: 4px;
 		
 		  	
 		</table>
+		 --%>
 	</div>
 	<div id = "papagebar">
 	${pagebar}
@@ -497,15 +616,11 @@ padding-left: 4px;
     </form>
     
 
-    <div id="displayList" style="border:solid 1px gray; border-top:0px; height:100px; margin-left:75px; margin-top:-1px; overflow:auto;">
-	</div>
 </div>
 
-<div id="testtest">
-	
-	
-	
 
-</div>
+
+
+
 
 
