@@ -144,7 +144,7 @@ i.fa-flag{
 			data:{"mail_no":mailno},
 	        success:function(pwd){
 	        	if(pwd != "" && pwd != null){
-	        		swal("비밀 메일입니다. 암호를 입력해주세요.", {
+	        		swal("비밀 메일입니다. 암호를 입력해주세요", {
 	  				  content: "input",
 	  				})
 	  				.then((value) => {
@@ -152,7 +152,7 @@ i.fa-flag{
 	  					  location.href="<%=ctxPath%>/mail/viewMail.on?mailNo="+ mailno ;
 	  				  }
 	  				  else{
-	  					  swal("잘못된 암호입니다. 다시 확인해주세요.");
+	  					  swal("잘못된 암호입니다. 다시 확인해주세요");
 	  				  }
 	  				});
 	        	}
@@ -163,7 +163,7 @@ i.fa-flag{
 	        	
 	        },
 	        error: function(request, status, error){
-				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+	        	swal("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
 			}
 		});
 	}
@@ -216,7 +216,7 @@ i.fa-flag{
 	        	
 	        },
 	        error: function(request, status, error){
-				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+				swal("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
 			}
 		});
 	}
@@ -240,7 +240,7 @@ i.fa-flag{
 		 importantCheck(result);  
 		}
 		else{
-			alert("체크박스를 선택해주세요.");
+			toastr["warning"]("체크박스를 선택해주세요")
 		}
 	}
 	
@@ -256,7 +256,7 @@ i.fa-flag{
 	        	listRefresh();
 	        },
 	        error: function(request, status, error){
-				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+	        	swal("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
 			}
 		});
 	}
@@ -276,7 +276,7 @@ i.fa-flag{
 		 deleteCheck(result);  
 		}
 		else{
-			alert("체크박스를 선택해주세요.");
+			toastr["warning"]("체크박스를 선택해주세요")
 		}
    	}
    	
@@ -288,12 +288,12 @@ i.fa-flag{
 			dataType:"json",
 	        success:function(json){
 	        	if(json.n > 0){
-	        		alert(json.n+ "개 삭제");
+	        		toastr["success"]("선택한 게시글"+json.n+"개가 삭제되었습니다")
 	        	}
 	        	listRefresh();
 	        },
 	        error: function(request, status, error){
-				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+				swal("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
 			}
 		});
    	}
@@ -316,7 +316,7 @@ i.fa-flag{
 		 tagCheck(result,tagColor, tagName);  
 		}
 		else{
-			alert("체크박스를 선택해주세요.")
+			toastr["warning"]("체크박스를 선택해주세요")
 		}
 	}
    	
@@ -330,12 +330,13 @@ i.fa-flag{
 			dataType:"json",
 	        success:function(json){
 	        	if(json.n > 0){
-	        		alert(json.n+ "개 태그가 설정되었습니다.");
+	        		toastr["success"]("선택한 게시글"+json.n+"개에 태그를 설정하였습니다")
+
 	        	}
 	        	listRefresh(); 
 	        },
 	        error: function(request, status, error){
-				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+				swal("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
 			}
 		});
 	}
@@ -353,7 +354,7 @@ i.fa-flag{
 		 	location.href="<%=ctxPath%>/mail/writeMail.on?mailNo="+ result+ "&type=reply";
 		}
 		else{
-			alert("체크박스를 하나만 선택해주세요.");
+			toastr["warning"]("체크박스를 하나만 선택해주세요")
 		}
 	}
 	
@@ -371,7 +372,7 @@ i.fa-flag{
 		 	location.href="<%=ctxPath%>/mail/writeMail.on?mailNo="+ result+ "&type=pass";
 		}
 		else{
-			alert("체크박스를 하나만 선택해주세요.");
+			toastr["warning"]("체크박스를 하나만 선택해주세요")
 		}
 	}
 	
@@ -404,7 +405,7 @@ i.fa-flag{
 			dataType:"json",
 	        success:function(json){
 	        	if(json.n > 0){
-	        		Command: toastr["success"]("선택한 게시글에 새로운 태그가 적용되었습니다.")
+	        		toastr["success"]("선택한 게시글에 새로운 태그가 적용되었습니다")
 	    
 	        		$('#modal_addTag').modal('hide');
 	
@@ -413,7 +414,7 @@ i.fa-flag{
 	        	sideTag();
 	        },
 	        error: function(request, status, error){
-				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+				swal("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
 			}
 		});
 
@@ -446,14 +447,14 @@ i.fa-flag{
 		        success:function(json){
 		        	if(json.n > 0){
 		
-		        		toastr["success"](tag_name+'태그 '+json.n+'개가 전부 삭제되었습니다.');
+		        		toastr["success"](tag_name+'태그 '+json.n+'개가 전부 삭제되었습니다');
 		     
 		        	}
 		        	listRefresh(); 
 		        	sideTag();
 		        },
 		        error: function(request, status, error){
-					alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+					swal("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
 				}
 			});
 	        

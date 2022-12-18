@@ -48,7 +48,7 @@ th{
 			dataType:"json",
 	        success:function(json){
 	        	if(json.n = 1){
-	        		swal("삭제 완료", "메일이 삭제되었습니다.", "success")
+	        		swal("삭제 완료", "메일이 삭제되었습니다", "success")
 		 	    	.then((value) => {
 		    	    	location.href = "<%=ctxPath%>/mail/sendMailBox.on";
 		    		});
@@ -56,7 +56,7 @@ th{
 	        	listRefresh();
 	        },
 	        error: function(request, status, error){
-				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+				swal("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
 			}
 		});
    	}
@@ -76,7 +76,7 @@ th{
 	        	listRefresh();
 	        },
 	        error: function(request, status, error){
-				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+				swal("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
 			}
 		});
 	}

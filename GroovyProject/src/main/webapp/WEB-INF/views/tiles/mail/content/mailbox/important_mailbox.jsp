@@ -156,7 +156,7 @@ i.fa-flag{
 	        	
 	        },
 	        error: function(request, status, error){
-				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+				swal("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
 			}
 		});
 	}
@@ -198,19 +198,17 @@ i.fa-flag{
 				type:"post",
 				dataType:"json",
 		        success:function(json){
-		        	if(json.n > 0){
-		        		alert(json.n+ "개 중요 클릭");
-		        	}
+
 		        	listRefresh();
 		        },
 		        error: function(request, status, error){
-					alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+					swal("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
 				}
 			});
 
 		}
 		else{
-			alert("체크박스를 선택해주세요.")
+			toastr["warning"]("체크박스를 선택해주세요")
 		}
 	}
 	
@@ -233,13 +231,11 @@ i.fa-flag{
 			type:"post",
 			dataType:"json",
 	        success:function(json){
-	        	if(json.n > 0){
-	        		alert(json.n+ "개 중요 클릭");
-	        	}
+
 	        	listRefresh();
 	        },
 	        error: function(request, status, error){
-				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+				swal("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
 			}
 		});
 	}
@@ -276,17 +272,17 @@ i.fa-flag{
 				dataType:"json",
 		        success:function(json){
 		        	if(json.n > 0){
-		        		alert(json.n+ "개 삭제");
+		        		toastr["success"]("선택한 게시글"+json.n+"개가 삭제되었습니다")
 		        	}
 		        	listRefresh();
 		        },
 		        error: function(request, status, error){
-					alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+					swal("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
 				}
 			});
 		}
 		else{
-			alert("체크박스를 선택해주세요.")
+			toastr["warning"]("체크박스를 선택해주세요")
 		}
    	}
 
@@ -320,17 +316,17 @@ i.fa-flag{
 				dataType:"json",
 		        success:function(json){
 		        	if(json.n > 0){
-		        		alert(json.n+ "개 태그가 설정되었습니다.");
+		        		toastr["success"]("선택한 게시글"+json.n+"개에 태그를 설정하였습니다")
 		        	}
 		        	listRefresh(); 
 		        },
 		        error: function(request, status, error){
-					alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+					swal("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
 				}
 			});  
 		}
 		else{
-			alert("체크박스를 선택해주세요.")
+			toastr["warning"]("체크박스를 선택해주세요")
 		}
 	}
 	
@@ -353,7 +349,7 @@ i.fa-flag{
 		 	location.href="<%=ctxPath%>/mail/writeMail.on?mailNo="+ result+ "&type=reply";
 		}
 		else{
-			alert("체크박스를 하나만 선택해주세요.");
+			toastr["warning"]("체크박스를 하나만 선택해주세요")
 		}
 	}
    	
@@ -375,7 +371,7 @@ i.fa-flag{
 		 	location.href="<%=ctxPath%>/mail/writeMail.on?mailNo="+ result+ "&type=pass";
 		}
 		else{
-			alert("체크박스를 하나만 선택해주세요.");
+			toastr["warning"]("체크박스를 하나만 선택해주세요")
 		}
 	}
 	
@@ -423,7 +419,7 @@ i.fa-flag{
 	        	sideTag();
 	        },
 	        error: function(request, status, error){
-				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+				swal("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
 			}
 		});
 
@@ -463,7 +459,7 @@ i.fa-flag{
 		        	sideTag();
 		        },
 		        error: function(request, status, error){
-					alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+					swal("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
 				}
 			});
 	        
@@ -508,7 +504,7 @@ i.fa-flag{
 	        	
 	        },
 	        error: function(request, status, error){
-				alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+				swal("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
 			}
 		});
 	}
