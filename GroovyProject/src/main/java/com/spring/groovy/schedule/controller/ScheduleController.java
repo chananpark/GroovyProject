@@ -715,14 +715,14 @@ public class ScheduleController {
 	    CellStyle headerStyle = workbook.createCellStyle();
 	    headerStyle.setAlignment(HorizontalAlignment.CENTER);
 	    headerStyle.setVerticalAlignment(VerticalAlignment.CENTER);
-		
+	    
 	    // CellStyle 배경색(ForegroundColor)만들기
         // setFillForegroundColor 메소드에 IndexedColors Enum인자를 사용한다.
         // setFillPattern은 해당 색을 어떤 패턴으로 입힐지를 정한다.
-	    mergeRowStyle.setFillForegroundColor(IndexedColors.INDIGO.getIndex());  // IndexedColors.DARK_BLUE.getIndex() 는 색상(남색)의 인덱스값을 리턴시켜준다. 
+	    mergeRowStyle.setFillForegroundColor(IndexedColors.BLUE.getIndex());  // IndexedColors.DARK_BLUE.getIndex() 는 색상(남색)의 인덱스값을 리턴시켜준다. 
 	    mergeRowStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND); 		   // 실선
       
-	    headerStyle.setFillForegroundColor(IndexedColors.LIGHT_YELLOW.getIndex()); // IndexedColors.LIGHT_YELLOW.getIndex() 는 연한노랑의 인덱스값을 리턴시켜준다. 
+	    headerStyle.setFillForegroundColor(IndexedColors.PALE_BLUE.getIndex()); // IndexedColors.LIGHT_YELLOW.getIndex() 는 연한노랑의 인덱스값을 리턴시켜준다. 
 	    headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
 	    
 	    // Cell 폰트(Font) 설정하기
@@ -731,7 +731,6 @@ public class ScheduleController {
         // 이후 CellStyle의 setFont 메소드를 사용해 인자로 폰트를 넣어준다.
         // mergeRowFont 에 set 해주면 폰트스타일을 설정해 놓는 것이다.
 	    Font mergeRowFont = workbook.createFont(); // import org.apache.poi.ss.usermodel.Font; 으로 한다.
-	    mergeRowFont.setFontName("맑은고딕");
 	    mergeRowFont.setFontHeight((short)500);
 	    mergeRowFont.setColor(IndexedColors.WHITE.getIndex());
 	    mergeRowFont.setBold(true);
