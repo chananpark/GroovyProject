@@ -514,7 +514,7 @@ i.fa-flag{
 		  <!-- 아이콘 클릭시 아래것들 나올예정 -->
 		  <i class="fas fa-tag"></i>&nbsp태그
 		  </span>
-		  <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+		  <div id="tagOption" class="dropdown-menu" aria-labelledby="dropdownMenuButton">
 			<%--  <c:forEach var="tagVO" items="${requestScope.tagListSide}" varStatus="status">   		
      	  		<a class="dropdown-item" href="#" onclick="tagCheckSelect('${tagVO.tag_color}','${tagVO.tag_name}')"><i class="fas fa-tag" style="color:#${tagVO.tag_color}" ></i> 
 	     	  	&nbsp${tagVO.tag_name}

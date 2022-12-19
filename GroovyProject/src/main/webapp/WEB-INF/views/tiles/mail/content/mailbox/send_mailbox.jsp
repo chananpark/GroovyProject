@@ -157,7 +157,7 @@ i.fa-flag{
 	  				});
 	        	}
 	        	else{
-	    			 location.href="<%=ctxPath%>/mail/viewMail.on?mailNo="+ mailno ; 
+	    			 location.href="<%=ctxPath%>/mail/viewMail.on?mailNo="+ mailno; 
 	    		}
 
 	        	
