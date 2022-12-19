@@ -176,7 +176,7 @@ $(()=>{
 								
    			</div>
    			<div class="dropdown-content">
-			    <a href="#">프로필</a>
+			    <a href="<%=ctxPath%>/manage/info/viewInfo.on">프로필</a>
 			    <a href="<%= ctxPath%>/login.on">로그아웃</a>
 			</div>
    		</div>
