@@ -441,7 +441,7 @@
 
 	<!-- 기안 문서 조회 -->
 	<select id="getDraftInfo" resultType="com.spring.groovy.approval.model.DraftVO" parameterType="com.spring.groovy.approval.model.DraftVO" >
-		SELECT D.*, FK_DRAFT_EMPNO, NAME as DRAFT_EMP_NAME, DEPARTMENT AS DRAFT_DEPARTMENT, POSITION, EMPIMG
+		SELECT D.*, FK_DRAFT_EMPNO, NAME as DRAFT_EMP_NAME, DEPARTMENT AS DRAFT_DEPARTMENT, FK_DEPARTMENT_NO AS DRAFT_DEPARTMENT_NO, POSITION, EMPIMG
         FROM TBL_DRAFT D JOIN TBL_EMPLOYEE
         ON EMPNO = FK_DRAFT_EMPNO
 		WHERE DRAFT_NO = #{draft_no}
