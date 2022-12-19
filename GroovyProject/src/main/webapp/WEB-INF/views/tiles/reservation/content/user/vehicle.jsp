@@ -48,7 +48,9 @@
 	$(document).ready(function(){
 		
 		// 첫창에서 오늘 날짜 선택하게 만들기
-		var today_date = new Date().toISOString().substring(0, 10);
+		let offset = now.getTimezoneOffset() * 60000; //ms단위라 60000곱해줌
+		let dateOffset = new Date(now.getTime() - offset);	
+		var today_date = dateOffset.toISOString().substring(0, 10);
 	    $("input#reservStartDate").val(today_date);
 
 	    // insertReservation 에 넣어줄 변수인 클릭한 날짜 잡아오기
