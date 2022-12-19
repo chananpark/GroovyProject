@@ -61,14 +61,44 @@
 	    $("input#reservStartDate").change(function(){
 	    	selectDate = $("input#reservStartDate").val();
 	    	
-	    	// 이전 날짜 선택 막기
-	    	blockSelectDate(selectDate);
+	    	var str_selectDay = selectDate.substring(0,4).toString() + selectDate.substring(5,7).toString() + selectDate.substring(8,10).toString();
 	    	
-	    	// 타임테이블 불러오는 메소드
-	    	callReservationTable(selectDate);
+	    	// 현재 시간 날짜 구해오기
+			var now_year = now.getFullYear();
+			var now_month = now.getMonth();
+			var now_date = now.getDate();
+			var now_hours = now.getHours();
+			
+			if(now_month < 10) {
+				now_month = "0"+(now_month+1);
+			} else {
+				now_month = now_month + 1;
+			}
+			
+			if(now_date < 10) {
+				now_date = "0"+now_date;
+			} 
+			
+			if(now_hours < 10) {
+				now_hours = "0"+now_hours;
+			} 
+			
+			var now_day =  now_year.toString() + now_month.toString() + now_date.toString();
 	    	
-	    	// 예약된 시간 보여주면서 예약 못하게 막아주는 메소드		
-		    reservTime(selectDate);
+	    	if(Number(str_selectDay) < Number(now_day)) {
+	    		swal("지난 날짜는 예약할 수 없습니다.");
+				$("input#reservStartDate").val(today_date);
+	    		return;
+	    	} else {
+	    		// 타임테이블 불러오는 메소드
+		    	callReservationTable(selectDate);
+		    	
+		    	// 예약된 시간 보여주면서 예약 못하게 막아주는 메소드		
+			    reservTime(selectDate);
+		    	
+			 	// 이전 날짜 선택 막기
+		    	blockSelectDate(selectDate);
+	    	}
 	    	
 	    }); // end of  $("input#reservStartDate").change(function()
 	    
