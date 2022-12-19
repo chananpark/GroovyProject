@@ -221,7 +221,7 @@ const cancelDraft = () => {
 			</div>
 			
 			<!-- 결재라인 -->
-			<div class='approvalLineInfo' style='width:40%'>
+			<div class='approvalLineInfo' style='width:45%'>
 				<h5 class='text-left my-4'>결재정보</h5>
 				<table class='mr-4 table table-sm table-bordered text-left' style="width:auto">
 					<tr>
@@ -266,7 +266,7 @@ const cancelDraft = () => {
 			</script>
 			<!-- 수신처 -->
 			<c:if test="${externalList != '[]'}">
-			<div class='approvalLineInfo' style='clear:both; width:40%'>
+			<div class='approvalLineInfo' style='clear:both; width:45%'>
 				<table class='mr-4 table table-sm table-bordered text-left' style="width:auto">
 					<tr>
 						<th rowspan='5' style='font-size: medium; vertical-align: middle; width: 30px'>수<br>신</th>
