@@ -137,7 +137,7 @@ $(()=>{
    		</div>
     </li>
     <li class="nav-item">
-      	<div id='' class="nav-link text-dark  header_hover header_width" onClick='location.href="#"'>
+      	<div id='' class="nav-link text-dark  header_hover header_width" onClick='location.href="<%=ctxPath%>/notice/list.on"'>
     		<div class="text-center"><i class="fas fa-bullhorn fa-lg"></i></div>
     		<div style="text-align: center;">공지사항</div>
    		</div>
