@@ -237,7 +237,7 @@ public class CommunityController {
 	// 임시저장글 삭제하기
 	@ResponseBody
 	@PostMapping(value = "/deleteTempPost.on", produces = "text/plain;charset=UTF-8")
-	public String savePost(HttpServletRequest request, @RequestParam("temp_post_no") String temp_post_no) {
+	public String deleteSavePost(HttpServletRequest request, @RequestParam("temp_post_no") String temp_post_no) {
 		
 		MemberVO loginuser = Myutil.getLoginUser(request);
 		String empno =  loginuser.getEmpno();
@@ -474,7 +474,7 @@ public class CommunityController {
 	@ResponseBody
 	@RequestMapping(value = "/addReComment.on", produces = "text/plain;charset=UTF-8")
 	public String addReComment(HttpServletRequest request, CommunityCommentVO comment) {
-		System.out.println("답댓작성컨트롤러");
+
 		MemberVO loginuser = Myutil.getLoginUser(request);
 		comment.setFk_empno(loginuser.getEmpno());
 		
