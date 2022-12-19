@@ -1,14 +1,14 @@
-# GroovyProject
-Spring MVC 모듈을 사용한 그룹웨어 팀프로젝트입니다.
+# Groovy Project
+Spring MVC 모듈을 사용하여 그룹웨어 사이트를 제작한 팀프로젝트입니다.
 <hr>
 <h2>개발 환경</h2>
 <ul>
   <li>OS: Windows 10</li>
   <li>Language: Java 1.8.0</li>
-  <li>DBMS: ORACLE</li>
+  <li>DBMS: Oracle 18c</li>
   <li>Framework: Spring 5.3.22, Mybatis, Tiles, Bootstrap</li>
-  <li>WAS: Tomcat 9.0</li>
-  <li>Technology: HTML5, CSS, javascript, jQuery, AJAX, JSON</li>
+  <li>Server: Tomcat 9.0</li>
+  <li>Front-End: HTML, CSS, javascript, jQuery</li>
 </ul>
 <hr>
 <h2>팀원 소개</h2>
@@ -49,4 +49,41 @@ Spring MVC 모듈을 사용한 그룹웨어 팀프로젝트입니다.
       </ul>
   </li>
 </ul>
+<hr>
+<h2>제작 기간</h2>
+총 제작 기간: 22/11/07 - 22/12/19<br><br>
+<table>
+  <tr>
+    <td>11/07 - 11/07</td>
+    <td>주제선정</td>
+  </tr>
+  <tr>
+    <td>11/08 - 11/08</td>
+    <td>기능 설계 및 요구사항 명세서 작성</td>
+  </tr>
+  <tr>
+    <td>11/09 - 11/10</td>
+    <td>스토리보드 제작</td>
+  </tr>  
+  <tr>
+    <td>11/11 - 11/19</td>
+    <td>화면 구현</td>
+  </tr>
+  <tr>
+    <td>11/15 - 11/16</td>
+    <td>DB 모델링(1차)</td>
+  </tr>  
+  <tr>
+    <td>11/16 - 12/17</td>
+    <td>기능 구현</td>
+  </tr>
+  <tr>
+    <td>12/6 - 12/7</td>
+    <td>DB 모델링(2차)</td>
+  </tr> 
+  <tr>
+    <td>12/18 - 12/19</td>
+    <td>디버깅 및 발표준비</td>
+  </tr> 
+</table>
 <hr>
