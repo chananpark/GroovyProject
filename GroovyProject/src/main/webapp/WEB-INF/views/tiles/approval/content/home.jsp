@@ -94,7 +94,7 @@ $(()=>{
 					  	</h5><br>
 					  	문서번호: <span class='draft_no'>${rdraft.draft_no}</span><br>
 					  	기안자: <span class='draft_emp_name'>${rdraft.draft_emp_name}</span><br>
-					  	기안일: <span class='draft_date'>${rdraft.draft_date}</span><br>
+					  	기안일: <span class='draft_date'>${fn:substring(rdraft.draft_date,0,10)}</span><br>
 					  	종류: <span class='draft_type'>${rdraft.draft_type}</span>
 					  </div>
 					  <div class="card-footer approveThis">결재하기</div>
