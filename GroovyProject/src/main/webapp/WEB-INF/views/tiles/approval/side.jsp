@@ -66,19 +66,6 @@ const goWriteForm = () => {
 <!-- A vertical navbar -->
 <nav class="navbar bg-light">
 
-<<<<<<< HEAD
-  <!-- Links -->
-  <ul class="navbar-nav" style='width:100%'>
-    <li class="nav-item">
-      <h4 class='mb-4'>전자결재</h4>
-    </li>
-    <li class="nav-item mb-4">
-
-
-
-      <button id="goWriteBtn" type="button" style='width:100%' class="btn btn-outline-dark"  onclick="selectApv()">기안문서 작성</button>
-
-=======
  	<!-- Links -->
 	<ul class="navbar-nav" style='width:100%'>
 	<li class="nav-item">
@@ -88,7 +75,6 @@ const goWriteForm = () => {
 
 	<button id="goWriteBtn" type="button" style='width:100%' class="btn btn-outline-dark"  onclick="selectApv()">기안문서 작성</button>
 
->>>>>>> branch 'main' of https://github.com/Chanan-Park/GroovyProject.git
     </li>
     <li class="nav-item">
 		<a id="home" class="nav-link" href="<%=ctxPath%>/approval/home.on">홈</a>
