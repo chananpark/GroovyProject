@@ -75,6 +75,11 @@ public interface InterAttendanceService {
 	// 페이징처리한 글목록 가져오기(검색까지 포함)
 	List<Map<String, String>> getTeamSearchList(Map<String, Object> filterMap);
 
+	// 전사 근태 관리 - 부서 리스트 얻어오기
+	List<Map<String, String>> getDepartments();
+
+	String getSideWeeklyWorkTime(Map<String, String> paraMap);
+
 	
 	
 	

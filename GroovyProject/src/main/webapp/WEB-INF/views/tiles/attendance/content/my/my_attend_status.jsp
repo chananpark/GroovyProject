@@ -76,7 +76,7 @@
 	.widths {
 		width: 90%; 
 		margin: 0 auto;
-		padding-top: 50px;
+		padding-top: 20px;
 	}
 	
 	.weeks {	margin: 20px 0 0 10px;	}
@@ -318,7 +318,7 @@
 								"<th style='width:13%; padding-bottom: 10px;'>업무종료</th>"+
 								"<th style='width:13%; padding-bottom: 10px;'>총근무시간</th>"+
 								"<th style='padding-bottom: 10px;'>근무시간 상세</th>"+
-								"<th style='width:20%; padding-bottom: 10px;'>승인요청내역</th>"+
+								"<th style='width:20%; padding-bottom: 10px;'>비고</th>"+
 							"</tr>"+
 						"</thead>"+
 						"<tbody>";
@@ -337,7 +337,7 @@
 										"<td style='text-align: left;'>"+item.workend+"</td>"+
 										"<td style='text-align: left;'>"+item.worktime+"</td>"+
 										"<td style='text-align: left;'>기본 "+item.worktime+" / 연장  "+item.extendstart+" / 외근 "+item.triptime+" </td>"+
-										"<td style='text-align: left;'></td>"+					
+										"<td style='text-align: left;'>"+item.dayoff+"</td>"+					
 									"</tr>";
 						// console.log(index);
 						
@@ -361,7 +361,7 @@
 											"<th style='width:13%; padding-bottom: 10px;'>업무종료</th>"+
 											"<th style='width:13%; padding-bottom: 10px;'>총근무시간</th>"+
 											"<th style='padding-bottom: 10px;'>근무시간 상세</th>"+
-											"<th style='width:20%; padding-bottom: 10px;'>승인요청내역</th>"+
+											"<th style='width:20%; padding-bottom: 10px;'>비고</th>"+
 										"</tr>"+
 									"</thead>"+
 									"<tbody>";
@@ -387,7 +387,7 @@
 											"<th style='width:13%; padding-bottom: 10px;'>업무종료</th>"+
 											"<th style='width:13%; padding-bottom: 10px;'>총근무시간</th>"+
 											"<th style='padding-bottom: 10px;'>근무시간 상세</th>"+
-											"<th style='width:20%; padding-bottom: 10px;'>승인요청내역</th>"+
+											"<th style='width:20%; padding-bottom: 10px;'>비고</th>"+
 										"</tr>"+
 									"</thead>"+
 									"<tbody>";
@@ -413,7 +413,7 @@
 											"<th style='width:13%; padding-bottom: 10px;'>업무종료</th>"+
 											"<th style='width:13%; padding-bottom: 10px;'>총근무시간</th>"+
 											"<th style='padding-bottom: 10px;'>근무시간 상세</th>"+
-											"<th style='width:20%; padding-bottom: 10px;'>승인요청내역</th>"+
+											"<th style='width:20%; padding-bottom: 10px;'>비고</th>"+
 										"</tr>"+
 									"</thead>"+
 									"<tbody>";
@@ -439,7 +439,7 @@
 											"<th style='width:13%; padding-bottom: 10px;'>업무종료</th>"+
 											"<th style='width:13%; padding-bottom: 10px;'>총근무시간</th>"+
 											"<th style='padding-bottom: 10px;'>근무시간 상세</th>"+
-											"<th style='width:20%; padding-bottom: 10px;'>승인요청내역</th>"+
+											"<th style='width:20%; padding-bottom: 10px;'>비고</th>"+
 										"</tr>"+
 									"</thead>"+
 									"<tbody>";
@@ -559,28 +559,48 @@
 		const weekNo = weekNumOfMonth(date);
 		// alert(weekNo);	
 		
-		switch (weekNo) {
-		case "1":
-			$("#table_week1").show();
-			break;
+		const now = new Date();	
+		
+		const year = now.getFullYear();
+		const month = now.getMonth()+1;
+		
+		const compairDate = now.getFullYear() + "-" + (now.getMonth()+1) ;
+		if($("#calMonth").val() == compairDate){
 			
-		case "2":
-			$("#table_week2").show();
-			break;
-			
-		case "3":
-			$("#table_week3").show();
-			break;
-	
-		case "4":
-			$("#table_week4").show();
-			break;
-			
-		case "5":
-			$("#table_week5").show();	
-			break;
+			switch (weekNo) {
+			case "1":
+				$("#table_week1").show();
+				break;
+				
+			case "2":
+				$("#table_week2").show();
+				break;
+				
+			case "3":
+				$("#table_week3").show();
+				break;
+		
+			case "4":
+				$("#table_week4").show();
+				break;
+				
+			case "5":
+				$("#table_week5").show();	
+				break;
 
+			}
+			
 		}
+		else{
+			$("#table_week1").show();
+			$("#table_week2").show();
+			$("#table_week3").show();
+			$("#table_week4").show();
+			$("#table_week5").show();
+		}
+	
+		
+		
 	}
 		
 		
@@ -627,107 +647,9 @@
 
 <div id="weekList">
 
-<div id="week3" class="widths">
-	<div onclick="toggle('week3')" class="weeks">
-		<span class="fas fa-angle-down" style="font-size: 10pt;"></span>
-		&nbsp;3 주차
-	</div>
-	<hr>
-	<div id="table_week3">
-		<table style="width: 100%;" class="table-hover tables">
-			<thead>
-				<tr style="height: 30px; border-bottom: solid 1px #f2f2f2;">
-					<th style="width:13%; padding: 0 0 10px 30px;">일자</th>
-					<th style="width:13%; padding-bottom: 10px;">업무시작</th>
-					<th style="width:13%; padding-bottom: 10px;">업무종료</th>
-					<th style="width:13%; padding-bottom: 10px;">총근무시간</th>
-					<th style="padding-bottom: 10px;">근무시간 상세</th>
-					<th style="width:20%; padding-bottom: 10px;">비고</th>
-				</tr>
-			</thead>
-			<tbody> 				
-				<tr style="height: 30px; padding-top: 10px;">
-					<td style="text-align: left; padding-left: 30px;">07 월</td>
-					<td style="text-align: left;">12:00:00</td>
-					<td style="text-align: left;">12:00:00</td>
-					<td style="text-align: left;">5h 0m 0s</td>
-					<td style="text-align: left;">기본 5h 0m 0s/ 연장 5h 0m 0s/야간 5h 0m 0s</td>
-					<td style="text-align: left;"></td>						
-				</tr>	
-								
-			</tbody>
-		</table>
-	</div>
 
-</div>
 
-<div id="week4" class="widths">
-	<div onclick="toggle('week4')" class="weeks" >
-		<span class="fas fa-angle-down" style="font-size: 10pt;"></span>
-		&nbsp;4 주차
-	</div>
-	<hr>
-	<div>
-		<table style="width: 100%;" id="table_week4" class="table-hover tables">
-			<thead>
-				<tr style="height: 30px; border-bottom: solid 1px #f2f2f2;">
-					<th style="width:13%; padding: 0 0 10px 30px;">일자</th>
-					<th style="width:13%; padding-bottom: 10px;">업무시작</th>
-					<th style="width:13%; padding-bottom: 10px;">업무종료</th>
-					<th style="width:13%; padding-bottom: 10px;">총근무시간</th>
-					<th style="padding-bottom: 10px;">근무시간 상세</th>
-					<th style="width:20%; padding-bottom: 10px;">승인요청내역</th>
-				</tr>
-			</thead>
-			<tbody> 				
-				<tr style="height: 30px; padding-top: 10px;">
-					<td style="text-align: left; padding-left: 30px;">07 월</td>
-					<td style="text-align: left;">12:00:00</td>
-					<td style="text-align: left;">12:00:00</td>
-					<td style="text-align: left;">5h 0m 0s</td>
-					<td style="text-align: left;">기본 5h 0m 0s/ 연장 5h 0m 0s/야간 5h 0m 0s</td>
-					<td style="text-align: left;"></td>						
-				</tr>	
-								
-			</tbody>
-		</table>
-	</div>
 
-</div>
-
-<div id="week5" class="widths">
-	<div onclick="toggle('week5')" class="weeks" >
-		<span class="fas fa-angle-down" style="font-size: 10pt;"></span>
-		&nbsp;5 주차
-	</div>
-	<hr>
-	<div>
-		<table style="width: 100%;" id="table_week5" class="table-hover tables">
-			<thead>
-				<tr style="height: 30px;">
-					<th style="width:13%; padding: 0 0 10px 30px;">일자</th>
-					<th style="width:13%; padding-bottom: 10px;">업무시작</th>
-					<th style="width:13%; padding-bottom: 10px;">업무종료</th>
-					<th style="width:13%; padding-bottom: 10px;">총근무시간</th>
-					<th style="text-align:center; padding-bottom: 10px;">근무시간 상세</th>
-					<th style="width:20%; padding-bottom: 10px;">승인요청내역</th>
-				</tr>
-			</thead>
-			<tbody> 				
-				<tr style="height: 30px; padding-top: 10px;">
-					<td style="text-align: left; padding-left: 30px;">07 월</td>
-					<td style="text-align: left;">12:00:00</td>
-					<td style="text-align: left;">12:00:00</td>
-					<td style="text-align: left;">5h 0m 0s</td>
-					<td style="text-align: left;">기본 5h 0m 0s/ 연장 5h 0m 0s/야간 5h 0m 0s</td>
-					<td style="text-align: left;"></td>						
-				</tr>	
-								
-			</tbody>
-		</table>
-	</div>
-
-</div>
 </div>
 
 

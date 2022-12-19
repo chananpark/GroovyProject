@@ -32,7 +32,7 @@
 	
 	.timeBoxes {
 		display: inline-block;
-		width: 110px;
+		width: 130px;
 		margin-right: 30px;
 		margin-top: 15px;
 		padding-right: 30px;
@@ -162,8 +162,12 @@
 		let date = now.getDate();		
 		let day = parseInt(now.getDay());
 				
-		let start;
-		let end;
+		let start = new Date(now.getFullYear(), now.getMonth(), 1);
+		let startdate = start.getDate();
+		if(startdate < 10){	startdate = '0'+startdate;	}
+		start = start.getFullYear() + "." + (start.getMonth()+1) + "." + startdate + "(" + day_kor(start.getDay()) + ")";
+		
+		<%-- 이번주의 월요일 구하기
 		if(day != 1){ // 오늘이 월요일이 아니라면
 			start = new Date(now.setDate( now.getDate()-(day-1) )); // 이번주의 월요일 구하기
 			
@@ -176,7 +180,9 @@
 		else{ // 오늘이 월요일 이라면
 			start = year + "." + month + "." + date + "(" + day_kor(day) + ")";
 		}
+		--%>
 		
+		let end;
 		if(day != 5){ // 오늘이 금요일이 아니라면			
 			end = new Date(now2.setDate(now2.getDate()+(5-day))); // 이번주의 금요일 구하기
 			
@@ -290,8 +296,8 @@
 		const dateStart = $("#dateStart").val().substr(0,10);
 		const dateEnd = $("#dateEnd").val().substr(0,10);
 		
-		console.log(dateStart);
-		console.log(dateEnd);
+		//console.log(dateStart);
+		//console.log(dateEnd);
 		
 		$.ajax({
 			  url:"<%=ctxPath%>/attend/getBoxAttend.on",
@@ -436,7 +442,7 @@
 									"<td style='text-align: left;'>"+item.starttime+" ~ "+item.endtime+"</td>"+
 									"<td style='text-align: left;'>"+item.registerdate+"</td>"+
 									"<td style='text-align: left;'>"+item.place+"</td>"+
-									"<td style='text-align: left;'><input class='requestid' type='hidden' value='"+item.requestid+"' /><i class='fas fa-trash-alt hoverShadowText trash'></i></td>"+		
+									"<td style='text-align: left;'><input class='requestid' type='hidden' value='"+item.requestid+"' /></td>"+		
 								  "</tr>";
 														
 					  });					  
@@ -490,9 +496,9 @@
 
 <div>
 	<div id="workBox">
-		<div class="timeBoxes" style="border-right: solid 1px #bfbfbf; width: 170px;">
+		<div class="timeBoxes" style="border-right: solid 1px #bfbfbf; width: 200px;">
 			<div class="timeBoxes_1" style="padding-bottom: 5px;">누적 근무시간</div>
-			<div class="timeBoxes_2" id="worktime">0</div>
+			<div class="timeBoxes_2" id="worktime">0시간</div>
 		</div>
 		<div class="timeBoxes">
 			<div class="timeBoxes_1">사용연차</div>
@@ -500,16 +506,17 @@
 		</div>
 		<div class="timeBoxes">
 			<div class="timeBoxes_1">외근</div>
-			<div class="timeBoxes_2" id="triptime">0</div>
+			<div class="timeBoxes_2" id="triptime">0시간</div>
 		</div>
 		<div class="timeBoxes" style="border-right: solid 1px #bfbfbf;">
 			<div class="timeBoxes_1">연장근무</div>
-			<div class="timeBoxes_2" id="extendtime">0</div>
+			<div class="timeBoxes_2" id="extendtime">0시간</div>
 		</div>
+		<%-- 
 		<div class="timeBoxes">
 			<div class="timeBoxes_1">발생연차</div>
 			<div class="timeBoxes_2" style="color: #b3b3b3;">0</div>
-		</div>
+		</div> --%>
 		<div class="timeBoxes">
 			<div class="timeBoxes_1">잔여연차</div>
 			<div class="timeBoxes_2" style="color: #b3b3b3;">0</div>
@@ -563,7 +570,7 @@
 	</div>
 	<%-- <div class="showMore hoverShadowText">더보기</div> --%>
 </div>
-
+<%--
 <div id="dayoffInfo" class="widths">
 	<div class="titles">&nbsp;연차 생성내역</div>
 	<hr>
@@ -582,9 +589,9 @@
 			</tbody>
 		</table>
 	</div>
-	<%-- <div class="showMore hoverShadowText">더보기</div> --%>
+	 <div class="showMore hoverShadowText">더보기</div> 
 </div>
-
+--%>
 
 
 

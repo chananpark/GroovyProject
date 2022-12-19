@@ -51,16 +51,7 @@ public class AttendanceDAO implements InterAttendanceDAO {
 	
 	// 근태 신청하기 
 	@Override
-	public int requestAttendance(Map<String, String> paraMap) {
-		System.out.println("dao  empno:" + paraMap.get("empno"));
-		System.out.println("dao  attend_index:" + paraMap.get("attend_index"));
-		System.out.println("dao  usedate:" + paraMap.get("usedate"));
-		System.out.println("dao  starttime:" + paraMap.get("starttime"));
-		System.out.println("dao  endtime:" + paraMap.get("endtime"));
-		System.out.println("dao  place:" + paraMap.get("place"));
-		System.out.println("dao  reason:" + paraMap.get("reason"));
-		
-	
+	public int requestAttendance(Map<String, String> paraMap) {	
 		
 		int n = sqlsession.insert("hyewon.requestAttendance", paraMap);
 		return n;
@@ -192,6 +183,20 @@ public class AttendanceDAO implements InterAttendanceDAO {
 	public List<Map<String, String>> getTeamSearchList(Map<String, Object> filterMap) {
 		List<Map<String, String>> teamSearchList = sqlsession.selectList("hyewon.getTeamSearchList", filterMap);
 		return teamSearchList;
+	}
+
+	// 전사 근태 관리 - 부서 리스트 얻어오기
+	@Override
+	public List<Map<String, String>> getDepartments() {
+		List<Map<String, String>> departList = sqlsession.selectList("hyewon.getDepartments");
+		return departList;
+	}
+
+	
+	@Override
+	public String getSideWeeklyWorkTime(Map<String, String> paraMap) {
+		String sideWeeklyWork = sqlsession.selectOne("hyewon.getSideWeeklyWorkTime");
+		return sideWeeklyWork;
 	}
 	    
 	

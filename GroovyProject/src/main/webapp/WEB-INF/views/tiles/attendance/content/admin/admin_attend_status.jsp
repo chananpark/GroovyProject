@@ -1,6 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %> 
+
 <% String ctxPath = request.getContextPath(); %>
 
 <style>
@@ -16,6 +18,14 @@
 		border: none;
 		width: 143px;
 		font-size: 16pt;
+	}
+	
+	.searchTxt {
+		width: 130px;
+		height: 25px;
+		border-radius: 5px;
+		border: solid 1px #bfbfbf;
+		margin-bottom: 10px;
 	}
 	
 	.cals:hover {	cursor: pointer;	}
@@ -150,6 +160,7 @@
 
 	$(document).ready(function(){
 		
+		
 		$(function(){
 		    $('.cals').datepicker();
 		})
@@ -283,13 +294,6 @@
 		}); // end of $("#prevWeek").click() -------------------------
 		*/
 		
-		const empno = "${sessionScope.loginuser.empno}";		
-		const bumun = "${sessionScope.loginuser.bumun}";
-		const department = "${sessionScope.loginuser.department}";
-		// 개인정보 박스 조회
-		teamInfoBox();		
-		personalInfoBox("${sessionScope.loginuser.empno}");		
-		getWeeklyWorkList(empno);
 		
 		$("#dateStart").change(function(){
 			const empno = $("#personalEmpno").val();
@@ -308,12 +312,33 @@
 			
 		});
 		
+		$("#departments").change(function(){
+			
+			const department = $("#departments option:selected").val();
+			// console.log("department: "+department);
+			
+			teamInfoBox();
+			
+		});
+		
+		const child = $("#boxTeamInfo").children('div:eq(0)');
+		console.log(child.attr('id'));
+		
 		// ================================================================================================== // 
 		
+		const empno = "${sessionScope.loginuser.empno}";
+		
+		const bumun = "${sessionScope.loginuser.bumun}";
+		const department = "${sessionScope.loginuser.department}";
+		// 개인정보 박스 조회
 		
 		
 		
-		$("#titleDepartment").text(bumun + " - " + department);
+		teamInfoBox();
+		personalInfoBox(empno);
+		
+		getWeeklyWorkList(empno);
+			
 		
 		
 		
@@ -344,11 +369,11 @@
 		return result;
 	}
 	
-	// 개인정보 박스 조회
+	// 팀정보 박스 조회
 	function teamInfoBox(){
 		
 		const empno = "${sessionScope.loginuser.empno}";
-		const department = "${sessionScope.loginuser.department}";
+		const department = $("#departments option:selected").val();
 		
 		$.ajax({
 			  url:"<%=ctxPath%>/attend/getTeamInfoBox.on",
@@ -385,7 +410,7 @@
 	} // end of function teamInfoBox(){} ----------------------------
 	
 	
-	
+	// 개인정보 박스 조회
 	function personalInfoBox(empno){		
 		
 		const dateStart = $("#dateStart").val().substr(0,10);
@@ -430,8 +455,8 @@
 		const dateEnd = $("#dateEnd").val().substr(0,10);
 		
 
-		console.log("datestart: "+$("#dateStart").val());
-		console.log("dateend: "+$("#dateEnd").val());
+		// console.log("datestart: "+$("#dateStart").val());
+		// console.log("dateend: "+$("#dateEnd").val());
 		
 		$.ajax({
 			  url:"<%=ctxPath%>/attend/getWeeklyWorkList.on",
@@ -509,10 +534,12 @@
 		
 		
 	} // end of function goDptPplInfo(empno){} --------------------------
+	
+	
 
 </script>
 
-<div style="font-size: 18pt; margin: 40px 0 50px 30px;" >부서 근태조회</div>
+<div style="font-size: 18pt; margin: 40px 0 50px 30px;" >전사 근태조회</div>
 
 <div style="font-size: 16pt; text-align: center; margin-bottom: 30px;">
 	<span id="prevWeek" class="fas fa-angle-left" style="color: #bfbfbf; font-size: 14pt;"></span>
@@ -527,7 +554,14 @@
 	
 	<div style="">
 		<div class="infoBoxes" id="teamInfo">
-			<div id="titleDepartment" style="font-size: 14pt; margin-bottom: 10px;"></div>
+			<div id="titleDepartment">
+				<select name='departments' id='departments' class="searchTxt" style="font-size: 10pt; ">
+					<c:forEach items="${departList}" var="depart" >
+						<option value='${depart.department}'>${depart.department}</option>
+					</c:forEach>
+				</select>
+			</div>
+				
 			<div id="teamInfoTitle" style="">
 				<span class="boxes tInfo_positions">직급</span>
 				<span class="boxes tInfo_names">이름</span>

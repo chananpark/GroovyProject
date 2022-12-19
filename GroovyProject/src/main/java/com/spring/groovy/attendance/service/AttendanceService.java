@@ -181,6 +181,19 @@ public class AttendanceService implements InterAttendanceService {
 		return teamSearchList;
 	}
 
+	// 전사 근태 관리 - 부서 리스트 얻어오기
+	@Override
+	public List<Map<String, String>> getDepartments() {
+		List<Map<String, String>> departList = adao.getDepartments();
+		return departList;
+	}
+
+	@Override
+	public String getSideWeeklyWorkTime(Map<String, String> paraMap) {
+		String sideWeeklyWork = adao.getSideWeeklyWorkTime(paraMap);
+		return sideWeeklyWork;
+	}
+
 	
 	
 		

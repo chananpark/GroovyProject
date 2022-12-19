@@ -30,7 +30,7 @@
    
 	#attendBox{
 		width: 200px;
-		height: 300px;
+		height: 250px;
 		margin: 0 0 30px 30px;		
 	}
 	
@@ -174,7 +174,7 @@
 		// =========================================================================================== //
 		
 		getWorkTimes();
-		
+		getSideWeeklyWorkTimes();
 		
 		$("#goStartWorkBtn").click(function(){ // -------------------------
 			
@@ -187,6 +187,7 @@
 				  dataType:"JSON",
 				  success:function(json){
 					  getWorkTimes();
+					  getSideWeeklyWorkTimes();
 				  },
 				  error: function(request, status, error){
 					  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
@@ -207,6 +208,7 @@
 				  dataType:"JSON",
 				  success:function(json){
 					  getWorkTimes();
+					  getSideWeeklyWorkTimes();
 				  },
 				  error: function(request, status, error){
 					  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
@@ -329,12 +331,36 @@
 				  
 				  const workStartTime = json.workTimeMap.workstart;
 				  const workEndTime = json.workTimeMap.workend;
+				  const weeklyTime = json.workTimeMap.weeklyTime;
 				  
 				  // console.log("workStartTime: "+ workStartTime);
 				  // console.log("workEndTime: "+ workEndTime);
+				  // console.log("weeklyTime: "+ weeklyTime);
 				  
 				  $("#workStartTime").text(workStartTime);
 				  $("#workEndTime").text(workEndTime);
+				  
+			  },
+			  error: function(request, status, error){
+				  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			  }
+		  });
+		
+	} // end of function getWorkTimes() ----------------------------------
+	
+	function getSideWeeklyWorkTimes() { // -----------------------------------------
+		
+		const empno = "${sessionScope.loginuser.empno}";
+		
+		$.ajax({
+			  url:"<%=ctxPath%>/attend/getSideWeeklyWorkTimes.on",
+			  data:{"empno":empno},
+			  dataType:"JSON",
+			  success:function(json){
+				  
+				  const weeklywork = json.weeklyworkTimesMap.weeklywork;
+				  
+				  $("#sideWeeklywork").text(weeklywork);
 				  
 			  },
 			  error: function(request, status, error){
@@ -381,12 +407,13 @@
 	</div>
 	<div>
 		<span class="attTime">누적근무시간<span style="font-size: 8pt;">(주간)</span></span>
-		<span class="attTime attTimeRight">0h 0m 0s</span>
+		<span id="sideWeeklywork" class="attTime attTimeRight">0시간 0분</span>
 	</div>
 	<hr>
 	<div id="workSelectBox">
 		<button type="button" class="onOff hoverShadow" id="goStartWorkBtn">출근하기</button>
 		<button type="button" class="onOff hoverShadow" id="goEndWorkBtn">퇴근하기</button>
+		<%-- 
 		<button style="display: block;" type="button" id="attSelectBtn" class="hoverShadow">근무상태 <span id="attSelectComp" class="fas fa-caret-down"></span></button>
 		<div id="attSelectBox">
 			<div class="selectContent" style="border-top-left-radius: 9px; border-top-right-radius: 9px;" onclick="workStatus('업무')">업무</div>
@@ -395,6 +422,7 @@
 			<div class="selectContent" onclick="workStatus('복귀')">복귀</div>
 			<div class="selectContent" style="border-bottom-left-radius: 9px; border-bottom-right-radius: 9px;" onclick="workStatus('연장근무')">연장근무</div>
 		</div>
+		--%>
 	</div>
 </div>
 
@@ -409,15 +437,15 @@
 		
 		<li class="menu topMenu" id="topMenu2">부서 관리
 			<ul class="menu subMenus" id="subMenu2">
-				<li class="nav-link" style="margin-top: 7px;"><a href="<%= ctxPath%>/attend/teamStatusWeekly.on" class="hoverShadowText" id="team1">부서 근태 조회</a></li>
+				<li class="nav-link" style="margin-top: 7px;"><a href="<%= ctxPath%>/attend/teamStatus.on" class="hoverShadowText" id="team1">부서 근태 조회</a></li>
 				<li class="nav-link"><a href="<%= ctxPath%>/attend/teamManage.on" class="hoverShadowText" id="team2">부서 근태 관리</a></li>
 			</ul>
 		</li>
-		<c:if test="${sessionScope.loginuser.department == '이사실'}">
+		<c:if test="${sessionScope.loginuser.department == '인사총무팀'}">
 		<li class="menu topMenu" id="topMenu3">전사 근태관리
 			<ul class="menu subMenus" id="subMenu3">
-				<li style="margin-top: 7px;"><a href="<%= ctxPath%>/attend/allStatus.on" class="hoverShadowText" id="all1" >전사 근태 조회</a></li>
-				<li class=""><a href="<%= ctxPath%>/attend/allManage.on" class="hoverShadowText" id="all2">전사 근태 관리</a></li>
+				<li class="nav-link" style="margin-top: 7px;"><a href="<%= ctxPath%>/attend/allStatus.on" class="hoverShadowText" id="all1" >전사 근태 조회</a></li>
+				<li class="nav-link" class=""><a href="<%= ctxPath%>/attend/allManage.on" class="hoverShadowText" id="all2">전사 근태 관리</a></li>
 			</ul>
 		</li>
 		</c:if>

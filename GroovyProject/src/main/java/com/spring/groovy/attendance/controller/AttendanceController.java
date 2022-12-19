@@ -65,15 +65,24 @@ public class AttendanceController {
 	
 	@RequestMapping(value = "/attend/allStatus.on")
 	public String allAttendStatus(HttpServletRequest request) {
+		
+		List<Map<String, String>> departList = service.getDepartments();
+		
+		request.setAttribute("departList", departList);
 		request.setAttribute("submenuId", "all1");
-		return "attendance/admin/all_attend_status.tiles";
+		return "attendance/admin/admin_attend_status.tiles";
 		
 	}
 	
 	@RequestMapping(value = "/attend/allManage.on")
 	public String allAttendManage(HttpServletRequest request) {
+		
+		List<Map<String, String>> departList = service.getDepartments();
+		
+		request.setAttribute("departList", departList);
+		
 		request.setAttribute("submenuId", "all2");
-		return "attendance/admin/all_attend_manage.tiles";
+		return "attendance/admin/admin_attend_manage.tiles";
 		
 	}
 	
@@ -137,6 +146,27 @@ public class AttendanceController {
 				
 		JSONObject jsonObj = new JSONObject();
 		jsonObj.put("workTimeMap", workTimeMap);
+		
+		return jsonObj.toString(); // "{"workStartTime":"15:00:00"}"
+		
+	}
+	
+	
+	// 사이드바에 주간 근무시간 얻어오기
+	@ResponseBody
+	@RequestMapping(value = "/attend/getSideWeeklyWorkTimes.on", produces="text/plain;charset=UTF-8")
+	public String getSideWeeklyWorkTimes(HttpServletRequest request) {
+		
+		String empno = request.getParameter("empno");
+		
+		Map<String, String> paraMap = new HashMap<String, String>();
+		paraMap.put("empno", empno);
+		
+		
+		Map<String, String> weeklyworkTimesMap = service.getWeeklyWorkTimes(paraMap);
+		
+		JSONObject jsonObj = new JSONObject();
+		jsonObj.put("weeklyworkTimesMap", weeklyworkTimesMap);
 		
 		return jsonObj.toString(); // "{"workStartTime":"15:00:00"}"
 		
@@ -438,20 +468,20 @@ public class AttendanceController {
 	}
 
 	
-	
 	// 부서별 근태조회에서 부서정보박스 정보 얻어오기
 	@ResponseBody
 	@RequestMapping(value = "/attend/getTeamInfoBox.on", produces="text/plain;charset=UTF-8")
 	public String getTeamInfoBox(HttpServletRequest request) {
 		
 		String empno = request.getParameter("empno");		
-		// System.out.println("empno: " + empno);
+		String department = request.getParameter("department");	
 		
 		Map<String, String> paraMap = new HashMap<String, String>();
 		paraMap.put("empno", empno);
+		paraMap.put("department", department);
 		
 		List<MemberVO> teamInfoList = service.getTeamInfoBox(paraMap);
-		
+				
 		JSONArray jsonArr = new JSONArray(); // []
 		
 		if(teamInfoList != null && teamInfoList.size() != 0) { 
@@ -473,7 +503,8 @@ public class AttendanceController {
 		return jsonArr.toString(); // "{"workStartTime":"15:00:00"}"
 		
 	}
-	
+		
+		
 	
 	// 부서별 근태조회에서 개인정보박스 정보 얻어오기
 	@ResponseBody
@@ -623,78 +654,58 @@ public class AttendanceController {
 		return jsonObj.toString(); // "{"workStartTime":"15:00:00"}"
 		
 	}
-	
-	
+	/*
 	@RequestMapping(value="/attend/getTeamSearchList.on")
 	public ModelAndView getTeamSearchList(ModelAndView mav, HttpServletRequest request) {
 				
 		List<Map<String, String>> teamSearchList = null;
-		
-		////////////////////////////////////////////////////////////////////
-		// === #69. 글조회수(readCount)증가 (DML문 update)는
-		//          반드시 목록보기에 와서 해당 글제목을 클릭했을 경우에만 증가되고,
-		//          웹브라우저에서 새로고침(F5)을 했을 경우에는 증가가 되지 않도록 해야 한다.
-		//          이것을 하기 위해서는 session 을 사용하여 처리하면 된다.
-		
-		HttpSession session = request.getSession();
-		
-		// === #114. 페이징 처리를 한 검색어가 있는 전체 글목록 보여주기 시작 === //
-		/*
-			페이징 처리를 통한 글목록 보여주기는
-			
-			예를들어 2페이지의 내용을 보고자 한다면 검색을 할 경우는 아래와 같이 
-			list.action?searchType=subject&searchWord=java&currentShowPageNo=2 와 같이 해주어야 한다.
-			
-			또는 검색이 없는 전체를 볼 때는 아래와 같이
-			list.action 또는
-			list.action?searchType=subject&searchWord=&currentShowPageNo=2 또는
-			list.action?searchType=name&searchWord=&currentShowPageNo=2 와 같이 해주어야 한다.
-			
-		*/
-		
+				
 		Map<String, Object> filterMap = new HashMap<String, Object>();
 		String[] filters = request.getParameterValues("filter");
 		
-		List<String> filterList = new ArrayList<String>();
+		String filterwhere = "";
 		if(filters != null) {
 			for(String str : filters) {
-				filterList.add(str);				
+				if("trip".equals(str)) {
+					filterwhere += "or "+str+" like '%외근%' ";
+				}
+				else if("noStartCheck".equals(str)) {
+					filterwhere += "or workstart like '출근미등록' ";
+				}
+				else if("noEndCheck".equals(str)) {
+					filterwhere += "or workend like '퇴근미등록' ";
+				}
+				else if("dayoff".equals(str)) {
+					filterwhere += "or "+str+" like '연차' ";
+				}
+				else if("extend".equals(str)) {
+					filterwhere += "or "+str+" like '%연장%' ";
+				}
 			}
 		}
-		else {
-			filterList.add("none");
-		}
+		
+		filterwhere = filterwhere.substring(2);
+		
+		filterMap.put("filterwhere", filterwhere);
 		
 		String startTime = request.getParameter("filterStartTime");
 		String endTime = request.getParameter("filterEndTime");
 		String department = request.getParameter("filterDepartment");
-		String name = request.getParameter("filterName");
+		String fname = request.getParameter("filterName");
 				
 		
-		if(name == null || "".equals(name.trim())) {
-			name = "";
+		if(fname == null || "".equals(fname.trim())) {
+			fname = "";
 		}
 		
-		System.out.println("startTime: "+startTime);
-		System.out.println("endTime: "+endTime);
-		System.out.println("department: "+department);
-		System.out.println("name: "+name);
-		
-		for(String str : filterList){
-		    System.out.println(str);
-		}
-		
-		filterMap.put("filterList", filterList);
+		// filterMap.put("filterDetailMap", filterDetailMap);
 		filterMap.put("startTime", startTime);
 		filterMap.put("endTime", endTime);
 		filterMap.put("department", department);
-		filterMap.put("name", name);
+		filterMap.put("fname", fname);
 				
 		String str_currentShowPageNo = request.getParameter("currentShowPageNo");
 		
-		
-		// 먼저 총 게시물 건수(totalCount)를 구해와야 한다.
-		// 총 게시물 건수(totalCount)는 검색조건이 있을 때와 없을 때로 나뉘어진다.
 		int totalCount = 0;        // 총 게시물 건수
 	    int sizePerPage = 10;       // 한 페이지당 보여줄 게시물 건수 
 	    int currentShowPageNo = 0; // 현재 보여주는 페이지번호로서, 초기치로는 1페이지로 설정함.
@@ -705,10 +716,7 @@ public class AttendanceController {
 		
 		// 부서관리 총 게시물 건수(totalCount)
 	    totalCount = service.getTotalCnt(filterMap);
-	    // System.out.println("~~~~  totalCount: "+ totalCount);
 	    
-	    // 만약 총 게시물건수(totalCount) 가 22개라면
-	    // 총 페이지수 totalPage 는 3개가 되어야 한다.
 	    totalPage = (int) Math.ceil( (double)totalCount/sizePerPage );
 	    
 	    if(str_currentShowPageNo == null) {
@@ -728,32 +736,16 @@ public class AttendanceController {
 	    	
 	    }
 	    
-	    // **** 가져올 게시글의 범위를 구한다.(공식임!!!) **** 
-	    /*
-	           currentShowPageNo      startRno     endRno
-	          --------------------------------------------
-	               1 page        ===>    1           10
-	               2 page        ===>    11          20
-	               3 page        ===>    21          30
-	               4 page        ===>    31          40
-	               ......                ...         ...
-	    */
 		
 	    startRno = ((currentShowPageNo - 1) * sizePerPage) + 1;
 	    endRno = startRno + sizePerPage - 1;
+	    
 	    
 	    filterMap.put("startRno", String.valueOf(startRno));
 	    filterMap.put("endRno", String.valueOf(endRno));
 	    
 	    teamSearchList = service.getTeamSearchList(filterMap);
 		// 페이징처리한 글목록 가져오기(검색까지 포함)
-		
-		// 아래의 것은 검색대상 컬럼과 검색어를 뷰단페이지에서 유지시키기 위한 것이다.
-		/*
-		if() {
-			mav.addObject("paraMap", paraMap);
-		}
-		*/
 		
 		// === #121. 페이지바 만들기   === // 
 		int blockSize = 10;
@@ -764,12 +756,17 @@ public class AttendanceController {
 		int pageNo = ((currentShowPageNo - 1)/blockSize) * blockSize + 1;
 	    
 		String pageBar = "<ul style='list-style: none;'>";
-		String url = "/attend/getTeamSearchList.on";
+		String url = "/groovy/attend/getTeamSearchList.on?filterStartTime="+startTime+"&filterEndTime="+endTime+"&filterDepartment="+department+"&filterName="+fname;
+		
+		for(String str : filters) {
+			url += "&filter="+str;				
+		}
+		
 		
 		// === [맨처음][이전] 만들기  === //
 		if(pageNo != 1) {
-			pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='"+url+"?currentShowPageNo=1'>[맨처음]</a></li>";
-			pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='"+url+"?currentShowPageNo="+(pageNo-1)+"'>[이전]</a></li>";
+			pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='"+url+"&currentShowPageNo=1'>[맨처음]</a></li>";
+			pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='"+url+"&currentShowPageNo="+(pageNo-1)+"'>[이전]</a></li>";
 		}
 		
 		while( !(loop > blockSize || pageNo > totalPage) ) {
@@ -778,7 +775,7 @@ public class AttendanceController {
 				pageBar += "<li style='display:inline-block; text-decoration: underline; color:red; width:30px; font-size:12pt;'>"+pageNo+"</li>";
 			}
 			else {
-				pageBar += "<li style='display:inline-block; width:30px; font-size:12pt;'><a href='"+url+"?currentShowPageNo="+pageNo+"'>"+pageNo+"</a></li>";
+				pageBar += "<li style='display:inline-block; width:30px; font-size:12pt;'><a href='"+url+"&currentShowPageNo="+pageNo+"'>"+pageNo+"</a></li>";
 			}
 			
 			loop++;
@@ -788,23 +785,215 @@ public class AttendanceController {
 		
 		// === [다음][마지막] 만들기  === //
 		if(pageNo <= totalPage) {
-			pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='"+url+"?currentShowPageNo="+pageNo+"'>[다음]</a></li>";
-			pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='"+url+"?currentShowPageNo="+totalPage+"'>[마지막]</a></li>";
+			pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='"+url+"&currentShowPageNo="+pageNo+"'>[다음]</a></li>";
+			pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='"+url+"&currentShowPageNo="+totalPage+"'>[마지막]</a></li>";
 		}
 		pageBar += "</ul>"; 
 				
 		mav.addObject("pageBar", pageBar);
+		mav.addObject("totalCount", totalCount);
 			
+		// System.out.println("pageBar: "+ pageBar);
 		
 		
-		// === #114. 페이징 처리를 한 검색어가 있는 전체 글목록 보여주기 끝   === //
-		///////////////////////////////////////////////////////
 		
 		mav.addObject("teamSearchList", teamSearchList);
-		
+		mav.addObject("submenuId", "team2");
 		mav.setViewName("attendance/team/team_attend_manage.tiles");
+		
+		
+		
 				
 		return mav;
+	}
+	*/
+	
+	@ResponseBody
+	@RequestMapping(value="/attend/getTeamSearchList.on", produces="text/plain;charset=UTF-8")
+	public String getTeamSearchList(HttpServletRequest request) {
+				
+		List<Map<String, String>> teamSearchList = null;
+				
+		Map<String, Object> filterMap = new HashMap<String, Object>();
+		String filter = request.getParameter("filter");
+		
+		String[] filters = filter.split("_");
+				
+		String filterwhere = "";
+		if(filters != null) {
+			for(String str : filters) {
+				if("trip".equals(str)) {
+					filterwhere += "or "+str+" like '%외근%' ";
+				}
+				else if("noStartCheck".equals(str)) {
+					filterwhere += "or workstart like '출근미등록' ";
+				}
+				else if("noEndCheck".equals(str)) {
+					filterwhere += "or workend like '퇴근미등록' ";
+				}
+				else if("dayoff".equals(str)) {
+					filterwhere += "or "+str+" like '연차' ";
+				}
+				else if("extend".equals(str)) {
+					filterwhere += "or "+str+" like '%연장%' ";
+				}
+			}
+		}
+		
+		filterwhere = filterwhere.substring(2);
+		
+		filterMap.put("filterwhere", filterwhere); 
+				
+		String startTime = request.getParameter("filterStartTime");
+		String endTime = request.getParameter("filterEndTime");
+		String department = request.getParameter("filterDepartment");
+		String fname = request.getParameter("filterName");
+				
+		
+		if(fname == null || "".equals(fname.trim())) {
+			fname = "";
+		}
+		
+		// filterMap.put("filterDetailMap", filterDetailMap);
+		filterMap.put("startTime", startTime);
+		filterMap.put("endTime", endTime);
+		filterMap.put("department", department);
+		filterMap.put("fname", fname);
+				
+		String str_currentShowPageNo = request.getParameter("currentShowPageNo");
+		
+		// System.out.println("str_currentShowPageNo: "+str_currentShowPageNo);
+		
+		int totalCount = 0;        // 총 게시물 건수
+	    int sizePerPage = 10;       // 한 페이지당 보여줄 게시물 건수 
+	    int currentShowPageNo = 0; // 현재 보여주는 페이지번호로서, 초기치로는 1페이지로 설정함.
+	    int totalPage = 0;         // 총 페이지수(웹브라우저상에서 보여줄 총 페이지 개수, 페이지바)
+	      
+	    int startRno = 0; // 시작 행번호
+	    int endRno = 0;   // 끝 행번호
+		
+		// 부서관리 총 게시물 건수(totalCount)
+	    totalCount = service.getTotalCnt(filterMap);
+	    
+	    // System.out.println("totalCount: "+totalCount);
+	    
+	    totalPage = (int) Math.ceil( (double)totalCount/sizePerPage );
+	    
+	    if(str_currentShowPageNo == null) {
+	    	// 게시판에 보여지는 초기화면
+	    	currentShowPageNo = 1;
+	    }
+	    else {
+	    	
+	    	try {
+	    		currentShowPageNo = Integer.parseInt(str_currentShowPageNo);
+	    		if(currentShowPageNo < 1 || currentShowPageNo > totalPage) {
+	    			currentShowPageNo = 1;
+	    		}
+	    	} catch(NumberFormatException e) {
+	    		currentShowPageNo = 1;
+	    	}
+	    	
+	    }
+	    
+	    // System.out.println("currentShowPageNo: "+currentShowPageNo);
+		
+	    startRno = ((currentShowPageNo - 1) * sizePerPage) + 1;
+	    endRno = startRno + sizePerPage - 1;
+	    
+	    // System.out.println("startRno: "+startRno + " endRno: "+endRno);
+	    
+	    filterMap.put("startRno", String.valueOf(startRno));
+	    filterMap.put("endRno", String.valueOf(endRno));
+	    
+	    teamSearchList = service.getTeamSearchList(filterMap);
+		// 페이징처리한 글목록 가져오기(검색까지 포함)
+	    
+	    // === #121. 페이지바 만들기   === // 
+ 		int blockSize = 10;
+ 		// blockSize 는 1개 블럭(토막)당 보여지는 페이지번호의 개수이다.
+ 		
+ 		int loop = 1;
+ 		
+ 		int pageNo = ((currentShowPageNo - 1)/blockSize) * blockSize + 1;
+ 	    
+ 		String pageBar = "<ul style='list-style: none;'>";
+ 		String url = "/groovy/attend/getTeamSearchList.on?filterStartTime="+startTime+"&filterEndTime="+endTime+"&filterDepartment="+department+"&filterName="+fname+"&filter="+filter;
+ 		
+ 		/*
+ 		for(String str : filters) {
+ 			url += "&filter="+str;				
+ 		}
+ 		*/
+ 		
+ 		// === [맨처음][이전] 만들기  === //
+ 		if(pageNo != 1) {
+ 			// pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='"+url+"&currentShowPageNo=1'>[맨처음]</a></li>";
+ 			// pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='"+url+"&currentShowPageNo="+(pageNo-1)+"'>[이전]</a></li>";
+ 			pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='#' onclick='getFilterInfo(1)'>[맨처음]</a></li>";
+ 			pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='#' onclick='getFilterInfo("+(pageNo-1)+")'>[이전]</a></li>";
+ 		}
+ 		
+ 		while( !(loop > blockSize || pageNo > totalPage) ) {
+ 			
+ 			if(pageNo == currentShowPageNo) {
+ 				// pageBar += "<li style='display:inline-block; text-decoration: underline; color:red; width:30px; font-size:12pt;'>"+pageNo+"</li>";
+ 				pageBar += "<li style='display:inline-block; text-decoration: underline; color:red; width:30px; font-size:12pt;'>"+pageNo+"</li>";
+ 			}
+ 			else {
+ 				// pageBar += "<li style='display:inline-block; width:30px; font-size:12pt;'><a href='"+url+"&currentShowPageNo="+pageNo+"'>"+pageNo+"</a></li>";
+ 				pageBar += "<li style='display:inline-block; width:30px; font-size:12pt;'><a href='#' onclick='getFilterInfo("+pageNo+")'>"+pageNo+"</a></li>";
+ 			}
+ 			
+ 			loop++;
+ 			pageNo++;
+ 			
+ 		} // end of while -----------------------
+ 		
+ 		// === [다음][마지막] 만들기  === //
+ 		if(pageNo <= totalPage) {
+ 			// pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='"+url+"&currentShowPageNo="+pageNo+"'>[다음]</a></li>";
+ 			// pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='"+url+"&currentShowPageNo="+totalPage+"'>[마지막]</a></li>";
+ 			pageBar += "<li style='display:inline-block; width:50px; font-size:12pt;'><a href='#' onclick='getFilterInfo("+pageNo+")'>[다음]</a></li>";
+ 			pageBar += "<li style='display:inline-block; width:70px; font-size:12pt;'><a href='#' onclick='getFilterInfo("+totalPage+")'>[마지막]</a></li>";
+ 		}
+ 		pageBar += "</ul>"; 
+ 		
+ 		// System.out.println("pageBar: "+ pageBar);
+ 		// System.out.println("totalCount: "+ totalCount);
+	    
+	    JSONArray jsonArr = new JSONArray(); // []
+		
+	    int index = 0;
+		if(teamSearchList != null && teamSearchList.size() != 0) { 
+			for(Map<String, String> map : teamSearchList) {
+				
+				JSONObject jsonObj= new JSONObject();
+				
+				if(index == 0) {
+					jsonObj.put("pageBar", pageBar);
+					jsonObj.put("totalCount", totalCount);
+				}
+				jsonObj.put("fname", map.get("fname"));
+				jsonObj.put("department", map.get("department"));
+				jsonObj.put("workdate", map.get("workdate"));
+				jsonObj.put("workstart", map.get("workstart"));
+				jsonObj.put("workend", map.get("workend"));
+				jsonObj.put("dayoff", map.get("dayoff"));
+				jsonObj.put("trip", map.get("trip"));
+				jsonObj.put("extend", map.get("extend"));
+								
+				jsonArr.put(jsonObj);
+				
+				index++;
+				
+			} // end of for -------------------------
+		}
+		
+		return jsonArr.toString(); // 
+		
+		
+		
 	}
 	
 }

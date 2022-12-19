@@ -204,7 +204,6 @@
 		let date = now.getDate();		
 		let day = parseInt(now.getDay());
 		
-				
 		let start = new Date(now.getFullYear(), now.getMonth(), 1);
 		let startdate = start.getDate();
 		if(startdate < 10){	startdate = '0'+startdate;	}
@@ -343,11 +342,9 @@
 		$('input#filterDepartment').val("${sessionScope.loginuser.department}");
 		--%>
 		
-		$("#filterSearchBtn").click(function(){
-			
-			getFilterInfo(1);	
-			$('#filterModal').modal('hide');
-			
+		$("#filterSearchBtn").click(function(){			
+			getFilterInfo(1);	  
+			$('#filterModal').modal('hide');			
 		});
 		
 		getFilterInfo(1);
@@ -357,15 +354,7 @@
 	
 	function getFilterInfo(currentShowPageNo){
 		
-		// 폼(form)을 전송(submit)
-		<%--
-        const frm = document.filterSearchFrm;
-        frm.method = "get";
-        frm.action = "<%= ctxPath%>/attend/getTeamSearchList.on";
-        frm.submit();	
-        --%>
-        
-        // const queryString = $("form[name=filterSearchFrm]").serialize() ;
+		// const queryString = $("form[name=filterSearchFrm]").serialize() ;
         
         let filterArr = []; 
         let val = $("input:checkbox[name='filter']:checked");
@@ -374,17 +363,14 @@
         	filterArr.push($(this).val());
         });
         
-        let filter = filterArr.join();
+		let filter = filterArr.join();
         
         filter = filter.replaceAll(',','_');
-        
-        // console.log(filter);
-                        
+                                
         const filterStartTime = $("#dateStart").val().substr(0,10);
         const filterEndTime = $("#dateEnd").val().substr(0,10);
-        const filterDepartment = "${sessionScope.loginuser.department}";
+        const filterDepartment = $("#departments").val();
         const filterName = $("#name").val();
-        
         
         $.ajax({
 			  url:"<%= ctxPath%>/attend/getTeamSearchList.on",
@@ -401,16 +387,13 @@
 				  $("tbody#teamSearch").html("");
 				  
 				  let html = "";
-				  
-				  let pageBar;
-				  let totalCount;
-				  
 				  if(json.length > 0) {
-					  $.each(json, function(index, item){	
+					  $.each(json, function(index, item){
 						  if(index == 0){
 							  pageBar = item.pageBar;
 							  totalCount = item.totalCount;
 						  }
+						  
 						  html += "<tr>"+
 									"<td style='padding-left: 30px;'>"+item.fname+"</td>"+
 									"<td class='tbltexts' >"+item.department+"</td>"+
@@ -439,20 +422,6 @@
 				  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
 			  }
 		  });
-        <%--
-        $.ajax({
-			  url:"<%= ctxPath%>/attend/getTeamSearchListPageBar.on",
-			  data:queryString,
-			  dataType:"JSON",
-			  success:function(json){
-				  
-				  
-			  },
-			  error: function(request, status, error){
-				  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-			  }
-		  });
-		--%>
 	}
 		
 		
@@ -524,7 +493,7 @@
 	}
 </script>
 
-<div style="font-size: 18pt; margin: 40px 0 50px 30px;" >부서 근태관리</div>
+<div style="font-size: 18pt; margin: 40px 0 50px 30px;" >전사 근태관리</div>
 
 <div style="font-size: 18pt; text-align: center; margin-bottom: 20px;">
 	<span class="fas fa-angle-left" id="prevMonth" style="color: #bfbfbf; font-size: 14pt;"></span>
@@ -543,36 +512,21 @@
 			<div class="timeBoxes_1">퇴근 미체크</div>
 			<div id="cntendnochk" class="timeBoxes_2" style="color: #bfbfbf;"></div>
 		</div>
+		<div class="timeBoxes" style="">
+			<div class="timeBoxes_1">무단결근</div>
+			<div id="cntabsent" class="timeBoxes_2"></div>
+		</div>
 		<div class="timeBoxes">
 			<div class="timeBoxes_1">연차</div>
 			<div id="cntdayoff" class="timeBoxes_2"></div>
 		</div>
-		<div class="timeBoxes" style="">
-			<div class="timeBoxes_1">외근</div>
-			<div id="cntabsent" class="timeBoxes_2"></div>
-		</div>		
 		<div class="timeBoxes">
 			<div class="timeBoxes_1">연장근무</div>
 			<div id="sumextend" class="timeBoxes_2"></div>
 		</div>
 	</div>
 </div> <%-- 상단 박스 끝 --%>
-<%--
-<div id="searchBox">  상세검색 시작
-	<form>
-		<span style="font-size: 14pt; margin: 0 10px 10px 0; ">상세검색</span>
-		<select name="searchDetail" id="searchSelect" class="hoverShadow">
-			<option>전체</option>
-			<option value="name">부서원</option>
-			<option value="date">날짜</option>
-		</select>	
-	
-		<div id="searchText">		
-			<input id="searchInput" class="searchTxt hoverShadow" type="text" placeholder="">
-			<button class="searchBtn hoverShadow" type="button"><i class="fas fa-search" style="color:gray;"></i></button>		
-		</div>				
-	</form>
-</div> --%> <%-- 상세검색 끝 --%>
+
 
 
 
@@ -594,7 +548,8 @@
 				<th class="" style="width: 6%;"></th> <%-- 빈칸 --%>
 			</tr>
 		</thead>
-		<tbody id="teamSearch"> <%--
+		<tbody id="teamSearch"> 
+		<%-- 
 			<c:forEach var="teamSearchList" items="${requestScope.teamSearchList}" varStatus="status">
 				<tr>
 					<td style="padding-left: 30px;">${teamSearchList.fname}</td>
@@ -605,10 +560,10 @@
 					<td class="tbltexts" style="">${teamSearchList.dayoff}</td>		
 					<td class="tbltexts" style="">${teamSearchList.trip}</td>
 					<td class="tbltexts" style="">${teamSearchList.extend}</td>	
-					<td class="tbltexts" style=""></td>	
+					<td class="tbltexts" style=""></td> 	
 				</tr>					
 			</c:forEach>	
-			 --%>
+			--%>
 		</tbody>
 	</table>
 	
@@ -628,16 +583,19 @@
 				<div style="font-size: 14pt; margin-bottom: 30px;">목록 관리</div>
 				<form name="filterSearchFrm">
 					<div>
-						<input id="filterDepartment" name="filterDepartment" type="hidden">
 						<input id="filterStartTime" name="filterStartTime" type="hidden">
 						<input id="filterEndTime" name="filterEndTime" type="hidden">
-						<input id="name" name="filterName" class="searchTxt hoverShadow" type="text" style="font-size: 10pt; margin-bottom: 15px;" placeholder="부서원명"><br>
+						<select name='filterDepartment' id='departments' class="searchTxt hoverShadow" style="font-size: 10pt; margin-right: 10px;">
+							<option value='all'>전체</option>
+							<c:forEach items="${departList}" var="depart" >								
+								<option value='${depart.department}'>${depart.department}</option>
+							</c:forEach>
+						</select>
+						<input id="name" name="filterName" class="searchTxt hoverShadow" type="text" style="font-size: 10pt; margin-bottom: 15px;" placeholder="부서원 검색"><br>
 						<input type="checkbox" name="filter" id="noStartCheck" value="noStartCheck" checked><label for="noStartCheck" class="labels"  >출근 미체크</label>
 						<span class="labels">출근(업무)체크가 이루어지지 않은 경우(연차 제외)</span><br>
 						<input type="checkbox" name="filter" id="noEndCheck" value="noEndCheck" checked><label for="noEndCheck" class="labels">퇴근 미체크</label>
 						<span class="labels">퇴근(업무종료)체크가 이루어지지 않은 경우(연차 제외)</span><br>
-					<%--	<input type="checkbox" name="filter" id="absent" value="absent" checked><label for="absent" class="labels">결근</label>
-						<span class="labels">연차 등록 없이 출,퇴근 미체크로 결근처리가 된 경우</span><br> --%>
 						<input type="checkbox" name="filter" id="dayoff" value="dayoff" checked><label for="dayoff" class="labels">연차</label>
 						<span class="labels">1일 연차 등 휴가를 사용한 경우</span><br>
 						<input type="checkbox" name="filter" id="extend" value="extend" checked><label for="extend" class="labels">연장근무</label>
