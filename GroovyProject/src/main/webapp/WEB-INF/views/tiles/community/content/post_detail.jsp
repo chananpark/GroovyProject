@@ -117,9 +117,9 @@ function getComment() {
 				}
 				
 				if (el.fk_empno == "${loginuser.empno}") {
-					cmt += "<button type='button' id='editComment"+el.comment_no+"' class='text-right mx-2 commentControl' onclick='editComment("+el.comment_no+")'>수정</button>"
+					cmt += "<button type='button' id='editComment"+el.comment_no+"' class='text-right mx-2 commentControl' onclick='editComment("+el.comment_no + "," + el.fk_empno+")'>수정</button>"
 					+ "<button type='button' style='display:none' id='cancelEdit"+el.comment_no+"' class='text-right mx-2 commentControl' onclick='cancelEdit("+el.comment_no+")'>취소</button>"
-					+ "<button type='button' id='delComment"+el.comment_no+"' class='text-right mx-2 commentControl' onclick='delComment("+el.comment_no+")'>삭제</button>";
+					+ "<button type='button' id='delComment"+el.comment_no+"' class='text-right mx-2 commentControl' onclick='delComment("+el.comment_no + "," + el.fk_empno+")'>삭제</button>";
 
 				}
 				cmt += "<div style='white-space:pre; padding-left:50px' id='comment"+el.comment_no+"'><p>" + el.comment_content + "</p></div></div>";
@@ -137,7 +137,7 @@ function getComment() {
 }
 
 // 댓글 수정
-const editComment = comment_no => {
+const editComment = (comment_no, fk_empno) => {
 	
 	// p태그 감추기
 	$("div#comment"+comment_no).find('p').hide();
@@ -161,7 +161,8 @@ const editComment = comment_no => {
 	// 등록버튼 이벤트바인딩
 	$("#editSubmit"+comment_no).click((e)=>{
 		const target = $(e.target);
-		editSubmit(target);
+		const comment_content = target.parent().children('textarea').val();
+		editSubmit(comment_content, comment_no, fk_empno);
 	});
 }
 
@@ -186,13 +187,13 @@ const cancelEdit = comment_no => {
 }
 
 // 댓글 수정 컨트롤러 호출
-const editSubmit = (target) => {
-	const comment_content = target.parent().children('textarea').val();
-	const comment_no = target.attr('id').substring(10);
+const editSubmit = (comment_content, comment_no, fk_empno) => {
+	
+	//const comment_no = target.attr('id').substring(10);
 	
 	$.ajax({
 		url:"<%=ctxPath%>/community/editComment.on",
-		data : {"comment_no":comment_no, "comment_content":comment_content},
+		data : {"comment_no":comment_no, "comment_content":comment_content, "fk_empno":fk_empno},
 		dataType : "json",
 		method: "post",
 		success : function(json) {
@@ -262,7 +263,7 @@ const reCommentSubmit = comment_no => {
 }
 
 // 댓글 삭제
-const delComment = comment_no => {
+const delComment = (comment_no, fk_empno) => {
 	
 	swal({
 		  title: "이 댓글을 삭제하시겠습니까?",
@@ -274,7 +275,7 @@ const delComment = comment_no => {
 		  if (willDelete) {
 				$.ajax({
 					url:"<%=ctxPath%>/community/delComment.on",
-					data : {"comment_no":comment_no},
+					data : {"comment_no":comment_no, "fk_empno":fk_empno},
 					dataType : "json",
 					method: "post",
 					success : function(json) {

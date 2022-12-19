@@ -491,10 +491,16 @@ public class CommunityController {
 	@ResponseBody
 	@PostMapping(value = "/editComment.on", produces = "text/plain;charset=UTF-8")
 	public String editComment(HttpServletRequest request, CommunityCommentVO comment) {
-		
-		// 댓글 수정하기
-		boolean result = service.editComment(comment);
-		
+
+		MemberVO loginuser = Myutil.getLoginUser(request);
+
+		boolean result = false;
+		// 댓글 작성자와 로그인한 사용자가 같을때
+		if (loginuser.getEmpno().equals(comment.getFk_empno())) {
+			// 댓글 수정하기
+			result = service.editComment(comment);
+		}
+
 		JSONObject jsonObj = new JSONObject();
 		jsonObj.put("result", result);
 		
@@ -507,10 +513,9 @@ public class CommunityController {
 	@PostMapping(value = "/delComment.on", produces = "text/plain;charset=UTF-8")
 	public String delComment(HttpServletRequest request, CommunityCommentVO comment) {
 		
-		boolean result = false;
-		
 		MemberVO loginuser = Myutil.getLoginUser(request);
 
+		boolean result = false;
 		// 댓글 작성자와 로그인한 사용자가 같을때
 		if (loginuser.getEmpno().equals(comment.getFk_empno())) {
 			// 댓글 삭제하기
