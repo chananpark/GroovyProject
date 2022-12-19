@@ -6,10 +6,6 @@
     
 <style>
 
-	div#div_proofEmp {
-		padding: 5% 2%;
-		width: 95%;
-	}
 	
 	button{
 		border: none;
@@ -98,66 +94,59 @@
 
 
 <form name="frm_proofEmp">
-<div id="div_proofEmp">
-	
-	<div style='margin: 1% 0 3% 1%'>
-		<h4>재직증명서</h4>
-	</div>
+<div style='margin: 1% 0 5% 1%; width: 95%;' >
+	<h4>재직증명서 </h4>
+</div>
 
-	<div class='mx-4'  style="background-color:#e3f2fd; width: 100%; height: 45px;">
-		<div style="margin-left: 73%;" class="pt-1">
-			<span>
-				<select style="width: 100px; border:solid 1px #cccccc;" name="searchType"> 
-					<option> ====== </option>
-					<option value="1">은행제출용</option>
+	<div style="margin-left: 73%;">
+		<span>
+			<select style="width: 100px; border:solid 1px #cccccc; border: none;" name="searchType">
+				<option value="1">은행제출용</option>
 					<option value="2">공공기관제출용</option>
-				</select> 
-			</span>
-			<input type="text"style="width: 120px; border:solid 1px #cccccc;" name="searchWord"/>
-			<button class="btn btn-sm" style="background-color: #086BDE; color:white; width: 60px;font-size:14px;"><i class="fas fa-search"></i>검색</button>
+			</select> 
+		</span>
+		<input type="text"style="width: 120px; border:solid 1px #cccccc;" name="searchWord"/>
+		<button class="btn btn-sm" style="background-color: #086BDE; color:white; width: 60px;"><i class="fas fa-search"></i>검색</button>
+	</div>
+	
+	<div class='m-4' style="margin: 7% 0% 3% 0%;">
+		<h5>증명서목록</h5>
+		<table class="table table-bordered table-sm ">
+			<thead>
+				<tr>
+					<th>No</th>
+					<th>증명서종류</th>
+					<th>사원번호</th>
+					<th>용도</th>
+					<th>신청일</th>
+					<th>출력</th>
+				</tr>
+			</thead>
+			<tbody>
+				<c:if test="${requestScope.proofList != null }">
+				<c:forEach var="emp"  items="${requestScope.proofList}"  varStatus="status">
+				<tr class="text-center border">
+					<td>${emp.proofno}</td>
+					<td>재직증명서</td>
+					<td >${emp.fk_empno}</td>
+					<td ><c:choose><c:when test="${emp.issueuse eq '1'}">은행제출용</c:when><c:otherwise>공공기관제출용</c:otherwise></c:choose></td>
+					<td>${emp.issuedate}</td>
+					<td>
+						<!-- <button class="btn btn-sm" id="detail" data-toggle="modal" data-target="#viewDetailProof" > -->
+						<a href="#" id="detail" data-toggle="modal" data-target="#viewDetailProof"  data-backdrop="static">출력</a> 
+						<!-- </button> -->
+					</td> 
+				</tr>
+				</c:forEach>
+				</c:if>
+				<c:if test="${requestScope.proofList == null }"> 신청하신 내역이 존재하지 않습니다.
+				</c:if>
+			</tbody>
+		</table>
+		<div align="right">
+			<button id="btn_submit" class="btn" ><a href="<%= ctxPath%>/manage/proof/proofEmployment.on" style="color: white;">신청</a></button>
 		</div>
 	</div>
-
-	
-	<div class="mt-5">
-	<h5 class='mx-4'>증명서목록</h5>
-	<table class="table table-bordered table-sm m-4 ">
-		<thead>
-			<tr>
-				<th>No</th>
-				<th>증명서종류</th>
-				<th>사원번호</th>
-				<th>용도</th>
-				<th>신청일</th>
-				<th>출력</th>
-			</tr>
-		</thead>
-		<tbody>
-			<c:if test="${requestScope.proofList != null }">
-			<c:forEach var="emp"  items="${requestScope.proofList}"  varStatus="status">
-			<tr class="text-center border">
-				<td>${emp.proofno}</td>
-				<td>재직증명서</td>
-				<td >${emp.fk_empno}</td>
-				<td ><c:choose><c:when test="${emp.issueuse eq '1'}">은행제출용</c:when><c:otherwise>공공기관제출용</c:otherwise></c:choose></td>
-				<td>${emp.issuedate}</td>
-				<td>
-					<!-- <button class="btn btn-sm" id="detail" data-toggle="modal" data-target="#viewDetailProof" > -->
-					<a href="#" id="detail" data-toggle="modal" data-target="#viewDetailProof"  data-backdrop="static">출력</a> 
-					<!-- </button> -->
-				</td> 
-			</tr>
-			</c:forEach>
-			</c:if>
-			<c:if test="${requestScope.proofList == null }"> 신청하신 내역이 존재하지 않습니다.
-			</c:if>
-		</tbody>
-	</table>
-	<div align="right">
-		<button id="btn_submit" class="btn" ><a href="<%= ctxPath%>/manage/proof/proofEmployment.on" style="color: white;">신청</a></button>
-	</div>
-	</div>
-</div>
 </form>
 
 <div>${pagebar}</div>

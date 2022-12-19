@@ -14,11 +14,6 @@
     
 <style>
 
-	div#div_searchInfo {
-		padding: 5% 2%;
-		width: 95%;
-	}
-	
 	button{
 		border: none;
 	}
@@ -98,30 +93,24 @@
 
 
 <form name="frm_searchInfo">
-<div id="div_searchInfo">
+<div style='margin: 1% 0 5% 1%'>
+	<h4>사원정보</h4>
+</div>
 	
-	<div style='margin: 1% 0 3% 1%'>
-		<h4>사원정보</h4>
-	</div>
-	
-	<div class='mx-4'  style="background-color:#e3f2fd; width: 100%; height: 45px;">
-		<div class="pt-2">
-			<span class="float-right">
-			<span >
-				<select id="searchType" name="searchType" style="width: 110px; border:solid 1px #cccccc;">
-					<option value="name">사원명</option>
-					<option value="department">부서명</option>
-				</select> 
-			</span>
+	<div style="margin-left: 73%;">
+		<span>
+			<select style="width: 100px; border:solid 1px #cccccc; border: none;" name="searchType">
+				<option value="name">사원명</option>
+				<option value="department">부서명</option>
+			</select> 
+		</span>
 			<input type="text" id="searchWord"  name="searchWord" placeholder="검색어를 입력하세요" style="width: 120px; border:solid 1px #cccccc;"/>
-			<button class="btn btn-sm mr-3" id="go_search" style="background-color: #086BDE; color:white;"><i class="fas fa-search"></i>검색</button>
-			</span>
-		</div>
+			<button class="btn btn-sm ml-1" id="go_search" style="background-color: #086BDE; color:white; width: 60px;"><i class="fas fa-search"></i>검색</button>
 	</div>
 	
-	<div style="margin-top: 5%;">
-		<h5 class='mx-4'>사원조회</h5>
-		<table class="table table-bordered table-sm mx-4 ">
+	<div class='m-4' style="margin: 7% 0% 5% 0%; width: 95%;">
+		<h5 >사원조회</h5>
+		<table class="table table-bordered table-sm ">
 			<thead>
 				<tr>
 					<th>사원번호</th>
@@ -153,8 +142,6 @@
 		</table>
 	</div>
 	
-	
-</div>
 </form>
 
 <div>${pagebar}</div>

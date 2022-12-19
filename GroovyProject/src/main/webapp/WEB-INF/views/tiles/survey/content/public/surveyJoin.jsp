@@ -58,15 +58,7 @@
 		// === 제출버튼을 누르면 === //
 		$("button#btn_sumbit").click(function(e){
 			
-			var result = confirm("제출된 응답은 수정할 수 없습니다.\n제출하시겠습니까?");
-			
-			if(result) {
-				alert("확인");
-				func_submit(fk_surno);
-			} 
-			else {
-				alert("취소하셨습니다.");
-			}
+		
 	
 		}); // end of $("button#btn_sumbit").click(function(){ -------------
 	
@@ -108,35 +100,39 @@
 		
 	// >>> 제출버튼을 누르면 <<<
 	function func_submit(fk_surno){
-		
+	
 		var result = confirm("제출된 응답은 수정할 수 없습니다.\n제출하시겠습니까?");
 		
-		if(!result) {
-			alert("취소하셨습니다.");
-			return false;
+		if(result) {
+			alert("확인");
+			
+		const queryString = $("form[name='frm_surveyJoin']").serialize();
+		console.log(queryString+"jsp");
+		
+		$.ajax({
+			url:"<%=ctxPath%>/survey/surveyJoinEnd.on",
+			data: queryString,
+			type:"POST",
+			dataType:"JSON",
+			success:function(json){
+				
+				if(json.n == 1) {
+					swal("설문 제출완료");
+				}
+				else {
+					swal("설문지 등록 실패하였습니다.");
+				}
+			},
+		  	 error: function(request, status, error){
+				  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			  }
+		}); // end of 설문내용 insert $.ajax({ -----------------------
+			
 		} 
 		else {
-			alert("확인");
-			const queryString = $("form[name='frm_surveyJoin']").serialize();
-			$.ajax({
-				url:"<%=ctxPath%>/survey/surveyJoinEnd.on",
-				data: queryString,
-				type:"POST",
-				dataType:"JSON",
-				success:function(json){
-					
-					if(json.n == 1) {
-						swal("설문 제출완료");
-					}
-					else {
-						swal("설문지 등록 실패하였습니다.");
-					}
-				},
-			  	 error: function(request, status, error){
-					  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
-				  }
-			}); // end of 설문내용 insert $.ajax({
-		}
+			alert("취소하셨습니다.");
+			return;
+		} 
 	}
 
 
@@ -171,7 +167,7 @@
 	
 	<div align="center">
 		<input type="button" id="btn_cancle" onclick="location.href='<%=ctxPath%>/survey/surveyList.on'" class="btn btn-sm" value="취소"/>
-		<button id="btn_sumbit" class="btn btn-sm" style="background-color:#086BDE; color:white; width: 80px;">제출</button>
+		<button id="btn_sumbit" onclick="func_submit(${fk_surno})" class="btn btn-sm" style="background-color:#086BDE; color:white; width: 80px;">제출</button>
 	</div>
 
 	<!-- 설문을 제출하면 내가 작성한 답변을 확인할 수 있다. 답변창 readonly로 설정하기-->

@@ -75,6 +75,14 @@
 		$("#noCnt").html("("+ length+")").css("background-color","yellow");
 
 		
+		// 제목을 누르면
+		$("a#nosurtitle").click(function(){
+			swal("설문기간이 아닙니다.");
+		}); // end of $("a#nosurtitle").click(function(){
+			
+			
+			
+		
 	}); // end of document.ready(function(){----------------------------
 
 <%-- 
@@ -143,9 +151,9 @@
 				<jsp:useBean id="now" class="java.util.Date" />
 				<fmt:formatDate value="${now}" pattern="yyyy-MM-dd" var="today" />
 				
-				
 				<tbody align="center" class="table ">
 				<c:forEach var="survey" items="${requestScope.pageCnt}" varStatus="status"> 
+					<input type="hidden" name="surend" value="${survey.surend}"/>
 					<tr>
 						<td>${status.count}
 							<input type="hidden" name="surno" id="surno" value="${survey.surno}"/>
@@ -161,9 +169,14 @@
 								<div id="situation2">종료</div>
 							</c:if>
 						</td>
-						<%-- <td><a href="<%= ctxPath%>/survey/surveyJoin.on" style="color:black;">${survey.surtitle}</a></td> --%>
-						<td><a name="surtitle" id="surtitle" href="<%=ctxPath%>/survey/surveyJoin.on?surno=${survey.surno}"  style="color: black;">${survey.surtitle}</a>
+						<td>
+						<c:if test="${survey.surstart <= survey.surend && survey.surend >= today}">
+						<a name="surtitle" id="surtitle" href="<%=ctxPath%>/survey/surveyJoin.on?surno=${survey.surno}"  style="color: black;">${survey.surtitle}</a>
 								<!-- onclick="go_survey()" -->
+								</c:if>
+								<c:if test="${survey.surend < today}">
+									<a name="surtitle" id="nosurtitle"  style="color: black;cursor: pointer; ">${survey.surtitle}</a>
+								</c:if>
 						</td>
 						<td>${survey.surstart}~${survey.surend}</td>
 						

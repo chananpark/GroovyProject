@@ -12,10 +12,6 @@
     
 <style>
 
-	div#div_celebSearch {
-		padding: 5% 2%;
-		width: 95%;
-	}
 	
 	button{
 		border: none;
@@ -83,33 +79,25 @@
 
 
 <form name="frm_celebSearch">
-<div id="div_celebSearch">
+<div style='margin: 1% 0 5% 1%'>
+	<h4>경조비관리</h4>
+</div>
 	
-	<div style='margin: 1% 0 3% 1%'>
-		<h4>경조비관리</h4>
-	</div>
-	
-	
-	<div class='mx-4'  style="background-color:#e3f2fd; width: 100%; height: 45px;">
-		<div style="margin-left: 73%;" class="pt-1">
-			<span>
-				<select style="width: 100px; border:solid 1px #cccccc;" name="searchType"> 
-					<option> ====== </option>
-					<option value="1">명절상여금</option>
-					<option value="2">생일상여금</option>
-					<option value="3">휴가비</option>
-				</select> 
-			</span>
+	<div style="margin-left: 73%;">
+		<span>
+			<select style="width: 100px; border:solid 1px #cccccc; border: none;" name="searchType">
+				<option value="1">명절상여금</option>
+				<option value="2">생일상여금</option>
+				<option value="3">휴가비</option>
+			</select> 
+		</span>
 			<input type="text"style="width: 120px; border:solid 1px #cccccc;" name="searchWord"/>
-			<button class="btn btn-sm" style="background-color: #086BDE; color:white; width: 60px;font-size:14px;"><i class="fas fa-search"></i>검색</button>
-		</div>
+			<button class="btn btn-sm" style="background-color: #086BDE; color:white; width: 60px;"><i class="fas fa-search"></i>검색</button>
 	</div>
 	
-
-	
-	<div style="margin-top: 7%;">
-	<h5 class='mx-4'>경조비 지급목록</h5>
-	<table class="table table-bordered table-sm mx-4 ">
+	<div class='m-4' style="margin: 7% 0% 5% 0%; width: 95%;">
+		<h5 >경조비지급목록</h5>
+	<table class="table table-bordered table-sm ">
 		<thead>
 			<tr>
 				<th>NO</th>
@@ -151,7 +139,6 @@
 		</tbody>
 	</table>
 	</div>
-</div>
 </form>
 
 	

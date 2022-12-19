@@ -5,11 +5,6 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
 <style>
-
-	div#div_celebApply {
-		padding: 5% 2%;
-		width: 95%;
-	}
 	
 	button{
 		border: none;
@@ -127,13 +122,12 @@
 
 
 <form name="frm_celebApply" id="frm_celebApply">
-<div id="div_celebApply">
-	
-	
-<div style='margin: 1% 0 5% 1%'>
-	<h4>경조비관리</h4>
-</div>	
-	<h5 class='m-4'>경조비신청</h5>
+<div style='margin: 1% 0 5% 1%; width: 95%;' >
+	<h4>경조비관리 </h4>
+</div>
+
+	<div id='list' class='m-4'>
+	<h5>경조비신청</h5>
 	
 	<%-- 경조구분만 선택가능. 옵션을 누르면 금액은 자동으로 들어오게 해야함.--%>
 	
@@ -184,8 +178,9 @@
 	<div class="float-right">
 		<button style="color: white; background-color:#086BDE" class="btn-sm" id="btn_submit">신청</button> <%-- 상여금을 받을 수 있을때만 저장이 가능하다 --%>
 	</div>
-	
-</div>
+	</div>
+
+
 </form>
 
 

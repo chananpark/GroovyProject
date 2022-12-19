@@ -648,11 +648,11 @@ nocache;
 
    
 -- 설문조사대상테이블
-create table tbl_target
-(surtarget      number(1)    default 1    not null   -- 설문대상
-,fk_surno		number(20)       not null   -- 설문번호
-,constraint PK_tbl_target_surtarget primary key(surtarget)
-,constraint FK_tbl_target_fk_surno foreign key(fk_surno) references tbl_survey(surno)ON DELETE CASCADE
+CREATE TABLE TBL_TARGET
+(SURTARGET      NUMBER(1)    DEFAULT 1    NOT NULL   -- 설문대상
+,FK_SURNO		NUMBER(20)       NOT NULL   -- 설문번호
+,CONSTRAINT PK_TBL_TARGET_SURTARGET PRIMARY KEY(SURTARGET)
+,CONSTRAINT FK_TBL_TARGET_FK_SURNO FOREIGN KEY(FK_SURNO) REFERENCES TBL_SURVEY(SURNO)ON DELETE CASCADE
 );
 
 -- 설문조사대상테이블 시퀀스
@@ -666,17 +666,17 @@ nocache;
 
 
 -- 설문조사문항테이블
-create table  tbl_ask
-(questno 	    number(20)      not null       -- 문항번호
-,fk_surno		number(20)      not null       -- 설문번호
-,question		varchar2(300)   not null       -- 설문질문
-,option1		varchar2(100)                  -- 선택지1
-,option2		varchar2(100)         	       -- 선택지2
-,option3		varchar2(100)        	       -- 선택지3
-,option4		varchar2(100)         	       -- 선택지4
-,option5		varchar2(100)         	       -- 선택지5
-,constraint PK_tbl_ask_questno   primary key(questno)
-,constraint FK_tbl_ask_fk_surno foreign key(fk_surno) references tbl_survey(surno)ON DELETE CASCADE
+CREATE TABLE  TBL_ASK
+(QUESTNO 	    NUMBER(20)      NOT NULL       -- 문항번호
+,FK_SURNO		NUMBER(20)      NOT NULL       -- 설문번호
+,QUESTION		VARCHAR2(300)   NOT NULL       -- 설문질문
+,OPTION1		VARCHAR2(100)                  -- 선택지1
+,OPTION2		VARCHAR2(100)         	       -- 선택지2
+,OPTION3		VARCHAR2(100)        	       -- 선택지3
+,OPTION4		VARCHAR2(100)         	       -- 선택지4
+,OPTION5		VARCHAR2(100)         	       -- 선택지5
+,CONSTRAINT PK_TBL_ASK_QUESTNO   PRIMARY KEY(QUESTNO)
+,CONSTRAINT FK_TBL_ASK_FK_SURNO FOREIGN KEY(FK_SURNO) REFERENCES TBL_SURVEY(SURNO)ON DELETE CASCADE
 );
 
 -- 칼럼 변경
@@ -701,17 +701,17 @@ nocache;
 drop table tbl_joinsurvey
 
 -- 설문참여테이블
-create table  tbl_joinsurvey 
-(joinsurno 	number(20)        not null       -- 설문참여번호
-,fk_empno	number            not null   	 -- 사원번호
-,fk_surno   number(20)        not null       -- 설문번호
-,fk_questno	number(20)        not null       -- 문항번호
-,answer		number(20)        not null       -- 답변
-,surjoindate date  default sysdate  not null  -- 답변제출일
-,constraint PK_tbl_joinsurvey_joinsurno  primary key(joinsurno)
-,constraint FK_tbl_joinsurvey_fk_empno foreign key(fk_empno) references tbl_employee(empno)ON DELETE CASCADE
-,constraint FK_tbl_joinsurvey_fk_surno foreign key(fk_surno) references tbl_survey(surno)ON DELETE CASCADE
-,constraint FK_tbl_joinsurvey_fk_questno foreign key(fk_questno) references tbl_ask(questno)ON DELETE CASCADE
+create table  TBL_JOINSURVEY 
+(JOINSURNO 	number(20)        not null       -- 설문참여번호
+,FK_EMPNO	number            not null   	 -- 사원번호
+,FK_SURNO   number(20)        not null       -- 설문번호
+,FK_QUESTNO	number(20)        not null       -- 문항번호
+,ANSWER		number(20)        not null       -- 답변
+,SURJOINDATE date  default SYSDATE  not null  -- 답변제출일
+,constraint PK_TBL_JOINSURVEY_JOINSURNO  primary key(JOINSURNO)
+,constraint FK_TBL_JOINSURVEY_FK_EMPNO foreign key(FK_EMPNO) references TBL_EMPLOYEE(EMPNO)on delete cascade
+,constraint FK_TBL_JOINSURVEY_FK_SURNO foreign key(FK_SURNO) references TBL_SURVEY(SURNO)on delete cascade
+,constraint FK_TBL_JOINSURVEY_FK_QUESTNO foreign key(FK_QUESTNO) references TBL_ASK(QUESTNO)on delete cascade
 );
 
 select *
@@ -953,6 +953,41 @@ SELECT PAYNO, FK_EMPNO, NAME, BUMUN, DEPARTMENT, POSITION, SALARY,PAY ,ANNUALPAY
 	    )P
 
 
+        SELECT *
+	    FROM (SELECT ROWNUM AS RNO, V.*
+	        FROM( 
+	            SELECT SURNO,SURTITLE,SUREXPLAIN,TO_CHAR(SURCREATEDATE, 'YYYY-MM-DD')SURCREATEDATE,TO_CHAR(SURSTART, 'YYYY-MM-DD')SURSTART
+	            		,TO_CHAR(SUREND, 'YYYY-MM-DD')SUREND,SURSTATUS
+	            FROM TBL_SURVEY S LEFT JOIN TBL_TARGET T
+	            ON S.SURNO = T.fk_surno
+	         	
+	            ORDER BY SURNO DESC
+	        )V)
+	    WHERE RNO BETWEEN #{startRno} AND #{endRno}
+        
+
+INSERT INTO TBL_DRAFT_FILE (DRAFT_FILE_NO, FK_DRAFT_NO, ORIGINALFILENAME, FILENAME, FILESIZE)
+		SELECT SEQ_DRAFT_FILE_NO.NEXTVAL AS DRAFT_FILE_NO, A.* 
+		FROM (
+		<foreach collection="list" item="dfvo" separator="union all">
+			SELECT #{dfvo.fk_draft_no} AS FK_DRAFT_NO, #{dfvo.originalFilename} AS ORIGINALFILENAME,
+			#{dfvo.filename} AS FILENAME, #{dfvo.filesize} AS FILESIZE FROM DUAL
+		</foreach>) A
+        
+        
+        INSERT INTO TBL_JOINSURVEY(JOINSURNO,FK_EMPNO,FK_SURNO,FK_QUESTNO,ANSWER,SURJOINDATE)
+        VALUES(seq_tbl_joinsurvey.nextval,#{jvoList.fk_empno},#{jvoList.fk_surno},#{jvoList.fk_questno},#{jvoList.answer}, sysdate)
 
 
+INSERT INTO TBL_JOINSURVEY(JOINSURNO,FK_EMPNO,FK_SURNO,FK_QUESTNO,ANSWER,SURJOINDATEm)
+select SEQ_TBL_JOINSURVEY.NEXTVAL AS JOINSURNO,FK_EMPNO,FK_SURNO,FK_QUESTNO,ANSWER,sysdate as SURJOINDATE
+from (
+        SELECT JOINSURNO,FK_EMPNO,FK_SURNO,FK_QUESTNO,ANSWER,TO_CHAR(SURJOINDATE, 'yyyy-mm-dd')AS SURJOINDATE
+        FROM TBL_JOINSURVEY
+        )A;
+        
+        
+    SELECT CLBNO, FK_EMPNO, to_char(CLBDATE, 'YYYY-MM-DD') AS CLBDATE, CLBPAY, CLBTYPE, CLBSTATUS
+		FROM TBL_CELEBRATE
+        
 

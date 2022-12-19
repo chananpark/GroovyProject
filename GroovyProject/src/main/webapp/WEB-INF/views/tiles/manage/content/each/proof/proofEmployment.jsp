@@ -6,11 +6,6 @@
     
 <style>
 
-	div#div_proofEmp {
-		padding: 5% 2%;
-		width: 95%;
-	}
-	
 	button{
 		border: none;
 	}
@@ -94,15 +89,14 @@
 
 
 <form name="frm_proofEmp">
-<div id="div_proofEmp">
+<div style='margin: 1% 0 5% 1%'>
+	<h4>재직증명서</h4>
+</div>
 	
-	<div style='margin: 1% 0 5% 1%'>
-		<h4>재직증명서</h4>
-	</div>
 	
-	<h5 class='mx-4'>증명서 신청</h5>
 	
 	<div class=" mx-4">
+	<h5>증명서 신청</h5>
 	<table class="table table-bordered table-sm">
 	<c:if test="${ not empty sessionScope.loginuser }">
 		<tr>

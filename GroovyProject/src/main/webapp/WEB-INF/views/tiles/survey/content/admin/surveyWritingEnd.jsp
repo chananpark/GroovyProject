@@ -128,7 +128,7 @@
 				
 				if(json.fk_surno != "") {
 					//alert("설문지 등록 성공하였습니다.");
-					console.log(json.fk_surno+"jsp");
+					//console.log(json.fk_surno+"jsp");
 					fk_surno = json.fk_surno;
 					
 					// 설문항목 insert
@@ -159,11 +159,7 @@
 							async: false, // 반복문이기때문에 비동기방식이 아닌 동기방식으로 해야한다.
 							success:function(json){
 								
-								if(json.p == 1) {
-									alert("설문지 등록 성공하였습니다.");
-									loction.href="<%=ctxPath%>/survey/surveyList.on";
-								}
-								else {
+								if(json.p != 1) {
 									alert([i] +"질문 등록 실패하였습니다.");
 									return;
 								}
@@ -172,8 +168,10 @@
 								  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
 							  }
 						});
+						
 					} // end of for -------------------------
-					
+					alert("설문지 등록 성공하였습니다.");
+					location.href="<%= ctxPath%>/survey/surveyList.on";
 				}
 				else {
 					alert("설문지 등록 실패하였습니다.");

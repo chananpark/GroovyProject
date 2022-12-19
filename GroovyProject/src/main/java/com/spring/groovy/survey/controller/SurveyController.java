@@ -1,5 +1,6 @@
 package com.spring.groovy.survey.controller;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.google.gson.JsonObject;
+import com.spring.groovy.approval.model.ExpenseListVO;
 import com.spring.groovy.common.Pagination;
 import com.spring.groovy.management.model.MemberVO;
 import com.spring.groovy.survey.model.AskVO;
@@ -92,20 +94,32 @@ public class SurveyController {
 	@ResponseBody
 	@RequestMapping(value="/survey/surveyJoinEnd.on")
 	public String surveyJoinEnd( HttpServletRequest request,JoinSurveyVO jvo) {
-
+		
+		HttpSession session = request.getSession();
+		MemberVO loginuser = (MemberVO)session.getAttribute("loginuser");
+		String empno = loginuser.getEmpno();
+		
+		String jvoListsurtitle = request.getParameter("jvoList[1].surtitle");
+		String answer = request.getParameter("jvoList[1].answer");
+		System.out.println(jvoListsurtitle+"1");
+		System.out.println(answer+"1 ekq");
+		
+		ArrayList<JoinSurveyVO> getJvoList = new ArrayList<>(jvo.getJvoList());
+		
 		// 관리자 - 설문작성(설문조사 번호 insert하기)
 		Map<String, Object>paramap = new HashMap<>();
-		paramap.put("jvoList", jvo.getJvoList());
+		paramap.put("getJvoList", getJvoList);
+		paramap.put("empno", empno);
 		
 		//  답변한 설문지 insert
 		int n = service.surveyJoinEnd(paramap);
 		
 		JSONObject json = new JSONObject();
 		json.put("n", n);
+		System.out.println(n+"controller");
 		
 		return json.toString();
 	}
-	
 	
 	// 관리자 - 설문작성1
 	@RequestMapping(value="/survey/surveyWriting.on")

@@ -6,13 +6,6 @@
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt"%>
 
 <style>
-
-	div#info_manageInfo {
-		padding: 5% 2%;
-		width: 95%;
-	}
-
-	
 	table{
 		width: 95%;
 		padding: 2%;
@@ -203,7 +196,8 @@
 				$("button#checkPvEmail").show();
 				$("input#btn_update").hide();
 				$("input#btn_updateEnd").show();
-				$("input#file").show();
+				$("input[name='attach']").show();
+				$("i#personimg").hide();
 				return;
 			}
 				
@@ -218,6 +212,8 @@
 				go_updateEnd();
 			}
 		}); // end of $("input#btn_updateEnd").click(function(e){ ------------------
+			
+			
 			
 	
 }); // end of $(document).ready(function(){}-----------------------------------------
@@ -385,20 +381,27 @@ function readURL(input) {
 
 
 <form name="frm_manageInfo" id="frm_manageInfo" method="post" enctype="multipart/form-data">
-<div id="info_manageInfo">
-
-<div style='margin: 1% 0 5% 1%'>
-	<h4>사원정보</h4>
+	
+<div style='margin: 1% 0 7% 1%'>
+	<h4>내정보</h4>
 </div>
 
-	<h5 class='m-4'>내 정보</h5>
+<div class='mx-4'>
 	
 	<table class="m-4 mb-3 table table-bordered table-sm" id="first_table">
 		<tr>
 			<td rowspan='4' style="width:2%;">
-				<img id="preview" src="<%=ctxPath%>/resources/images/profile/${loginuser.empimg}" class="image-box" width="150px;" />
-			    <input id="file" name="attach" type="file" accept="image/*" onchange="readURL(this)" style="width: 65px;"/>
+				<c:choose>
+					<c:when test="${empty loginuser.empimg}">
+						<i id="personimg" class="fas fa-user-tie fa-10x mt-2 ml-2" ></i><input type="hidden" name="empimg"/>
+					</c:when>
+					<c:otherwise>
+						<img id="preview" src="<%=ctxPath%>/resources/images/profile/${loginuser.empimg}" class="image-box" width="150px;" />
+				    	<input id="file" name="attach" type="file" accept="image/*" onchange="readURL(this)" style="width: 65px;"/>
+					</c:otherwise>
+				</c:choose>
 			</td>
+			
 			<!-- <td rowspan='4' style="width:2%;"><input type="file" name="empimg" id="empimg" accept=".png, .jpeg" onchange="fileUpload(this)" class"readonly"/></td>   -->
 																					  <!-- accept는 입력받을 수 있는 파일의 유형을 지정하는 속성 -->
 			<th class="t1">사원번호</th>
@@ -538,6 +541,7 @@ function readURL(input) {
 	<div align="right" style="margin: 3% 0;">
 		<input type="button"  id="btn_updateEnd" style="color: white; background-color:#086BDE; border: none; width: 80px;" value="저장"/>
 	</div>
+	
 
 </div>
 </form>

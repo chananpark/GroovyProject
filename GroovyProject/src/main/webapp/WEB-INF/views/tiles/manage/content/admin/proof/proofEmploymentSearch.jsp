@@ -7,11 +7,6 @@
     
 <style>
 
-	div#div_proofEmp {
-		padding: 5% 2%;
-		width: 95%;
-	}
-	
 	button{
 		border: none;
 	}
@@ -78,58 +73,54 @@
 
 
 <form name="frm_proofEmp">
-<div id="div_proofEmp">
-	
-	<div style='margin: 1% 0 3% 1%'>
-		<h4>재직증명서</h4>
-	</div>
 
-	<div class='mx-4'  style="background-color:#e3f2fd; width: 100%; height: 45px;">
-		<div style="margin-left: 73%;" class="pt-1">
-			<span>
-				<select style="width: 100px; border:solid 1px #cccccc;" name="searchType"> 
-					<option> ====== </option>
-					<option value="1">은행제출용</option>
-					<option value="2">공공기관제출용</option>
-				</select> 
-			</span>
-			<input type="text"style="width: 120px; border:solid 1px #cccccc;" name="searchWord"/>
-			<button class="btn btn-sm" style="background-color: #086BDE; color:white; width: 60px;font-size:14px;"><i class="fas fa-search"></i>검색</button>
+<div style='margin: 1% 0 5% 1%'>
+	<h4>재직증명서</h4>
+</div>
+	<input type="hidden" name="empno" value="${loginuser.empno}">
+	
+	<div style="margin-left: 73%;">
+		<span>
+			<select style="width: 100px; border:solid 1px #cccccc; border: none;" name="searchType">
+				<option value="1">은행제출용</option>
+				<option value="2">공공기관제출용</option>
+			</select> 
+		</span>
+		<input type="text"style="width:145px; border:solid 1px #cccccc;" name="searchWord"/>
+		<button class="btn btn-sm ml-1" style="background-color: #086BDE; color:white; width: 60px;"><i class="fas fa-search"></i>검색</button>
+	</div>
+	
+	<div class='m-4' style="margin: 7% 0% 5% 0%; width: 95%;">
+		<h5>증명서목록</h5>
+		<table class="table table-bordered table-sm ">
+			<thead>
+				<tr>
+					<th>No</th>
+					<th>신청번호</th>
+					<th>사원번호</th>
+					<th>사원명</th>
+					<th>용도</th>
+					<th>신청일</th>
+				</tr>
+			</thead>
+			<tbody  onclick="go_viewDetailProof()" data-toggle="modal" data-target="#viewDetailProof">	
+				<c:forEach var="proofList" items="${requestScope.proofList}" varStatus="status">
+				<tr class="text-center border">
+					<td ><c:out value="${status.count}" /></td>
+					<td>${proofList.proofno}</td>
+					<td>${proofList.fk_empno}</td>
+					<td>${proofList.name}</td>
+					<td>
+						<c:choose>
+							<c:when test="${proofList.issueuse eq '1'}">은행제출용</c:when>
+							<c:otherwise>공공기관용</c:otherwise>
+						</c:choose></td>
+					<td>${proofList.issuedate}</td>
+				</tr>
+				</c:forEach>
+			</tbody>
+		</table>
 		</div>
 	</div>
-
-	
-	<div class="mt-5">
-	<h5 class='mx-4'>증명서목록</h5>
-	<table class="table table-bordered table-sm m-4 ">
-		<thead>
-			<tr>
-				<th>No</th>
-				<th>신청번호</th>
-				<th>사원번호</th>
-				<th>사원명</th>
-				<th>용도</th>
-				<th>신청일</th>
-			</tr>
-		</thead>
-		<tbody  onclick="go_viewDetailProof()" data-toggle="modal" data-target="#viewDetailProof">	
-			<c:forEach var="proofList" items="${requestScope.proofList}" varStatus="status">
-			<tr class="text-center border">
-				<td ><c:out value="${status.count}" /></td>
-				<td>${proofList.proofno}</td>
-				<td>${proofList.fk_empno}</td>
-				<td>${proofList.name}</td>
-				<td>
-					<c:choose>
-						<c:when test="${proofList.issueuse eq '1'}">은행제출용</c:when>
-						<c:otherwise>공공기관용</c:otherwise>
-					</c:choose></td>
-				<td>${proofList.issuedate}</td>
-			</tr>
-			</c:forEach>
-		</tbody>
-	</table>
-	</div>
-</div>
 </form>
 <div>${pagebar}</div>

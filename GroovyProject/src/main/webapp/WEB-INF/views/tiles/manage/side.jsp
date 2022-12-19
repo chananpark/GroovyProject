@@ -94,7 +94,7 @@
       <!-- 관리자 Links -->
      <c:if test="${sessionScope.loginuser != null && loginuser.department ==  '인사총무팀'}">
      <li class="nav-item mb-4">
-      	<button id="insertBtn" type="button" style='width:100%;' class="btn btn-outline-dark" onclick="<%=ctxPath%>/manage/admin/registerInfo.on">사원등록</button>
+      	<button id="insertBtn" type="button" style='width:100%;' class="btn btn-outline-dark" onclick="javascript:location.href='<%= ctxPath%>/manage/admin/registerInfo.on'">사원등록</button>
     	</li>
      </c:if> 
      
@@ -151,7 +151,7 @@
 		       <ul class="menu subMenus admenu2 eachmenu5">
 		      	<li><a class="nav-link" href="<%= ctxPath%>/manage/pay/paySearchAdmin.on">급여조회</a></li>		
 		      	<li><a class="nav-link" href="<%= ctxPath%>/manage/pay/overtimepaySearchAdmin.on">기본외수당조회</a></li>	
-		      	<li><a class="nav-link" href="<%= ctxPath%>/manage/pay/payChart.on">연봉급여차트</a></li>	
+		      <!-- 	<li><a class="nav-link" href="<%= ctxPath%>/manage/pay/payChart.on">연봉급여차트</a></li>	 -->
 		      </ul> 
 		    </li>
 		    </ul>

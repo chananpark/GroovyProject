@@ -506,9 +506,9 @@
 	</select>
 	
 	<!--  답변한 설문지 insert -->
-	<insert id="surveyJoinEnd" parameterType="com.spring.groovy.survey.model.JoinSurveyVO">
-		INSERT INTO TBL_JOINSURVEY(JOINSURNO,FK_EMPNO,FK_SURNO,FK_QUESTNO,ANSWER,SURJOINDATE)
-               VALUES(seq_tbl_joinsurvey.nextval,#{jvoList.fk_empno},#{jvoList.fk_surno},#{jvoList.fk_questno},#{jvoList.answer}, sysdate)
+	<insert id="surveyJoinEnd" parameterType="HashMap">
+	INSERT INTO TBL_JOINSURVEY(JOINSURNO,FK_EMPNO,FK_SURNO,FK_QUESTNO,ANSWER,SURJOINDATE)
+	VALUES(SEQ_TBL_JOINSURVEY.NEXTVAL,#{empno},#{jvoList.fk_surno},#{jvoList.fk_questno},#{jvoList.answer},sysdate)
 	</insert>
 	
 	
@@ -553,12 +553,12 @@
 	    SELECT *
 	    FROM (SELECT ROWNUM AS RNO, V.*
 	        FROM( 
-	            SELECT SURNO,SURTITLE,SUREXPLAIN,TO_CHAR(SURCREATEDATE, 'YYYY-MM-DD')SURCREATEDATE,TO_CHAR(SURSTART), 'YYYY-MM-DD')SURSTART
+	            SELECT SURNO,SURTITLE,SUREXPLAIN,TO_CHAR(SURCREATEDATE, 'YYYY-MM-DD')SURCREATEDATE,TO_CHAR(SURSTART, 'YYYY-MM-DD')SURSTART
 	            		,TO_CHAR(SUREND, 'YYYY-MM-DD')SUREND,SURSTATUS
 	            FROM TBL_SURVEY S LEFT JOIN TBL_TARGET T
 	            ON S.SURNO = T.FK_SURNO
 	         	 <if test='searchType != "" and searchWord != "" '> 
-		              WHERE AND LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
+		          WHERE LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
 		          </if>
 	            ORDER BY SURNO DESC
 	        )V)

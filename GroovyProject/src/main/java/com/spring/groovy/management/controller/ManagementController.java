@@ -2,6 +2,7 @@ package com.spring.groovy.management.controller;
 
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -117,7 +118,21 @@ public class ManagementController {
 			originalFilename = empimg.getOriginalFilename();
 			
 			// 새로운 파일명으로 디스크에 저장한다.
-			filename = fileManager.doFileUpload(bytes, originalFilename, path);
+	         filename = fileManager.doFileUpload(bytes, originalFilename, path);
+	         
+	         String pathname = "C:\\Users\\sist\\git\\GroovyProject\\GroovyProject\\src\\main\\webapp\\resources\\images\\profile" + File.separator + filename;
+	         File dir = new File("C:\\Users\\sist\\git\\GroovyProject\\GroovyProject\\src\\main\\webapp\\resources\\images\\profile");
+	               if(!dir.exists()) {
+	                  // 만약에 파일을 저장할 경로인 폴더가 실제로 존재하지 않는다면
+	                  
+	                  dir.mkdirs(); // 파일을 저장할 경로인 폴더를 생성한다.
+	               }
+	         FileOutputStream fos = new FileOutputStream(pathname);
+
+	         fos.write(bytes);
+
+	         fos.flush();
+	         fos.close();
 			
 		} catch (Exception e) {
 			e.printStackTrace();

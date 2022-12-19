@@ -510,13 +510,12 @@ let b_flag_emailDuplicate_click = false;
 </script>
 
 <form name="frm_manageInfo">
-<div id="info_manageInfo">
-
 <div style='margin: 1% 0 5% 1%'>
 	<h4>사원정보</h4>
 </div>
 
-	<h5 class='m-4'>사원등록</h5>
+	<div class='mx-4'>
+	<h5>사원등록</h5>
 	
 	<table class="m-4 mb-3 table table-bordered table-sm" id="first_table">
 		<tr>
