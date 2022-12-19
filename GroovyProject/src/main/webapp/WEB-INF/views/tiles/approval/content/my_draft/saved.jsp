@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <% String ctxPath=request.getContextPath(); %>
 
 <link rel = "stylesheet" href = "<%=ctxPath%>/resources/css/draft_list_style.css">
@@ -160,6 +161,7 @@ const deleteDraft = () => {
 		<thead>
 			<tr class='row'>
 				<th class='col col-2'>선택</th>
+				<th class='col col-1'>문서번호</th>
 				<th class='col col-2'>작성일</th>
 				<th class='col col-2'>종류</th>
 				<th class='col'>제목</th>
@@ -175,7 +177,8 @@ const deleteDraft = () => {
 								<input type="checkbox" id="check${sts.index}" class="checkboxes"/>
 								<label for="check${sts.index}" class='btn smallBtn'>&nbsp;문서 선택</label>
 							</td>
-							<td class='col col-2'>${temp.draft_date}</td>
+							<td class='col col-1'>${temp.draft_no}</td>
+							<td class='col col-2'>${fn:substring(temp.draft_date,0,10)}</td>
 							<td class='col col-2'>${temp.draft_type}</td>
 							<td class='col'>
 							<a href='<%=ctxPath%>/approval/tempDraftDetail.on?draft_no=${temp.draft_no}&fk_draft_type_no=${temp.fk_draft_type_no}'>
