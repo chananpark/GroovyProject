@@ -73,6 +73,7 @@ const excelDownLoad = () => {
 					<option value="draft_no">문서번호</option>
 					<option value="draft_type">종류</option>
 					<option value="draft_subject">제목</option>
+					<option value="draft_content">내용</option>
 					<option value="draft_emp_name">기안자</option>
 				</select>
 				<%-- 검색어 입력창 --%>

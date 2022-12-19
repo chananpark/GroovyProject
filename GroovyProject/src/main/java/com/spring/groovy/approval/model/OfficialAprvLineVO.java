@@ -3,7 +3,7 @@ package com.spring.groovy.approval.model;
 public class OfficialAprvLineVO {
 	private int official_aprv_line_no; // 공통결재라인 번호(기본키)
 	private int fk_draft_type_no; // 기안종류 번호(외래키)
-	private Integer fk_approval_empno1; // 첫번째 결재자 사원번호(외래키)
+	private int fk_approval_empno1; // 첫번째 결재자 사원번호(외래키)
 	private Integer fk_approval_empno2; // 두번째 결재자 사원번호(외래키)      
 	private Integer fk_approval_empno3; // 세번째 결재자 사원번호(외래키)
 	private Integer fk_approval_empno4; // 네번째 결재자 사원번호(외래키)

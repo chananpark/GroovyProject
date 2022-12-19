@@ -6,7 +6,7 @@ public class ApprovalVO {
 
 	private int approval_no; // 결재번호(기본키)         
 	private String fk_draft_no; // 기안문서번호(외래키)
-	private int fk_approval_empno; // 결재자 사원번호      
+	private String fk_approval_empno; // 결재자 사원번호      
 	private int levelno; // 결재순서  
 	private int approval_status; // 결재상태(0:미결, 1:결재, 2:반려, -1: 처리불가(아래에서 반려함))      
 	private String approval_comment; // 결재의견
@@ -33,10 +33,10 @@ public class ApprovalVO {
 	public void setFk_draft_no(String fk_draft_no) {
 		this.fk_draft_no = fk_draft_no;
 	}
-	public int getFk_approval_empno() {
+	public String getFk_approval_empno() {
 		return fk_approval_empno;
 	}
-	public void setFk_approval_empno(int fk_approval_empno) {
+	public void setFk_approval_empno(String fk_approval_empno) {
 		this.fk_approval_empno = fk_approval_empno;
 	}
 	public int getLevelno() {

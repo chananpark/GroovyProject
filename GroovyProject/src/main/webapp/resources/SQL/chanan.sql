@@ -400,7 +400,9 @@ create or replace view view_draft_approval
 as
 SELECT case when DRAFT_status = 0 then null else APPROVAL_DATE end as APPROVAL_DATE, 
 DRAFT_DATE, FK_DRAFT_TYPE_NO, draft_type, draft_no, FK_DRAFT_EMPNO, urgent_status, FK_APPROVAL_EMPNO,
-name as DRAFT_EMP_NAME, DRAFT_SUBJECT, DRAFT_status, department as draft_DEPARTMENT
+name as DRAFT_EMP_NAME, REPLACE(REPLACE(REPLACE(REPLACE(DRAFT_SUBJECT,'&'||'lt;','<' ),'&'||'gt;','>'),'&amp;', '&'),'&nbsp;',' ') AS DRAFT_SUBJECT,
+REGEXP_REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(DRAFT_CONTENT, '&'||'lt;','<' ),'&'||'gt;','>'),'&amp;', '&'),'&nbsp;',' ') , '<[^>]*>' ,'' ) AS DRAFT_CONTENT,
+DRAFT_status, department as draft_DEPARTMENT
 FROM TBL_APPROVAL JOIN TBL_DRAFT
 ON FK_DRAFT_NO = DRAFT_NO
 JOIN TBL_EMPLOYEE
@@ -412,9 +414,11 @@ create or replace view view_team_draft
 as
 select case when DRAFT_status = 0 then null else APPROVAL_DATE end as APPROVAL_DATE, 
 DRAFT_DATE, FK_DRAFT_TYPE_NO, draft_type, draft_no, FK_DRAFT_EMPNO, urgent_status,
-name as DRAFT_EMP_NAME, DRAFT_SUBJECT, DRAFT_status, department as draft_DEPARTMENT, fk_department_no
+name as DRAFT_EMP_NAME, REPLACE(REPLACE(REPLACE(REPLACE(DRAFT_SUBJECT,'&'||'lt;','<' ),'&'||'gt;','>'),'&amp;', '&'),'&nbsp;',' ') AS DRAFT_SUBJECT,
+REGEXP_REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(DRAFT_CONTENT, '&'||'lt;','<' ),'&'||'gt;','>'),'&amp;', '&'),'&nbsp;',' ') , '<[^>]*>' ,'' ) AS DRAFT_CONTENT,
+DRAFT_status, department as draft_DEPARTMENT, fk_department_no
 FROM
-(select DRAFT_DATE, FK_DRAFT_TYPE_NO, draft_type, draft_no, FK_DRAFT_EMPNO, DRAFT_SUBJECT, DRAFT_status, APPROVAL_DATE, urgent_status
+(select DRAFT_DATE, FK_DRAFT_TYPE_NO, draft_type, draft_no, FK_DRAFT_EMPNO, DRAFT_SUBJECT, DRAFT_CONTENT, DRAFT_status, APPROVAL_DATE, urgent_status
 from tbl_draft join 
 (select max(APPROVAL_DATE) as APPROVAL_DATE, FK_DRAFT_NO from tbl_approval group by FK_DRAFT_NO)
 on draft_no = FK_DRAFT_NO
@@ -427,7 +431,9 @@ on empno = fk_draft_empno
 create or replace view view_draft_sent
 as
 select case when DRAFT_status = 0 then null else APPROVAL_DATE end as APPROVAL_DATE, DRAFT_DATE, FK_DRAFT_TYPE_NO, draft_type, draft_no,
-FK_DRAFT_EMPNO, NAME as DRAFT_EMP_NAME, DRAFT_SUBJECT, DRAFT_status, urgent_status
+FK_DRAFT_EMPNO, NAME as DRAFT_EMP_NAME, REPLACE(REPLACE(REPLACE(REPLACE(DRAFT_SUBJECT,'&'||'lt;','<' ),'&'||'gt;','>'),'&amp;', '&'),'&nbsp;',' ') AS DRAFT_SUBJECT, 
+DRAFT_status, urgent_status,
+REGEXP_REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(DRAFT_CONTENT, '&'||'lt;','<' ),'&'||'gt;','>'),'&amp;', '&'),'&nbsp;',' ') , '<[^>]*>' ,'' ) AS DRAFT_CONTENT
 from tbl_draft join
 (select max(APPROVAL_DATE) as APPROVAL_DATE, FK_DRAFT_NO from tbl_approval group by FK_DRAFT_NO)
 on draft_no = FK_DRAFT_NO
@@ -436,24 +442,36 @@ tbl_employee
 on empno = fk_draft_empno
 ;
 
-
 -- 개인문서함 결재함 목록 뷰 --
 create or replace view view_draft_processed
 as
 SELECT case when DRAFT_status = 0 then null else APPROVAL_DATE end as APPROVAL_DATE, 
 DRAFT_DATE, FK_DRAFT_TYPE_NO, DRAFT_TYPE, DRAFT_NO,
-FK_DRAFT_EMPNO, NAME as DRAFT_EMP_NAME, fk_approval_empno, DRAFT_SUBJECT, 
-department as draft_DEPARTMENT, urgent_status, DRAFT_status
+FK_DRAFT_EMPNO, NAME as DRAFT_EMP_NAME, fk_approval_empno, REPLACE(REPLACE(REPLACE(REPLACE(DRAFT_SUBJECT,'&'||'lt;','<' ),'&'||'gt;','>'),'&amp;', '&'),'&nbsp;',' ') AS DRAFT_SUBJECT, 
+department as draft_DEPARTMENT, urgent_status, DRAFT_status,
+REGEXP_REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(DRAFT_CONTENT, '&'||'lt;','<' ),'&'||'gt;','>'),'&amp;', '&'),'&nbsp;',' ') , '<[^>]*>' ,'' ) AS DRAFT_CONTENT
 FROM TBL_DRAFT JOIN (select APPROVAL_DATE, approval_STATUS, fk_approval_empno, FK_DRAFT_NO from tbl_approval)
 ON DRAFT_NO = FK_DRAFT_NO
 and approval_STATUS IN (1,2) join
 tbl_employee
 on empno = fk_draft_empno
-;		
+;	
+
+-- 개인문서함 임시저장함 목록 뷰 --
+create or replace view view_temp_draft
+as
+SELECT DRAFT_TYPE, TEMP_DRAFT_NO AS DRAFT_NO, FK_DRAFT_EMPNO, DRAFT_DATE,
+					REPLACE(REPLACE(REPLACE(REPLACE(DRAFT_SUBJECT,'&'||'lt;','<' ),'&'||'gt;','>'),'&amp;', '&'),'&nbsp;',' ') AS DRAFT_SUBJECT, 
+                    FK_DRAFT_TYPE_NO, NAME AS DRAFT_EMP_NAME,
+                    REGEXP_REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(DRAFT_CONTENT, '&'||'lt;','<' ),'&'||'gt;','>'),'&amp;', '&'),'&nbsp;',' ') , '<[^>]*>' ,'' ) AS DRAFT_CONTENT
+					FROM TBL_TEMP_DRAFT JOIN
+					TBL_EMPLOYEE
+					ON EMPNO = FK_DRAFT_EMPNO
+;
 
 -- 결재 대기문서 목록 select문 --
 SELECT DISTINCT DRAFT_DATE, FK_DRAFT_TYPE_NO, DRAFT_TYPE, DRAFT_NO, FK_DRAFT_EMPNO, 
-NAME AS DRAFT_EMP_NAME, DRAFT_SUBJECT, URGENT_STATUS
+NAME AS DRAFT_EMP_NAME, REPLACE(REPLACE(REPLACE(REPLACE(DRAFT_SUBJECT,'&'||'lt;','<' ),'&'||'gt;','>'),'&amp;', '&'),'&nbsp;',' ') AS DRAFT_SUBJECT, URGENT_STATUS
 FROM TBL_DRAFT JOIN TBL_APPROVAL
 ON DRAFT_NO = FK_DRAFT_NO
 AND DRAFT_NO IN (

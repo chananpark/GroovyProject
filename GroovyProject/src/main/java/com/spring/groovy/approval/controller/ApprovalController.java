@@ -131,12 +131,24 @@ public class ApprovalController {
 		Map<String, Object> draftMap = service.getDraftDetail(dvo);
 		dvo = (DraftVO) draftMap.get("dvo");
 		
-		if (loginuser.getFk_bumun_no() != 1) {
-			if (loginuser.getFk_department_no() != dvo.getDraft_department_no()) {
-				mav.addObject("message", "다른 부서의 기안은 조회할 수 없습니다.");
-				mav.addObject("loc", "javascript:history.back()");
-				mav.setViewName("msg");
-				return mav;
+		if (loginuser.getFk_bumun_no() != 1) { // 이사실 직원이 아닐 경우
+			if (loginuser.getFk_department_no() != dvo.getDraft_department_no()) { // 기안자 부서와 로그인 유저의 부서가 다를 경우
+				List<ApprovalVO> externalList = (List<ApprovalVO>) draftMap.get("externalList");
+				
+				boolean flag = false;
+				for(ApprovalVO avo : externalList) {
+					// 결재자 목록에 로그인 유저가 있을 경우
+					if (loginuser.getEmpno().equals(avo.getFk_approval_empno())) {
+						flag = true;
+						break;
+					}
+				}
+				if (!flag) {
+					mav.addObject("message", "다른 부서의 기안은 조회할 수 없습니다.");
+					mav.addObject("loc", "javascript:history.back()");
+					mav.setViewName("msg");
+					return mav;
+				}
 			}
 		}
 		mav.addObject("draftMap", draftMap);
@@ -288,7 +300,9 @@ public class ApprovalController {
 	public ModelAndView sentDraftList(HttpServletRequest request, ModelAndView mav, Pagination pagination) throws Exception {
 
 		MemberVO loginuser = Myutil.getLoginUser(request);
-
+		String unescaped = XssPreventer.unescape(pagination.getSearchWord());
+		pagination.setSearchWord(unescaped);
+		
 		Map<String, Object> paraMap = BeanUtils.describe(pagination); // pagination을 Map으로
 		paraMap.put("empno", loginuser.getEmpno());
 
@@ -320,7 +334,9 @@ public class ApprovalController {
 			throws Exception {
 
 		MemberVO loginuser = Myutil.getLoginUser(request);
-
+		String unescaped = XssPreventer.unescape(pagination.getSearchWord());
+		pagination.setSearchWord(unescaped);
+		
 		Map<String, Object> paraMap = BeanUtils.describe(pagination); // pagination을 Map으로
 		paraMap.put("empno", loginuser.getEmpno());
 
@@ -351,7 +367,9 @@ public class ApprovalController {
 	public ModelAndView savedDraftList(HttpServletRequest request, ModelAndView mav, Pagination pagination) throws Exception {
 
 		MemberVO loginuser = Myutil.getLoginUser(request);
-
+		String unescaped = XssPreventer.unescape(pagination.getSearchWord());
+		pagination.setSearchWord(unescaped);
+		
 		Map<String, Object> paraMap = BeanUtils.describe(pagination); // pagination을 Map으로
 		paraMap.put("empno", loginuser.getEmpno());
 
@@ -402,7 +420,9 @@ public class ApprovalController {
 			throws Exception {
 
 		MemberVO loginuser = Myutil.getLoginUser(request);
-
+		String unescaped = XssPreventer.unescape(pagination.getSearchWord());
+		pagination.setSearchWord(unescaped);
+		
 		Map<String, Object> paraMap = BeanUtils.describe(pagination); // pagination을 Map으로
 		paraMap.put("fk_department_no", loginuser.getFk_department_no());
 
@@ -430,10 +450,11 @@ public class ApprovalController {
 	// 결재하기-결재대기문서 페이지요청
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/requested.on")
-	public ModelAndView requestedDraftList(HttpServletRequest request, ModelAndView mav, Pagination pagination)
-			throws Exception {
+	public ModelAndView requestedDraftList(HttpServletRequest request, ModelAndView mav, Pagination pagination) throws Exception {
 		MemberVO loginuser = Myutil.getLoginUser(request);
-
+		String unescaped = XssPreventer.unescape(pagination.getSearchWord());
+		pagination.setSearchWord(unescaped);
+		
 		Map<String, Object> paraMap = BeanUtils.describe(pagination); // pagination을 Map으로
 		paraMap.put("empno", loginuser.getEmpno());
 
@@ -472,7 +493,10 @@ public class ApprovalController {
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/upcoming.on")
 	public ModelAndView upcomingDraftList(HttpServletRequest request, ModelAndView mav, Pagination pagination) throws Exception {
+		
 		MemberVO loginuser = Myutil.getLoginUser(request);
+		String unescaped = XssPreventer.unescape(pagination.getSearchWord());
+		pagination.setSearchWord(unescaped);
 		
 		Map<String, Object> paraMap = BeanUtils.describe(pagination); // pagination을 Map으로
 		paraMap.put("empno", loginuser.getEmpno());
@@ -855,7 +879,7 @@ public class ApprovalController {
 		boolean result = false;
 		
 		MemberVO loginuser = Myutil.getLoginUser(request);
-		avo.setFk_approval_empno(Integer.parseInt(loginuser.getEmpno()));
+		avo.setFk_approval_empno(loginuser.getEmpno());
 		
 		// 내 다음 결재단계 조회
 		int next_levelno = service.checkApprovalProxy(avo);

@@ -86,7 +86,8 @@
 		
 	<!-- 개인 문서함-임시저장함 게시글 수 조회 -->
 	<select id="getSavedDraftCnt" resultType="int" parameterType="HashMap" >
-		SELECT COUNT(*) FROM TBL_TEMP_DRAFT
+		SELECT COUNT(*)
+		FROM VIEW_TEMP_DRAFT
 		WHERE FK_DRAFT_EMPNO = #{empno}
 		<if test='searchType != "" and searchWord != "" '>
 		AND LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
@@ -97,11 +98,7 @@
  	<select id="getSavedDraftList" resultType="com.spring.groovy.approval.model.DraftVO" parameterType="HashMap" >
 		SELECT * 
 		FROM ( SELECT A.*, ROWNUM AS RNO
-		    FROM (SELECT DRAFT_TYPE, TEMP_DRAFT_NO AS DRAFT_NO, FK_DRAFT_EMPNO, DRAFT_DATE,
-					DRAFT_SUBJECT, FK_DRAFT_TYPE_NO, NAME AS DRAFT_EMP_NAME
-					FROM TBL_TEMP_DRAFT JOIN
-					TBL_EMPLOYEE
-					ON EMPNO = FK_DRAFT_EMPNO
+			FROM (SELECT * FROM VIEW_TEMP_DRAFT
 					WHERE FK_DRAFT_EMPNO = #{empno}
 					<if test='searchType != "" and searchWord != "" '>
 					AND LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'

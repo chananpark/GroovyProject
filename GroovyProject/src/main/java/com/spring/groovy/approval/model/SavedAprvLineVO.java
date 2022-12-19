@@ -2,10 +2,10 @@ package com.spring.groovy.approval.model;
 
 public class SavedAprvLineVO {
 
-	private Integer aprv_line_no;        
+	private int aprv_line_no;        
 	private String aprv_line_name;
-	private Integer fk_empno;    
-	private Integer fk_approval_empno1;     
+	private int fk_empno;    
+	private int fk_approval_empno1;     
 	private Integer fk_approval_empno2;      
 	private Integer fk_approval_empno3; 
 	private Integer fk_approval_empno4;
