@@ -126,7 +126,19 @@ public class ApprovalController {
 	@RequestMapping(value = "/draftDetail.on")
 	public ModelAndView getDraftDetail(ModelAndView mav, HttpServletRequest request, DraftVO dvo) {
 		
+		MemberVO loginuser = Myutil.getLoginUser(request);
+
 		Map<String, Object> draftMap = service.getDraftDetail(dvo);
+		dvo = (DraftVO) draftMap.get("dvo");
+		
+		if (loginuser.getFk_bumun_no() != 1) {
+			if (loginuser.getFk_department_no() != dvo.getDraft_department_no()) {
+				mav.addObject("message", "다른 부서의 기안은 조회할 수 없습니다.");
+				mav.addObject("loc", "javascript:history.back()");
+				mav.setViewName("msg");
+				return mav;
+			}
+		}
 		mav.addObject("draftMap", draftMap);
 		
 		String fk_draft_type_no = request.getParameter("fk_draft_type_no");
@@ -145,7 +157,9 @@ public class ApprovalController {
 			break;
 
 		default:
-			mav.setViewName("error");
+			mav.addObject("message", "잘못된 요청입니다.");
+			mav.addObject("loc", "javascript:history.back()");
+			mav.setViewName("msg");
 			break;
 		}
 		
@@ -168,8 +182,16 @@ public class ApprovalController {
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/tempDraftDetail.on")
 	public ModelAndView getTempDraftDetail(ModelAndView mav, HttpServletRequest request, DraftVO dvo) {
+		MemberVO loginuser = Myutil.getLoginUser(request);
 		
 		Map<String, Object> draftMap = service.getTempDraftDetail(dvo);
+		dvo = (DraftVO) draftMap.get("dvo");
+		if (!loginuser.getEmpno().equals(dvo.getFk_draft_empno())) {
+			mav.addObject("message", "다른 사람의 임시저장 문서는 조회할 수 없습니다.");
+			mav.addObject("loc", "javascript:history.back()");
+			mav.setViewName("msg");
+			return mav;
+		}
 		mav.addObject("draftMap", draftMap);
 		
 		String fk_draft_type_no = request.getParameter("fk_draft_type_no");
@@ -188,7 +210,9 @@ public class ApprovalController {
 			break;
 			
 		default:
-			mav.setViewName("error");
+			mav.addObject("message", "잘못된 요청입니다.");
+			mav.addObject("loc", "javascript:history.back()");
+			mav.setViewName("msg");
 			break;
 		}
 		
@@ -356,7 +380,7 @@ public class ApprovalController {
 	// 개인문서함-임시저장함 글삭제
 	@ResponseBody
 	@PostMapping(value = "/delete.on", produces = "text/plain;charset=UTF-8")
-	public String deleteTempDraft(ModelAndView mav, HttpServletRequest request) {
+	public String deleteTempDraft(HttpServletRequest request) {
 
 		// 지울 파일 목록
 		String deleteList = request.getParameter("deleteList");
@@ -521,7 +545,9 @@ public class ApprovalController {
 			return mav;
 
 		default:
-			mav.setViewName("error");
+			mav.addObject("message", "잘못된 요청입니다.");
+			mav.addObject("loc", "javascript:history.back()");
+			mav.setViewName("msg");
 			return mav;
 		}
 		
@@ -685,7 +711,9 @@ public class ApprovalController {
 			return mav;
 
 		default:
-			mav.setViewName("error");
+			mav.addObject("message", "잘못된 요청입니다.");
+			mav.addObject("loc", "javascript:history.back()");
+			mav.setViewName("msg");
 			return mav;
 		}
 		

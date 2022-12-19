@@ -5,7 +5,7 @@ public class DraftVO {
 	private String draft_no; // 문서번호(기본키)
 	private int fk_draft_type_no; // 기안 종류 번호
 	private String draft_type; // 기안 종류
-	private int fk_draft_empno; // 기안자 사원번호
+	private String fk_draft_empno; // 기안자 사원번호
 	private String draft_subject; // 문서 제목
 	private String draft_content; // 문서 내용
 	private String draft_comment; // 기안 의견
@@ -15,6 +15,7 @@ public class DraftVO {
 
 	private String draft_emp_name; // 기안자 이름(join)
 	private String draft_department; // 기안부서(join)
+	private int draft_department_no; // 기안부서(join)
 	private String position; // 기안자 부서(join)
 	private String empimg; // 기안자 프로필이미지(join)
 
@@ -64,11 +65,11 @@ public class DraftVO {
 		this.draft_type = draft_type;
 	}
 
-	public int getFk_draft_empno() {
+	public String getFk_draft_empno() {
 		return fk_draft_empno;
 	}
 
-	public void setFk_draft_empno(int fk_draft_empno) {
+	public void setFk_draft_empno(String fk_draft_empno) {
 		this.fk_draft_empno = fk_draft_empno;
 	}
 
@@ -168,5 +169,13 @@ public class DraftVO {
 	public void setEmpimg(String empimg) {
 		this.empimg = empimg;
 	}
-	
+
+	public int getDraft_department_no() {
+		return draft_department_no;
+	}
+
+	public void setDraft_department_no(int draft_department_no) {
+		this.draft_department_no = draft_department_no;
+	}
+
 }
