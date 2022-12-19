@@ -395,7 +395,7 @@ public class ManagementController {
 		paramap.put("empno", empno);
 		
 		System.out.println(payno+"payno");
-		System.out.println(empno+"empno");
+		System.out.println(empno+"payno");
 		
 		List<PayVO> payDetailList = service.payDetailView(paramap);
 		
