@@ -29,7 +29,7 @@ public class AdminCheckInterceptor implements HandlerInterceptor{
        if(  loginuser == null || ( loginuser != null && !"인사총무팀".equalsIgnoreCase(loginuser.getDepartment()) ) ) {
          //로그인이 되지 않았거나 로그인한 사용자의 등급이 10미만인 경우
     	   
-         String message = "인사팀만 접근가능 합니다.(인터셉터 활용)~~~";
+         String message = "인사총무팀만 접근가능 합니다.";
          String loc = request.getContextPath()+"/index.on";
          
          request.setAttribute("message", message);

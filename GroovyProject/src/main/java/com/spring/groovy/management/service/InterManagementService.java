@@ -125,6 +125,24 @@ public interface InterManagementService {
 	// 재직증명서 - 한 페이지에 표시할 글 목록  (페이징 페이지수를 알아온다음에 10개씩보여줌) (페이징)
 	List<ProofVO> getOnePageProofCnt(Map<String, Object> paraMap);
 
+	// 공용 증명서 - 월급리스트
+	List<PayVO> payView(Map<String, Object> paramap);
+
+	// 관리자 - 급여관리(급여조회)
+	List<PayVO> paySearchAdmin(Map<String, Object> paramap);
+
+	// 관리자 - 급여관리(급여조회) 한 페이지에 표시할 전체 글 개수 구하기(페이징)
+	int getcountPayList(Pagination pagination);
+
+	// 공용 - 급여관리(급여조회) 한 페이지에 표시할  전체 글 개수 구하기(페이징)
+	int getSalaryList(Pagination pagination);
+
+	// 공용 - 급여관리(기본외수당조회) 한 페이지에 표시할  전체 글 개수 구하기(페이징)
+	int getOverPayList(Pagination pagination);
+
+	// 공용 - 급여관리(급여상세조회 Ajax) 
+	List<PayVO> payDetailView(Map<String, Object> paramap);
+
 	
 
 

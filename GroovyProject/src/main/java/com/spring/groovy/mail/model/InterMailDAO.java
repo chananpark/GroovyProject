@@ -3,6 +3,8 @@ package com.spring.groovy.mail.model;
 import java.util.List;
 import java.util.Map;
 
+import com.spring.chatting.websockethandler.MessageVO;
+
 public interface InterMailDAO {
 
 	/** 특정 유저의 받은메일 총 갯수를 알아오는 식*/
@@ -52,6 +54,42 @@ public interface InterMailDAO {
 
 	/** 태그 by mail_no*/
 	int tagCheckM(Map<String, String> paraMap);
+
+	/** cpemail 넣으면 이메일 작성하기에서 사용할 값 반환 */
+	String getreply(String cpemail);
+
+	// 채팅방 개설하기
+	/** 채팅방 채번  */
+	String getSeqChatNo();
+	/** 방 개설 */
+	int addChatroom(Map<String, String> paraMap);
+	/** 이메일 주소로 넣을 사원번호 가져오기 */
+	String getEmpno(String recipient_address);
+	/** 채팅방에 멤버 추가 */
+	int addChatMember(Map<String, String> paraMap);
+	/** 채팅방 리스트 가져오기 */
+	List<Map<String, String>> getChatroomList(String empno);
+	/** 채팅방에 메시지 추가하기 */
+	int addMessage(MessageVO messageVO);
+	/** 메시지 리스트 가져오기 */
+	List<MessageVO> getMessageList(String no);
+	/** 조직도 중요 체크 */
+	int orgImportantUpdate(Map<String, String> paraMap);
+	/** 채팅방 멤버 리스트 가져오기 */
+	List<String> getMember(String roomNo);
+	/** 멤버 삭제 */
+	int deleteMember(Map<String, String> paraMap);
+	/** 방 정보 변경 */
+	int updateChatroom(Map<String, String> paraMap);
+	/** 태그 추가 */
+	int tagAdd(Map<String, String> paraMap);
+	/** 태그 삭제 */
+	int tagDelete(Map<String, String> paraMap);
+	/** 태그 메일 리스트 가져오기 */
+	List<String> getTotalCountTag(Map<String, Object> paraMap);
+	/** 비밀번호 가져오기 */
+	String getPwd(String mail_no);
+
 
 	
 

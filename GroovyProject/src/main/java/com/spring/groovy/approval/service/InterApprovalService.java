@@ -3,8 +3,6 @@ package com.spring.groovy.approval.service;
 import java.util.List;
 import java.util.Map;
 
-import org.json.JSONArray;
-
 import com.spring.groovy.approval.model.ApprovalVO;
 import com.spring.groovy.approval.model.DraftFileVO;
 import com.spring.groovy.approval.model.DraftVO;
@@ -90,17 +88,32 @@ public interface InterApprovalService {
 	List<MemberVO> getOneAprvLine(String aprv_line_no);
 
 	// 업무기안 임시저장하기
-	boolean saveWorkDraft(Map<String, Object> paraMap);
+	String saveTempDraft(Map<String, Object> paraMap);
 	
 	// 30일 지난 임시저장 글 삭제하기
 	void autoDeleteSavedDraft();
 
-	// 기안문서 조회
+	// 기안문서 상세 조회
 	Map<String, Object> getDraftDetail(DraftVO dvo);
+	
+	// 기안문서 조회
+	DraftVO getDraftInfo(DraftVO dvo);
+
+	// 임시저장 문서 조회
+	Map<String, Object> getTempDraftDetail(DraftVO dvo);
 
 	// 첨부파일 1개 조회
-	DraftFileVO getAttachedFile(String draft_file_no);
+	DraftFileVO getOneAttachedFile(String draft_file_no);
 	
+	// 모든 첨부파일 조회
+	List<DraftFileVO> getAllAttachedFile(String draft_no);
+
+	// 결재단계 사원번호 조회
+	String checkApproval(ApprovalVO avo);
+	
+	// 자신의 다음 결재단계 조회
+	int checkApprovalProxy(ApprovalVO avo);
+		
 	// 결재 처리하기
 	boolean updateApproval(ApprovalVO avo);
 
@@ -110,6 +123,15 @@ public interface InterApprovalService {
 	// 관리자메뉴-공통결재라인 목록 불러오기
 	List<Map<String, String>> getOfficialAprvList();
 	
+	// 관리자메뉴-공통결재라인 삭제하기
+	boolean delOfficialAprvLine(Map<String, String> paraMap);
+
+	// 공통결재라인 여부 사용으로 변경하기
+	boolean setUseOfficialLine(String draft_type_no);
+
+	// 공통결재라인 없는 양식 목록 불러오기
+	List<Map<String, String>> getNoOfficialAprvList();
+
 	// 관리자메뉴-공통결재라인 한개 불러오기
 	List<MemberVO> getOneOfficialAprvLine(String official_aprv_line_no);
 	
@@ -124,6 +146,11 @@ public interface InterApprovalService {
 
 	// 환경설정-서명이미지 수정
 	int updateSignature(Map<String, String> paraMap);
+	
+	// 기안 상신취소하기
+	boolean cancelDraft(DraftVO dvo);
 
+	// 첨부파일 삭제하기
+	boolean deleteFiles(Map<String, Object> paraMap);
 
 }

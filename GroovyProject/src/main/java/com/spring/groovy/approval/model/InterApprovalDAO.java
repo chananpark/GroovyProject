@@ -94,6 +94,9 @@ public interface InterApprovalDAO {
 	// 공통결재라인 목록 불러오기
 	List<Map<String, String>> getOfficialAprvList();
 
+	// 공통결재라인 없는 양식 목록 불러오기
+	List<Map<String, String>> getNoOfficialAprvList();
+
 	// 환경설정 - 결재라인 저장
 	int saveApprovalLine(SavedAprvLineVO sapVO);
 	
@@ -110,13 +113,13 @@ public interface InterApprovalDAO {
 	List<MemberVO> getOneAprvLine(String aprv_line_no);
 
 	// 임시저장 번호 얻어오기
-	int getTempDraftNo();
+	String getTempDraftNo();
 
 	// 기안 임시저장하기
-	int saveDraft(DraftVO dvo);
+	int addTempDraft(DraftVO dvo);
 
 	// 결재정보 임시저장하기
-	int saveApproval(List<ApprovalVO> apvoList);
+	int addTempApproval(List<ApprovalVO> apvoList);
 
 	// 30일 지난 임시저장 글 삭제하기
 	void autoDeleteSavedDraft();
@@ -137,18 +140,84 @@ public interface InterApprovalDAO {
 	BiztripReportVO getBiztripReportInfo(DraftVO dvo);
 	
 	// 첨부파일 1개 조회
-	DraftFileVO getAttachedFile(String draft_file_no);
+	DraftFileVO getOneAttachedFile(String draft_file_no);
 	
+	// 모든 첨부파일 조회
+	List<DraftFileVO> getAllAttachedFile(String draft_no);
+
+	// 결재단계 사원번호 조회
+	String checkApproval(ApprovalVO avo);
+	
+	// 자신의 다음 결재단계 조회
+	int checkApprovalProxy(ApprovalVO avo);
+
 	// 결재 처리하기
-	int updateApproval(ApprovalVO avo);
+	int updateApproval(Map<String, Object> approvalMap);
 
 	// 기안종류번호로 공통결재라인 가져오기
 	List<MemberVO> getRecipientList(String type_no);
+
+	// 관리자메뉴-공통결재라인 삭제하기
+	int delOfficialAprvLine(String official_aprv_line_no);
+
+	// 공통결재라인 사용 안함으로 바꾸기
+	int setNoUseOfficialAprvLine(String draft_type_no);
+
+	// 공통결재라인 여부 사용으로 변경하기
+	int setUseOfficialLine(String draft_type_no);
+
+	// 공통결재선 번호 가져오기
+	int getNewOfficialLineNo();
 
 	// 관리자메뉴-공통결재라인 저장
 	int saveOfficialApprovalLine(OfficialAprvLineVO oapVO);
 
 	// 환경설정-서명이미지 수정
 	int updateSignature(Map<String, String> paraMap);
+
+	// temp_draft에서 select
+	DraftVO getTempDraftInfo(DraftVO dvo);
+
+	// temp_approval에서 select
+	List<ApprovalVO> getTempApprovalInfo(DraftVO dvo);
+	
+	// temp 지출내역 select
+	List<ExpenseListVO> getTempExpenseListInfo(DraftVO dvo);
+
+	// temp 출장보고 select
+	BiztripReportVO getTempBiztripReportInfo(DraftVO dvo);
+
+	// 임시 지출내역 insert
+	int addTempExpenseList(List<ExpenseListVO> evoList);
+
+	// 임시 출장보고 insert
+	int addTempBiztripReport(BiztripReportVO brvo);
+
+	// 임시저장된 결재목록 삭제
+	int deleteAprvList(String temp_draft_no);
+
+	// 임시저장된 지출내역 삭제
+	int deleteEvoList(String temp_draft_no);
+
+	// 임시저장 문서 삭제
+	int deleteTempDraft(String temp_draft_no);
+
+	// draft -> temp_draft 테이블로 옮기기
+	int moveDraft(Map<String, Object> paraMap);
+
+	// approval -> temp_approval로 옮기기
+	int moveApproval(Map<String, Object> paraMap);
+
+	// expense_list -> temp_expense_list로 옮기기
+	int moveExpenseList(Map<String, Object> paraMap);
+
+	// biztrip_report -> temp_biztrip_report로 옮기기
+	int moveBiztripList(Map<String, Object> paraMap);
+
+	// 첨부파일 삭제하기
+	int deleteFiles(List<DraftFileVO> dfvoList);
+
+	// 기안 1개 삭제하기
+	int deleteOneDraft(String draft_no);
 
 }

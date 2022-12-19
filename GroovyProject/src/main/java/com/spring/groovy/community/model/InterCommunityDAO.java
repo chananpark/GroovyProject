@@ -47,5 +47,47 @@ public interface InterCommunityDAO {
 	// 댓글 작성하기
 	int addComment(CommunityCommentVO comment);
 
+	// 댓글 수정하기
+	int editComment(CommunityCommentVO comment);
+
+	// 댓글 삭제하기
+	int delComment(CommunityCommentVO comment);
+
+	// 첨부파일 1개 조회
+	CommunityPostFileVO getAttachedFile(String post_file_no);
+
+	// 답댓글 작성
+	int addReComment(CommunityCommentVO comment);
+
+	// 임시저장 번호 시퀀스 가져오기
+	String getTempPostNo();
+
+	// 임시저장 테이블에 insert
+	int savePost(Map<String, Object> paraMap);
+
+	// 임시저장 목록 가져오기
+	List<Map<String, String>> getSavedPostList(String fk_empno);
+
+	// 임시저장글 삭제
+	int delTempPost(String temp_post_no);
+
+	// 30일 지난 임시저장 글 삭제하기
+	void autoDeleteTempPost();
+	
+	// 좋아요 목록 조회
+	List<CommunityLikeVO> getLikeList(String post_no);
+
+	// like 시퀀스 가져오기
+	String getLikeNo();
+
+	// 좋아요 누르기/취소하기
+	int updateLike(CommunityLikeVO like);
+
+	// 테이블에서 파일 삭제
+	int deleteAttachedFiles(String post_no);
+
+	// 임시저장글 조회하기
+	CommunityPostVO getTempPost(String temp_post_no);
+
 
 }

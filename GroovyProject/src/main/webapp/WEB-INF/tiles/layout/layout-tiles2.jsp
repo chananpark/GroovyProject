@@ -7,7 +7,6 @@
 <html>
 <head>
 <meta charset="UTF-8">
-
 <!-- 
 ┌─────┐  ┌─────┐  ┌─────┐ ┌─────┐ ┌─┐  ┌─┐ ┌─┐  ┌─┐
 │ ┌───┘  │ ┌─┐ │  │ ┌─┐ │ │ ┌─┐ │ │ │  │ │ │ │  │ │
@@ -52,8 +51,13 @@
 <%-- sweet alert --%>
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+
 <%-- 폰트 --%>
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.6/dist/web/static/pretendard.css" />
+ 
+<%-- 부트스트랩 popper --%>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
 
 <style>
 @import url("https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.6/dist/web/static/pretendard.css");

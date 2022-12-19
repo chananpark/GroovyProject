@@ -33,13 +33,10 @@ public class ManagementService implements InterManagementService {
 	// 로그인- 이메일 입력
 	@Override
 	public MemberVO getLogin(String cpemail) {
-		
 		MemberVO loginuser = dao.getLogin(cpemail);
-		
 		if(loginuser == null) {
 			
 		}
-		
 		return loginuser;
 	}
 	
@@ -309,6 +306,43 @@ public class ManagementService implements InterManagementService {
 	public List<ProofVO> getOnePageProofCnt(Map<String, Object> paraMap) {
 		List<ProofVO> proofListPG = dao.getOnePageProofCnt(paraMap);
 		return proofListPG;
+	}
+
+	// 공용 증명서 - 월급리스트
+	@Override
+	public List<PayVO> payView(Map<String, Object> paramap) {
+		return dao.payView(paramap);
+	}
+
+
+	// 관리자 - 급여관리(급여조회)
+	@Override
+	public List<PayVO> paySearchAdmin(Map<String, Object> paramap) {
+		return dao.paySearchAdmin(paramap);
+	}
+
+	// 관리자 - 급여관리(급여조회) 한 페이지에 표시할 전체 글 개수 구하기(페이징)
+	@Override
+	public int getcountPayList(Pagination pagination) {
+		return dao.getcountPayList(pagination);
+	}
+
+	// 공용 - 급여관리(급여조회) 한 페이지에 표시할  전체 글 개수 구하기(페이징)
+	@Override
+	public int getSalaryList(Pagination pagination) {
+		return dao.getSalaryList(pagination);
+	}
+
+	// 공용 - 급여관리(기본외수당조회) 한 페이지에 표시할  전체 글 개수 구하기(페이징)
+	@Override
+	public int getOverPayList(Pagination pagination) {
+		return dao.getOverPayList(pagination);
+	}
+
+	// 공용 - 급여관리(급여상세조회 Ajax) 
+	@Override
+	public List<PayVO> payDetailView(Map<String, Object> paramap) {
+		return dao.payDetailView(paramap);
 	}
 
 

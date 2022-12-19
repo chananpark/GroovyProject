@@ -15,13 +15,24 @@
 
 	<select id="getTotalCount" parameterType="HashMap" resultType="int">
 	    select count(*)
+	    from
+	    (
+	    select M.MAIL_NO, SEND_TIME ,case when(lag(M.MAIL_NO, 1) over(order by SEND_TIME desc) = M.MAIL_NO) then 0 else 1 end as ck
 	    from tbl_mail M  
-	    <if test='listType == "FK_Recipient_address" or listType == "important"'>   
+	    <if test='listType == "FK_Recipient_address" or listType == "important" or listType == "Tag"'>   
 	    right JOIN TBL_MAIL_Recipient R  
    		ON R.fk_mail_no = M.mail_no
    		</if>
 	    <![CDATA[where SEND_TIME <= sysdate]]>	    
-	
+	    <if test='listType == "Tag"'>
+	        and mail_no in 
+			<foreach collection="TagMailList" item="item" index="index" separator="," open="(" close=")">
+                    #{item}
+            </foreach>
+	        and ((FK_Sender_address != #{mail_address} and FK_Recipient_address_individual = #{mail_address} and RECIPIENT_delete =0)
+    			  or (FK_Recipient_address_individual != #{mail_address} and FK_Sender_address = #{mail_address} and sender_delete = 0)
+    			  or (FK_Sender_address = #{mail_address} and FK_Recipient_address_individual = #{mail_address} and RECIPIENT_delete =0 and sender_delete = 0))
+	    </if>
        	<if test='listType == "FK_Sender_address"'>
        		and sender_delete = 0
        		and  ${listType} = #{mail_address}
@@ -38,7 +49,10 @@
     	<if test='searchType != "" and searchWord != "" '>
 	    	and lower(${searchType}) like '%'||lower(#{searchWord})||'%'
 	    </if>
-			 
+		)
+		<if test='listType == "important" or listType == "Tag"'> 
+       where ck = 1
+       </if> 
 	</select>
 		
 		<!-- 페이징한 메일 정보만 가져오기-->
@@ -49,45 +63,64 @@
 		    select rownum AS rno, V.*
 		    from 
 		    (
-		        select M.MAIL_NO,M.FK_SENDER_ADDRESS,M.FK_RECIPIENT_ADDRESS
-		        ,M.SUBJECT,M.contents,M.send_Time,M.SENDER_DELETE,M.SENDER_IMPORTANT
-		        ,M.FILENAME, M.ORGFILENAME, M.FILESIZE,M.MAIL_PWD
-		        <if test='listType == "FK_Recipient_address" or listType == "important"'>   
+		    	select *
+		    	from
+		    	(
+			        select M.MAIL_NO,M.FK_SENDER_ADDRESS,M.FK_RECIPIENT_ADDRESS
+			        ,M.SUBJECT,M.contents,M.send_Time,M.SENDER_DELETE,M.SENDER_IMPORTANT
+			        ,M.FILENAME, M.ORGFILENAME, M.FILESIZE,M.MAIL_PWD, case when(lag(M.MAIL_NO, 1) over(order by SEND_TIME desc) = M.MAIL_NO) then 0 else 1 end as ck
+			        <if test='listType == "FK_Recipient_address" or listType == "important" or listType == "Tag"'>   
+		
+			        	,R.mail_recipient_no,R.FK_RECIPIENT_ADDRESS_individual
+			        	,R.FK_REFERENCED_ADDRESS_individual,R.READ_CHECK
+			        	,R.RECIPIENT_DELETE,RECIPIENT_IMPORTANT
+					</if>
+				
+				   from tbl_mail M  
+				   <if test='listType == "FK_Recipient_address" or listType == "important" or listType == "Tag"'>
+					   right JOIN TBL_MAIL_Recipient R  
+					   ON R.fk_mail_no = M.mail_no
+				   </if>
+			        <!-- <![CDATA[]]> 파싱하지 않고 문자 그대로 들어감 -->
+			        <![CDATA[where SEND_TIME <= sysdate]]>
+			        <if test='listType != ""'>		
+			        	<if test='listType == "Tag"'>
+					        and mail_no in 
+							<foreach collection="TagMailList" item="item" index="index" separator="," open="(" close=")">
+				                    #{item}
+				            </foreach>
+					        and ((FK_Sender_address != #{mail_address} and FK_Recipient_address_individual = #{mail_address} and RECIPIENT_delete =0)
+				    			  or (FK_Recipient_address_individual != #{mail_address} and FK_Sender_address = #{mail_address} and sender_delete = 0)
+				    			  or (FK_Sender_address = #{mail_address} and FK_Recipient_address_individual = #{mail_address} and RECIPIENT_delete =0 and sender_delete = 0))
+					    </if>
+			        	<if test='listType == "FK_Sender_address"'>
+			        		and sender_delete = 0 
+			        		and  ${listType} = #{mail_address}
+			        	</if>
+			        	<if test='listType == "FK_Recipient_address"'>  
+			        		and RECIPIENT_delete =0  
+			        		and not (FK_Sender_address = #{mail_address} and sender_delete = 1) 	
+				    		and  ((FK_Recipient_address_individual = #{mail_address})
+				    			  or (FK_REFERENCED_ADDRESS_individual = #{mail_address}))
+				    	</if>
+				    	<if test='listType == "important"'>    	
+				    	    and ((FK_Recipient_address_individual = #{mail_address} and Recipient_IMPORTANT = 1 and RECIPIENT_delete =0  )
+				    			  or (FK_Sender_address = #{mail_address} and SENDER_IMPORTANT = 1 and sender_delete = 0)) 
+				    			  
+				    			  
+				    	</if>
+				    </if>
+			        
+				    <if test='searchType != "" and searchWord != "" '>
+				    	
+				    	and lower(${searchType}) like '%'||lower(#{searchWord})||'%'
+				    </if>
 	
-		        	,R.mail_recipient_no,R.FK_RECIPIENT_ADDRESS_individual
-		        	,R.FK_REFERENCED_ADDRESS_individual,R.READ_CHECK
-		        	,R.RECIPIENT_DELETE,RECIPIENT_IMPORTANT
-				</if>
-			
-			   from tbl_mail M  
-			   <if test='listType == "FK_Recipient_address" or listType == "important"'>
-				   right JOIN TBL_MAIL_Recipient R  
-				   ON R.fk_mail_no = M.mail_no
-			   </if>
-		        <!-- <![CDATA[]]> 파싱하지 않고 문자 그대로 들어감 -->
-		        <![CDATA[where SEND_TIME <= sysdate]]>
-		        <if test='listType != ""'>		
-		        	<if test='listType == "FK_Sender_address"'>
-		        		and sender_delete = 0
-		        		and  ${listType} = #{mail_address}
-		        	</if>
-		        	<if test='listType == "FK_Recipient_address"'>  
-		        		and RECIPIENT_delete =0    	
-			    		and  ((FK_Recipient_address_individual = #{mail_address})
-			    			  or (FK_REFERENCED_ADDRESS_individual = #{mail_address}))
-			    	</if>
-			    	<if test='listType == "important"'>    	
-			    	    and ((FK_Recipient_address_individual = #{mail_address} and Recipient_IMPORTANT = 1 and RECIPIENT_delete =0  )
-			    			  or (FK_Sender_address = #{mail_address} and SENDER_IMPORTANT = 1 and sender_delete = 0)) 
-			    	</if>
-			    </if>
-		        
-			    <if test='searchType != "" and searchWord != "" '>
-			    	
-			    	and lower(${searchType}) like '%'||lower(#{searchWord})||'%'
-			    </if>
-
-		        order by SEND_TIME desc
+			        order by SEND_TIME desc
+			        )C
+		        <if test='listType == "important" or listType == "Tag"'> 
+		        where ck = 1
+		        </if>
 		    ) V
 		) T 
 		where rno between #{startRno} and #{endRno} 
@@ -125,6 +158,9 @@
 		select seq_mail_no.nextval
 		from dual
 	</select>
+	
+	
+	
 	<!-- 메일 추가하기 -->
 	<insert id="addMail" parameterType="HashMap">
 		insert into tbl_mail(MAIL_NO, FK_Sender_address,FK_Recipient_address,SUBJECT, CONTENTS,
@@ -145,7 +181,7 @@
 	    	    null,
 	    	</when>
 	    	<otherwise>
-	    	    to_date(#{send_time},'mm/dd/yyyy hh24:mi:ss'),
+	    	    #{mail_pwd},
 	    	</otherwise>
 	    </choose>
 	    
@@ -201,6 +237,13 @@
 		select '"'||department||' '||position||' '||name||'<![CDATA[<]]>'||cpemail||'<![CDATA[>]]>'||'"' as cpemail
 		from tbl_employee
 	</select>
+	
+	<!--  메일정보 가져오기 (답장용) -->
+	<select id="getreply" resultType="String" parameterType="String"> 
+		select '"'||department||' '||position||' '||name||'<![CDATA[<]]>'||cpemail||'<![CDATA[>]]>'||'"' as cpemail
+		from tbl_employee
+		where cpemail = lower(#{cpemail})
+	</select>
 		
 	<!--  메일 읽음 처리하기 -->
 	<update id="readMail" parameterType = "HashMap" >
@@ -239,14 +282,32 @@
 	<!-- 중요체크 추가 or 해제 mailno -->
 	<update id="importantUpdateM" parameterType = "HashMap" >
 	
-		update TBL_MAIL
+		update TBL_MAIL 
 		<if test="SENDER_IMPORTANT == 0">
 		set SENDER_IMPORTANT =  1
 		</if>
 		<if test="SENDER_IMPORTANT == 1">
 		set SENDER_IMPORTANT =  0
 		</if>
-   		where mail_no = #{mail_no}
+		where mail_no = #{mail_no}
+
+	</update>
+	
+	<update id="importantUpdateM2" parameterType = "HashMap" >
+		MERGE 
+		 INTO TBL_MAIL_Recipient r
+		USING  TBL_MAIL m
+		   ON (r.fk_mail_no = m.mail_no 
+		   	  and FK_RECIPIENT_ADDRESS_INDIVIDUAL = FK_SENDER_ADDRESS
+		      and mail_no = #{mail_no})
+		 WHEN MATCHED THEN
+		      UPDATE
+		        <if test="SENDER_IMPORTANT == 0">
+				set RECIPIENT_IMPORTANT =  1
+				</if>
+				<if test="SENDER_IMPORTANT == 1">
+				set RECIPIENT_IMPORTANT =  0
+				</if>
 	</update>
 	
 
@@ -264,6 +325,8 @@
 		set SENDER_Delete=  1
    		where mail_no = #{mail_no}
 	</update>
+	
+
 	
 	
 	
@@ -284,6 +347,20 @@
 		insert(tag_no,FK_mail_address,tag_color,tag_name ,fk_MAIL_NO )
 		values(seq_tag_no.nextval,#{FK_MAIL_ADDRESS},#{tag_color},#{tag_name},#{mail_no})
 	</update>
+	
+	<!-- 태그추가 -->
+	<insert id="tagAdd" parameterType = "HashMap">
+	insert into tbl_tag (tag_no,FK_mail_address,tag_color,tag_name ,fk_MAIL_NO )
+	values(seq_tag_no.nextval,#{FK_MAIL_ADDRESS},#{tag_color},#{tag_name},#{fk_mail_no})
+	</insert>
+	
+	<!-- 태그삭제 -->
+	<delete id="tagDelete" parameterType = "HashMap">
+	delete from tbl_tag 
+	where FK_MAIL_ADDRESS=#{FK_MAIL_ADDRESS}
+	and tag_color=#{tag_color}
+	and tag_name=#{tag_name}
+	</delete>
 	
 	
 	<resultMap type="HashMap" id="departmentMap">
@@ -323,6 +400,7 @@
 		<result property="department" column="department" javaType="String"/>
 		<result property="mobile" column="mobile" javaType="String"/>
 		<result property="joindate" column="joindate" javaType="String"/>
+		<result property="important" column="important" javaType="String"/>
 	</resultMap>
 	
 	<select id="empListSearchWithPaging" parameterType="HashMap" resultMap="empList"> 
@@ -332,14 +410,21 @@
 		    select rownum AS rno, V.*
 		    from 
 		    ( 
-			select empno, cpemail, name, position, substr(jubun,0,6) as birth_date
-		          ,empimg, bumun,department, mobile,joindate
-		    from TBL_EMPLOYEE
-		    where 1=1
-		    <if test='searchType != "" and searchWord != "" '>
-		    	and lower(${searchType}) like '%'||lower(#{searchWord})||'%'
-		    </if>
-		    order by fk_bumun_no, fk_department_no,fk_position_no
+				select empno, cpemail, name, position, substr(jubun,0,6) as birth_date
+	                      ,empimg, bumun,department, mobile,joindate , nvl2(FK_IMPORTANT_EMPNO, 1,0) as important
+			    from tbl_employee E 
+			    left join 
+			    (
+			        select fk_user_empno,fk_important_empno
+			        from tbl_important_organization 
+			        where fk_user_empno = 12
+			    )I
+		    	on E.empno = I.fk_important_empno
+		    	where 1=1
+			    <if test='searchType != "" and searchWord != "" '>
+			    	and lower(${searchType}) like '%'||lower(#{searchWord})||'%'
+			    </if>
+		    	order by fk_bumun_no, fk_department_no,fk_position_no
 		    ) V
 		) T 
 		where rno between #{startRno} and #{endRno}
@@ -347,5 +432,162 @@
 	
 	
 	
+		
+	
+	
+	
+	
+	<!-- 채팅방 채번하기 -->
+	<select id="getSeqChatNo" resultType="String">
+		select seq_chatroom_no.nextval
+		from dual
+	</select>
+	
+	<!--  채팅방 개설하기 -->
+	<insert id="addChatroom"  parameterType="HashMap">
+		insert into tbl_chatroom(chatroom_no, chatroom_name)
+		values(#{room_no},#{subject})
+	</insert>
+	
+	<!--  사원번호 가져오기 	 -->
+	<select id="getEmpno" resultType="String" parameterType="String"> 
+		select empno
+		from tbl_employee
+		where cpemail = lower(#{cpemail})
+	</select>
+
+	 
+	
+	<!--  채팅방에 인원 추가하기 	-->
+	<insert id="addChatMember"  parameterType="HashMap">
+		insert into tbl_chatroom_member(fk_chatroom_no, fk_member_no)
+		values(#{room_no},#{empNo})
+	</insert>
+	
+	<resultMap type="HashMap" id="chatroom">
+		<result property="chatroom_no" column="chatroom_no" javaType="String"/>
+		<result property="chatroom_name" column="chatroom_name" javaType="String"/>
+		<result property="cnt" column="cnt" javaType="String"/>
+		<result property="position" column="position" javaType="String"/>
+
+	</resultMap>
+	<select id="getChatroomList" parameterType="String" resultMap="chatroom">
+		select *
+		from
+		(
+		select chatroom_no, chatroom_name
+		,(select count(*)
+		    from tbl_chatroom_member
+		    where fk_chatroom_no= chatroom_no) as cnt
+		from tbl_chatroom
+		)c
+		right join
+		(
+		select *
+		from tbl_chatroom_member
+		where FK_MEMBER_NO = #{empno}
+		)m
+		on c.chatroom_no = m.FK_CHATROOM_NO
+		order by chatroom_no
+	</select>
+	
+	<!--  메시지 추가하기  -->
+	<insert id="addMessage" parameterType="com.spring.chatting.websockethandler.MessageVO">
+		insert into tbl_chatroom_message(fk_chatroom_no, fk_member_no,message,type,send_time,send_to)
+		values(#{no},#{fk_member_no},#{message},#{type},#{send_time},
+		<if test='to == "all" '>
+		null
+		</if>
+		<if test='to != "all" '>
+		#{to}
+		</if>
+		)
+	</insert>
+	
+	
+	<!--  채팅방 멤버가져오기 -->
+	<select id="getMember" resultType="String" parameterType="String"> 
+		select '"'||department||' '||position||' '||name||'<![CDATA[<]]>'||cpemail||'<![CDATA[>]]>'||'"' as cpemail
+		from tbl_employee e
+		right join 
+        (
+        select *
+        from tbl_chatroom_member 
+        where fk_chatroom_no = #{roomNo}
+        )m
+        on e.empno = m.fk_member_no
+	</select>
+
+	<!--  messageList 가져오기 -->
+	<select id="getMessageList" parameterType="String" resultType="com.spring.chatting.websockethandler.MessageVO">
+		select fk_chatroom_no, fk_member_no, message, type, send_to, send_time
+		, (select name
+		   from tbl_employee
+		    where empno = fk_member_no) as name
+		from tbl_chatroom_message
+		where fk_chatroom_no=#{no}
+		order by send_time asc
+	</select>
+	
+	
+	
+	<!-- 조직도 중요 체크 / 해제 -->
+	<update id="orgImportantUpdate" parameterType = "HashMap" >
+		MERGE 
+		INTO TBL_IMPORTANT_ORGANIZATION
+		USING dual
+		
+		 ON (FK_USER_EMPNO= #{loginuserNo} and FK_IMPORTANT_EMPNO = #{no})
+		 
+		WHEN MATCHED THEN
+		update SET IMPORTANT_delete=1
+		delete where IMPORTANT_delete = 1
+		WHEN NOT MATCHED THEN
+		
+		insert(FK_USER_EMPNO,FK_IMPORTANT_EMPNO)
+		values(#{loginuserNo},#{no})
+	</update>
+	
+
+	
+	
+	<delete id="deleteMember" parameterType="HashMap">
+		delete from tbl_chatroom_member
+   		where FK_MEMBER_NO = #{empNo}
+   		and fk_chatroom_no = #{room_no}
+	</delete>
+	
+	<update id="updateChatroom" parameterType="HashMap">
+		update tbl_chatroom
+		set chatroom_name =  #{subject}
+   		where chatroom_no = #{room_no}
+	</update>
+	
+	
+	
+	
+	
+	
+	
+	
+	<!-- 태그에 맞는 메일번호 가져오기 -->
+	<select id="getTotalCountTag" resultType="String" parameterType="HashMap"> 
+		select FK_MAIL_NO 
+	    from tbl_tag
+	    where TAG_COLOR = #{tag_color}
+	    	  and FK_MAIL_ADDRESS = #{mail_address}
+	    	  
+
+	</select>
+	
+	
+	<!-- 비밀번호 가져오기 -->
+	<select id="getPwd" resultType="String" parameterType="String"> 
+		select mail_pwd
+		from tbl_mail
+		where mail_no=#{mail_no}
+	    	  
+
+	</select>
 		
 </mapper>

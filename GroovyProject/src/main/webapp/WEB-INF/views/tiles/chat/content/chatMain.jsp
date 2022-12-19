@@ -16,99 +16,42 @@
 
 </style>
 <link rel="stylesheet" href="http://code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
-<script src="https://code.jquery.com/jquery-1.12.4.js"></script>
-<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+
 <script type="text/javascript">
 
 	$(document).ready(function(){
 		
 	});// end of $(document).ready(function(){})-------------------
 	
-	function showChatroom() {
+	function showChatroom(roomNo) {
 		var _width = '400';
 	    var _height = '600';
 		var _left = Math.ceil(( window.screen.width - _width )/2);
 	    var _top = Math.ceil(( window.screen.height - _height )/2); 
 		 
-		window.open('<%=ctxPath%>/chat/chatroom.on', '채팅방', 'width='+ _width +', height='+ _height +', left=' + _left + ', top='+ _top );
+		window.open('<%=ctxPath%>/chat/chatroom.on?no='+roomNo, '채팅방', 'width='+ _width +', height='+ _height +', left=' + _left + ', top='+ _top );
 
 	}
+	
+
 </script>
 
 <h2>채팅</h2>
 
 
 <div class="row row-cols-1 row-cols-md-3 g-4">
-  <div class="col mb-3">
-    <div class="card" style="height: 250px; background-color: lavender;" onclick = "showChatroom()">
-      <div style= "padding: 5px 10px;"> <i class="fas fa-users"></i> 5</div>
-      <div class="card-body text-center" style="line-height:150px">
-      
-        	방이름
-      </div>
-    </div>
-  </div>
-  <div class="col mb-3">
-    <div class="card" style="height: 250px; background-color: lavender;">
-      <div style= "padding: 5px 10px;"> <i class="fas fa-users"></i> 5</div>
-      <div class="card-body text-center" style="line-height:150px">
-      
-        	방이름
-      </div>
-    </div>
-  </div>
-  <div class="col mb-3">
-    <div class="card" style="height: 250px; background-color: lavender;">
-      <div style= "padding: 5px 10px;"> <i class="fas fa-users"></i> 5</div>
-      <div class="card-body text-center" style="line-height:150px">
-      
-        	방이름
-      </div>
-    </div>
-  </div>
-  <div class="col mb-3">
-    <div class="card" style="height: 250px; background-color: lavender;">
-      <div style= "padding: 5px 10px;"> <i class="fas fa-users"></i> 5</div>
-      <div class="card-body text-center" style="line-height:150px">
-      
-        	방이름
-      </div>
-    </div>
-  </div>
-  <div class="col mb-3">
-    <div class="card" style="height: 250px; background-color: lavender;">
-      <div style= "padding: 5px 10px;"> <i class="fas fa-users"></i> 5</div>
-      <div class="card-body text-center" style="line-height:150px">
-      
-        	방이름
-      </div>
-    </div>
-  </div>
-  <div class="col mb-3">
-    <div class="card" style="height: 250px; background-color: lavender;">
-      <div style= "padding: 5px 10px;"> <i class="fas fa-users"></i> 5</div>
-      <div class="card-body text-center" style="line-height:150px">
-      
-        	방이름
-      </div>
-    </div>
-  </div>
-  <div class="col mb-3">
-    <div class="card" style="height: 250px; background-color: lavender;">
-      <div style= "padding: 5px 10px;"> <i class="fas fa-users"></i> 5</div>
-      <div class="card-body text-center" style="line-height:150px">
-      
-        	방이름
-      </div>
-    </div>
-  </div>
-  <div class="col mb-3">
-    <div class="card" style="height: 250px; background-color: lavender;">
-      <div style= "padding: 5px 10px;"> <i class="fas fa-users"></i> 5</div>
-      <div class="card-body text-center" style="line-height:150px">
-      
-        	방이름
-      </div>
-    </div>
-  </div>
+	  <c:forEach var="chatroom" items="${chatroomList}">
+		<div class="col mb-3">
+	    <div class="card" style="height: 250px; background-color: lavender;" onclick = "showChatroom('${chatroom.chatroom_no}')">
+	      <div style= "padding: 5px 10px;"> <i class="fas fa-users"></i> ${chatroom.cnt}
+	      <i onclick="change('${chatroom.chatroom_no}')" data-toggle="modal" data-target="#modal_addChatroom" style="float:right" class="fas fa-wrench"></i></div>
+	      <div class="card-body text-center" style="line-height:150px">
+	      
+	        	${chatroom.chatroom_name}
+	      </div>
+	      <i class="fas fa-door-open"style="float:right; padding:5px" onclick="exit('${chatroom.chatroom_no}')"></i>
+
+	    </div>
+	  </div>
+	</c:forEach>
 </div>

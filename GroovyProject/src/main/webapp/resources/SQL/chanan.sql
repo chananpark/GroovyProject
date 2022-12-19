@@ -154,6 +154,15 @@ NOMINVALUE
 NOCYCLE
 NOCACHE;
 
+-- 임시 지출 내역 시퀀스 --
+CREATE SEQUENCE SEQ_TEMP_EXPENSE_LIST_NO
+START WITH 1
+INCREMENT BY 1
+NOMAXVALUE
+NOMINVALUE
+NOCYCLE
+NOCACHE;
+
 -- 출장 보고 테이블 --
 CREATE TABLE TBL_BIZTRIP_REPORT
 (BIZTRIP_REPORT_NO NUMBER -- 출장 보고 번호(기본키)
@@ -168,6 +177,15 @@ CREATE TABLE TBL_BIZTRIP_REPORT
 
 -- 출장 보고 시퀀스 --
 CREATE SEQUENCE SEQ_BIZTRIP_REPORT_NO
+START WITH 1
+INCREMENT BY 1
+NOMAXVALUE
+NOMINVALUE
+NOCYCLE
+NOCACHE;
+
+-- 임시 출장 보고 시퀀스 --
+CREATE SEQUENCE SEQ_TEMP_BIZTRIP_REPORT_NO
 START WITH 1
 INCREMENT BY 1
 NOMAXVALUE
@@ -265,6 +283,26 @@ CREATE TABLE TBL_COMMUNITY_POST
 
 -- 커뮤니티 게시판 번호 시퀀스 --
 CREATE SEQUENCE SEQ_POST_NO
+START WITH 1
+INCREMENT BY 1
+NOMAXVALUE
+NOMINVALUE
+NOCYCLE
+NOCACHE;
+        
+-- 커뮤니티 게시판 임시저장 테이블 --
+CREATE TABLE TBL_COMMUNITY_POST_TEMP
+(TEMP_POST_NO NUMBER -- 글번호(기본키)
+,FK_EMPNO NOT NULL -- 작성자 사원번호(외래키)
+,POST_SUBJECT NVARCHAR2(100) -- 글 제목
+,POST_CONTENT CLOB NOT NULL -- 글 내용
+,POST_DATE DATE DEFAULT SYSDATE NOT NULL -- 작성일자
+,CONSTRAINT PK_TBL_COMMUNITY_POST_TEMP_TEMP_POST_NO PRIMARY KEY(TEMP_POST_NO)
+,CONSTRAINT FK_TBL_COMMUNITY_POST_FK_EMPNO FOREIGN KEY(FK_EMPNO) REFERENCES TBL_EMPLOYEE(EMPNO)
+);
+
+-- 커뮤니티 게시판 번호 시퀀스 --
+CREATE SEQUENCE SEQ_TEMP_POST_NO
 START WITH 1
 INCREMENT BY 1
 NOMAXVALUE
@@ -485,41 +523,87 @@ begin
    
 end pcd_tbl_approval_update;
 
--- 대결 처리 프로시저 --
-create or replace procedure pcd_tbl_approval_proxy
-(p_FK_DRAFT_NO IN tbl_approval.FK_DRAFT_NO%type
-,p_LEVELNO in tbl_approval.LEVELNO%type
-,p_APPROVAL_COMMENT in tbl_approval.APPROVAL_COMMENT%type
-,o_updateCnt out number
+-- 오늘의 명언 프로시저 --
+create or replace procedure pcd_get_TODAY_PROVERB
+(o_proverb out TBL_TODAY_PROVERB.proverb%type
 )
 is
-    v_maxLevel number(1); -- 최고 결재단계
+    v_proverb_no TBL_TODAY_PROVERB.proverb_no%type;
+    v_today_used_count number;
+    v_unused_count number;
 begin
-    -- 최고 결재단계 알아오기
-    SELECT MAX(LEVELNO) into v_maxLevel FROM TBL_APPROVAL WHERE FK_DRAFT_NO = p_FK_DRAFT_NO;
 
-    -- 결재 처리하기
-        UPDATE TBL_APPROVAL
-		SET APPROVAL_STATUS = 1
-		,APPROVAL_DATE = SYSDATE
-		,APPROVAL_COMMENT = p_APPROVAL_COMMENT
-		WHERE FK_DRAFT_NO = p_FK_DRAFT_NO
-		AND LEVELNO = p_LEVELNO;
+    -- 오늘 이미 사용된 명언이 있는지 조회
+    SELECT count(*) into v_today_used_count FROM TBL_TODAY_PROVERB
+    WHERE TO_CHAR(USED_DATE, 'YYYY-MM-DD') = TO_CHAR(SYSDATE, 'YYYY-MM-DD');
+    
+    -- 오늘 사용된 명언이 있다면 out변수에 담기
+    if (v_today_used_count = 1) then
+    SELECT proverb into o_proverb FROM TBL_TODAY_PROVERB
+    WHERE TO_CHAR(USED_DATE, 'YYYY-MM-DD') = TO_CHAR(SYSDATE, 'YYYY-MM-DD');
 
-    -- 만약 마지막 결재자라면 기안 테이블 완료처리
-    if(p_LEVELNO = v_maxLevel) then
-        update tbl_draft set DRAFT_STATUS = 1
-        where DRAFT_NO = p_FK_DRAFT_NO;
+    -- 오늘 사용된 명언이 없다면
+    else
+        -- 사용하지 않은 명언 개수 조회
+        SELECT COUNT(*) into v_unused_count FROM TBL_TODAY_PROVERB
+        WHERE USED_STATUS = 0;
+    
+        -- 모든 명언이 사용되었으면 초기화하기
+        if (v_unused_count = 0) then
+            UPDATE TBL_TODAY_PROVERB
+            SET USED_STATUS = 0, USED_DATE = null;
+            
+        -- 사용되지 않은 명언이 있다면
+        else
+            -- 랜덤 조회하기
+            select proverb, proverb_no into o_proverb, v_proverb_no 
+            from(
+                SELECT proverb, proverb_no FROM TBL_TODAY_PROVERB
+                WHERE USED_STATUS = 0
+                order by DBMS_RANDOM.RANDOM)
+            where rownum = 1;
+            
+            -- 상태 업데이트하기
+            UPDATE TBL_TODAY_PROVERB
+            SET USED_STATUS = 1, USED_DATE = TO_CHAR(SYSDATE, 'YYYY-MM-DD')
+            WHERE PROVERB_NO = v_proverb_no;
+        end if;
     end if;
-
-   o_updateCnt := SQL%rowcount;
-   
-end pcd_tbl_approval_proxy;
-
+    
+end pcd_get_TODAY_PROVERB;
 -------------------------------------------------------------------------------
-
+SET DEFINE OFF;
 -- 커뮤니티 글 목록 조회하기 뷰 --
 create or replace view view_post_list
+as
+select POST_NO, FK_EMPNO, 
+REPLACE(REPLACE(REPLACE(REPLACE(POST_SUBJECT, '&'||'lt;','<' ),'&'||'gt;','>'),'&amp;', '&'),'&nbsp;',' ') AS POST_SUBJECT,
+REGEXP_REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(POST_CONTENT, '&'||'lt;','<' ),'&'||'gt;','>'),'&amp;', '&'),'&nbsp;',' ') , '<[^>]*>' ,'' ) AS POST_CONTENT,
+POST_DATE, POST_HIT, POST_STATUS, nvl(commentCnt,0) commentCnt, name, empimg, nvl(likeCnt,0) likeCnt, nvl(fileCnt,0) fileCnt
+from TBL_COMMUNITY_POST P
+left join 
+    (select count(*) commentCnt, fk_post_no 
+    from tbl_community_comment
+    where comment_status = 1
+    group by fk_post_no) C
+on post_no = C.fk_post_no
+left join
+    (select count(*) likeCnt, fk_post_no 
+    from tbl_community_like
+    group by fk_post_no) L
+on post_no = L.fk_post_no
+left join
+    (select count(*) fileCnt, fk_post_no 
+    from tbl_community_post_file
+    group by fk_post_no) F
+on post_no = F.fk_post_no
+join tbl_employee E
+on P.fk_empno = empno
+and POST_STATUS = 1
+;
+
+-- 커뮤니티 글 내용 조회하기 뷰 --
+create or replace view view_post_detail
 as
 select P.*, nvl(commentCnt,0) commentCnt, name, empimg, nvl(likeCnt,0) likeCnt,
 lag(post_no, 1) over(order by post_no) as pre_no,
@@ -540,4 +624,20 @@ on post_no = L.fk_post_no
 join tbl_employee E
 on P.fk_empno = empno
 and POST_STATUS = 1
+;
+
+-- 임시저장 글 조회 뷰 --
+create or replace view view_temp_post_list
+as
+SELECT T.*,
+REGEXP_REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(POST_CONTENT, '&'||'lt;','<' ),'&'||'gt;','>'),'&amp;', '&'),'&nbsp;',' ') , '<[^>]*>' ,'' ) AS PLAIN_POST_CONTENT
+FROM TBL_COMMUNITY_POST_TEMP T;
+
+-- 좋아요 목록 조회 뷰 --
+create or replace view view_like_list
+as
+select L.*, name, empimg
+from TBL_COMMUNITY_LIKE L
+join tbl_employee E
+on L.fk_empno = empno
 ;

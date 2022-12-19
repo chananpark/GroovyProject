@@ -101,4 +101,88 @@ public class CommunityDAO implements InterCommunityDAO {
 		return sqlsession.insert("community.addComment", comment);
 	}
 
+	// 댓글 수정하기
+	@Override
+	public int editComment(CommunityCommentVO comment) {
+		return sqlsession.update("community.editComment", comment);
+	}
+
+	// 댓글 삭제하기
+	@Override
+	public int delComment(CommunityCommentVO comment) {
+		return sqlsession.update("community.delComment", comment);
+	}
+
+	// 첨부파일 1개 조회
+	@Override
+	public CommunityPostFileVO getAttachedFile(String post_file_no) {
+		return sqlsession.selectOne("community.getAttachedFile", post_file_no);
+	}
+
+	// 답댓글 작성
+	@Override
+	public int addReComment(CommunityCommentVO comment) {
+		return sqlsession.insert("community.addReComment", comment);
+	}
+
+	// 임시저장 번호 시퀀스 가져오기
+	@Override
+	public String getTempPostNo() {
+		return sqlsession.selectOne("community.getTempPostNo");
+	}
+
+	// 임시저장 테이블에 insert or update
+	@Override
+	public int savePost(Map<String, Object> paraMap) {
+		return sqlsession.update("community.savePost", paraMap);
+	}
+
+	// 임시저장 목록 가져오기
+	@Override
+	public List<Map<String, String>> getSavedPostList(String fk_empno) {
+		return sqlsession.selectList("community.getSavedPostList", fk_empno);
+	}
+
+	// 임시저장글 삭제
+	@Override
+	public int delTempPost(String temp_post_no) {
+		return sqlsession.delete("community.delTempPost", temp_post_no);
+	}
+
+	// 30일 지난 임시저장 글 삭제하기
+	@Override
+	public void autoDeleteTempPost() {
+		sqlsession.delete("community.autoDeleteTempPost");
+	}
+
+	// 좋아요 목록 조회
+	@Override
+	public List<CommunityLikeVO> getLikeList(String post_no) {
+		return sqlsession.selectList("community.getLikeList", post_no);
+	}
+
+	// like 시퀀스 가져오기
+	@Override
+	public String getLikeNo() {
+		return sqlsession.selectOne("community.getLikeNo");
+	}
+
+	// 좋아요 누르기/취소하기
+	@Override
+	public int updateLike(CommunityLikeVO like) {
+		return sqlsession.update("community.updateLike", like);
+	}
+
+	// 테이블에서 파일 삭제
+	@Override
+	public int deleteAttachedFiles(String post_no) {
+		return sqlsession.delete("community.deleteAttachedFiles", post_no);
+	}
+
+	// 임시저장글 조회하기
+	@Override
+	public CommunityPostVO getTempPost(String temp_post_no) {
+		return sqlsession.selectOne("community.getTempPost", temp_post_no);
+	}
+
 }

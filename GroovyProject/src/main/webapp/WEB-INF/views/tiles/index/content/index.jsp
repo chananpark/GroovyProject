@@ -1,8 +1,11 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <% String ctxPath = request.getContextPath(); %>
-
+<jsp:useBean id="now" class="java.util.Date" />
+<fmt:formatDate value="${now}" pattern="yyyy-MM-dd" var="today" />
 <style type="text/css">
 
 	.index_card_header {
@@ -135,6 +138,10 @@
 	#index_atten #menuBox {	z-index: 1;	} /* div 겹치는거 때문에 함 */
 	/* 출퇴근css 끝 */
 	
+	#indexSchedule .scheduletr:hover {
+		cursor: pointer;
+	}
+	
 	
 
 </style>
@@ -169,6 +176,27 @@
 		
 		// 출근끝
 		
+		// 오늘 생일 직원 사번 배열
+		var birthEmpno = [];
+
+		<c:forEach items="${birthMem}" var="mem">
+			birthEmpno.push("${mem.empno}");
+		</c:forEach>
+		
+		// 오늘 생일 직원 클릭시 팝오버
+	    $.fn.popover.Constructor.Default.whiteList.table = [];
+	    $.fn.popover.Constructor.Default.whiteList.tr = [];
+	    $.fn.popover.Constructor.Default.whiteList.td = [];
+	    $.fn.popover.Constructor.Default.whiteList.div = [];
+	    $.fn.popover.Constructor.Default.whiteList.tbody = [];
+	    $.fn.popover.Constructor.Default.whiteList.thead = [];
+	    
+	    birthEmpno.forEach(el=>{
+			$('#popover'+el).popover({
+				content: $('#myPopoverContent'+el).html(),
+				html: true
+			});
+	    });
 	}); // end of ready
 	
 
@@ -264,7 +292,7 @@
 
 <%-- 상단 --%>
 <div style="margin: 0 auto; width:95%;">
-	<h4 class="mt-3 mb-3">😀그루비 회원님, 좋은 하루 보내세요!</h4>
+	<h4 class="mt-3 mb-3">😀${loginuser.name} 회원님, 좋은 하루 보내세요!</h4>
 </div>
 
 <%-- 하단 card 영역 --%>	
@@ -288,31 +316,23 @@
 							</tr>
 						</thead>
 						<tbody>
-							<tr>
-								<td>박찬안</td>
-								<td>그루비팀 회식은</td>
-								<td>2022.11.16 11:23:21</td>
+						<c:forEach items="${mailList}" var="mail">
+						<fmt:formatDate value="${mail.send_time_date}" pattern="yyyy-MM-dd" var="sendTimeDD"/>
+				        <fmt:formatDate value="${mail.send_time_date}" pattern="HH:mm:ss" var="sendTimeToday"/>
+				        <fmt:formatDate value="${mail.send_time_date}" pattern="yyyy-MM-dd HH:mm:ss" var="sendTimeNotToday"/>
+				        
+							<tr onclick="location.href='<%=ctxPath%>/mail/viewMail.on?mailNo=${mail.mail_no}'" style="cursor:pointer">
+								<td>${mail.fK_sender_address}</td>
+								<td>${mail.subject}</td>
+								<c:if test="${sendTimeDD == today}">
+						      		<td class = "mail_list_time">오늘 ${sendTimeToday}</td>
+						      	</c:if>
+						        <c:if test="${sendTimeDD != today}">
+							      	<td class = "mail_list_time">${sendTimeNotToday}</td>
+						      	</c:if>	
 							</tr>
-							<tr>
-								<td>김민수</td>
-								<td>2022년 12월 21일입니다.</td>
-								<td>2022.11.16 11:23:21</td>
-							</tr>
-							<tr>
-								<td>김진석</td>
-								<td>다들 빠지지 마시고</td>
-								<td>2022.11.16 11:23:21</td>
-							</tr>
-							<tr>
-								<td>김혜원</td>
-								<td>꼭 참석해주세요.</td>
-								<td>2022.11.16 11:23:21</td>
-							</tr>
-							<tr>
-								<td>손여진</td>
-								<td>남은 기간도 화이팅입니다.(•̀ᴗ•́)و ̑̑</td>
-								<td>2022.11.16 11:23:21</td>
-							</tr>
+						</c:forEach>	
+							
 						</tbody>
 					</table>
 				</div>
@@ -322,13 +342,13 @@
 			<div class="card mb-3 shadow">
 				<div class="card-header bg-white index_card_header" onClick='location.href="<%=ctxPath%>/approval/home.on"'>전자결재</div>
 				<div class="card-body ">
-					결재해야할 문서가 <span style="color:#086BDE; font-weight: bold;">7건</span>있습니다.
-					<button class="btn mb-1 ml-2"  onClick='location.href="<%=ctxPath%>/approval/requested.on"'>>> 결재하기</button>
+					결재해야할 문서가 <span style="color:#086BDE; font-weight: bold;">${requestedDraftCnt}건</span>있습니다.
+					<button class="btn mb-1 ml-2" style="float:right" onClick='location.href="<%=ctxPath%>/approval/requested.on"'>>> 결재하기</button>
 				</div>
 			</div>
 			
 			<%-- 날씨 --%>
-			<div class="card mb-3 shadow">
+			<div class="card mb-3 shadow" style="clear:both">
 				<div class="card-header bg-white index_card_header">날씨</div>
 				<div class="card-body ">
 					<iframe width="100%" height="230" src="https://forecast.io/embed/#lat=37.5857&lon=126.877&color=#086BDE&name=그루비&color=&font=arial&units=si" frameborder="0"></iframe>
@@ -340,47 +360,39 @@
 			<div id="birthday_card" class="card mb-3 shadow">
 				<div class="card-header bg-white index_card_header">이달의 생일</div>
 				<div class="card-body pl-5" style="display:flex; flex-wrap: wrap; justify-content: flex-start;">
-				
-					<div class="card mr-4 mb-2">
-						<img src="<%= ctxPath %>/resources/images/test/profile_icon.png" alt="Avatar" style="width:100%">
+					<c:forEach items="${birthMem}" var="mem">
+					<div class="card mr-4 mb-2 pop"  data-toggle="popover" id='popover${mem.empno}' title="사원 정보">
+						<c:if test="${empty mem.empimg}">
+							<img src="<%= ctxPath %>/resources/images/test/profile_icon.png" alt="Avatar" style="width:100%">
+						</c:if>
+						<c:if test="${not empty mem.empimg}">
+							<img src="<%= ctxPath %>/resources/images/profile/${mem.empimg}" alt="Avatar" style="width:100%; border-radius: 50%">
+						</c:if>
 					 	<div class="container">
-					    	<h5>박찬안</h5>
-					    	<p>개발팀</p>
+					    	<h5>${mem.name}</h5>
+					    	<p>${mem.department}</p>
 					  	</div>
 					</div>
-					
-					<div class="card mr-4 mb-2">
-						<img src="<%= ctxPath %>/resources/images/test/profile_icon.png" alt="Avatar" style="width:100%">
-					 	<div class="container">
-					    	<h5>김민수</h5>
-					    	<p>개발팀</p>
-					  	</div>
+					<div id="myPopoverContent${mem.empno}" style="display: none;">
+						<table class='table table-borderless'>
+						    <tr>
+						        <td>이름: ${mem.name}</td>
+						    </tr>
+						    <tr>
+						        <td>직급: ${mem.position}</td>
+						    </tr>
+						    <tr>
+						        <td>소속: ${mem.bumun}&nbsp;${mem.department}</td>
+						    </tr>
+						    <tr>
+						    	<td>메일: ${mem.cpemail}</td>
+						    </tr>
+						    <tr>
+						    	<td>핸드폰: ${mem.mobile}</td>
+						    </tr>
+						</table>		
 					</div>
-					
-					<div class="card mr-4 mb-2">
-						<img src="<%= ctxPath %>/resources/images/test/profile_icon.png" alt="Avatar" style="width:100%">
-					 	<div class="container">
-					    	<h5>김진석</h5>
-					    	<p>개발팀</p>
-					  	</div>
-					</div>
-										
-					<div class="card mr-4 mb-2">
-						<img src="<%= ctxPath %>/resources/images/test/profile_icon.png" alt="Avatar" style="width:100%">
-					 	<div class="container">
-					    	<h5>김혜원</h5>
-					    	<p>개발팀</p>
-					  	</div>
-					</div>
-					
-					<div class="card mr-4 mb-2">
-						<img src="<%= ctxPath %>/resources/images/test/profile_icon.png" alt="Avatar" style="width:100%">
-					 	<div class="container">
-					    	<h5>손여진</h5>
-					    	<p>개발팀</p>
-					  	</div>
-					</div>
-					
+					</c:forEach>
 				</div>
 				
 			</div>
@@ -434,7 +446,7 @@
 			</div>
 			
 			<%-- 달력/일정 --%>
-			<div class="card mb-3 shadow">
+			<div id="indexSchedule" class="card mb-3 shadow">
 				<div class="card-header bg-white index_card_header" onClick='location.href="<%=ctxPath%>/schedule/schedule.on"'>오늘의 일정</div>
 				<div class="card-body ">
 				
@@ -447,16 +459,20 @@
 							</tr>
 						</thead>
 						<tbody>
-							<tr>
-								<td><div style="border-radius: 50%; background-color: #64DB56; width: 25px; height: 25px;"></div></td>
-								<td>2022.11.16 09:00:00</td>
-								<td>외부미팅</td>
-							</tr>
-							<tr>
-								<td><div style="border-radius: 50%; background-color: #EFF93A; width: 25px; height: 25px;"></div></td>
-								<td>2022.11.16 15:00:00</td>
-								<td>팀회의</td>
-							</tr>
+							<c:if test="${empty requestScope.scheduleList}">
+								<tr>
+									<td style="text-align: center;" colspan="12">오늘의 일정이 없습니다.</td>
+								</tr>
+							</c:if>
+							<c:if test="${not empty requestScope.scheduleList}">
+								<c:forEach var="map" items="${requestScope.scheduleList}">
+									<tr onclick="location.href='<%= ctxPath %>/schedule/viewSchedule.on?scheduleno=${map.scheduleno}'" class="scheduletr">
+										<td><div style="border-radius: 50%; background-color: ${map.color}; width: 25px; height: 25px;"></div></td>
+										<td>${map.startdate}</td>
+										<td>${map.subject}</td>
+									</tr>
+								</c:forEach>
+							</c:if>
 						</tbody>
 					</table>
 					
@@ -466,7 +482,7 @@
 			<%-- 명언 --%>
 			<div class="card mb-3 shadow">
 				<div class="card-header bg-white index_card_header">오늘의 명언</div>
-				<div class="card-body ">직업에서 행복을 찾아라. 아니면 행복이 무엇인지 절대 모를 것이다. - 엘버트 허버드</div>
+				<div class="card-body">${proverb}</div>
 			</div>
 			
 		</div>

@@ -3,90 +3,8 @@
 <%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 <% String ctxPath = request.getContextPath(); %>
-<style>
 
-.table {
-	font-size: small;
-}
-
-.table th {
-	background-color: #E3F2FD;
-	vertical-align: middle;
-	text-align: center;
-}
-
-.draftInfo,
-.approvalLineInfo {
-	display: inline-block;
-}
-
-.draftInfo {
-	float: left;
-}
-
-.approvalLineInfo {
-	float: right;
-}
-
-.approvalLineInfo table td, .approvalLineInfo table th{
-	text-align: center;
-}
-
-.approvalLineInfo  tr:nth-child(3) > td {
-	height: 100px;
-	width: 100px;
-	border-bottom-style: none;
-}
-
-.approvalLineInfo  tr:nth-child(4) > td {
-	border-top-style: none;
-}
-
-#attachContainer p{
-	padding: 1%;
-	margin: 0;
-	font-size: small;
-	text-align: left;
-}
-
-#draftTable th{
-	width: 20%;
-}
-
-#fileInfo {
-	background-color: #E3F2FD;
-}
-
-#fileName {
-	
-}
-
-.commentTable {
-	width: 100%;
-	margin: 0 auto;
-}
-
-.commentTable td {
-	text-align: left;
-}
-
-.commentTable td#date {
-	text-align: right;
-	width: 200px;
-}
-
-.commentTable td#profile {
-	width: 150px;
-}
-
-.card-header {
-	background-color: #E3F2FD;
-}
-
-a {
-	color: black;
-}
-</style>
+<link rel = "stylesheet" href = "<%=ctxPath%>/resources/css/draft_detail_style.css">
 
 <script>
 
@@ -131,7 +49,7 @@ $(()=>{
 	}		
 	
 	// 상신 취소 버튼 감추기
-	$("#cancelDraftBtn").hide();
+	$("#cancelDraftDiv").hide();
 	
 	//  내가 작성한 기안이고 아직 결재가 시작되지 않았을 때만 보임 
 	let statusArr = avoList.map(el => Number(el.approval_status));
@@ -140,7 +58,7 @@ $(()=>{
 	}, 0);
 	
 	if (${draftMap.dvo.fk_draft_empno} == ${loginuser.empno} && status == 0)
-		$("#cancelDraftBtn").show();
+		$("#cancelDraftDiv").show();
 	
 	// 승인 혹은 반려 버튼 클릭시 이벤트
 	$(".myApprovalBtn").click((e)=>{
@@ -152,8 +70,7 @@ $(()=>{
 	// 대결 버튼 클릭시 이벤트
 	$(".proxyApprovalBtn").click((e)=>{
 		const target = $(e.target);
-		const approval_status = target.attr('id');
-		updateApproval(approval_status);
+		updateApprovalProxy();
 	});
 });
 
@@ -165,68 +82,107 @@ const updateApproval = approval_status => {
 	// 문서번호
 	formData.append("fk_draft_no", "${draftMap.dvo.draft_no}");
 
-	// 자신의 사원번호
-	formData.append("fk_approval_empno", "${loginuser.empno}");
+	// 자신의 결재단계
+	formData.append("levelno", myApprovalInfo.levelno);
 	
-	// 승인 혹은 반려일 경우
-	if (approval_status != 3) {
-
-		// 자신의 결재단계
-		formData.append("levelno", myApprovalInfo.levelno);
-		
-		// 처리 종류(승인 or 반려)
-		formData.append("approval_status", approval_status);
-		
-	}
-	
-	// 대결일 경우
-	else {
-		
-		// 자신의 결재단계
-		formData.append("levelno", (Number(myApprovalInfo.levelno)+1));
-		
-		// 결재의견
-		formData.set("approval_comment", "${loginuser.name}에 의해 대결 처리되었습니다.");
-		
-		// 처리 종류
-		formData.append("approval_status", 1);
-	}
-	
+	// 처리 종류(승인 or 반려)
+	formData.append("approval_status", approval_status);
 	
 	// 폼 전송하기
- $.ajax({
-     url : "<%=ctxPath%>/approval/updateApproval.on",
-     data : formData,
-     type:'POST',
-     processData:false,
-     contentType:false,
-     dataType:'json',
-     cache:false,
-     success:function(json){
-     	if(json.result == true) {
- 	    	swal("처리 완료", "기안을 처리하였습니다.", "success")
- 	    	.then((value) => {
-	    	    	location.href = "<%=ctxPath%>/approval/requested.on";
+	$.ajax({
+	    url : "<%=ctxPath%>/approval/updateApproval.on",
+	    data : formData,
+	    type:'POST',
+	    processData:false,
+	    contentType:false,
+	    dataType:'json',
+	    cache:false,
+	    success:function(json){
+	    	if(json.result == true) {
+		    	swal("처리 완료", "기안을 처리하였습니다.", "success")
+		    	.then((value) => {
+		    		location.href = "<%=ctxPath%>/approval/draftDetail.on?draft_no=${draftMap.dvo.draft_no}&fk_draft_type_no=${draftMap.dvo.fk_draft_type_no}";
 	    		});
-     	}
-     	else
-     		swal("처리 실패", "처리에 실패하였습니다.", "error");
-     },
-     error: function(request, status, error){
+	    	}
+	    	else
+	    		swal("처리 실패", "처리에 실패하였습니다.", "error");
+	    },
+	    error: function(request, status, error){
 		alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
 		}
- });
+	});
 }
 
+
+//대결 처리하기
+const updateApprovalProxy = () => {
+	
+	let formData = new FormData($("#approvalFrm")[0]);
+	
+	// 문서번호
+	formData.append("fk_draft_no", "${draftMap.dvo.draft_no}");
+
+	// 자신의 결재단계
+	formData.append("levelno", myApprovalInfo.levelno);
+	
+	// 결재의견
+	formData.set("approval_comment", "${loginuser.name}에 의해 대결 처리되었습니다.");
+	
+	// 처리 종류
+	formData.append("approval_status", 1);
+	
+	// 폼 전송하기
+	$.ajax({
+	    url : "<%=ctxPath%>/approval/updateApprovalProxy.on",
+	    data : formData,
+	    type:'POST',
+	    processData:false,
+	    contentType:false,
+	    dataType:'json',
+	    cache:false,
+	    success:function(json){
+	    	if(json.result == true) {
+		    	swal("대결 완료", "기안을 대결 처리하였습니다.", "success")
+		    	.then((value) => {
+	    	    	location.href = "<%=ctxPath%>/approval/draftDetail.on?draft_no=${draftMap.dvo.draft_no}&fk_draft_type_no=${draftMap.dvo.fk_draft_type_no}";
+	    		});
+	    	}
+	    	else
+	    		swal("대결 실패", "대결 처리 실패하였습니다.", "error");
+	    },
+	    error: function(request, status, error){
+		alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+		}
+	});
+}
+
+//목록보기 버튼 클릭
+const showList = () => {
+	
+	// approvalBackUrl 스토리지에서 꺼내기
+	const approvalBackUrl = sessionStorage.getItem("approvalBackUrl");
+	
+	if (approvalBackUrl != null && approvalBackUrl != "" && approvalBackUrl !== undefined){
+		location.href=approvalBackUrl;
+		sessionStorage.removeItem("approvalBackUrl");		
+	}
+	else
+		location.href="javascript:history.go(-1)";
+}
+
+//상신 취소
+const cancelDraft = () => {
+	location.href = "<%=ctxPath%>/approval/cancel.on?draft_no=" + '${draftMap.dvo.draft_no}' + "&fk_draft_type_no=" + '${draftMap.dvo.fk_draft_type_no}';
+}
 </script>
 
 <div class="container">
-
-	<div id="cancelDraftBtn">
-		<button type='button' class='btn btn-lg'><i class="far fa-window-close"></i> 상신 취소</button>
+	
+	<div id='cancelDraftDiv'>
+		<button type='button' id='cancelDraftBtn' class='btn btn-lg' onclick="cancelDraft()"><i class="far fa-window-close"></i> 상신 취소</button>
 		<span style='color: gray; font-size: small'>상신 취소 시 임시저장함에 저장됩니다.</span>
 	</div>
-		
+	
 	<div class="card">
 	<c:if test="${not empty draftMap}">
 		<div class="card-header py-3" align="center">
@@ -396,6 +352,7 @@ const updateApproval = approval_status => {
 			</table>
 			</c:if>
 			<!-- 첨부파일 끝 -->
+			<button type="button" id="showListBtn" class="btn-secondary listView rounded" onclick="showList()">목록보기</button>
 			
 			<div style="clear:both; padding-top: 8px; margin-bottom: 30px;">
 			</div>
@@ -407,7 +364,16 @@ const updateApproval = approval_status => {
 					<table class='commentTable'>
 					<c:if test="${not empty draftMap.dvo.draft_comment}">
 						<tr>
-							<td class='profile' rowspan='2'><img style='border-radius: 50%; display: inline-block' src='<%=ctxPath%>/resources/images/profile/${draftMap.dvo.empimg}' width="100" /></td>
+							<c:if test="${empty draftMap.dvo.empimg}">
+								<td class='profile' rowspan='2'>
+									<div class="profile_css" id="profile_bg" style="display: inline-block;">
+										${fn:substring(draftMap.dvo.draft_emp_name,0,1)}
+									</div>
+								</td>
+							</c:if>
+							<c:if test="${not empty draftMap.dvo.empimg}">
+								<td class='profile' rowspan='2'><img style='border-radius: 50%; display: inline-block' src='<%=ctxPath%>/resources/images/profile/${draftMap.dvo.empimg}' width="100" height="100"/></td>
+							</c:if>
 							<td style='text-align:left'><h6>${draftMap.dvo.draft_emp_name}&nbsp;${draftMap.dvo.position}</h6></td>
 							<td id='date'><span style='color: #b3b3b3'>${draftMap.dvo.draft_date}</span></td>
 						</tr>
@@ -432,7 +398,16 @@ const updateApproval = approval_status => {
 					<c:set var="length" value="${fn:length(draftMap.avoList)}"></c:set>
 						<c:if test="${not empty avo.approval_comment}">
 							<tr>
-								<td class='profile' rowspan='2'><img style='border-radius: 50%; display: inline-block' src='<%=ctxPath%>/resources/images/profile/${avo.empimg}' width="100" /></td>
+								<c:if test="${empty avo.empimg}">
+									<td class='profile' rowspan='2'>
+										<div class="profile_css" id="profile_bg" style="display: inline-block;">
+											${fn:substring(draftMap.dvo.draft_emp_name,0,1)}
+										</div>
+									</td>
+								</c:if>
+								<c:if test="${not empty avo.empimg}">
+									<td class='profile' rowspan='2'><img style='border-radius: 50%; display: inline-block' src='<%=ctxPath%>/resources/images/profile/${avo.empimg}' width="100" height="100"/></td>
+								</c:if>
 								<td><h6>${avo.name}&nbsp;${avo.position}</h6></td>
 								<td id='date'><span style='color: #b3b3b3'>${avo.approval_date}</span></td>
 							</tr>

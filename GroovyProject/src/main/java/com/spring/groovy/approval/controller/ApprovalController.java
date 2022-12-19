@@ -3,7 +3,9 @@ package com.spring.groovy.approval.controller;
 import java.io.File;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
@@ -53,6 +55,7 @@ import com.spring.groovy.approval.model.OfficialAprvLineVO;
 import com.spring.groovy.approval.model.SavedAprvLineVO;
 import com.spring.groovy.approval.service.InterApprovalService;
 import com.spring.groovy.common.FileManager;
+import com.spring.groovy.common.Myutil;
 import com.spring.groovy.common.Pagination;
 import com.spring.groovy.management.model.MemberVO;
 
@@ -73,7 +76,7 @@ public class ApprovalController {
 	@RequestMapping(value = "/home.on")
 	public ModelAndView approvalHome(ModelAndView mav, HttpServletRequest request) {
 
-		MemberVO loginuser = getLoginUser(request);
+		MemberVO loginuser = Myutil.getLoginUser(request);
 		Map<String, Object> paraMap = new HashMap<>();
 		paraMap.put("empno", loginuser.getEmpno());
 
@@ -161,6 +164,49 @@ public class ApprovalController {
 		return mav;
 	}
 	
+	// 임시저장 문서 조회
+	@SuppressWarnings("unchecked")
+	@RequestMapping(value = "/tempDraftDetail.on")
+	public ModelAndView getTempDraftDetail(ModelAndView mav, HttpServletRequest request, DraftVO dvo) {
+		
+		Map<String, Object> draftMap = service.getTempDraftDetail(dvo);
+		mav.addObject("draftMap", draftMap);
+		
+		String fk_draft_type_no = request.getParameter("fk_draft_type_no");
+		
+		switch (fk_draft_type_no) {
+		case "1":
+			mav.setViewName("approval/draft_detail/temp/temp_work_detail.tiles");
+			break;
+			
+		case "2":
+			mav.setViewName("approval/draft_detail/temp/temp_expense_detail.tiles");
+			break;
+			
+		case "3":
+			mav.setViewName("approval/draft_detail/temp/temp_business_trip_detail.tiles");
+			break;
+			
+		default:
+			mav.setViewName("error");
+			break;
+		}
+		
+		// 전체 결재자 정보 리스트
+		JSONArray avoList = new JSONArray((List<ApprovalVO>)draftMap.get("avoList"));		
+		
+		// 내부 결재자 정보 리스트
+		JSONArray internalList = new JSONArray((List<ApprovalVO>)draftMap.get("internalList"));
+		
+		// 외부 결재자 정보 리스트
+		JSONArray externalList = new JSONArray((List<ApprovalVO>)draftMap.get("externalList"));
+		
+		mav.addObject("avoList", String.valueOf(avoList));
+		mav.addObject("internalList", String.valueOf(internalList));
+		mav.addObject("externalList", String.valueOf(externalList));
+		return mav;
+	}
+	
 	// 파일 다운로드
 	@ResponseBody
 	@RequestMapping(value = "/download.on")
@@ -173,7 +219,7 @@ public class ApprovalController {
 		PrintWriter out = null;
 
 		try {
-			DraftFileVO dfvo = service.getAttachedFile(draft_file_no); // 파일 조회
+			DraftFileVO dfvo = service.getOneAttachedFile(draft_file_no); // 파일 조회
 			
 			// 글번호가 없거나 파일 이름이 없다면
 			if (dfvo == null || (dfvo != null && dfvo.getFilename() == null)) {
@@ -215,9 +261,9 @@ public class ApprovalController {
 	// 개인문서함-상신함 페이지요청
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/personal/sent.on")
-	public ModelAndView sentDraftList(ModelAndView mav, Pagination pagination, HttpServletRequest request) throws Exception {
+	public ModelAndView sentDraftList(HttpServletRequest request, ModelAndView mav, Pagination pagination) throws Exception {
 
-		MemberVO loginuser = getLoginUser(request);
+		MemberVO loginuser = Myutil.getLoginUser(request);
 
 		Map<String, Object> paraMap = BeanUtils.describe(pagination); // pagination을 Map으로
 		paraMap.put("empno", loginuser.getEmpno());
@@ -238,7 +284,7 @@ public class ApprovalController {
 		pagination.setQueryString("&sortType="+paraMap.get("sortType")+"&sortOrder="+paraMap.get("sortOrder"));
 		mav.addObject("pagebar", pagination.getPagebar(url));
 		mav.addObject("paraMap", paraMap);
-
+		
 		mav.setViewName("approval/my_draft/sent.tiles");
 		return mav;
 	}
@@ -246,10 +292,10 @@ public class ApprovalController {
 	// 개인문서함-결재함 페이지요청
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/personal/processed.on")
-	public ModelAndView processdDraftList(ModelAndView mav, Pagination pagination, HttpServletRequest request)
+	public ModelAndView processdDraftList(HttpServletRequest request, ModelAndView mav, Pagination pagination)
 			throws Exception {
 
-		MemberVO loginuser = getLoginUser(request);
+		MemberVO loginuser = Myutil.getLoginUser(request);
 
 		Map<String, Object> paraMap = BeanUtils.describe(pagination); // pagination을 Map으로
 		paraMap.put("empno", loginuser.getEmpno());
@@ -278,9 +324,9 @@ public class ApprovalController {
 	// 개인문서함-임시저장함 페이지요청
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/personal/saved.on")
-	public ModelAndView savedDraftList(ModelAndView mav, Pagination pagination, HttpServletRequest request) throws Exception {
+	public ModelAndView savedDraftList(HttpServletRequest request, ModelAndView mav, Pagination pagination) throws Exception {
 
-		MemberVO loginuser = getLoginUser(request);
+		MemberVO loginuser = Myutil.getLoginUser(request);
 
 		Map<String, Object> paraMap = BeanUtils.describe(pagination); // pagination을 Map으로
 		paraMap.put("empno", loginuser.getEmpno());
@@ -310,7 +356,7 @@ public class ApprovalController {
 	// 개인문서함-임시저장함 글삭제
 	@ResponseBody
 	@PostMapping(value = "/delete.on", produces = "text/plain;charset=UTF-8")
-	public String deleteDraftList(ModelAndView mav, HttpServletRequest request) {
+	public String deleteTempDraft(ModelAndView mav, HttpServletRequest request) {
 
 		// 지울 파일 목록
 		String deleteList = request.getParameter("deleteList");
@@ -328,10 +374,10 @@ public class ApprovalController {
 	// 팀문서함 페이지요청
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/team.on")
-	public ModelAndView teamDraftList(ModelAndView mav, Pagination pagination, HttpServletRequest request)
+	public ModelAndView teamDraftList(HttpServletRequest request, ModelAndView mav, Pagination pagination)
 			throws Exception {
 
-		MemberVO loginuser = getLoginUser(request);
+		MemberVO loginuser = Myutil.getLoginUser(request);
 
 		Map<String, Object> paraMap = BeanUtils.describe(pagination); // pagination을 Map으로
 		paraMap.put("fk_department_no", loginuser.getFk_department_no());
@@ -360,9 +406,9 @@ public class ApprovalController {
 	// 결재하기-결재대기문서 페이지요청
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/requested.on")
-	public ModelAndView requestedDraftList(ModelAndView mav, Pagination pagination, HttpServletRequest request)
+	public ModelAndView requestedDraftList(HttpServletRequest request, ModelAndView mav, Pagination pagination)
 			throws Exception {
-		MemberVO loginuser = getLoginUser(request);
+		MemberVO loginuser = Myutil.getLoginUser(request);
 
 		Map<String, Object> paraMap = BeanUtils.describe(pagination); // pagination을 Map으로
 		paraMap.put("empno", loginuser.getEmpno());
@@ -401,8 +447,8 @@ public class ApprovalController {
 	// 결재하기-결재예정문서 페이지요청
 	@SuppressWarnings("unchecked")
 	@RequestMapping(value = "/upcoming.on")
-	public ModelAndView upcomingDraftList(ModelAndView mav, Pagination pagination, HttpServletRequest request) throws Exception {
-		MemberVO loginuser = getLoginUser(request);
+	public ModelAndView upcomingDraftList(HttpServletRequest request, ModelAndView mav, Pagination pagination) throws Exception {
+		MemberVO loginuser = Myutil.getLoginUser(request);
 		
 		Map<String, Object> paraMap = BeanUtils.describe(pagination); // pagination을 Map으로
 		paraMap.put("empno", loginuser.getEmpno());
@@ -441,11 +487,22 @@ public class ApprovalController {
 
 	// 기안 작성 페이지요청
 	@GetMapping(value = "/write.on")
-	public ModelAndView showWorkDraftForm(ModelAndView mav, @RequestParam("type_no") String type_no) {
+	public ModelAndView showWorkDraftForm(ModelAndView mav, HttpServletRequest request, @RequestParam("type_no") String type_no) {
+		
+		MemberVO loginuser = Myutil.getLoginUser(request);
 		
 		// 공통 결재라인 가져오기
 		List<MemberVO> recipientList = service.getRecipientList(type_no);
-		JSONArray recipientArr = new JSONArray(recipientList);
+		JSONArray recipientArr = new JSONArray();
+		
+		// 공통결재라인이 있을 경우
+		if(recipientList.size() > 0) {
+			for (MemberVO emp : recipientList) {
+				// 결재자 부서와 로그인한 사용자의 부서가 같지 않으면
+				if (emp.getFk_department_no() != loginuser.getFk_department_no())
+					recipientArr = new JSONArray(recipientList);
+			}
+		}
 		
 		mav.addObject("recipientArr", String.valueOf(recipientArr));
 		
@@ -476,6 +533,10 @@ public class ApprovalController {
 	public String addDraft(MultipartHttpServletRequest mtfRequest, DraftVO dvo, ApprovalVO avo, ExpenseListVO evo, BiztripReportVO brvo) {
 
 		Map<String, Object> paraMap = new HashMap<>();
+		// 임시저장번호
+		String temp_draft_no = mtfRequest.getParameter("temp_draft_no");
+		
+		paraMap.put("temp_draft_no", temp_draft_no);
 		
 		// 기안 정보
 		paraMap.put("dvo", dvo);
@@ -491,7 +552,7 @@ public class ApprovalController {
 		if (mtfRequest.getFiles("fileList").size() > 0) {
 			
 			// 파일 업로드 경로 지정
-			String path = setFilePath(mtfRequest, "files");
+			String path = Myutil.setFilePath(mtfRequest, "files");
 			
 			// view에서 넘어온 파일들
 			List<MultipartFile> multiFileList = mtfRequest.getFiles("fileList");
@@ -543,57 +604,98 @@ public class ApprovalController {
 		JSONObject jsonObj = new JSONObject();
 		jsonObj.put("result", result);
 
-		return jsonObj.toString();
-	}
-
-	// 파일 업로드 경로 지정
-	private String setFilePath(MultipartHttpServletRequest mtfRequest, String directory) {
-		HttpSession session = mtfRequest.getSession();
-		String root = session.getServletContext().getRealPath("/");
-		String path = root + "resources" + File.separator + directory;
-		
-		return path;
+		return String.valueOf(jsonObj);
 	}
 	
 	// 기안 임시저장하기
 	@ResponseBody
 	@PostMapping(value = "/saveDraft.on", produces = "text/plain;charset=UTF-8")
-	public String saveTemp(HttpServletRequest request, DraftVO dvo, ApprovalVO avo) {
+	public String saveTemp(HttpServletRequest request, DraftVO dvo, ApprovalVO avo, ExpenseListVO evo, BiztripReportVO brvo) {
 		
 		Map<String, Object> paraMap = new HashMap<>();
 
 		// 기안 정보
+		dvo.setDraft_no(request.getParameter("temp_draft_no")); // 임시저장 번호 set
 		paraMap.put("dvo", dvo);
-
-		// 결재자 목록 리스트
-		List<ApprovalVO> apvoList = new ArrayList<ApprovalVO>();
-
-		String[] empnoArr = request.getParameterValues("fk_approval_empno");
 		
-		if (empnoArr != null) {
-			for (String empno : empnoArr) {
-				ApprovalVO apvo = new ApprovalVO();
-				apvo.setFk_approval_empno(Integer.parseInt(empno));
-	
-				apvoList.add(apvo);
-			}
+		// 제목이 비어있다면
+		if (dvo.getDraft_subject() == null || "".equals(dvo.getDraft_subject())) {
+			Calendar currentDate = Calendar.getInstance(); // 현재날짜와 시간
+			SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy.MM.dd HH:mm:ss");
+			String currentTime = dateFormat.format(currentDate.getTime());
+			
+			dvo.setDraft_subject((currentTime + "에 임시저장된 문서"));
 		}
+		
+		// 결재자 목록 리스트
+		List<ApprovalVO> apvoList = avo.getAvoList();
 		paraMap.put("apvoList", apvoList);
 		
-		boolean result = service.saveWorkDraft(paraMap);
+		// 지출내역 리스트
+		List<ExpenseListVO> evoList = evo.getEvoList();
+		paraMap.put("evoList", evoList);
+		
+		// 출장보고 정보
+		paraMap.put("brvo", brvo);
+		String temp_draft_no = service.saveTempDraft(paraMap);
 
 		JSONObject jsonObj = new JSONObject();
-		jsonObj.put("result", result);
+		jsonObj.put("temp_draft_no", temp_draft_no);
 
-		return jsonObj.toString();
+		return String.valueOf(jsonObj);
 	}
 	
+	// 임시저장 기안 재상신(편집) 페이지요청
+	@GetMapping(value = "/edit.on")
+	public ModelAndView showDraftEditForm(ModelAndView mav, HttpServletRequest request, @RequestParam("fk_draft_type_no") String fk_draft_type_no, DraftVO dvo) {
+		
+		MemberVO loginuser = Myutil.getLoginUser(request);
+		
+		// 공통 결재라인 가져오기
+		List<MemberVO> recipientList = service.getRecipientList(fk_draft_type_no);
+		JSONArray recipientArr = new JSONArray();
+		
+		// 공통결재라인이 있을 경우
+		if(recipientList.size() > 0) {
+			for (MemberVO emp : recipientList) {
+				// 결재자 부서와 로그인한 사용자의 부서가 같지 않으면
+				if (emp.getFk_department_no() != loginuser.getFk_department_no())
+					recipientArr = new JSONArray(recipientList);
+			}
+		}
+		
+		mav.addObject("recipientArr", String.valueOf(recipientArr));
+		
+		// 임시저장 문서 정보 가져오기
+		Map<String, Object> draftMap = service.getTempDraftDetail(dvo);
+		mav.addObject("draftMap", draftMap);
+		
+		switch (fk_draft_type_no) {
+		
+		case "1":
+			mav.setViewName("approval/write_form/work_form.tiles");
+			return mav;
+
+		case "2":
+			mav.setViewName("approval/write_form/expense_form.tiles");
+			return mav;
+		
+		case "3":
+			mav.setViewName("approval/write_form/business_trip_form.tiles");
+			return mav;
+
+		default:
+			mav.setViewName("error");
+			return mav;
+		}
+		
+	}
 
 	// 결재라인 선택 팝업창 요청
 	@RequestMapping(value = "/selectApprovalLine.on")
 	public ModelAndView selectApprovalLine(ModelAndView mav, HttpServletRequest request) {
 
-		MemberVO loginuser = getLoginUser(request);
+		MemberVO loginuser = Myutil.getLoginUser(request);
 		String type = request.getParameter("type");
 		
 		Map<String, Object> paraMap = new HashMap<>();
@@ -647,7 +749,7 @@ public class ApprovalController {
 	@RequestMapping(value = "/getSavedAprvLine.on", produces = "text/plain;charset=UTF-8")
 	public String getSavedAprvLine(Model model, HttpServletRequest request) {
 
-		MemberVO loginuser = getLoginUser(request);
+		MemberVO loginuser = Myutil.getLoginUser(request);
 
 		Map<String, String> paraMap = new HashMap<>();
 		paraMap.put("empno", loginuser.getEmpno());
@@ -698,21 +800,104 @@ public class ApprovalController {
 	// 자신의 결재 처리하기(승인 or 반려)
 	@ResponseBody
 	@PostMapping(value = "/updateApproval.on", produces = "text/plain;charset=UTF-8")
-	public String updateApproval(ApprovalVO avo) {
+	public String updateApproval(ApprovalVO avo, HttpServletRequest request) {
 		
-		boolean result = service.updateApproval(avo);
+		MemberVO loginuser = Myutil.getLoginUser(request);
+		
+		// 결재대상자 조회
+		String approval_empno = service.checkApproval(avo);
+		
+		boolean result = false;
+		// 로그인한 사용자가 결재대상자일때
+		if (loginuser.getEmpno().equals(approval_empno)) {
+			result = service.updateApproval(avo);
+		}
 
 		JSONObject jsonObj = new JSONObject();
 		jsonObj.put("result", result);
 
 		return jsonObj.toString();
 	}
+	
+	// 대결 처리하기
+	@ResponseBody
+	@PostMapping(value = "/updateApprovalProxy.on", produces = "text/plain;charset=UTF-8")
+	public String updateApprovalProxy(ApprovalVO avo, HttpServletRequest request) {
 
+		boolean result = false;
+		
+		MemberVO loginuser = Myutil.getLoginUser(request);
+		avo.setFk_approval_empno(Integer.parseInt(loginuser.getEmpno()));
+		
+		// 내 다음 결재단계 조회
+		int next_levelno = service.checkApprovalProxy(avo);
+		
+		if (avo.getLevelno() + 1 == next_levelno) {
+			avo.setLevelno(next_levelno);
+			result = service.updateApproval(avo);
+		}
+		
+		JSONObject jsonObj = new JSONObject();
+		jsonObj.put("result", result);
+		
+		return jsonObj.toString();
+	}
+
+	// 기안 상신취소하기
+	@RequestMapping(value = "/cancel.on")
+	public ModelAndView cancelDraft(ModelAndView mav, HttpServletRequest request, DraftVO dvo) {
+		MemberVO loginuser = Myutil.getLoginUser(request);
+		
+		// 기안 조회하기
+		dvo = service.getDraftInfo(dvo);
+		
+		// 작성자 본인이 아닐 경우
+		if (!loginuser.getEmpno().equals(String.valueOf(dvo.getFk_draft_empno()))) {
+			mav.addObject("message", "다른 사람의 기안을 상신취소할 수 없습니다.");
+			mav.addObject("loc", "javascript:history.back()");
+			mav.setViewName("msg");
+		}
+		else {
+			
+			Map<String, Object> paraMap = new HashMap<>();
+			paraMap.put("filePath", Myutil.setFilePath(request, "files")); // 파일 저장 경로
+			paraMap.put("dvo", dvo); // 기안 vo
+			
+			// 파일삭제
+			boolean result = service.deleteFiles(paraMap);
+			
+			// 파일삭제 성공 시
+			if (result) {
+				
+				// 기안 상신취소하기
+				result = service.cancelDraft(dvo);
+
+				if (!result) {
+					mav.addObject("message", "상신 취소 실패하였습니다.");
+					mav.addObject("loc", "javascript:history.back()");
+					mav.setViewName("msg");
+				}
+				else {
+					mav.addObject("message", "상신 취소 되었습니다.");
+					mav.addObject("loc", request.getContextPath()+"/approval/personal/saved.on");
+					mav.setViewName("msg");
+				}
+			}
+			else {
+				mav.addObject("message", "상신 취소 실패하였습니다.");
+				mav.addObject("loc", "javascript:history.history.back()");
+				mav.setViewName("msg");
+			}
+		}
+
+		return mav;
+	}
+	
 	// 환경설정-결재라인관리 페이지요청
 	@RequestMapping(value = "/config/approvalLine.on")
 	public ModelAndView configApprovalLine(ModelAndView mav, HttpServletRequest request) {
-		MemberVO loginuser = getLoginUser(request);
-
+		MemberVO loginuser = Myutil.getLoginUser(request);
+		
 		Map<String, String> paraMap = new HashMap<>();
 		paraMap.put("empno", loginuser.getEmpno());
 		
@@ -823,7 +1008,7 @@ public class ApprovalController {
 	public ModelAndView updateSignature(ModelAndView mav, MultipartHttpServletRequest mtfRequest) {
 		
 		// 파일 업로드 경로 지정
-		String path = setFilePath(mtfRequest, "images" + File.separator + "sign");
+		String path = Myutil.setFilePath(mtfRequest, "images" + File.separator + "sign");
 		
 		// view에서 넘어온 파일들
 		MultipartFile attach = mtfRequest.getFile("attach");
@@ -847,7 +1032,7 @@ public class ApprovalController {
 			e.printStackTrace();
 		}
 		
-		MemberVO loginuser = getLoginUser(mtfRequest);
+		MemberVO loginuser = Myutil.getLoginUser(mtfRequest);
 						
 		Map<String, String> paraMap = new HashMap<String, String>();
 		paraMap.put("filename", filename);
@@ -879,7 +1064,11 @@ public class ApprovalController {
 		// 공통결재라인 목록 불러오기
 		List<Map<String, String>> officialAprvList = service.getOfficialAprvList(); 
 		
+		// 공통결재라인 없는 양식 목록 불러오기
+		List<Map<String, String>> noOfficialAprvList = service.getNoOfficialAprvList(); 
+		
 		mav.addObject("officialAprvList", officialAprvList);
+		mav.addObject("noOfficialAprvList", noOfficialAprvList);
 		mav.setViewName("approval/admin/official_approvalLine.tiles");
 		return mav;
 	}
@@ -904,6 +1093,37 @@ public class ApprovalController {
 		
 	}
 	
+	// 관리자메뉴-공통결재라인 삭제하기
+	@ResponseBody
+	@PostMapping(value = "/admin/delOfficialAprvLine.on", produces = "text/plain;charset=UTF-8")
+	public String delOfficialAprvLine(HttpServletRequest request) {
+		
+		Map<String, String> paraMap = new HashMap<>();
+		paraMap.put("official_aprv_line_no", request.getParameter("official_aprv_line_no"));
+		paraMap.put("draft_type_no", request.getParameter("draft_type_no"));
+		
+		// 관리자메뉴-공통결재라인 삭제하기
+		boolean result = service.delOfficialAprvLine(paraMap); 
+		
+		JSONObject json = new JSONObject();
+		json.put("result", result);
+		return String.valueOf(json);
+	}
+	
+	// 관리자메뉴-공통결재라인 추가하기
+	@ResponseBody
+	@PostMapping(value = "/admin/setOfficialLine.on", produces = "text/plain;charset=UTF-8")
+	public String setOfficialLine(HttpServletRequest request, @RequestParam("draft_type_no") String draft_type_no) {
+		
+		JSONObject json = new JSONObject();
+
+		// 공통결재라인 여부 사용으로 변경하기
+		boolean result = service.setUseOfficialLine(draft_type_no); 
+		
+		json.put("result", result);
+		return String.valueOf(json);
+	}
+	
 	// 관리자메뉴-공통결재라인 수정
 	@PostMapping(value = "/admin/approvalLine/save.on")
 	public ModelAndView saveOfficialApprovalLine(ModelAndView mav, HttpServletRequest request, OfficialAprvLineVO oapVO) {
@@ -923,13 +1143,6 @@ public class ApprovalController {
 
 		return mav;
 	}
-	
-	// 로그인 사용자 정보 가져오기
-	private MemberVO getLoginUser(HttpServletRequest request) {
-		HttpSession session = request.getSession();
-		MemberVO loginuser = (MemberVO) session.getAttribute("loginuser");
-		return loginuser;
-	}
 
 	// 문서함 조회 시 정렬 설정하기
 	private void setSorting(HttpServletRequest request, Map<String, Object> paraMap) {
@@ -942,12 +1155,6 @@ public class ApprovalController {
 		String sortOrder = request.getParameter("sortOrder");
 		sortOrder = sortOrder == null ? "desc" : sortOrder;
 		paraMap.put("sortOrder", sortOrder);
-	}
-
-	@ExceptionHandler(Exception.class)
-	private String error(Exception e) {
-		e.printStackTrace();
-		return "error";
 	}
 
 	// 문서함 목록 엑셀 다운로드

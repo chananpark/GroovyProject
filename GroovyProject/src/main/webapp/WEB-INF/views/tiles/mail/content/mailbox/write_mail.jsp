@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %> 
+<%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
 
 <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css" />
 
@@ -251,6 +252,7 @@ var fileSizeList = [];
            var pwd = "";
 
 		   if($('#password').is(':visible')){
+			   
 			   console.log($("input#pwd").val());		
 
 			   pwd = $("input#pwd").val();
@@ -289,7 +291,6 @@ var fileSizeList = [];
            console.log(date);		
 		   console.log(hour);
 		   console.log(minute);
-			
 
 		  
 		   $.ajax({
@@ -304,13 +305,17 @@ var fileSizeList = [];
 	            success:function(json){
 	            	if(json.n == 1){
 	            		swal('메일발송에 성공하였습니다.', "버튼을 누르면 보낸 메일함으로 이동합니다.", 'success')
-	            		location.href = "<%=ctxPath%>/mail/sendMailBox.on";
+	            		.then((value) => {
+	            			location.href = "<%=ctxPath%>/mail/sendMailBox.on";
+	            		});
+
+	            		
 	            	}
-	            	if(n==0){
+	            	if(json.n==0){
 	            		swal('메일발송이 실패하셨습니다.', "이 상태가 지속되면 지원팀에 문의해주세요.", 'warning')
 	            		return false;
 	            	}
-	            	if(n==-1){
+	            	if(json.n==-1){
 	            		swal('메일발송이 실패하셨습니다.', "파일 업로드 진행중 문제가 발생하였습니다.", 'warning')
 	            		return false;
 	            	}
@@ -320,7 +325,7 @@ var fileSizeList = [];
 	            } 
 	        }); 
 		   
-		   
+		
 		   
 		   
 		});
@@ -329,9 +334,48 @@ var fileSizeList = [];
 		var emailList = ${requestScope.mailList}
 		
 		$("#receieveName").autocomplete({
-			source : emailList
+			source : emailList,
+			select: function(event, ui){
+				console.log("ui.item"+event);
+			},
+			focus: function(event, ui){ return false;} // 사라짐 방지용 
 		});
-		
+		// 답장이면 보낸이 이메일 추가
+		if('${requestScope.replyList}' != null){
+			<c:forEach var="reply" items="${requestScope.replyList}" varStatus="status">
+				var emailStartIdx = '${reply}'.indexOf("<")+2;
+				var emailEndIdx = '${reply}'.indexOf(">")-1;
+				var emailOnly = '${reply}'.substring(emailStartIdx, emailEndIdx);
+				
+				for(let i = 0; i < recipient_addressList.length; i++) {
+	    	 		if(recipient_addressList[i] == emailOnly )  {
+	    	 			swal('중복된 이메일입니다', "다른 이메일을 선택해주세요.", 'warning')
+	    	 			$("input#receieveName").val('');
+	    	 			return false;
+	    	 		  }
+	    	 	}
+				
+				
+				$("#receieveName").val("");
+				
+				
+				
+				if(emailOnly == '${sessionScope.loginuser.cpemail}'){
+					$("#receiver").append(`<span class="rounded-pill email-ids myMail" name="email-container">`
+							 + '${sessionScope.loginuser.department } '+ '${sessionScope.loginuser.position } '+ '${sessionScope.loginuser.name}'
+							 + '&lt;'+'${sessionScope.loginuser.cpemail}' +'&gt;'
+							 + '<span class = "removeAddress" name="removeAddress"><i class="far fa-window-close"></i></span></span>');
+					$("#selfMail").prop("checked", true);
+				}
+				else{
+					$("#receiver").append('<span class="rounded-pill email-ids" name="email-container">'
+							+ ${reply} + '<span class = "removeAddress" name="removeAddress"><i class="far fa-window-close"></i></span></span>');
+				}
+				recipient_addressList.push(emailOnly);
+
+			</c:forEach>
+			
+		}
 		
 		
 		// 받는사람 입력후 스페이스바나 엔터 누르면 한 단위로 묶기
@@ -339,7 +383,6 @@ var fileSizeList = [];
 			if(e.keyCode == 13 || e.keyCode == 32){
 				var getValue = $(this).val();
 				console.log("getValue: "+getValue);
-				
 				var inList = false;
 				for(let i = 0; i < emailList.length; i++) {
 	    	 		if(emailList[i] == getValue )  {
@@ -363,24 +406,39 @@ var fileSizeList = [];
 				console.log("emailOnly"+emailOnly)
 				
 				if(inList == true){
-					$("#receiver").append('<span class="rounded-pill email-ids" name="email-container">'
-							+ getValue + '<span class = "removeAddress" name="removeAddress"><i class="far fa-window-close"></i></span></span>');
-					$("#receieveName").val("")
+					if(emailOnly == '${sessionScope.loginuser.cpemail}'){
+						$("#receiver").append(`<span class="rounded-pill email-ids myMail" name="email-container">`
+								 + '${sessionScope.loginuser.department } '+ '${sessionScope.loginuser.position } '+ '${sessionScope.loginuser.name}'
+								 + '&lt;'+'${sessionScope.loginuser.cpemail}' +'&gt;'
+								 + '<span class = "removeAddress" name="removeAddress"><i class="far fa-window-close"></i></span></span>');
+						$("#selfMail").prop("checked", true);
+					}
+					else{
+						$("#receiver").append('<span class="rounded-pill email-ids" name="email-container">'
+								+ getValue + '<span class = "removeAddress" name="removeAddress"><i class="far fa-window-close"></i></span></span>');
+					}
 				}
 				else{
 					$("#receiver").append('<span class="rounded-pill non-email-ids" name="email-container">'
 							+ getValue + '<span class = "removeAddress" name="removeAddress"><i class="far fa-window-close"></i></span></span>');
-					$("#receieveName").val("")
+					
 					
 				}
+				$("#receieveName").val("");
 				
 				
 				
 				recipient_addressList.push(emailOnly);
+				if(emailOnly == '${sessionScope.loginuser.cpemail}'){
+					$("#selfMail").prop("checked", true);
+				}
 			}
 			
 			
 		});
+		
+		
+		
 		
 		$("#selfMail").change(function(){
 	        if($("#selfMail").is(":checked")){
@@ -644,7 +702,21 @@ var fileSizeList = [];
 					<tr>
 						<th style="width: 15%; background-color: #E3F2FD;">제목</th>
 						<td>
-						       <input class="bottomLine" type="text" name="subject" id="subject" size="100" />
+							
+						       
+					       <c:if test="${requestScope.type == 'reply'}">
+					       	<input class="bottomLine" type="text" name="subject" id="subject" size="100" value="[Re:${mailVO.subject}]"/>
+					       </c:if>
+					       
+					        <c:if test="${requestScope.type == 'pass'}">
+					       	<input class="bottomLine" type="text" name="subject" id="subject" size="100" value="${mailVO.subject}"/>
+					       </c:if>
+					       
+					        <c:if test="${requestScope.type == null}">
+					       	<input class="bottomLine" type="text" name="subject" id="subject" size="100"/>
+					       </c:if>
+					       
+						       
 						</td>
 					</tr>
 					
@@ -652,12 +724,17 @@ var fileSizeList = [];
 						<th style="width: 15%; background-color: #E3F2FD;">내용</th>
 						<td>
 							<textarea style="width: 100%; height: 612px;" name="contents" id="contents">
-								<p><br></p><p><br></p><p><br></p><p><br></p><p><br></p><p><br></p><p><br></p><p><br></p><p><br></p><p><br></p><p><br></p><p><br></p><p><br></p>
-								<p>------------------------------------ original message ------------------------------------</p>
 								<c:if test="${requestScope.type == 'reply'}">
-									${mailVO.contents}
+									<p><br></p><p><br></p><p><br></p><p><br></p><p><br></p><p><br></p><p><br></p><p><br></p><p><br></p><p><br></p><p><br></p><p><br></p><p><br></p>
+									<p>------------------------------------ original message ------------------------------------</p>
+										${mailVO.contents}
+									<p>------------------------------------------------------------------------------------------</p>	
 								</c:if>
-								<p>------------------------------------------------------------------------------------------</p>
+								
+								<c:if test="${requestScope.type == 'pass'}">
+										${mailVO.contents}
+								</c:if>
+								
 							</textarea>
 						</td>
 					</tr>
