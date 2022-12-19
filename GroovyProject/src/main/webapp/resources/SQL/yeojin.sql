@@ -830,3 +830,37 @@ select reservationno, startdate, enddate, realuser, fk_smcatgono, fk_lgcatgono, 
     
 )
 where rno between 1 and 10
+
+
+
+select smcatgono, smcatgoname, sc_status, C.fk_empno, L.lgcatgono, lgcatgoname
+		from tbl_reservation_small_category C 
+		JOIN tbl_reservation_large_category L
+		ON C.fk_lgcatgono = L.lgcatgono
+		order by L.lgcatgono, C.smcatgono
+
+
+
+select scheduleno, startdate, enddate, subject, color, place, joinuser, content, fk_smcatgono, fk_lgcatgono, fk_empno, department
+		from tbl_calendar_schedule C join tbl_employee E
+		on C.fk_empno = E.empno
+		where C.fk_empno = 15 OR
+		fk_lgcatgono = 1 OR
+		(fk_lgcatgono = 2 AND department = (select department from tbl_employee where empno = 15) ) OR
+		(fk_lgcatgono = 3 and lower(joinuser) like '%'|| lower('schedule@groovy.com') ||'%') OR
+        (fk_lgcatgono = 3 and C.fk_empno = 15 )
+		order by scheduleno asc
+
+
+
+
+
+
+
+
+
+
+
+
+
+

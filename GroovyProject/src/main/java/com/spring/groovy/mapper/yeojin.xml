@@ -967,11 +967,11 @@
 		<result property="lgcatgoname" 	column="lgcatgoname" 	javaType="String" />
 	</resultMap>
 	<select id="managementResource" resultMap="resourceMap">
-		select smcatgono, smcatgoname, sc_status, fk_empno, lgcatgono, lgcatgoname
+		select smcatgono, smcatgoname, sc_status, C.fk_empno, L.lgcatgono, lgcatgoname
 		from tbl_reservation_small_category C 
 		JOIN tbl_reservation_large_category L
 		ON C.fk_lgcatgono = L.lgcatgono
-		order by lgcatgono, smcatgono
+		order by L.lgcatgono, C.smcatgono
 	</select>
 	
 	
@@ -1012,7 +1012,7 @@
 		<result property="lgcatgoname" 	column="lgcatgoname" 	javaType="String" />
 	</resultMap>
 	<select id="resourceFilter" parameterType="HashMap" resultMap="resourceFilterMap">
-		select smcatgono, smcatgoname, sc_status, fk_empno, lgcatgono, lgcatgoname
+		select smcatgono, smcatgoname, sc_status, C.fk_empno, lgcatgono, lgcatgoname
 		from tbl_reservation_small_category C 
 		JOIN tbl_reservation_large_category L
 		ON C.fk_lgcatgono = L.lgcatgono

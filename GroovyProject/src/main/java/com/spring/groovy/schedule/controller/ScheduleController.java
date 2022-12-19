@@ -449,7 +449,10 @@ public class ScheduleController {
 			MemberVO loginuser = (MemberVO) session.getAttribute("loginuser");
 			
 			Map<String,String> map = service.viewSchedule(scheduleno);
-			map.put("content", map.get("CONTENT").replaceAll("<br>", "\r\n"));
+			
+			if(map.get("CONTENT") != null) {
+				map.put("content", map.get("CONTENT").replaceAll("<br>", "\r\n"));
+			}
 			
 			if( !loginuser.getEmpno().equals( map.get("FK_EMPNO") ) ) {
 				String message = "다른 사용자가 작성한 일정은 수정이 불가합니다.";
