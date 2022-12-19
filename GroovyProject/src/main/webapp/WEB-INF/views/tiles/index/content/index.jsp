@@ -286,6 +286,40 @@
 		
 	}
 	
+	function goMail(mailno, mailRecipientNo){
+		// 패스워드 체크
+		$.ajax({
+			url:"<%= ctxPath%>/mail/getPwd.on",
+			type:"post",
+			data:{"mail_no":mailno},
+	        success:function(pwd){
+	        	if(pwd != "" && pwd != null){
+	        		swal("비밀 메일입니다. 암호를 입력해주세요", {
+	  				  content: "input",
+	  				})
+	  				.then((value) => {
+	  				  if(value == pwd){
+	  					location.href="<%=ctxPath%>/mail/viewMail.on?mailNo="+mailno+"&mailRecipientNo"+mailRecipientNo;
+	  				  }
+	  				  else{
+	  					  swal("잘못된 암호입니다. 다시 확인해주세요");
+	  				  }
+	  				});
+	        	}
+	        	else{
+	        		location.href="<%=ctxPath%>/mail/viewMail.on?mailNo="+mailno+"&mailRecipientNo"+mailRecipientNo;
+	    		}
+
+	        	
+	        },
+	        error: function(request, status, error){
+				swal("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			}
+		});
+		
+		
+	}
+	
 
 </script>
 
@@ -321,7 +355,7 @@
 				        <fmt:formatDate value="${mail.send_time_date}" pattern="HH:mm:ss" var="sendTimeToday"/>
 				        <fmt:formatDate value="${mail.send_time_date}" pattern="yyyy-MM-dd HH:mm:ss" var="sendTimeNotToday"/>
 				        
-							<tr onclick="location.href='<%=ctxPath%>/mail/viewMail.on?mailNo=${mail.mail_no}'" style="cursor:pointer">
+							<tr onclick="goMail('${mail.mail_no}','${mail.mail_recipient_no}')" style="cursor:pointer">
 								<td>${mail.fK_sender_address}</td>
 								<td>${mail.subject}</td>
 								<c:if test="${sendTimeDD == today}">
@@ -331,7 +365,13 @@
 							      	<td class = "mail_list_time">${sendTimeNotToday}</td>
 						      	</c:if>	
 							</tr>
-						</c:forEach>	
+						</c:forEach>
+						<c:if test="${mailList == null}">
+						
+							받은 메일이 없습니다.
+
+						
+						</c:if>	
 							
 						</tbody>
 					</table>

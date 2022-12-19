@@ -242,7 +242,7 @@ var fileSizeList = [];
 		        	return false;
 		        }
 		        
-		        send_time =date+" "+hour+":"+minute;
+		        send_time =date+" "+stthour+":"+sttminute;
 	         
 	           
 			  
@@ -329,6 +329,8 @@ var fileSizeList = [];
 		   
 		   
 		});
+		
+
 		
 		// 이메일 자동완성
 		var emailList = ${requestScope.mailList}
@@ -641,7 +643,8 @@ var fileSizeList = [];
 			jQuery('#dropzoneMessage').show();
 		}
 	}
-	
+
+
 
 </script>
 
@@ -653,8 +656,7 @@ var fileSizeList = [];
 		<div class="toolbarButton">
 			
 			<button id="btnWrite" type="button" class="btn btn-outline-dark"><i class="far fa-paper-plane"></i> 보내기</button>
-			<button type="button" class="btn btn-outline-dark"><i class="fas fa-archive"></i> 임시저장</button>
-			<button type="button" class="btn btn-outline-dark"><i class="fas fa-archive"></i> 다시쓰기</button>
+			<button id="clear" type="button" class="btn btn-outline-dark" onClick="window.location.reload();"><i class="fas fa-archive"></i> 다시쓰기</button>
 	
 		</div>
 		
