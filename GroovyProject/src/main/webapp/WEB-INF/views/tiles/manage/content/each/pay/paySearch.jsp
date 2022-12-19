@@ -85,16 +85,15 @@
 		
 		$('.eachmenu2').show();
 		
-		/* $("div#detailPay").hide(); */
-		
+		 $("div#detailPay").hide(); 
 		
 		 const payno = $("input#view").val();
 		
 		 $("input#view").click(function(){
-		/* 	 $("div#detailPay").show(); */
-			 console.log(payno);
+			$("div#detailPay").show(); 
+		 console.log(payno);
 			 
-			 go_detailInfo(payno);
+			 go_detailInfo();
 		 }); // end of  $("tbody.list > tr> td").click(function(){---------------------
 		
 			 
@@ -104,7 +103,7 @@
 	
 		
 	// >>> 상세보기 버튼을 누르면 <<<
-	function go_detailInfo(payno){
+	function go_detailInfo(){
 		
 		$.ajax({
 			uri:"<%=ctxPath%>/manage/pay/payDetailView.on",
@@ -113,56 +112,10 @@
 			type:"POST",
 			dataType:"JSON",
 			success:function(json){
-				let html = '<h5 class="mx-4">급여상세</h5>'+
-							"<table>"+
-							'<table class="table table-bordered table-sm mx-4 ">'+
-							"<thead>"+
-								"<tr>"+
-									"<th>No</th>"+
-									"<th colspan='2'>지급항목</th>"+
-									"<th colspan='2'>공제항목</th>"+
-								"</tr>"+
-							"</thead>"+
-							  
-				  
-				$.each(json, function(index, item){
-					html += '<tbody>'+
-								'<tr class="text-center border" >'+
-									'<td>1</td>'+
-									'<td>기본급</td>'+
-									'<td><fmt:formatNumber value="${emp.salary}" pattern="#,###" /></td>'+
-									'<td>소득세</td>'+
-									'<td><fmt:formatNumber value="${emp.incomtax}" pattern="#,###"/></td>'+
-								'</tr>'+
-								'<tr class="text-center border" >'+
-									'<td>2</td>'+
-									'<td>초과근무수당</td>'+
-									'<td><fmt:formatNumber value="${emp.overtimepay}" pattern="#,###" /></td>'+
-									'<td>국민연금</td>'+
-									'<td><fmt:formatNumber value="${emp.pension}" pattern="#,###" /></td>'+
-								'</tr>'+
-								'<tr class="text-center border" >'+
-									'<td>3</td>'+
-									'<td>연차수당</td>'+
-									'<td><fmt:formatNumber value="${emp.annualpay}" pattern="#,###" /></td>'+
-									'<td>고용보험</td>'+
-									'<td><fmt:formatNumber value="${emp.insurance}" pattern="#,###" /></td>'+
-								'</tr>'+
-							'</tbody>'+
-							'<tfoot>'+
-								'<tr>'+
-									'<th>합계</th>'+
-									'<th>지급총액</th>'+
-									'<td><fmt:formatNumber value="${emp.allpay}" pattern="#,###" /></td>'+
-									'<th>공제총액</th>'+
-									'<td><fmt:formatNumber value="${emp.tax}" pattern="#,###" /></td>'+
-									'</tr>'+
-							'</tfoot>'
-				});			  
 				
-				html += "</table>";
-		        
-				$("div#detailPay").html(html);
+				let html = json.jsonArr
+				console.log(html)
+				//$("div#detailPay").html(html);
 				
 			},
 		  	 error: function(request, status, error){
@@ -211,7 +164,6 @@
 		</div>
 	</div>
 	
-
 	
 	<div class="mt-5">
 		<h5 class='mx-4'>급여목록</h5>
@@ -244,7 +196,7 @@
 						<td><fmt:formatNumber value="${emp.tax}" pattern="#,###" /></td>
 						<td><fmt:formatNumber value="${emp.monthpay}" pattern="#,###" /></td>
 						<td>${emp.paymentdate}</td>
-						<td><input type="button" id="view" name="payno" value="${emp.payno}" />상세보기</td>
+						<td><input type="button" value="${emp.payno}" style="background-color:white;color:white ;" id="view" name="payno">상세보기</input></td>
 					</tr>
 				</c:forEach>
 			</tbody>
@@ -254,8 +206,7 @@
 	
 	
 	
-	<div class="mt-5" id="detailPay"></div>
-	<%-- 
+	<div class="mt-5" id="detailPay">
 	<h5 class='mx-4'>급여상세</h5>
 		<table class="table table-bordered table-sm mx-4 ">
 			<thead>
@@ -267,8 +218,8 @@
 			</thead>
 			<tbody>
 				<c:forEach  var="emp" items="${requestScope.payList}" varStatus="status">
-				<c:if test="${emp.payno}">
-				<input type="text" value="${emp.payno}"/>
+				<c:if test="${not empty emp.payno && status.count == 1 }">
+				<input type="hidden" value="${emp.payno}" />
 					<tr class="text-center border" >
 						<td>1</td>
 						<td>기본급</td>
@@ -294,6 +245,8 @@
 					</c:forEach>
 			</tbody>
 			<tfoot>
+				<c:forEach  var="emp" items="${requestScope.payList}" varStatus="status">
+				<c:if test="${not empty emp.payno && status.count == 1}">
 				<tr>
 					<th>합계</th>
 					<th>지급총액</th>
@@ -301,18 +254,20 @@
 					<th>공제총액</th>
 					<td><fmt:formatNumber value="${emp.tax}" pattern="#,###" /></td>
 					</tr>
+					</c:if>
+					</c:forEach>
 			</tfoot>
 		</table>
-		 --%>
-		<div align="right">
+		</div>
+		
+	<!-- 	<div align="right">
 			<span>
 				<button class="btn btn-sm" id="btn_excel">엑셀파일</button>
 				<button class="btn btn-sm" id="btn_pay"  onclick="go_payDetail" data-toggle="modal" data-target="#go_payDetail">급여명세서</button>
 			</span>
-		</div>
-		
+		</div> -->
 </div>
-</form>
+</form>		
 
 
 <%-- 급여상세 모달창 --%>

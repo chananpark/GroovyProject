@@ -4,5 +4,504 @@
 
 <!-- 루트 엘리먼트 & 네임스페이스 설정(프로젝트 전체 내에서 유일해야 함, 주로 파일명) -->
 <mapper namespace="hyewon">
-		<!-- 이 안에 sql문을 적는다 -->
+	<!-- 이 안에 sql문을 적는다 -->
+	
+	<insert id="goStartWork" parameterType="HashMap">
+		update tbl_attendance set workstart = sysdate
+		where fk_empno = #{empno} and to_char(workdate, 'yyyy-mm-dd') = (select to_char(sysdate, 'yyyy-mm-dd') from dual )
+	</insert>
+	
+	<update id="goEndWork" parameterType="HashMap">
+		update tbl_attendance set workend = sysdate
+		where fk_empno = #{empno} and to_char(workdate, 'yyyy-mm-dd') = (select to_char(sysdate, 'yyyy-mm-dd') from dual )
+	</update>
+	
+	<resultMap type="HashMap" id="workTimeMap">
+		<result property="workstart"   column="workstart"   javaType="String" />
+		<result property="workend"    column="workend"    javaType="String" />
+	</resultMap>
+	<select id="getWorkTimes" resultMap="workTimeMap" parameterType="HashMap">
+		select nvl(to_char(workstart, 'hh24:mi:ss'), '-') as workstart
+			 , nvl(to_char(workend, 'hh24:mi:ss'), '-') as workend
+		from tbl_attendance
+		where fk_empno = #{empno} and to_char(workdate, 'yyyy-mm-dd') = (select to_char(sysdate, 'yyyy-mm-dd') from dual )
+	</select>
+	
+	
+	<resultMap type="HashMap" id="partMap">
+		<result property="department"   column="department"   javaType="String" />
+	</resultMap>
+	<select id="getDepartment" resultMap="partMap" parameterType="HashMap">
+		select department
+		from tbl_employee
+		where empno = #{empno}
+	</select>
+	
+	<insert id="requestAttendance" parameterType="HashMap">
+    	<if test='attend_index.equals("dayoff")'>
+	    	insert into tbl_attendance_request (requestid, fk_empno, attend_index, starttime )
+			values(seq_attendance_request.nextval, #{empno, jdbcType=INTEGER}, #{attend_index}, to_date(#{usedate},'yyyy-mm-dd'))
+	    </if>
+	    <if test='!attend_index.equals("dayoff")'>
+	    	 INSERT INTO tbl_attendance_request (requestid, fk_empno, attend_index, starttime, endtime, place, reason  )
+			 VALUES(seq_attendance_request.nextval, #{empno, jdbcType=INTEGER}, #{attend_index}, to_date(#{starttime},'yyyy-mm-dd hh24:mi'), to_date(#{endtime},'yyyy-mm-dd hh24:mi'), #{place}, #{reason})
+	    </if>
+	</insert>
+	
+	
+	
+	
+	<select id="myAttendStatusList" resultType="com.spring.groovy.attendance.model.AttendanceVO" parameterType="HashMap">
+		select fk_empno, workstart, workdate, workend, trip, tripstart, tripend, triptime, dayoff, extendstart, worktime
+		from 
+		(
+			select rownum AS RNO, fk_empno, trip
+					 , to_char(workdate, 'mm.dd dy') as workdate
+					 , nvl(to_char(workstart, 'hh24:mi:ss'), '-') as workstart
+			         , nvl(to_char(workend, 'hh24:mi:ss'), '-') as workend
+			         , nvl(to_char(tripstart), '-') as tripstart, nvl(to_char(tripend), '-') as tripend
+			         , nvl(to_char(round((tripend-tripstart)*24,2)), '-') as triptime
+			         , decode(dayoff, 'Y', '연차', 'N', ' ') as dayoff
+			         , nvl(to_char(round((workend-extendstart)*24,2)), '-') as extendstart
+			         , NVL(trunc((((workend - workstart)*24)*60)/60), 0)|| '시간 ' ||  NVL(round(mod((((workend - workstart)*24)*60), 60)), 0) || '분' as worktime
+		    from 
+		    (
+		        select *
+		        from tbl_attendance 
+		        where fk_empno = #{empno} and workdate between( select TRUNC(to_date(#{calMonthVal}, 'yyyy-mm'), 'iw') from dual ) and (select next_day((last_day(to_date(#{calMonthVal}, 'yyyy-mm'))),'금') from dual )
+		        order by workdate
+		    ) V
+		) T
+	</select>
+	
+	
+	<resultMap type="HashMap" id="weeklyworkTimesMap">
+		<result property="weeklywork"    column="weeklywork"     javaType="String" />
+		<result property="remainwork"    column="remainwork"     javaType="String" />
+		<result property="weeklyextend"  column="weeklyextend"   javaType="String" />
+	</resultMap>
+	<select id="getWeeklyWorkTimes" resultMap="weeklyworkTimesMap" parameterType="HashMap">
+		select NVL(trunc((sum((workend-workstart)*24)*60)/60), 0)|| '시간 ' ||  NVL(round(mod(sum(((workend-workstart)*24)*60), 60)), 0) || '분' as weeklywork
+		     , <![CDATA[case when (40-NVL(round(sum((workend-workstart)*24), 2), 0)) < 0 then '0시간 0분' else trunc(((40-NVL(round(sum((workend-workstart)*24), 2), 0))*60)/60)|| '시간 ' ||  round(mod(((40-NVL(round(sum((workend-workstart)*24), 2), 0))*60), 60)) || '분' end]]> as remainwork
+		     , NVL(trunc((sum((workend-extendstart)*24)*60)/60), 0)|| '시간 ' ||  NVL(round(mod(sum(((workend-extendstart)*24)*60), 60)), 0) || '분' as weeklyextend
+		from tbl_attendance 
+		where fk_empno = #{empno} and workdate between( select TRUNC(sysdate, 'iw') from dual ) and ( select TRUNC(sysdate, 'iw')+5 from dual )
+	</select>
+		
+	<select id="getSideWeeklyWorkTime" resultType="String" parameterType="HashMap">
+		select NVL(trunc((sum((workend-workstart)*24)*60)/60), 0)|| '시간 ' ||  NVL(round(mod(sum(((workend-workstart)*24)*60), 60)), 0) || '분' as sideWeeklyWork
+		from tbl_attendance
+		where fk_empno = #{empno} and workdate between( select TRUNC(sysdate, 'iw') from dual ) and ( select TRUNC(sysdate, 'iw')+5 from dual )
+	</select>
+	
+	<resultMap type="HashMap" id="monthlyworkTimesMap">
+		<result property="monthlywork"    column="monthlywork"     javaType="String" />
+		<result property="monthlyextend"    column="monthlyextend"     javaType="String" />
+	</resultMap>
+	<select id="getMonthlyWorkTimes" resultMap="monthlyworkTimesMap" parameterType="HashMap">
+		select trunc((sum((workend-workstart)*24)*60)/60)|| '시간 ' ||  round(mod((sum((workend-workstart)*24)*60), 60)) || '분' as monthlywork
+		     , NVL(trunc((sum((workend-extendstart)*24)*60)/60), 0)|| '시간 ' ||  NVL(round(mod((sum((workend-extendstart)*24)*60), 60)), 0) || '분' as monthlyextend
+		from tbl_attendance 
+		where fk_empno = #{empno} and workdate between( SELECT TRUNC(SYSDATE, 'MM') FROM DUAL ) and  (select last_day(sysdate) from dual )  
+	</select>
+	
+	
+	
+	<select id="getRequestList" resultType="com.spring.groovy.attendance.model.AttandanceRequestVO" parameterType="HashMap">
+		<![CDATA[
+		select requestid, attend_index, to_char(starttime, 'yyyy.mm.dd hh24:mi') as starttime
+		     , to_char(endtime, 'yyyy.mm.dd hh24:mi') as endtime
+		     , nvl(place, '-') as place, nvl(reason, '-') as reason
+		     , to_char(registerdate, 'yyyy.mm.dd') as registerdate
+		from tbl_attendance_request
+		where fk_empno = #{empno} 
+			  and starttime > sysdate 
+		]]>
+	</select>
+	
+	
+	<select id="getUsedAttendList" resultType="com.spring.groovy.attendance.model.AttandanceRequestVO" parameterType="HashMap">
+		<![CDATA[
+		select requestid, attend_index, to_char(starttime, 'yyyy-mm-dd hh24:mi') as starttime
+		     , to_char(endtime, 'yyyy-mm-dd hh24:mi') as endtime
+		     , nvl(place, '-') as place, nvl(reason, '-') as reason
+		     , to_char(registerdate, 'yyyy-mm-dd') as registerdate
+		from tbl_attendance_request
+		where fk_empno = #{empno} and starttime > to_date(#{dateStart}, 'yyyy-mm-dd') and endtime < sysdate
+		]]>
+	</select>
+	
+	
+	
+	<resultMap type="HashMap" id="boxAttendMap">
+		<result property="worktime"    column="worktime"     javaType="String" />
+		<result property="triptime"    column="triptime"     javaType="String" />
+		<result property="extendtime"    column="extendtime"     javaType="String" />
+		<result property="dayoffcnt"    column="dayoffcnt"     javaType="String" />
+	</resultMap>
+	<select id="getBoxAttend" resultMap="boxAttendMap" parameterType="HashMap">
+		select NVL(trunc((sum((workend-workstart)*24)*60)/60), 0)|| '시간 ' ||  NVL(round(mod((sum((workend-workstart)*24)*60), 60)),0) || '분' as worktime
+		     , nvl(to_char( round( sum((tripend-tripstart)*24), 1) ),'0')|| '시간' as triptime
+		     , nvl(to_char( round( sum((workend-extendstart)*24), 1) ),'0')|| '시간' as extendtime
+		     , sum(decode(dayoff, 'Y', 1, 'N', 0)) as dayoffcnt     
+		from tbl_attendance 
+		where fk_empno = #{empno} and workdate between to_date(#{dateStart}, 'yyyy.mm.dd') and to_date(#{dateEnd}, 'yyyy.mm.dd')
+	</select>
+	
+	
+	
+	<select id="getTeamInfoBox" resultType="com.spring.groovy.management.model.MemberVO" parameterType="HashMap">
+		select empno, department, name, position, bumun
+		from tbl_employee
+		where department = #{department} 
+		order by empno
+	</select>
+	
+	
+	
+	<resultMap type="HashMap" id="PersonalInfoMap">
+		<result property="name"    column="name"     javaType="String" />
+		<result property="department"    column="department"     javaType="String" />
+		<result property="position"    column="position"     javaType="String" />
+		<result property="empimg"    column="empimg"     javaType="String" />
+		<result property="worksum"    column="worksum"     javaType="String" />
+		<result property="fk_empno"    column="fk_empno"     javaType="String" />
+	</resultMap>
+	<select id="getPersonalInfoBox" resultMap="PersonalInfoMap" parameterType="HashMap">
+		select name, department, position, empimg, worksum, fk_empno
+		from 
+		(
+		    select fk_empno, trunc((sum((workend-workstart)*24)*60)/60)|| '시간 ' ||  round(mod((sum((workend-workstart)*24)*60), 60)) || '분' as worksum
+		    from tbl_attendance
+		    where workdate between to_date(#{dateStart}, 'yyyy.mm.dd') and to_date(#{dateEnd}, 'yyyy.mm.dd')+1
+		    group by fk_empno
+		) A
+		JOIN
+		(
+		    select empno, bumun, department, position, name, NVL(empimg, '없음') as empimg
+		    from tbl_employee 
+		) E
+		on E.empno = A.fk_empno
+		where fk_empno = #{empno}
+	</select>
+	
+	
+	
+	<resultMap type="HashMap" id="weeklyWorkListMap">
+		<result property="workstart"    column="workstart"     javaType="String" />
+		<result property="workend"    column="workend"     javaType="String" />
+		<result property="extendtime"  column="extendtime"   javaType="String" />
+		<result property="worksum"    column="worksum"     javaType="String" />
+		<result property="dayoff"    column="dayoff"     javaType="String" />
+		<result property="trip"  column="trip"   javaType="String" />		
+		<result property="tripstart"  column="tripstart"   javaType="String" />
+		<result property="tripend"  column="tripend"   javaType="String" />
+	</resultMap>
+	<select id="getWeeklyWorkList" resultMap="weeklyWorkListMap" parameterType="HashMap">
+		select NVL(to_char(workstart, 'yyyy.mm.dd hh24:mi dy'), to_char(workdate, 'yyyy.mm.dd hh24:mi dy')) as workstart
+		     , NVL(to_char(workend, 'hh24:mi'), '00:00') as workend
+		     , NVL(trunc((((workend-extendstart)*24)*60)/60), 0)|| '시간 ' ||  NVL(round(mod((((workend-extendstart)*24)*60), 60)), 0) || '분' as extendtime
+		     , NVL(trunc((((workend-workstart)*24)*60)/60), 0)|| '시간 ' ||  NVL(round(mod((((workend-workstart)*24)*60), 60)), 0) || '분' as worksum
+		     , decode(dayoff, 'Y', '연차 ', 'N', ' ' ) as dayoff
+		     , decode(trip, 'Y', '외근 ', 'N', ' ' ) as trip
+		     , NVL(to_char(tripstart, 'hh24:mi ~'), ' ') as tripstart, NVL(to_char(tripend, 'hh24:mi'), ' ') as tripend
+		from tbl_attendance
+		where fk_empno = #{empno} and workdate between to_date(#{dateStart}, 'yyyy.mm.dd') and to_date(#{dateEnd}, 'yyyy.mm.dd')+1
+		order by workdate
+	</select>
+	
+	
+	<delete id="deleteRequest" parameterType="HashMap">
+		delete from tbl_attendance_request
+		where requestid = #{requestid}
+	</delete>
+	
+	
+	    
+	<select id="getCntstartnochk" resultType="String" parameterType="HashMap">
+		select count(decode(workstart, null, ' ')) as cntstartnochk
+		from tbl_attendance A
+		JOIN tbl_employee E
+		on A.fk_empno = E.empno
+		where E.department = #{department} and workdate between to_date(#{dateStart}, 'yyyy.mm.dd') and to_date(#{dateEnd}, 'yyyy.mm.dd')+1
+		    and A.workstart is null
+	</select>
+	
+	<select id="getCntendnochk" resultType="String" parameterType="HashMap">
+		select count(decode(workend, null, ' ')) as cntendnochk
+		from tbl_attendance A
+		JOIN tbl_employee E
+		on A.fk_empno = E.empno
+		where E.department = #{department} and workdate between to_date(#{dateStart}, 'yyyy.mm.dd') and to_date(#{dateEnd}, 'yyyy.mm.dd')+1
+		    and A.workend is null
+	</select>
+	
+	<select id="getCntabsent" resultType="String" parameterType="HashMap">
+		select NVL(trunc((sum((tripend-tripstart)*24)*60)/60), 0)|| '시간 ' ||  NVL(round(mod(sum(((tripend-tripstart)*24)*60), 60)), 0) || '분' as sumextend
+		from tbl_attendance A
+		JOIN tbl_employee E
+		on A.fk_empno = E.empno
+		where E.department = #{department} and workdate between to_date(#{dateStart}, 'yyyy.mm.dd') and to_date(#{dateEnd}, 'yyyy.mm.dd')+1
+		    and trip = 'Y'
+	</select>
+	
+	<select id="getCntdayoff" resultType="String" parameterType="HashMap">
+		select count(dayoff) as cntdayoff
+		from tbl_attendance A
+		JOIN tbl_employee E
+		on A.fk_empno = E.empno
+		where E.department = #{department} and workdate between to_date(#{dateStart}, 'yyyy.mm.dd') and to_date(#{dateEnd}, 'yyyy.mm.dd')+1 
+		    and A.dayoff = 'Y'
+	</select>
+	
+	<select id="getSumextend" resultType="String" parameterType="HashMap">
+		select NVL(trunc((sum((workend-extendstart)*24)*60)/60), 0)|| '시간 ' ||  NVL(round(mod(sum(((workend-extendstart)*24)*60), 60)), 0) || '분' as sumextend
+		from tbl_attendance A
+		JOIN tbl_employee E
+		on A.fk_empno = E.empno
+		where E.department = #{department} and workdate between to_date(#{dateStart}, 'yyyy.mm.dd') and to_date(#{dateEnd}, 'yyyy.mm.dd')+1
+	</select>
+	
+	
+	<select id="getTotalCnt" resultType="int" parameterType="HashMap">
+		select count(*)
+	    from 
+	    (
+        select E.name as name, E.department as department
+             , to_char(workdate, 'yyyy-mm-dd') as workdate
+             , decode(A.workstart, null, '출근미등록', to_char(A.workstart, 'hh24:mi')) as workstart
+             , decode(A.workend, null, '퇴근미등록', to_char(A.workend, 'hh24:mi')) as workend 
+             , decode(A.dayoff, 'N', ' ', 'Y', '연차') as dayoff
+             , decode(A.trip, 'Y', '외근' || ' ' ||NVL(to_char(A.tripstart, 'hh24:mi'), ' ') || '~' || NVL(to_char(A.tripend, 'hh24:mi'), ' '), 'N', null) as trip
+             , NVL2(A.extendstart, '연장 '|| to_char(A.extendstart, 'hh24:mi') || '~' || to_char(A.workend, 'hh24:mi'), null ) as extend
+        from tbl_attendance A
+        JOIN tbl_employee E
+        on A.fk_empno = E.empno
+		where 1=1<if test= "department != null and department != 'all'">and E.department = #{department}</if>
+				 <if test= "fname != null and fname != ''">and E.name = #{fname}</if>
+		) C
+		where to_date(workdate) between to_date(#{startTime}, 'yyyy.mm.dd') and to_date(#{endTime}, 'yyyy.mm.dd')+1
+		    and ( ${filterwhere})
+	</select>
+	
+	
+	
+	<resultMap type="HashMap" id="teamSearchListMap">
+		<result property="fname"         column="fname"          javaType="String" />
+		<result property="department"    column="department"     javaType="String" />
+		<result property="workdate"      column="workdate"       javaType="String" />
+		<result property="workstart"     column="workstart"      javaType="String" />
+		<result property="workend"       column="workend"        javaType="String" />
+		<result property="dayoff"        column="dayoff"         javaType="String" />		
+		<result property="trip"          column="trip"           javaType="String" />
+		<result property="extend"        column="extend"         javaType="String" />
+	</resultMap>
+	<select id="getTeamSearchList" resultMap="teamSearchListMap" parameterType="HashMap">
+		select fname, department, workdate, workstart, workend, dayoff, trip, extend
+		from
+		(
+			select rownum AS RNO, fname, department, workdate, workstart, workend, dayoff, trip, extend
+			from 
+			(
+				select E.name as fname, E.department as department
+				     , to_char(workdate, 'yyyy-mm-dd') as workdate
+				     , decode(A.workstart, null, '출근미등록', to_char(A.workstart, 'hh24:mi')) as workstart
+				     , decode(A.workend, null, '퇴근미등록', to_char(A.workend, 'hh24:mi')) as workend 
+				     , decode(A.dayoff, 'N', '-', 'Y', '연차') as dayoff
+				     , decode(A.trip, 'Y', '외근' || ' ' ||NVL(to_char(A.tripstart, 'hh24:mi'), ' ') || '~' || NVL(to_char(A.tripend, 'hh24:mi'), ' '), 'N', '-') as trip
+				     , NVL2(A.extendstart, '연장 '|| to_char(A.extendstart, 'hh24:mi') || '~' || to_char(A.workend, 'hh24:mi'), '-' ) as extend
+				from tbl_attendance A
+				JOIN tbl_employee E
+				on A.fk_empno = E.empno
+				where 1=1<if test= "department != null and department != 'all'">and E.department = #{department}</if>
+				<if test= "fname != null and fname != ''">and E.name = #{fname}</if>
+			) C
+			where to_date(workdate) between to_date(#{startTime}, 'yyyy.mm.dd') and to_date(#{endTime}, 'yyyy.mm.dd')+1
+			    and (${filterwhere} )
+		) T
+		where RNO between #{startRno} and #{endRno}
+		order by workdate desc
+	</select>
+	
+	
+	<resultMap type="HashMap" id="departMap">
+		<result property="department"       column="department"       javaType="String" />
+		<result property="department_no"    column="department_no"    javaType="String" />
+	</resultMap>
+	<select id="getDepartments" resultMap="departMap" >
+		select department, department_no
+		from TBL_DEPARTMENT
+		order by department_no
+	</select>
+	
+	
+	
+	<!-- 여기부터 Notice  -->
+	
+	
+	
+	<select id="getNoticeTotalCnt" resultType="int" parameterType="HashMap">
+		select count(*)
+		from tbl_notice
+	</select>
+	
+	
+	<!-- 게시글 목록 조회하기 -->
+	<select id="getNoticeList" resultType="com.spring.groovy.notice.model.NoticeVO" parameterType="HashMap" >
+		select seq, fk_empno, name, subject, readcount, regdate, commentCount, groupno, fk_seq, depthno
+		from
+		(
+		    select rownum as rno
+		         , seq, fk_empno, name, subject, readcount, regdate, commentCount
+		         , groupno, fk_seq, depthno
+		    from
+		    (
+		        select seq, fk_empno, subject, name
+		             , readcount, to_char(regdate, 'yyyy-mm-dd hh24:mi:ss') as regdate
+		             , commentCount
+		             , groupno, fk_seq, depthno
+		        from tbl_notice
+		        <if test='searchType != "" and searchWord != "" '>
+					<include refid="search" />
+	            </if>
+		        start with fk_seq = 0
+		        connect by prior seq = fk_seq
+		        order siblings by regdate ${sortOrder}, groupno desc
+		    ) V
+		) T
+		where rno between #{startRno} and #{endRno}	
+	</select>
+	
+	<!-- 검색 sql문 -->
+	<sql id="search">
+		WHERE
+		<choose>
+			<!-- 제목+내용으로 검색 시 -->
+			<when test="searchType == 'all' ">
+				SUBJECT like '%'||LOWER(#{searchWord})||'%'
+				OR CONTENT like '%' ||LOWER(#{searchWord})||'%'
+			</when>
+			<!-- 기타 -->
+			<otherwise>
+				LOWER(${searchType}) LIKE '%'||LOWER(#{searchWord})||'%'
+			</otherwise>
+		</choose>
+	</sql>
+	
+	 
+	<!-- // === tbl_notice 테이블에서 groupno 컬럼의 최대값 알아오기 === // -->
+	<select id="getGroupnoMax" resultType="int">
+		select nvl(max(groupno), 0)
+		from tbl_notice
+	</select>
+	
+	<!-- 글번호 얻어오기  -->
+	<select id="getNoticeSeq" resultType="String" >
+		select max(seq) from tbl_notice
+	</select>
+	
+	<!-- === 글쓰기 === -->
+	<insert id="writeEnd" parameterType="com.spring.groovy.notice.model.NoticeVO">
+	    <if test='fk_seq.equals("")'>
+	    	insert into tbl_notice(seq, fk_empno, subject, name, content, readCount, regDate, status, groupno, fk_seq, depthno) 
+	    	values(noticeSeq.nextval, #{fk_empno}, #{subject}, #{name}, #{content}, default, default, default, #{groupno}, default, default)  
+	    </if>	    
+	    <if test='!fk_seq.equals("")'>
+	    	insert into tbl_notice(seq, fk_empno, subject, name, content, readCount, regDate, status, groupno, fk_seq, depthno) 
+	    	values(noticeSeq.nextval, #{fk_empno}, #{subject}, #{name}, #{content}, default, default, default, #{groupno}, #{fk_seq}, #{depthno}+1)    
+	    </if> 
+	</insert>
+	
+	<!-- 첨부파일 등록하기 -->
+	<insert id="insertFiles" parameterType="java.util.List">
+		insert into tbl_notice_file (notice_file_seq, fk_seq, originalfilename, filename, filesize)
+		SELECT notice_file_seq.NEXTVAL AS notice_file_seq, A.* 
+		FROM (
+		<foreach collection="list" item="file" separator="union all">
+			SELECT #{file.fk_seq} AS fk_seq, #{file.originalfilename} AS ORIGINALFILENAME,
+			#{file.filename} AS FILENAME, #{file.filesize} AS FILESIZE FROM DUAL
+		</foreach>) A
+	</insert>
+		
+	
+	<!-- 글내용 상세조회  -->
+	<select id="getNoticeDetail" resultType="com.spring.groovy.notice.model.NoticeVO" parameterType="HashMap">
+		select prev_seq, prev_subject
+		     , seq, fk_empno, name, subject, content, readcount, regdate, empimg
+		     , next_seq, next_subject
+		     , groupno, fk_seq, depthno
+		from 
+		(
+		    select  lag(seq) over(order by seq desc) as prev_seq
+		              , lag(subject) over(order by seq desc) as prev_subject
+		              , seq, fk_empno, N.name, subject, content, readcount, E.empimg
+		              , to_char(regdate, 'yyyy-mm-dd hh24:mi:ss') as regdate
+		              , lead(seq) over(order by seq desc) as next_seq
+		              , lead(subject) over(order by seq desc) as next_subject
+		              , groupno, fk_seq, depthno
+		    from tbl_notice N
+		    JOIN tbl_employee E
+		    on N.name = E.name
+		    where status = 1
+		    <if test='!searchWord.equals("")'>
+		    	and lower(subject) like '%'||lower('#{searchWord}')||'%'
+		    </if>
+		) V
+		where V.seq = #{seq}
+	</select>
+	
+	<!-- 조회수 증가  -->
+	<update id="addReadCnt" parameterType="HashMap">
+		update tbl_notice set readcount = readcount+1
+		where seq = #{seq}
+	</update>
+	
+	
+	<!-- 첨부파일 목록 조회(글 상세 조회)  -->
+	<select id="getFilesDetail" resultType="com.spring.groovy.notice.model.NoticeFileVO" parameterType="String">
+		select *
+        from tbl_notice_file        
+        where fk_seq = #{seq}
+	</select>
+	
+	<!-- 글 수정하기  -->
+	<update id="editNotice" parameterType="com.spring.groovy.notice.model.NoticeVO">
+		update tbl_notice set subject = #{subject}, content = #{content}
+		where seq = #{seq}
+	</update>
+	
+	
+	
+	<!-- (글 수정) 파일번호로 파일 정보 조회  -->
+	<select id="getFileInfo" resultType="com.spring.groovy.notice.model.NoticeFileVO" >
+		select *
+		from tbl_notice_file
+		where notice_file_seq = #{notice_file_seq}
+	</select>
+	
+	
+	<!-- (글 수정) 테이블에서 파일 삭제  -->
+	<delete id="deleteFile" parameterType="String">
+		delete from tbl_notice_file
+		where notice_file_seq = #{notice_file_seq}
+	</delete>
+	
+	
+	<!-- 글 정보 확인 (글 삭제)  -->
+	<select id="getPostInfo" resultType="com.spring.groovy.notice.model.NoticeVO" parameterType="HashMap">
+		select *
+        from tbl_notice        
+        where seq = #{seq}
+	</select>
+	
+	
+	<!-- 글 삭제  -->
+	<delete id="deletePost" parameterType="String">
+		delete from tbl_notice
+		where seq = #{seq}
+	</delete>
+	
+	
+	 
+	
 </mapper>

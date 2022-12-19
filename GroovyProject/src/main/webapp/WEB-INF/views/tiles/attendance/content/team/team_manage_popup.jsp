@@ -190,9 +190,9 @@
 <div style="font-size: 18pt; margin: 40px 0 50px 30px;" >근태 조회(인사 - 김혜원)</div>
 
 <div style="font-size: 18pt; text-align: center;">
-	<i class="glyphicon glyphicon-menu-left" style="color: #bfbfbf; font-size: 14pt;"></i>
+	<i class="fas fa-angle-left" style="color: #bfbfbf; font-size: 14pt;"></i>
 	2022.11
-	<span class="glyphicon glyphicon-menu-right" style="color: #bfbfbf; font-size: 14pt;"></span>
+	<span class="fas fa-angle-right" style="color: #bfbfbf; font-size: 14pt;"></span>
 </div>
 
 
@@ -227,7 +227,7 @@
 
 <div id="week1" class="widths">
 	<div onclick="toggle('week1')" class="weeks">
-		<span class="glyphicon glyphicon-menu-down" style="font-size: 11pt;"></span>
+		<span class="fas fa-angle-down" style="font-size: 11pt;"></span>
 		&nbsp;1 주차
 	</div>
 	<hr>
