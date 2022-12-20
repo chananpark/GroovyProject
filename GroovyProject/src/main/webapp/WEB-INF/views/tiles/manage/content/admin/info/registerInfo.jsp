@@ -517,7 +517,7 @@ let b_flag_emailDuplicate_click = false;
 	<div class='mx-4'>
 	<h5>사원등록</h5>
 	
-	<table class="m-4 mb-3 table table-bordered table-sm" id="first_table">
+	<table class="m-4 mb-3 table table-bordered table-sm" id="first_table" style="width: 95%;">
 		<tr>
 			<td rowspan='4' style="width: 2%;"><i class="fas fa-user-tie fa-10x mt-2 ml-2" ></i><input type="hidden" name="empimg"/></td>
 			<th class="t1"><span class="alert_required" style="color: red;">*</span>사원번호</th>
@@ -577,7 +577,7 @@ let b_flag_emailDuplicate_click = false;
 
 	</table>
 	
-	<table  class="m-4 mb-3 table table-bordered" >
+	<table  class="m-4 mb-3 table table-bordered" style="width: 95%;">
 		<tr>
 			<th><span class="alert_required"style="color: red;">*</span>내선번호</th>
 			<td>
@@ -608,7 +608,7 @@ let b_flag_emailDuplicate_click = false;
 		</tr>
 	</table>
 	
-	<table  class=" m-4 mb-3 table table-bordered" >
+	<table  class=" m-4 mb-3 table table-bordered" style="width: 95%;">
 		<tr>
 			<th><span class="alert_required" style="color: red;">*</span>부문</th>
 			<td>
@@ -673,7 +673,7 @@ let b_flag_emailDuplicate_click = false;
 	</table>
 	
 	<%-- 정보수정 페이지에서 보이는 버튼 --%>
-	<div align="right" style="margin: 3% 0;">
+	<div align="right" style="margin: 3% 0; width: 95%;">
 		<button id="btn_update" style="background-color:#F9F9F9; border: none; width: 80px;" onclick="func_delete()">삭제</button>
 		<button style="color: white; background-color:#086BDE; border: none; width: 80px;" id="btn_submit">저장</button>
 	</div>

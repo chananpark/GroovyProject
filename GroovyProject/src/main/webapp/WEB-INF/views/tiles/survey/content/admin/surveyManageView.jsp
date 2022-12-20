@@ -96,7 +96,7 @@
 <div id="div_surveyManageView">
 
 
-<input type="text" name="surno" value="${requestScope.surno}">
+<input type="hidden" name="surno" value="${requestScope.surno}">
 	<c:forEach var="resultView" items="${requestScope.resultViewList}" varStatus="status">
 	<c:if test="${status.count ==1 }">
 		<div>
@@ -120,7 +120,7 @@
 				</c:choose>
 			</span>
 			<span class="mr-5"><b>참여현황: </b>${requestScope.joinempcnt}/${requestScope.empCnt}</span>
-			<span class="mr-5"><b>참여율: </b>??</span>
+			<span class="mr-5"><b>참여율: </b></span>
 		</div>
 	</c:if>
 	</c:forEach>

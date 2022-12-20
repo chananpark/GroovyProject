@@ -22,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
+import com.google.gson.JsonObject;
 import com.spring.groovy.common.FileManager;
 import com.spring.groovy.common.Pagination;
 import com.spring.groovy.management.model.CelebrateVO;
@@ -580,6 +581,25 @@ public class ManagementController {
 		mav.setViewName("manage/admin/celebrate/receiptCelebrateStatus.tiles");
 		return mav;
 	}
+	
+
+	   // 관리자 사원관리 - 경조비신청현황(결제상태 변경 Ajax)
+	   @ResponseBody
+	   @RequestMapping(value="/manage/admin/receiptCelebrateStatusEnd.on", method= {RequestMethod.POST}, produces="text/plain;charset=UTF-8")
+	   public String receiptCelebrateStatusEnd(HttpServletRequest request, CelebrateVO cvo) {
+
+	      Map<String, Object> paramap = new HashMap<>();
+	      paramap.put("cvo", cvo);
+
+	      int n = service.receiptCelebrateStatusEnd(paramap);
+
+	      JSONObject json = new JSONObject();
+
+	      json.put("n",n);
+
+	      return json.toString();
+	   }
+	
 
 	//관리자 사원관리 - 경조비지급목록
 	@RequestMapping(value="/manage/admin/receiptcelebrateList.on")

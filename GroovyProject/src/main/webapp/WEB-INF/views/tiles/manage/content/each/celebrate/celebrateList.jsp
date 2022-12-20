@@ -114,7 +114,7 @@
 		<button class="btn btn-sm" style="background-color: #086BDE; color:white; width: 60px;"><i class="fas fa-search"></i>검색</button>
 	</div>
 		
-	<div class='m-4' style="margin: 7% 0% 3% 0%;">
+	<div class='m-4' style="margin: 7% 0% 3% 0%; width: 95%;" >
 	<h5>경조비신청목록</h5>
 	<table class="table table-bordered table-sm ">
 		<thead>

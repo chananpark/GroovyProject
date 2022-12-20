@@ -9,10 +9,6 @@
 
 <style>
 
-	div#div_surveyList {
-		padding: 5% 2%;
-		width: 95%;
-	}
 	button {
 		border: none;
 		background-color: white;
@@ -99,10 +95,9 @@
 
 
 <div id="div_surveyList">
-
-	<div style='margin: 1% 0 3% 1%'>
-		<h4>설문리스트</h4>
-	</div>
+<div style='margin: 1% 0 5% 1%'>
+	<h4>설문리스트</h4>
+</div>
 	
 	<!-- 제목을 클릭하면 정보를 넘길 수 있도록 hidden으로 값 받아오기 -->
 	
@@ -144,7 +139,7 @@
 					<th>설문제목</th>
 					<th>설문기간</th>
 					<th>참여여부</th>
-					<th>답변제출일</th>
+					<th>설문제출일</th>
 				</thead>
 				
 				<%-- 현재시각을 알아오는 JSTL --%>
