@@ -4,7 +4,8 @@
 <% String ctxPath = request.getContextPath(); %>   
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-    
+<%@ taglib prefix="fn" uri="http://java.sun.com/jsp/jstl/functions" %>
+
 <!-- Font Awesome 5 Icons !!이걸써줘야 아이콘웹에서 아이콘 쓸 수 있다!!-->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
     
@@ -150,7 +151,7 @@
 							<c:otherwise>승인완료</c:otherwise>
 						</c:choose>
 					</td>
-					<td>${celebList.clbdate}</td>
+					<td>${fn:substring(celebList.clbdate,0,10)}</td>
 				</tr>
 			</c:forEach>
 		</tbody>
