@@ -36,7 +36,9 @@
 
 </script>
 
-<h2>채팅</h2>
+<div style='margin: 1% 0 5% 1%'>
+	<h4>채팅</h4>
+</div>
 
 
 <div class="row row-cols-1 row-cols-md-3 g-4">
