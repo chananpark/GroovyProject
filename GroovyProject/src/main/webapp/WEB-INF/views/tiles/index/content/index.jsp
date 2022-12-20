@@ -527,6 +527,18 @@
 						        <td>소속: ${mem.bumun}&nbsp;${mem.department}</td>
 						    </tr>
 						    <tr>
+						    	<td>생일: 
+						    	<c:choose>
+						    		<c:when test="${fn:substring(mem.jubun,8,9) == 1 or fn:substring(mem.jubun,8,9) == 2}">
+						    			<c:set var="year" value="19"/>
+						    		</c:when>
+						    		<c:otherwise>
+						    			<c:set var="year" value="20"/>
+						    		</c:otherwise>
+						    	</c:choose>
+						    	${year}${fn:substring(mem.jubun,0,2)}-${fn:substring(mem.jubun,2,4)}-${fn:substring(mem.jubun,4,6)}</td>
+						    </tr>
+						    <tr>
 						    	<td>메일: ${mem.cpemail}</td>
 						    </tr>
 						    <tr>
