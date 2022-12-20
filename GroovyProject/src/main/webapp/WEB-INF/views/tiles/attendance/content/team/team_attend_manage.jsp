@@ -523,8 +523,9 @@
 		$('#filterModal').modal('hide');
 	}
 </script>
-
-<div style="font-size: 18pt; margin: 40px 0 50px 30px;" >부서 근태관리</div>
+<div style='margin: 1% 0 5% 1%'>
+	<h4>부서 근태관리</h4>
+</div>
 
 <div style="font-size: 18pt; text-align: center; margin-bottom: 20px;">
 	<span class="fas fa-angle-left" id="prevMonth" style="color: #bfbfbf; font-size: 14pt;"></span>

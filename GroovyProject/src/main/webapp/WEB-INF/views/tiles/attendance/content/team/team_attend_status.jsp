@@ -510,8 +510,9 @@
 	} // end of function goDptPplInfo(empno){} --------------------------
 
 </script>
-
-<div style="font-size: 18pt; margin: 40px 0 50px 30px;" >부서 근태조회</div>
+<div style='margin: 1% 0 5% 1%'>
+	<h4>부서 근태조회</h4>
+</div>
 
 <div style="font-size: 16pt; text-align: center; margin-bottom: 30px;">
 	<span id="prevWeek" class="fas fa-angle-left" style="color: #bfbfbf; font-size: 14pt;"></span>

@@ -483,7 +483,9 @@
 	
 </script>
 
-<div style="font-size: 18pt; margin: 40px 0 50px 30px;" >근태 관리</div>
+<div style='margin: 1% 0 5% 1%'>
+	<h4>근태 관리</h4>
+</div>
 
 <div style="font-size: 16pt; text-align: center; margin-bottom: 30px;">
 	<span id="prevWeek" class="fas fa-angle-left hoverShadowText" style="color: #bfbfbf; font-size: 14pt;"></span>
