@@ -108,7 +108,7 @@
 	<!-- 공용 경조비관리 - 경조비신청 -->
 	<insert id="receiptCelebrate" parameterType="com.spring.groovy.management.model.CelebrateVO">
 		INSERT INTO TBL_CELEBRATE (CLBNO, FK_EMPNO, CLBDATE, CLBPAY, CLBTYPE, CLBSTATUS)
-		VALUES(seq_tbl_celebrate.nextval, #{fk_empno}, sysdate, #{clbpay}, #{clbtype}, default)
+		VALUES(seq_tbl_celebrate.nextval, #{fk_empno}, to_char(sysdate,'yyyy-mm-dd'), #{clbpay}, #{clbtype}, default)
 	</insert>
 	
 	

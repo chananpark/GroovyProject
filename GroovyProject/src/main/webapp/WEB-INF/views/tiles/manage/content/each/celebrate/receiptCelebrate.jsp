@@ -126,7 +126,7 @@
 	<h4>경조비관리 </h4>
 </div>
 
-	<div id='list' class='m-4'>
+	<div id='list' class='m-4' style="width: 95%;">
 	<h5>경조비신청</h5>
 	
 	<%-- 경조구분만 선택가능. 옵션을 누르면 금액은 자동으로 들어오게 해야함.--%>
@@ -175,8 +175,8 @@
 		</tr>
 	</c:if>
 	</table>
-	<div class="float-right">
-		<button style="color: white; background-color:#086BDE" class="btn-sm" id="btn_submit">신청</button> <%-- 상여금을 받을 수 있을때만 저장이 가능하다 --%>
+	<div align="right">
+		<button style="color: white; background-color:#086BDE" class="btn" id="btn_submit">신청</button> <%-- 상여금을 받을 수 있을때만 저장이 가능하다 --%>
 	</div>
 	</div>
 

@@ -196,7 +196,7 @@
 	
 	
 	
-	<div class="mt-5" id="detailPay">
+	<div class='m-4'  id="detailPay" style="margin: 7% 0% 5% 0%; width: 95%;">
 	<h5 class='mx-4'>급여상세</h5>
 		<table class="table table-bordered table-sm mx-4 ">
 			<thead>

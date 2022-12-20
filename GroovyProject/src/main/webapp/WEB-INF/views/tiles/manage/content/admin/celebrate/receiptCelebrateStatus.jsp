@@ -123,8 +123,6 @@
 
 
 <form name="frm_celebSearch">
-
-
 <div style='margin: 1% 0 5% 1%'>
 	<h4>경조비관리</h4>
 </div>
@@ -195,8 +193,8 @@
 	
 	<%-- 정보수정 페이지에서 보이는 버튼 --%>
 	<c:if test="${not empty requestScope.celbStatusList}">
-		<div align="right" style="margin: 3% 0;">
-			<button id="btn_update" style="color: white; background-color:#086BDE; border: none; width: 80px;" >저장</button>
+		<div align="right" style="margin: 3% 4% 3% 0;">
+			<button id="btn_update" class="btn" style="color: white; background-color:#086BDE; border: none; width: 80px;" >저장</button>
 		</div>
 	</c:if>
 	
