@@ -198,7 +198,8 @@
 			});
 	    });
 	    
-	    
+	    getWorkTimes();
+		  getSideWeeklyWorkTimes();
 	 // 출근하기
 		$("#goStartWorkBtn").click(function(){ // -------------------------
 			

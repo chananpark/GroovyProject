@@ -678,7 +678,7 @@
 						<div id="dayoffInfo" style="margin-top: 15px;">
 							<span style="font-size: 10pt;">잔여: </span>
 							<span style="font-size: 11pt; font-weight: bold; color: #086BDE;">${sessionScope.loginuser.annualcnt}일</span>
-							<div style="font-size: 10pt;">사용 후: ${sessionScope.loginuser.annualcnt}일</div>
+							<div style="font-size: 10pt;">사용 후: 14일</div>
 						</div>
 							
 						</div>
