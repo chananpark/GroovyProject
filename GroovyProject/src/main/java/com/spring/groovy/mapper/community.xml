@@ -138,6 +138,7 @@
 		UPDATE TBL_COMMUNITY_COMMENT
 		SET COMMENT_STATUS = 0
 		WHERE COMMENT_NO = #{comment_no}
+		OR PARENT_COMMENT_NO = #{comment_no}
 	</update>
 		
 	<!-- 답댓글 작성하기 -->

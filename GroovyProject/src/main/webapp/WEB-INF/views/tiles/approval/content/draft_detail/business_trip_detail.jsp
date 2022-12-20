@@ -338,9 +338,7 @@ const cancelDraft = () => {
 			<c:if test="${not empty draftMap.dfvoList}">
 			<table class='mr-4 table table-sm table-bordered text-left'>
 				<tr>
-					<c:forEach items="${draftMap.dfvoList}" var="file" varStatus="sts">
-					<th class='p-2 text-left'><i class="fas fa-paperclip"></i> 첨부파일 ${sts.count}개</th>
-					</c:forEach>
+					<th class='p-2 text-left'><i class="fas fa-paperclip"></i> 첨부파일 ${fn:length(draftMap.dfvoList)}개</th>
 				</tr>
 				<c:forEach items="${draftMap.dfvoList}" var="file">
 				<tr>

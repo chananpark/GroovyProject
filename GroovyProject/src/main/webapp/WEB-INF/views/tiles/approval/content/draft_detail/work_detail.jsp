@@ -320,13 +320,14 @@ const cancelDraft = () => {
 			<!-- 첨부파일 -->
 			<c:if test="${not empty draftMap.dfvoList}">
 			<table class='mr-4 table table-sm table-bordered text-left'>
-				<c:forEach items="${draftMap.dfvoList}" var="file" varStatus="sts">
-				<th class='p-2 text-left'><i class="fas fa-paperclip"></i> 첨부파일 ${sts.count}개</th>
-				</c:forEach>
+				<tr>
+					<th class='p-2 text-left'><i class="fas fa-paperclip"></i> 첨부파일 ${fn:length(draftMap.dfvoList)}개</th>
+				</tr>
 				<c:forEach items="${draftMap.dfvoList}" var="file">
 				<tr>
 					<td class='p-2'>
-					<a href="<%=ctxPath%>/approval/download.on?draft_file_no=${file.draft_file_no}">${file.originalFilename} (${file.filesize}Byte)</a></td>
+					<a href="<%=ctxPath%>/approval/download.on?draft_file_no=${file.draft_file_no}">${file.originalFilename} (${file.filesize}Byte)</a>
+					</td>
 				</tr>
 				</c:forEach>
 			</table>

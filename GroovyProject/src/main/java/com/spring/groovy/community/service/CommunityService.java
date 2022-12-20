@@ -262,7 +262,7 @@ public class CommunityService implements InterCommunityService {
 		
 		int n = dao.delComment(comment);
 		
-		return (n==1)? true: false;
+		return (n > 1)? true: false;
 	}
 
 	// 첨부파일 1개 조회
