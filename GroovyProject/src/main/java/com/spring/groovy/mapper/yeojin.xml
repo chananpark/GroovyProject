@@ -261,6 +261,24 @@
 			OR ( SD.fk_empno != #{empno} and lower(joinuser) like '%'||lower(#{cpemail})||'%' ))
 		</if>
 		
+		<!-- 검색분류와 일정분류가 있고 검색어가 없는 경우 -->
+		<if test='fk_lgcatgono != "" and pagination.searchWord == "" and pagination.searchType != "" '>
+			<choose>
+	        	<!-- 전사일정 -->
+	            <when test='fk_lgcatgono == "1" '>
+	               and SD.fk_lgcatgono = 1
+	            </when>
+	            <!-- 팀별일정 -->
+	            <when test='fk_lgcatgono == "2" '>
+	               and SD.fk_lgcatgono = 2 AND E.department = (select department from tbl_employee where empno = #{empno})
+	            </when>
+	            <!-- 개인일정 -->
+	            <when test='fk_lgcatgono == "3" '>
+	               and SD.fk_lgcatgono = 3 and SD.fk_empno = #{empno}
+	            </when>
+			</choose>
+		</if>
+		
 		<!-- 검색분류가 있고 검색어가 없는 경우 -->
 		<if test='fk_lgcatgono == "" and pagination.searchWord == "" and pagination.searchType != "" '>
 			and (SD.fk_lgcatgono = 1 OR (SD.fk_lgcatgono = 2 AND E.department = (select department from tbl_employee where empno = #{empno})) OR SD.fk_empno = #{empno})
@@ -396,6 +414,24 @@
 			<if test='fk_lgcatgono == "" and pagination.searchWord == "" and pagination.searchType != "" '>
 				and (SD.fk_lgcatgono = 1 OR (SD.fk_lgcatgono = 2 AND E.department = (select department from tbl_employee where empno = #{empno})) OR SD.fk_empno = #{empno})
 				OR ( SD.fk_empno != #{empno} and lower(joinuser) like '%'||lower(#{cpemail})||'%' )
+			</if>
+			
+			<!-- 검색분류와 일정분류가 있고 검색어가 없는 경우 -->
+			<if test='fk_lgcatgono != "" and pagination.searchWord == "" and pagination.searchType != "" '>
+				<choose>
+		        	<!-- 전사일정 -->
+		            <when test='fk_lgcatgono == "1" '>
+		               and SD.fk_lgcatgono = 1
+		            </when>
+		            <!-- 팀별일정 -->
+		            <when test='fk_lgcatgono == "2" '>
+		               and SD.fk_lgcatgono = 2 AND E.department = (select department from tbl_employee where empno = #{empno})
+		            </when>
+		            <!-- 개인일정 -->
+		            <when test='fk_lgcatgono == "3" '>
+		               and SD.fk_lgcatgono = 3 and SD.fk_empno = #{empno}
+		            </when>
+				</choose>
 			</if>
 			
 			<!-- 검색 분류가 없고 검색어가 있는 경우 -->

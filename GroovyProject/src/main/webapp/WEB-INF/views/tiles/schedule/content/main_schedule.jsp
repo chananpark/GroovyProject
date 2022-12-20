@@ -407,8 +407,8 @@
 
 								
                              	// 공유일정
-                                if (  (item.fk_lgcatgono == 2 && item.department != "${sessionScope.loginuser.department}" && item.empno != "${sessionScope.loginuser.empno}" && '(item.joinuser).indexOf("${sessionScope.loginuser.cpemail}")' != '-1')
-                                		|| (item.fk_lgcatgono == 3 && item.empno != "${sessionScope.loginuser.empno}" && '(item.joinuser).indexOf("${sessionScope.loginuser.cpemail}")' != '-1') ){  
+                                if (  (item.fk_lgcatgono == 2 && item.department != "${sessionScope.loginuser.department}" && item.empno != "${sessionScope.loginuser.empno}" && (item.joinuser).indexOf("${sessionScope.loginuser.cpemail}") != '-1')
+                                		|| (item.fk_lgcatgono == 3 && item.empno != "${sessionScope.loginuser.empno}" && (item.joinuser).indexOf("${sessionScope.loginuser.cpemail}") != '-1') ){  
                                       
 									events.push({
                           				id: "0",  // "0" 인 이유는  배열 events 에 push 할때 id는 고유해야 하는데 위의 사내캘린더 및 내캘린더에서 push 할때 id값으로 item.scheduleno 을 사용하였다. item.scheduleno 값은 DB에서 1 부터 시작하는 시퀀스로 사용된 값이므로 0 값은 위의 사내캘린더나 내캘린더에서 사용되지 않으므로 여기서 고유한 값을 사용하기 위해 0 값을 준 것이다. 
