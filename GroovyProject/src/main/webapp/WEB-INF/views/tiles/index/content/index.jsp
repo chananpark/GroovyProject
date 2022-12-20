@@ -197,6 +197,50 @@
 				html: true
 			});
 	    });
+	    
+	    
+	 // 출근하기
+		$("#goStartWorkBtn").click(function(){ // -------------------------
+			
+			const empno = "${sessionScope.loginuser.empno}";	
+			
+			$.ajax({
+				  url:"<%=ctxPath%>/attend/goStartWork.on",
+				  data:{"empno":empno},
+				  type:"POST",
+				  dataType:"JSON",
+				  success:function(json){
+					  getWorkTimes();
+					  getSideWeeklyWorkTimes();
+				  },
+				  error: function(request, status, error){
+					  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+				  }
+			});			
+			
+		}); // end of $("#goStartWorkBtn").click() --------------------------
+		
+		// 퇴근하기
+		$("#goEndWorkBtn").click(function(){ // -------------------------
+			
+			const empno = "${sessionScope.loginuser.empno}";			
+			
+			$.ajax({
+				  url:"<%=ctxPath%>/attend/goEndWork.on",
+				  data:{"empno":empno},
+				  type:"POST",
+				  dataType:"JSON",
+				  success:function(json){
+					  getWorkTimes();
+					  getSideWeeklyWorkTimes();
+				  },
+				  error: function(request, status, error){
+					  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+				  }
+			  });			
+			
+		}); // end of $("#goStartWorkBtn").click() --------------------------
+	    
 	}); // end of ready
 	
 
@@ -320,6 +364,60 @@
 		
 	}
 	
+	
+	
+	// 주간근무시간 얻어오기
+	function getSideWeeklyWorkTimes() { // -----------------------------------------
+		
+		const empno = "${sessionScope.loginuser.empno}";
+		
+		$.ajax({
+			  url:"<%=ctxPath%>/attend/getSideWeeklyWorkTimes.on",
+			  data:{"empno":empno},
+			  dataType:"JSON",
+			  success:function(json){
+				  
+				  const weeklywork = json.weeklyworkTimesMap.weeklywork;
+				  
+				  $("#sideWeeklywork").text(weeklywork);
+				  
+			  },
+			  error: function(request, status, error){
+				  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			  }
+		  });
+		
+	} // end of function getWorkTimes() ----------------------------------
+	
+	
+	function getWorkTimes() { // -----------------------------------------
+		
+		const empno = "${sessionScope.loginuser.empno}";
+		
+		$.ajax({
+			  url:"<%=ctxPath%>/attend/getWorkTimes.on",
+			  data:{"empno":empno},
+			  dataType:"JSON",
+			  success:function(json){
+				  
+				  const workStartTime = json.workTimeMap.workstart;
+				  const workEndTime = json.workTimeMap.workend;
+				  const weeklyTime = json.workTimeMap.weeklyTime;
+				  
+				  // console.log("workStartTime: "+ workStartTime);
+				  // console.log("workEndTime: "+ workEndTime);
+				  // console.log("weeklyTime: "+ weeklyTime);
+				  
+				  $("#workStartTime").text(workStartTime);
+				  $("#workEndTime").text(workEndTime);
+				  
+			  },
+			  error: function(request, status, error){
+				  alert("code: "+request.status+"\n"+"message: "+request.responseText+"\n"+"error: "+error);
+			  }
+		  });
+		
+	} // end of function getWorkTimes() ----------------------------------
 
 </script>
 
@@ -454,22 +552,22 @@
 								
 								<div>
 									<span class="attTime">출근시간</span>
-									<span class="attTime attTimeRight">10:00:00</span>
+									<span class="attTime attTimeRight" id="workStartTime">-</span>
 								</div>
 								<div>
 									<span class="attTime">퇴근시간</span>
-									<span class="attTime attTimeRight">10:00:00</span>
+									<span class="attTime attTimeRight" id="workEndTime">-</span>
 								</div>
 								<div>
 									<span class="attTime pr-1">누적근무시간<span style="font-size: 8pt;">(주간)</span></span>
-									<span class="attTime attTimeRight">9h 20m 52s</span>
+									<span class="attTime attTimeRight" id="sideWeeklywork" >0h 0m </span>
 								</div>
 							</div>
 							<hr>
 							<div>
 								<div id="workSelectBox">
-									<button type="button" class="onOff hoverShadow" id="">출근하기</button>
-									<button type="button" class="onOff hoverShadow" id="">퇴근하기</button>
+									<button type="button" class="onOff hoverShadow" id="goStartWorkBtn">출근하기</button>
+									<button type="button" class="onOff hoverShadow" id="goEndWorkBtn">퇴근하기</button>
 									<button style="display: block;" type="button" id="attSelectBtn" class="hoverShadow">근무상태 <span id="attSelectComp" class="fas fa-caret-down"></span></button>
 									<div id="attSelectBox">
 										<div class="selectContent" style="border-top-left-radius: 9px; border-top-right-radius: 9px;" onclick="workStatus('업무')">업무</div>
