@@ -474,7 +474,6 @@ public class CommunityController {
 	@ResponseBody
 	@RequestMapping(value = "/addReComment.on", produces = "text/plain;charset=UTF-8")
 	public String addReComment(HttpServletRequest request, CommunityCommentVO comment) {
-		System.out.println("답댓작성컨트롤러");
 		MemberVO loginuser = Myutil.getLoginUser(request);
 		comment.setFk_empno(loginuser.getEmpno());
 		

@@ -113,7 +113,7 @@ function getComment() {
 					+ "<span style='color:gray' class='ml-2'>" + el.comment_date + "</span>";
 					
 				if(el.depth == 0) {
-					cmt += "<button type='button' style='background-color:transparent' onclick='addReComment("+el.comment_no+ "," + el.group_no+")'><i class='fas fa-reply fa-rotate-180 mx-2'></i>답댓글 작성</button>";
+					cmt += "<button type='button' style='background-color:transparent' onclick='addReComment("+el.comment_no+ "," + el.group_no + "," + el.empno +")'><i class='fas fa-reply fa-rotate-180 mx-2'></i>답댓글 작성</button>";
 				}
 				
 				if (el.fk_empno == "${loginuser.empno}") {
@@ -212,7 +212,7 @@ const editSubmit = (comment_content, comment_no, fk_empno) => {
 }
 
 // 답댓글 작성
-const addReComment = (comment_no, group_no) => {
+const addReComment = (comment_no, group_no, empno) => {
 	
 	// 답댓글 입력폼 추가
 	let html = "<form id='reCommentFrm" + comment_no + "'>";
@@ -233,13 +233,13 @@ const addReComment = (comment_no, group_no) => {
 	
 	// 등록버튼 이벤트바인딩
 	$("#addReComment"+comment_no).click(()=>{
-		reCommentSubmit(comment_no);
+		reCommentSubmit(comment_no, empno);
 	});
 		
 }
 
 // 답댓글 작성 컨트롤러 호출
-const reCommentSubmit = comment_no => {
+const reCommentSubmit = (comment_no, empno) => {
 	var queryString = $("#reCommentFrm"+comment_no).serialize();
 	
 	$.ajax({
@@ -250,6 +250,14 @@ const reCommentSubmit = comment_no => {
 		success : function(json) {
 			if (json.result == true) {
 				getComment(); // 댓글 읽어오기
+				
+				// 소켓
+           		if("${loginuser.empno}" != empno){ // 자신이 자신의 댓글에 단 답댓글이 아니라면
+	           		if(socket){
+	        			let socketMsg = "커뮤니티,"+ "${post.fk_empno}," + "${loginuser.name} 님이 [${post.post_subject}] 글에서 나의 댓글에 <b>답댓글</b>을 남겼습니다.," + "<%=ctxPath%>/community/detail.on?post_no=${post.post_no}";
+	        			socket.send(socketMsg);
+	           		}
+           		}
 			} else {
 				swal("답댓글 작성 실패");
 			}
@@ -342,6 +350,14 @@ const addComment = () => {
 			if (json.result == true) {
 				$("textarea[name='comment_content']").val(""); // 댓글 입력창 비우기
 				getComment(); // 댓글 읽어오기
+				
+				// 소켓
+           		if("${loginuser.empno}" != "${post.fk_empno}"){ // 자신이 자신의 글에 단 댓글이 아니라면
+	           		if(socket){
+	        			let socketMsg = "커뮤니티,"+ "${post.fk_empno}," + "${loginuser.name} 님이 [${post.post_subject}] 글에 <b>댓글</b>을 남겼습니다.," + "<%=ctxPath%>/community/detail.on?post_no=${post.post_no}";
+	        			socket.send(socketMsg);
+	           		}
+           		}
 			} else {
 				swal("댓글 작성 실패");
 			}
