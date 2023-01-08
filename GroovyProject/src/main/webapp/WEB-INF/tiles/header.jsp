@@ -61,11 +61,73 @@
 		font-size: 25pt;
 		font-weight: bold;
 	}
+	
+	#msgStack {
+		position: fixed;
+		right: 16px;
+		z-index: 1;
+	}
+	
+	a {
+		color: black;
+	}
 </style>
-
 <script>
+// 소켓 전역변수 설정
+var socket  = null;
+
+// toast생성 및 추가
+function onMessage(evt){
+	var data = evt.data;
+	// toast
+	let toast = "<div class='toast' role='alert' aria-live='assertive' aria-atomic='true'>";
+	toast += "<div class='toast-header'><i class='fas fa-bell mr-2'></i><strong class='mr-auto'>알림</strong>";
+	toast += "<button type='button' class='ml-2 mb-1 close' data-dismiss='toast' aria-label='Close'>";
+	toast += "<span aria-hidden='true'>&times;</span></button>";
+	toast += "</div> <div class='toast-body'>" + data + "</div></div>";
+	$("#msgStack").append(toast);   // msgStack div에 생성한 toast 추가
+	$(".toast").toast({"animation": true, "autohide": false});
+	$('.toast').toast('show');
+};	
+
 $(()=>{
 	
+	// 웹소켓 연결
+	/* sock = new SockJS("/alert.on");
+	socket = sock;
+
+	// 소켓이 열렸을 때
+	sock.onopen = function() {
+	 	console.log('open');
+	}; */
+	const url = window.location.host; // 웹브라우저의 주소창의 포트까지 가져옴
+    const pathname = window.location.pathname; // 최초 '/' 부터 오른쪽에 있는 모든 경로
+    const appCtx = pathname.substring(0, pathname.lastIndexOf("/") ); 
+    const root = url + appCtx;
+	var ws = new WebSocket('ws://${pageContext.request.serverName}:${pageContext.request.serverPort}${pageContext.request.contextPath}/alert.on');		   
+       
+    socket = ws;
+    
+	ws.onopen = function() {
+   		console.log('Info: connection opened.');
+	};
+
+	ws.onmessage = function(event) {
+   		console.log('Info: connection onmessage.');
+
+    	onMessage(event); // toast 생성
+	};
+
+	ws.onclose = function(event) {
+   		console.log('Info: connection closed');
+	};
+    
+	ws.onerror = function(err) {
+   		console.log('Error:', err);
+	};
+
+	
+ 	// 현재 메뉴 표시하기
 	const pathName = window.location.pathname;
 	const ctxPath = '<%=ctxPath%>';
 	let menuName = pathName.substring(ctxPath.length+1);
@@ -76,9 +138,10 @@ $(()=>{
 	$('div#'+menuName).addClass('activeHeaderMenu'); // 현재 메뉴에 색 입히기
 	
 	$("#header_profile_bg").text("${sessionScope.loginuser.name}".substring(0,1));
+
 });
 </script>
-
+<div id="msgStack"></div>
 <nav class="navbar navbar-expand-sm">
 
   <ul class="navbar-nav headerNavbar">
@@ -181,7 +244,6 @@ $(()=>{
 			</div>
    		</div>
     </li>
-    
   
   </ul>
   
