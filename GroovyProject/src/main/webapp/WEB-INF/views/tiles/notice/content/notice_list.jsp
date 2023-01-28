@@ -156,7 +156,9 @@ a {
 		</table>
 	</div>
 	
+	<c:if test="${loginuser.fk_department_no == 2}">
 	<button type="button" id="writeBtn" class='rounded' onclick='addPost()'>글쓰기</button>
+	</c:if>
 	
 	<div id="pageList">
 		${pagebar}

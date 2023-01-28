@@ -474,7 +474,6 @@ public class CommunityController {
 	@ResponseBody
 	@RequestMapping(value = "/addReComment.on", produces = "text/plain;charset=UTF-8")
 	public String addReComment(HttpServletRequest request, CommunityCommentVO comment) {
-
 		MemberVO loginuser = Myutil.getLoginUser(request);
 		comment.setFk_empno(loginuser.getEmpno());
 		

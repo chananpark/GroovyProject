@@ -111,7 +111,7 @@
 			if('${emp.empno}'==empno){
 				$("#card_header").text("직원 ${emp.name}님 정보");
 				if('${emp.empimg}' != null && '${emp.empimg}'!= ''){
-					$("#empPhoto").attr("src", "<%= ctxPath%>/resources/images/empphoto/${emp.empimg}.jpg" );
+					$("#empPhoto").attr("src", "<%= ctxPath%>/resources/images/profile/${emp.empimg}" );
 				}
 				
 				$("#selectName").val("${emp.name}");
@@ -318,7 +318,8 @@
 			
 						<tr>
 							<td rowspan="5" style="width:150px;">
-								<img id="empPhoto"src="<%= ctxPath%>/resources/images/picture/꼬미사진.jpg" height="200px;" width="200px"/>
+
+								<img id="empPhoto"src="<%= ctxPath%>/resources/images/profile/default_profile.png" height="200px;" width="200px"/>
 								
 							</td>
 							

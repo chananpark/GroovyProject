@@ -1,6 +1,5 @@
 package com.spring.groovy.approval.model;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -20,46 +19,55 @@ public class ApprovalDAO implements InterApprovalDAO {
 		this.sqlsession = sqlsession;
 	}
 
+	// 팀문서함 전체 글 개수 조회
 	@Override
 	public int getTeamDraftCnt(Map<String, Object> paraMap) {
 		return sqlsession.selectOne("approval.getTeamDraftCnt", paraMap);
 	}
 
+	// 팀문서함 페이징처리한 리스트 조회
 	@Override
 	public List<DraftVO> getTeamDraftList(Map<String, Object> paraMap) {
 		return sqlsession.selectList("approval.getTeamDraftList", paraMap);
 	}
 
+	// 개인문서함 - 상신함 전체 글 개수 조회
 	@Override
 	public int getSentDraftCnt(Map<String, Object> paraMap) {
 		return sqlsession.selectOne("approval.getSentDraftCnt", paraMap);
 	}
 
+	// 개인문서함 - 상신함 페이징처리한 리스트 조회
 	@Override
 	public List<DraftVO> getSentDraftList(Map<String, Object> paraMap) {
 		return sqlsession.selectList("approval.getSentDraftList", paraMap);
 	}
 
+	// 개인문서함 - 결재함 전체 글 개수 조회
 	@Override
 	public int getProcessedDraftCnt(Map<String, Object> paraMap) {
 		return sqlsession.selectOne("approval.getProcessedDraftCnt", paraMap);
 	}
 
+	// 개인문서함 - 결재함 페이징처리한 리스트 조회
 	@Override
 	public List<DraftVO> getProcessedDraftList(Map<String, Object> paraMap) {
 		return sqlsession.selectList("approval.getProcessedDraftList", paraMap);
 	}
 	
+	// 개인문서함 - 임시저장함 전체 글 개수 조회
 	@Override
 	public int getSavedDraftCnt(Map<String, Object> paraMap) {
 		return sqlsession.selectOne("approval.getSavedDraftCnt", paraMap);
 	}
 	
+	// 개인문서함 - 임시저장함 페이징처리한 리스트 조회
 	@Override
 	public List<DraftVO> getSavedDraftList(Map<String, Object> paraMap) {
 		return sqlsession.selectList("approval.getSavedDraftList", paraMap);
 	}
 
+	// 개인문서함 - 임시저장함 글삭제
 	@Override
 	public int deleteDraftList(String[] deleteArr) {
 		return sqlsession.delete("approval.deleteDraftList", deleteArr);

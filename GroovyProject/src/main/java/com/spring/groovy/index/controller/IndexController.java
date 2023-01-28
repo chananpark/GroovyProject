@@ -78,7 +78,10 @@ public class IndexController {
 		/* 메일 5개 보여주기 */
 		paraMap.put("cpemail", loginuser.getCpemail());
 		List<MailVO> mailList = indexService.getMailList(paraMap);
-		mav.addObject("mailList", mailList);
+		if(mailList.size() != 0) {
+			mav.addObject("mailList", mailList);
+		}
+		
 		
 		mav.setViewName("index/index.tiles2");
 		return mav;

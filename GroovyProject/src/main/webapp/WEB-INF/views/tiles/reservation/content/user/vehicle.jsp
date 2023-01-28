@@ -288,7 +288,7 @@
 
 
 <div style='margin: 1% 0 5% 1%; display: flex;'>
-	<h4 class="mt-2">차량 예약</h4>
+	<h4>차량 예약</h4>
 </div>
 
 <div id="reservationFormat" style="width:95%; margin: 0 auto;">

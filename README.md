@@ -87,3 +87,10 @@ Spring MVC 모듈을 사용하여 그룹웨어 사이트를 제작한 팀프로�
   </tr> 
 </table>
 <hr>
+<h2>ERD</h2>
+<ul>
+<li>논리 모델링</li>
+<img src="https://user-images.githubusercontent.com/106459550/211135110-b682c421-4c77-49af-b7f0-2f48a8590e05.png"><br>
+<li>물리 모델링</li>
+<img src="https://user-images.githubusercontent.com/106459550/211135190-3e46169e-0ae6-4b24-ba48-065e270ba3ba.png">
+</ul>

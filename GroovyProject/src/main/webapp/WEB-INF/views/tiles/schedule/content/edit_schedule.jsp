@@ -527,7 +527,7 @@
 
 	
 	<div style='margin: 1% 0 5% 1%;'>
-		<h4 class="mt-2">일정 수정</h4>
+		<h4>일정 수정</h4>
 	</div>
 	
 	<hr style="background-color:#E3F2FD; margin-bottom: 30px; width:98%;">

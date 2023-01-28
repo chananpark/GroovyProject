@@ -12,8 +12,12 @@
 		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
     
     <beans:bean id="echoHandler" class="com.spring.chatting.websockethandler.WebsocketEchoHandler" init-method="init" /> 
+ 	<!-- 실시간 알림 websocket handler -->
+   	<beans:bean id="alertHandler" class="com.spring.groovy.common.AlertHandler" init-method="init"/>
+   	
     <websocket:handlers> 
         <websocket:mapping path="/chat/multichatstart.on" handler="echoHandler" />
+		<websocket:mapping path="/alert.on" handler="alertHandler" />
         <!-- websocket:handlers 태그안에서 아래처럼 websocket:handshake-interceptors에
              HttpSessionHandshakeInterceptor를 추가해주면
              WebSocketHandler에 접근하기 전에 
@@ -22,5 +26,5 @@
    			<beans:bean class="org.springframework.web.socket.server.support.HttpSessionHandshakeInterceptor" />
     	</websocket:handshake-interceptors>
     </websocket:handlers>
-    
+    	
 </beans:beans>

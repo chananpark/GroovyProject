@@ -70,7 +70,7 @@ th{
 	        	if(json.n = 1){
 	        		swal("삭제 완료", "메일이 삭제되었습니다.", "success")
 		 	    	.then((value) => {
-		    	    	location.href = "<%=ctxPath%>/mail/receieveMailBox.on";
+		    	    	location.href = "<%=ctxPath%>/mail/receiveMailBox.on";
 		    		});
 	        	}
 	        	listRefresh();

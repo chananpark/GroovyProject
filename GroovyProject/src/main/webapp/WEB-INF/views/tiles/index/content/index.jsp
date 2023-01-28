@@ -198,7 +198,8 @@
 			});
 	    });
 	    
-	    
+	    getWorkTimes();
+		  getSideWeeklyWorkTimes();
 	 // 출근하기
 		$("#goStartWorkBtn").click(function(){ // -------------------------
 			
@@ -439,6 +440,7 @@
 			<div class="card mb-3 shadow mt-3">
 				<div class="card-header bg-white index_card_header" onClick='location.href="<%=ctxPath%>/mail/receiveMailBox.on"'>메일</div>
 				<div class="card-body ">
+					<c:if test="${mailList != null}">
 					<table class="table table-hover">
 						<thead>
 							<tr class=" bold">
@@ -464,15 +466,17 @@
 						      	</c:if>	
 							</tr>
 						</c:forEach>
-						<c:if test="${mailList == null}">
+						
+							
+						</tbody>
+					</table>
+					</c:if>
+					<c:if test="${mailList == null}">
 						
 							받은 메일이 없습니다.
 
 						
 						</c:if>	
-							
-						</tbody>
-					</table>
 				</div>
 			</div>
 			
@@ -521,6 +525,18 @@
 						    </tr>
 						    <tr>
 						        <td>소속: ${mem.bumun}&nbsp;${mem.department}</td>
+						    </tr>
+						    <tr>
+						    	<td>생일: 
+						    	<c:choose>
+						    		<c:when test="${fn:substring(mem.jubun,8,9) == 1 or fn:substring(mem.jubun,8,9) == 2}">
+						    			<c:set var="year" value="19"/>
+						    		</c:when>
+						    		<c:otherwise>
+						    			<c:set var="year" value="20"/>
+						    		</c:otherwise>
+						    	</c:choose>
+						    	${year}${fn:substring(mem.jubun,0,2)}-${fn:substring(mem.jubun,2,4)}-${fn:substring(mem.jubun,4,6)}</td>
 						    </tr>
 						    <tr>
 						    	<td>메일: ${mem.cpemail}</td>

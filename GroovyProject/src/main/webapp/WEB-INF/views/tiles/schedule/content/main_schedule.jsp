@@ -549,7 +549,7 @@
 	</div>
 	 -->
 	<div style='margin: 1% 0 5% 1%; display: flex;'>
-		<h4 class="mt-2">일정</h4>
+		<h4>일정</h4>
 		<button id="search_btn" class="bg-white text-end ml-3" style="border: none; color:#ccc;"><i class="fas fa-search fa-1x"></i></button> 
 	</div>
 	

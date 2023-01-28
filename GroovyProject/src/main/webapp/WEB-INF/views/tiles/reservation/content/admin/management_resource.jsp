@@ -217,7 +217,7 @@
 <div id="add_resource_div"> 
 	
 	<div style='margin: 1% 0 5% 1%; display: flex;'>
-		<h4 class="mt-2">자원 관리</h4>
+		<h4>자원 관리</h4>
 		<div style="text-align: right;">
 			<button class="btn bg-light ml-3 mt-1" onclick="addResourceModal();">자원 추가</button>
 		</div>	

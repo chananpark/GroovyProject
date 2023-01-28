@@ -2,7 +2,6 @@
 	pageEncoding="UTF-8"%>
 <%@ taglib prefix="tiles" uri="http://tiles.apache.org/tags-tiles"%>
 <% String ctxPath = request.getContextPath(); %>
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -51,8 +50,6 @@
 <%-- sweet alert --%>
 <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
-
 <%-- 폰트 --%>
 <link rel="stylesheet" as="style" crossorigin href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.6/dist/web/static/pretendard.css" />
  
@@ -84,6 +81,7 @@
 }
 </style>
 </head>
+
 <body>
 	<div id="myContainer">
 		<div id="myHeader">
