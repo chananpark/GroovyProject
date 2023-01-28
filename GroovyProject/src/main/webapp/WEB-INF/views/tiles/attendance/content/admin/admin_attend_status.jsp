@@ -192,12 +192,12 @@
 		let date = now.getDate();		
 		let day = parseInt(now.getDay());
 				
-		let start = new Date(now.getFullYear(), now.getMonth(), 1);
+/* 		let start = new Date(now.getFullYear(), now.getMonth(), 1);
 		let startdate = start.getDate();
 		if(startdate < 10){	startdate = '0'+startdate;	}
-		start = start.getFullYear() + "." + (start.getMonth()+1) + "." + startdate + "(" + day_kor(start.getDay()) + ")";
+		start = start.getFullYear() + "." + (start.getMonth()+1) + "." + startdate + "(" + day_kor(start.getDay()) + ")"; */
 		
-		<%-- 이번주의 월요일 구하기
+		
 		if(day != 1){ // 오늘이 월요일이 아니라면
 			start = new Date(now.setDate( now.getDate()-(day-1) )); // 이번주의 월요일 구하기
 			
@@ -210,7 +210,7 @@
 		else{ // 오늘이 월요일 이라면
 			start = year + "." + month + "." + date + "(" + day_kor(day) + ")";
 		}
-		--%>
+		
 		
 		let end;
 		
@@ -538,8 +538,9 @@
 	
 
 </script>
-
-<div style="font-size: 18pt; margin: 40px 0 50px 30px;" >전사 근태조회</div>
+<div style='margin: 1% 0 5% 1%'>
+	<h4>전사 근태조회</h4>
+</div>
 
 <div style="font-size: 16pt; text-align: center; margin-bottom: 30px;">
 	<span id="prevWeek" class="fas fa-angle-left" style="color: #bfbfbf; font-size: 14pt;"></span>
